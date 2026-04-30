@@ -4,9 +4,13 @@ const mongoose = require('mongoose');
 const cors = require('cors');
 const http = require('http');
 const { Server } = require('socket.io');
-const nodemailer = require('nodemailer');
 const bcrypt = require('bcrypt');
 require('dotenv').config();
+
+// Strict email format validator — must have a local part, @, and a TLD (e.g. .com)
+function isValidEmail(email) {
+  return /^[^\s@]+@[^\s@]+\.[a-zA-Z]{2,}$/.test(String(email).trim());
+}
 
 const app = express();
 const server = http.createServer(app);
@@ -61,26 +65,7 @@ const RideSchema = new mongoose.Schema({
 RideSchema.index({ pickupCoords: "2dsphere" });
 const Ride = mongoose.model('Ride', RideSchema);
 
-// =============================================
-// NODEMAILER TRANSPORTER
-// =============================================
 
-const transporter = nodemailer.createTransport({
-  host: 'smtp.gmail.com',
-  port: 465,
-  secure: true, // TLS on port 465
-  family: 4,    // Force IPv4 — avoids ENETUNREACH on Render's IPv6 network
-  auth: {
-    user: process.env.EMAIL_USER,
-    pass: process.env.EMAIL_PASS,
-  },
-});
-
-// =============================================
-// IN-MEMORY OTP STORE  { email -> { otp, expiresAt } }
-// =============================================
-
-const otpStore = new Map();
 
 // =============================================
 // ADMIN MIDDLEWARE
@@ -115,63 +100,26 @@ io.on('connection', (socket) => {
 // AUTH ROUTES
 // =============================================
 
-// Send OTP
-app.post('/api/auth/send-otp', async (req, res) => {
-  try {
-    const { email } = req.body;
-    if (!email) return res.status(400).json({ error: 'Email is required.' });
-
-    const otp = String(Math.floor(1000 + Math.random() * 9000));
-    const expiresAt = Date.now() + 10 * 60 * 1000; // 10-minute expiry
-    otpStore.set(email.toLowerCase(), { otp, expiresAt });
-
-    await transporter.sendMail({
-      from: `"Ridify" <${process.env.EMAIL_USER}>`,
-      to: email,
-      subject: '🚗 Your Ridify Signup OTP',
-      html: `
-        <div style="font-family: Arial, sans-serif; max-width: 480px; margin: auto; padding: 30px; border-radius: 12px; border: 1px solid #e0e0e0;">
-          <h2 style="color: #111;">Welcome to Ridify! 🚗</h2>
-          <p style="color: #444;">Use the one-time code below to complete your sign-up. It expires in <strong>10 minutes</strong>.</p>
-          <div style="font-size: 42px; font-weight: bold; letter-spacing: 10px; text-align: center; padding: 20px 0; color: #111;">${otp}</div>
-          <p style="color: #888; font-size: 13px;">If you did not request this, please ignore this email.</p>
-        </div>
-      `,
-    });
-
-    res.status(200).json({ success: true, message: 'OTP sent to email.' });
-  } catch (err) {
-    console.error('OTP send error:', err);
-    res.status(500).json({ error: err.message });
-  }
-});
-
-// Register (with OTP verification + bcrypt)
+// Register (bcrypt — no OTP required)
 app.post('/api/auth/register', async (req, res) => {
   try {
-    const { name, age, email, password, otp } = req.body;
+    const { name, age, email, password } = req.body;
 
-    // Basic field validation
+    // Field presence check
     if (!name || !email || !password) {
       return res.status(400).json({ error: 'Name, email, and password are required.' });
     }
+
+    // Strict email format check
+    if (!isValidEmail(email)) {
+      return res.status(400).json({ error: 'Please enter a valid email address.' });
+    }
+
     if (password.length < 8) {
       return res.status(400).json({ error: 'Password must be at least 8 characters.' });
     }
 
-    // Verify OTP
-    const record = otpStore.get(email.toLowerCase());
-    if (!record) return res.status(400).json({ error: 'No OTP was sent to this email. Please request one first.' });
-    if (Date.now() > record.expiresAt) {
-      otpStore.delete(email.toLowerCase());
-      return res.status(400).json({ error: 'OTP has expired. Please request a new one.' });
-    }
-    if (record.otp !== String(otp).trim()) {
-      return res.status(400).json({ error: 'Incorrect OTP. Please try again.' });
-    }
-    otpStore.delete(email.toLowerCase());
-
-    // Hash password
+    // Hash password with bcrypt
     const hashedPassword = await bcrypt.hash(password, 10);
 
     const newUser = new User({ name, age, email, password: hashedPassword });
@@ -187,6 +135,11 @@ app.post('/api/auth/login', async (req, res) => {
   try {
     const { email, password } = req.body;
     if (!email || !password) return res.status(400).json({ error: 'Email and password are required.' });
+
+    // Strict email format check
+    if (!isValidEmail(email)) {
+      return res.status(400).json({ error: 'Please enter a valid email address.' });
+    }
 
     const user = await User.findOne({ email });
     if (!user) return res.status(401).json({ error: 'Invalid credentials' });

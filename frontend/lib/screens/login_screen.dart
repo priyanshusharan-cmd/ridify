@@ -1,6 +1,4 @@
-import 'dart:async';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -18,70 +16,25 @@ class _LoginScreenState extends State<LoginScreen> {
   bool isLoading = false;
   bool _obscurePassword = true;
 
-  // OTP state
-  bool _otpSent = false;
-  bool _sendingOtp = false;
-  int _resendCooldown = 0;
-  Timer? _resendTimer;
-
   final TextEditingController nameController = TextEditingController();
   final TextEditingController ageController = TextEditingController();
   final TextEditingController emailController = TextEditingController();
   final TextEditingController passwordController = TextEditingController();
-  final TextEditingController otpController = TextEditingController();
 
   final String serverUrl = "$kBaseUrl/api/auth";
 
   @override
   void dispose() {
-    _resendTimer?.cancel();
     nameController.dispose();
     ageController.dispose();
     emailController.dispose();
     passwordController.dispose();
-    otpController.dispose();
     super.dispose();
   }
 
-  void _startResendCooldown() {
-    setState(() => _resendCooldown = 30);
-    _resendTimer?.cancel();
-    _resendTimer = Timer.periodic(const Duration(seconds: 1), (t) {
-      if (_resendCooldown <= 1) {
-        t.cancel();
-        if (mounted) setState(() => _resendCooldown = 0);
-      } else {
-        if (mounted) setState(() => _resendCooldown--);
-      }
-    });
-  }
-
-  Future<void> _sendOtp() async {
-    final email = emailController.text.trim();
-    if (email.isEmpty) {
-      _showSnack("Please enter your Email first.", Colors.orange);
-      return;
-    }
-    setState(() => _sendingOtp = true);
-    try {
-      final response = await http.post(
-        Uri.parse("$serverUrl/send-otp"),
-        headers: {"Content-Type": "application/json"},
-        body: jsonEncode({"email": email}),
-      );
-      if (response.statusCode == 200) {
-        setState(() => _otpSent = true);
-        _startResendCooldown();
-        _showSnack("OTP sent to $email!", Colors.green);
-      } else {
-        final err = jsonDecode(response.body)['error'] ?? "Failed to send OTP.";
-        _showSnack(err, Colors.red);
-      }
-    } catch (e) {
-      _showSnack("Error: ${e.toString()}", Colors.red);
-    } finally {
-      if (mounted) setState(() => _sendingOtp = false);
-    }
+  // Validates email format: must have local part, @, and a TLD (e.g. .com)
+  bool _isValidEmail(String email) {
+    return RegExp(r'^[^\s@]+@[^\s@]+\.[a-zA-Z]{2,}$').hasMatch(email);
   }
 
   Future<void> authenticate() async {
@@ -90,6 +43,13 @@ class _LoginScreenState extends State<LoginScreen> {
       _showSnack("Please fill in your Email and Password!", Colors.red);
       return;
     }
+
+    // Strict email format validation before making any HTTP call
+    if (!_isValidEmail(emailController.text.trim())) {
+      _showSnack("Please enter a valid email address.", Colors.red);
+      return;
+    }
+
     if (passwordController.text.trim().length < 8) {
       _showSnack("Password must be at least 8 characters.", Colors.red);
       return;
@@ -98,10 +58,6 @@ class _LoginScreenState extends State<LoginScreen> {
       if (nameController.text.trim().isEmpty ||
           ageController.text.trim().isEmpty) {
         _showSnack("Name and Age are required for Sign Up!", Colors.red);
-        return;
-      }
-      if (otpController.text.trim().isEmpty) {
-        _showSnack("Please enter the OTP sent to your email.", Colors.red);
         return;
       }
     }
@@ -119,7 +75,6 @@ class _LoginScreenState extends State<LoginScreen> {
               "age": ageController.text.trim(),
               "email": emailController.text.trim(),
               "password": passwordController.text.trim(),
-              "otp": otpController.text.trim(),
             };
 
       final response = await http.post(
@@ -231,12 +186,6 @@ class _LoginScreenState extends State<LoginScreen> {
                 _passwordField(),
                 const SizedBox(height: 16),
 
-                // ── OTP FIELD (signup only) ───────────────────────────
-                if (!isLoginMode) ...[
-                  _otpRow(),
-                  const SizedBox(height: 16),
-                ],
-
                 const SizedBox(height: 9),
 
                 // ── SUBMIT ────────────────────────────────────────────
@@ -278,10 +227,6 @@ class _LoginScreenState extends State<LoginScreen> {
                       onTap: () {
                         setState(() {
                           isLoginMode = !isLoginMode;
-                          _otpSent = false;
-                          _resendCooldown = 0;
-                          _resendTimer?.cancel();
-                          otpController.clear();
                         });
                       },
                       child: Text(
@@ -296,60 +241,6 @@ class _LoginScreenState extends State<LoginScreen> {
           ),
         ),
       ),
-    );
-  }
-
-  // ── OTP ROW (field + send/resend button) ──────────────────────────────────
-  Widget _otpRow() {
-    return Row(
-      crossAxisAlignment: CrossAxisAlignment.center,
-      children: [
-        Expanded(
-          child: TextField(
-            controller: otpController,
-            keyboardType: TextInputType.number,
-            inputFormatters: [
-              FilteringTextInputFormatter.digitsOnly,
-              LengthLimitingTextInputFormatter(4),
-            ],
-            decoration: InputDecoration(
-              hintText: "4-digit OTP",
-              prefixIcon:
-                  const Icon(Icons.verified_outlined, color: Colors.grey),
-              filled: true,
-              fillColor: Colors.white,
-              border: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(18),
-                borderSide: BorderSide.none,
-              ),
-            ),
-          ),
-        ),
-        const SizedBox(width: 10),
-        _sendingOtp
-            ? const SizedBox(
-                width: 40,
-                height: 40,
-                child: CircularProgressIndicator(strokeWidth: 2),
-              )
-            : TextButton(
-                onPressed: _resendCooldown > 0 ? null : _sendOtp,
-                style: TextButton.styleFrom(
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
-                ),
-                child: Text(
-                  _resendCooldown > 0
-                      ? "Resend (${_resendCooldown}s)"
-                      : (_otpSent ? "Resend OTP" : "Send OTP"),
-                  style: TextStyle(
-                    fontSize: 13,
-                    color: _resendCooldown > 0 ? Colors.grey : Colors.black54,
-                    fontWeight: FontWeight.w600,
-                  ),
-                ),
-              ),
-      ],
     );
   }
 

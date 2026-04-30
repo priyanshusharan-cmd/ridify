@@ -1,181 +1,122 @@
+<div align="center">
+
+<img src="frontend/assets/icon.png" alt="Ridify Logo" width="120" />
+
 # 🚗 Ridify
 
-> **Real-time ride-sharing for students.** Offer a ride, find a ride, track it live on a map, and split the cost — all from one app.
+### **Real-time ride-sharing, reimagined for students.**  
+*Offer a seat, find a ride, track it live, and split the cost — all in one seamless experience.*
 
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
-[![Flutter](https://img.shields.io/badge/Flutter-3.x-blue?logo=flutter)](https://flutter.dev)
-[![Node.js](https://img.shields.io/badge/Node.js-Express-green?logo=node.js)](https://nodejs.org)
-[![MongoDB](https://img.shields.io/badge/MongoDB-Atlas-green?logo=mongodb)](https://mongodb.com)
-[![Socket.IO](https://img.shields.io/badge/Socket.IO-4.x-black?logo=socket.io)](https://socket.io)
+[![License: MIT](https://img.shields.io/badge/License-MIT-F1C40F?style=for-the-badge&logo=opensourceinitiative&logoColor=white)](LICENSE)
+[![Flutter](https://img.shields.io/badge/Flutter-3.x-02569B?style=for-the-badge&logo=flutter&logoColor=white)](https://flutter.dev)
+[![Node.js](https://img.shields.io/badge/Node.js-Express-339933?style=for-the-badge&logo=node.js&logoColor=white)](https://nodejs.org)
+[![MongoDB](https://img.shields.io/badge/MongoDB-Atlas-47A248?style=for-the-badge&logo=mongodb&logoColor=white)](https://mongodb.com)
+[![Socket.IO](https://img.shields.io/badge/Socket.IO-4.x-010101?style=for-the-badge&logo=socket.io&logoColor=white)](https://socket.io)
 
----
-
-## ✨ Features
-
-- **Offer a Ride** — Post your journey with vehicle type, seats, fare per seat, and departure time
-- **Find a Ride** — Search for available rides by location, date, and seats needed
-- **Real-time Matching** — Drivers accept/decline passenger requests instantly via Socket.IO
-- **Live Map Tracking** — See the driver's location in real-time using OpenStreetMap & flutter_map
-- **In-ride Chat** — Communicate with your ride group during the journey
-- **Ride History** — View all past completed, cancelled, or declined rides
-- **Financial Dashboard** — Track total earnings (as driver) and total spending (as passenger)
-- **Profile Management** — Edit name, age, and email; delete account
-- **Persistent Login** — Stay logged in across app restarts; session cleared on logout
-- **Email OTP Signup** — Verify your email with a 4-digit OTP before creating an account
-- **Admin Controls** — Role-based trash/delete features protected by backend middleware
+</div>
 
 ---
 
-## 🔐 Security & Authentication
+## 🚀 Key Features
 
-### Persistent Login
-Once you log in, your session (name, age, email) is stored locally via `shared_preferences`. On the next app open, the app reads this session and navigates directly to the Home screen — no need to log in again.
+Ridify is designed to make commuting easier, safer, and more social. Here’s what makes it stand out:
 
-Logging out (or deleting your account) clears this session, forcing a return to the Login screen on next launch.
-
----
-
-### Bcrypt Password Hashing
-All passwords are hashed with **bcrypt (10 salt rounds)** before being stored in MongoDB. Plain-text passwords are never saved. Login uses `bcrypt.compare()` for secure verification.
-
----
-
-### Admin Shield (Role-Based Access)
-Admin emails are defined in the backend `.env` as `ADMIN_EMAILS` (comma-separated). All sensitive delete routes are protected by an `adminOnly` middleware that checks the `x-admin-email` request header.
-
-| Action | Route | Protection |
-|--------|-------|------------|
-| Wipe all rides | `DELETE /api/rides` | `adminOnly` middleware |
-| Wipe all users | `DELETE /api/auth/users` | `adminOnly` middleware |
-
-In the Flutter app, the trash icons are **conditionally rendered** — only visible if the logged-in user's email is in `kAdminEmails`:
-
-- **Home Screen** → Trash icon wipes all ride data (with confirmation dialog).
-- **Profile Screen** → "Admin: Wipe All Users" button wipes all accounts and **auto-logs out** the admin.
-
-![Screenshot — Admin Trash Icon (Home Screen)]()
-
-![Screenshot — Admin Confirmation Dialog]()
-
-![Screenshot — Profile Screen Admin Button]()
-
----
-
-## 🗂️ Project Structure
-
-```
-ridify/
-├── backend/          # Node.js + Express + Socket.IO + MongoDB API
-│   ├── server.js     # Main server entry point (OTP, bcrypt, admin middleware)
-│   └── .env          # Environment variables (NOT committed — see below)
-├── frontend/         # Flutter mobile app
-│   ├── lib/
-│   │   ├── screens/  # All app screens
-│   │   ├── widgets/  # Reusable widgets
-│   │   ├── constants.dart  # API base URL + kAdminEmails
-│   │   └── utils.dart      # Shared utility functions
-│   └── assets/       # App icon and images
-└── README.md
-```
+- 🚘 **Flexible Ride Offering** — Post journeys with custom vehicle types, available seats, and transparent fares.
+- 🔍 **Smart Ride Discovery** — Find the perfect ride based on your location, schedule, and vehicle preference.
+- ⚡ **Instant Matching** — Connect with drivers and passengers instantly via real-time Socket.IO events.
+- 🗺️ **Live Map Tracking** — Watch your ride approach in real-time with integrated OpenStreetMap & GPS tracking.
+- 💬 **Integrated Group Chat** — Coordinate pickup details and socialize with your ride group before and during the journey.
+- 💰 **Financial Dashboard** — Track your total earnings as a driver or your savings as a passenger at a glance.
+- 🛡️ **Admin Suite** — Robust management tools for data cleanup and user moderation, protected by secure middleware.
 
 ---
 
 ## 🛠️ Tech Stack
 
-| Layer        | Technology                          |
-|--------------|-------------------------------------|
-| Frontend     | Flutter (Dart) + shared_preferences |
-| Backend      | Node.js, Express.js                 |
-| Database     | MongoDB (via Mongoose)              |
-| Real-time    | Socket.IO                           |
-| Maps         | flutter_map + OpenStreetMap + OSRM  |
-| Email / OTP  | Nodemailer (Gmail SMTP)             |
-| Auth         | bcrypt password hashing             |
-| Hosting      | Render (backend)                    |
+| Layer | Technology |
+|---|---|
+| **Mobile App** | **Flutter (Dart)** — Cross-platform experience with `shared_preferences` persistence |
+| **Backend API** | **Node.js & Express.js** — High-performance RESTful architecture |
+| **Real-time Engine** | **Socket.IO** — Bidirectional low-latency communication for tracking and chat |
+| **Database** | **MongoDB Atlas** — Scalable NoSQL storage with Mongoose ODM |
+| **Maps & Tracking** | **OpenStreetMap & OSRM** — Seamless live location tracking and routing |
+| **Security** | **Bcrypt** — Industry-standard password hashing (10 salt rounds) |
 
 ---
 
-## 🚀 Getting Started
+## 🔐 Security & Authentication
 
-### Prerequisites
+We believe security shouldn't compromise simplicity:
 
-- [Flutter SDK](https://docs.flutter.dev/get-started/install) `^3.x`
-- [Node.js](https://nodejs.org/) `^18.x`
-- MongoDB connection string (Atlas or local)
-- A Gmail account with an **App Password** enabled (for OTP emails)
+- **Bcrypt Hashing** — Every password is cryptographically hashed using salting. Plain-text is never stored in the database.
+- **Secure Email Auth** — Strict validation on both client and server ensures only legitimate accounts are created.
+- **Persistent Sessions** — A frictionless login experience that remembers you securely across app restarts.
+- **Admin Shield** — Critical data management routes are protected by role-based access control (RBAC) middleware.
 
-### Backend Setup
+---
 
+## 📸 Experience Ridify
+
+> *Below are placeholders for the major screens within the Ridify application.*
+
+| Login & Home | Discovery & Posting |
+|---|---|
+| **Login Screen**<br>![Login Screen]() | **Home Screen**<br>![Home Screen]() |
+| **Find Ride Screen**<br>![Find Ride Screen]() | **Offer Ride Screen**<br>![Offer Ride Screen]() |
+
+| Tracking & Status | Communication |
+|---|---|
+| **Active Rides**<br>![Active Rides]() | **Match Request/Status**<br>![Match Request/Status]() |
+| **In-ride Chat**<br>![In-ride Chat]() | **Live Map Tracking**<br>![Live Map Tracking]() |
+
+| History & Profile | Administration |
+|---|---|
+| **Ride History**<br>![Ride History]() | **Profile Screen**<br>![Profile Screen]() |
+| **Admin Controls**<br>![Admin Controls]() | |
+
+---
+
+## ⚙️ Installation & Setup
+
+### 📦 Prerequisites
+* **Flutter SDK** (`^3.x`)
+* **Node.js** (`^18.x`)
+* **MongoDB Atlas** connection string
+
+### 🖥️ Backend Setup
 ```bash
+# Navigate to backend directory
 cd backend
-cp .env.example .env        # Fill in your values
+
+# Create your environment file
+cp .env.example .env   # Update with your MONGO_URI and ADMIN_EMAILS
+
+# Install dependencies and start
 npm install
 npm start
 ```
 
-### Frontend Setup
-
+### 📱 Frontend Setup
 ```bash
+# Navigate to frontend directory
 cd frontend
+
+# Install Flutter dependencies
 flutter pub get
+
+# Launch the app
 flutter run
 ```
-
-> **Note:** Update `lib/constants.dart` with your backend URL and admin emails before running.
-
----
-
-## 🔒 Environment Variables
-
-Create a `backend/.env` file with:
-
-```env
-PORT=5001
-MONGO_URI=your_mongodb_connection_string_here
-EMAIL_USER=your_gmail_address@gmail.com
-EMAIL_PASS=your_gmail_app_password
-ADMIN_EMAILS=admin1@example.com,admin2@example.com
-```
-
-⚠️ **Never commit `.env` to version control.** It is already ignored in `.gitignore`.
-
----
-
-## 📸 Screenshots
-
-> Drop your screenshots below by replacing the empty image links.
-
-![Screenshot 1 — Login Screen]()
-
-![Screenshot 2 — Signup with OTP]()
-
-![Screenshot 3 — Home Screen]()
-
-![Screenshot 4 — Active Rides]()
-
-![Screenshot 5 — Live Map Tracking]()
-
-![Screenshot 6 — In-ride Chat]()
-
-![Screenshot 7 — Ride History]()
-
-![Screenshot 8 — Profile Screen]()
-
-![Screenshot 9 — Admin Controls]()
 
 ---
 
 ## 📄 License
-
-This project is licensed under the **MIT License** — see the [LICENSE](LICENSE) file for details.
-
----
+This project is licensed under the **MIT License**. See the [LICENSE](LICENSE) file for details.
 
 ## 👤 Author
-
 **Priyanshu Sharan**  
-[GitHub](https://github.com/priyanshusharan-cmd)
+[![GitHub](https://img.shields.io/badge/GitHub-Profile-181717?style=flat&logo=github&logoColor=white)](https://github.com/priyanshusharan-cmd)
 
----
-
-*Built with ❤️ as a real-world ride-sharing solution.*
+<div align="center">
+  <sub>Built with ❤️ as a real-world solution for student mobility.</sub>
+</div>
