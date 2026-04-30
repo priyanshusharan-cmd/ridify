@@ -66,7 +66,10 @@ const Ride = mongoose.model('Ride', RideSchema);
 // =============================================
 
 const transporter = nodemailer.createTransport({
-  service: 'gmail',
+  host: 'smtp.gmail.com',
+  port: 465,
+  secure: true, // TLS on port 465
+  family: 4,    // Force IPv4 — avoids ENETUNREACH on Render's IPv6 network
   auth: {
     user: process.env.EMAIL_USER,
     pass: process.env.EMAIL_PASS,

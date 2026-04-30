@@ -78,7 +78,7 @@ class _LoginScreenState extends State<LoginScreen> {
         _showSnack(err, Colors.red);
       }
     } catch (e) {
-      _showSnack("Cannot connect to server.", Colors.orange);
+      _showSnack("Error: ${e.toString()}", Colors.red);
     } finally {
       if (mounted) setState(() => _sendingOtp = false);
     }
@@ -156,7 +156,7 @@ class _LoginScreenState extends State<LoginScreen> {
         _showSnack(err, Colors.red);
       }
     } catch (e) {
-      _showSnack("Cannot connect to server. Is Node running?", Colors.orange);
+      _showSnack("Error: ${e.toString()}", Colors.red);
     } finally {
       if (mounted) setState(() => isLoading = false);
     }
