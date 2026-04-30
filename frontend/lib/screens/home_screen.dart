@@ -12,6 +12,7 @@ import 'ride_history_screen.dart';
 import '../utils.dart';
 import '../constants.dart';
 
+
 class HomeScreen extends StatefulWidget {
   final String userName;
   final String userAge;
@@ -165,22 +166,53 @@ class _HomeScreenState extends State<HomeScreen> {
                 ],
               ),
               actions: [
-                IconButton(
-                  icon: const Icon(Icons.delete_sweep, color: Colors.redAccent),
-                  onPressed: () async {
-                    await http.delete(
-                      Uri.parse("$kBaseUrl/api/rides"),
-                    );
-                    if (mounted) {
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(
-                          content: Text("Database Wiped!"),
-                          backgroundColor: Colors.red,
+                if (kAdminEmails.contains(widget.userEmail.toLowerCase()))
+                  IconButton(
+                    icon: const Icon(Icons.delete_sweep, color: Colors.redAccent),
+                    tooltip: 'Admin: Wipe All Rides',
+                    onPressed: () async {
+                      final confirmed = await showDialog<bool>(
+                        context: context,
+                        builder: (ctx) => AlertDialog(
+                          title: const Text(
+                            '⚠️ Wipe All Rides',
+                            style: TextStyle(fontWeight: FontWeight.bold),
+                          ),
+                          content: const Text(
+                            'This wipes the database of all rides and broadcasts a reset to all connected users. Are you sure?',
+                          ),
+                          actions: [
+                            TextButton(
+                              onPressed: () => Navigator.pop(ctx, false),
+                              child: const Text('Cancel',
+                                  style: TextStyle(color: Colors.black)),
+                            ),
+                            ElevatedButton(
+                              style: ElevatedButton.styleFrom(
+                                  backgroundColor: Colors.red),
+                              onPressed: () => Navigator.pop(ctx, true),
+                              child: const Text('Yes, Wipe',
+                                  style: TextStyle(color: Colors.white)),
+                            ),
+                          ],
                         ),
                       );
-                    }
-                  },
-                ),
+                      if (confirmed == true && mounted) {
+                        await http.delete(
+                          Uri.parse("$kBaseUrl/api/rides"),
+                          headers: {'x-admin-email': widget.userEmail},
+                        );
+                        if (mounted) {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(
+                              content: Text("All rides wiped!"),
+                              backgroundColor: Colors.red,
+                            ),
+                          );
+                        }
+                      }
+                    },
+                  ),
               ],
             ),
       body: pages[_currentIndex],

@@ -20,6 +20,67 @@
 - **Ride History** — View all past completed, cancelled, or declined rides
 - **Financial Dashboard** — Track total earnings (as driver) and total spending (as passenger)
 - **Profile Management** — Edit name, age, and email; delete account
+- **Persistent Login** — Stay logged in across app restarts; session cleared on logout
+- **Email OTP Signup** — Verify your email with a 4-digit OTP before creating an account
+- **Admin Controls** — Role-based trash/delete features protected by backend middleware
+
+---
+
+## 🔐 Security & Authentication
+
+### Persistent Login
+Once you log in, your session (name, age, email) is stored locally via `shared_preferences`. On the next app open, the app reads this session and navigates directly to the Home screen — no need to log in again.
+
+Logging out (or deleting your account) clears this session, forcing a return to the Login screen on next launch.
+
+![Screenshot — Login Screen]()
+
+![Screenshot — Auto-Login (Home Screen on relaunch)]()
+
+---
+
+### Email OTP Verification (Signup)
+When signing up, the backend generates a secure 4-digit OTP and sends it to your email via **Nodemailer / Gmail**. You must enter the correct OTP (valid for 10 minutes) before your account is created.
+
+- The OTP field opens the numeric keyboard automatically.
+- A **"Send OTP"** button appears next to the field; after sending, it becomes a grey **"Resend OTP (30s)"** with a countdown timer.
+
+![Screenshot — Signup Screen with OTP Field]()
+
+![Screenshot — OTP Email received]()
+
+---
+
+### Password Visibility Toggle
+Both the Login and Signup password fields include an eye 👁 icon that toggles between hidden and visible text.
+
+![Screenshot — Password Eye Toggle]()
+
+---
+
+### Bcrypt Password Hashing
+All passwords are hashed with **bcrypt (10 salt rounds)** before being stored in MongoDB. Plain-text passwords are never saved. Login uses `bcrypt.compare()` for secure verification.
+
+---
+
+### Admin Shield (Role-Based Access)
+Admin emails are defined in the backend `.env` as `ADMIN_EMAILS` (comma-separated). All sensitive delete routes are protected by an `adminOnly` middleware that checks the `x-admin-email` request header.
+
+| Action | Route | Protection |
+|--------|-------|------------|
+| Wipe all rides | `DELETE /api/rides` | `adminOnly` middleware |
+| Wipe all users | `DELETE /api/auth/users` | `adminOnly` middleware |
+
+In the Flutter app, the trash icons are **conditionally rendered** — only visible if the logged-in user's email is in `kAdminEmails`:
+
+- **Home Screen** → Trash icon wipes all ride data (with confirmation dialog).
+- **Profile Screen** → "Admin: Wipe All Users" button wipes all accounts and **auto-logs out** the admin.
+
+![Screenshot — Admin Trash Icon (Home Screen)]()
+
+![Screenshot — Admin Confirmation Dialog]()
+
+![Screenshot — Profile Screen Admin Button]()
 
 ---
 
@@ -28,14 +89,13 @@
 ```
 ridify/
 ├── backend/          # Node.js + Express + Socket.IO + MongoDB API
-│   ├── models/       # Mongoose schemas (User, Ride)
-│   ├── server.js     # Main server entry point
-│   └── .env          # Environment variables (NOT committed)
+│   ├── server.js     # Main server entry point (OTP, bcrypt, admin middleware)
+│   └── .env          # Environment variables (NOT committed — see below)
 ├── frontend/         # Flutter mobile app
 │   ├── lib/
 │   │   ├── screens/  # All app screens
 │   │   ├── widgets/  # Reusable widgets
-│   │   ├── constants.dart  # API base URL config
+│   │   ├── constants.dart  # API base URL + kAdminEmails
 │   │   └── utils.dart      # Shared utility functions
 │   └── assets/       # App icon and images
 └── README.md
@@ -45,14 +105,16 @@ ridify/
 
 ## 🛠️ Tech Stack
 
-| Layer     | Technology                          |
-|-----------|-------------------------------------|
-| Frontend  | Flutter (Dart)                      |
-| Backend   | Node.js, Express.js                 |
-| Database  | MongoDB (via Mongoose)              |
-| Real-time | Socket.IO                           |
-| Maps      | flutter_map + OpenStreetMap + OSRM  |
-| Hosting   | Render (backend)                    |
+| Layer        | Technology                          |
+|--------------|-------------------------------------|
+| Frontend     | Flutter (Dart) + shared_preferences |
+| Backend      | Node.js, Express.js                 |
+| Database     | MongoDB (via Mongoose)              |
+| Real-time    | Socket.IO                           |
+| Maps         | flutter_map + OpenStreetMap + OSRM  |
+| Email / OTP  | Nodemailer (Gmail SMTP)             |
+| Auth         | bcrypt password hashing             |
+| Hosting      | Render (backend)                    |
 
 ---
 
@@ -63,12 +125,13 @@ ridify/
 - [Flutter SDK](https://docs.flutter.dev/get-started/install) `^3.x`
 - [Node.js](https://nodejs.org/) `^18.x`
 - MongoDB connection string (Atlas or local)
+- A Gmail account with an **App Password** enabled (for OTP emails)
 
 ### Backend Setup
 
 ```bash
 cd backend
-cp .env.example .env        # Add your MONGO_URI
+cp .env.example .env        # Fill in your values
 npm install
 npm start
 ```
@@ -81,7 +144,7 @@ flutter pub get
 flutter run
 ```
 
-> **Note:** Update `lib/constants.dart` with your backend URL before running.
+> **Note:** Update `lib/constants.dart` with your backend URL and admin emails before running.
 
 ---
 
@@ -90,11 +153,38 @@ flutter run
 Create a `backend/.env` file with:
 
 ```env
-MONGO_URI=your_mongodb_connection_string_here
 PORT=5001
+MONGO_URI=your_mongodb_connection_string_here
+EMAIL_USER=your_gmail_address@gmail.com
+EMAIL_PASS=your_gmail_app_password
+ADMIN_EMAILS=admin1@example.com,admin2@example.com
 ```
 
 ⚠️ **Never commit `.env` to version control.** It is already ignored in `.gitignore`.
+
+---
+
+## 📸 Screenshots
+
+> Drop your screenshots below by replacing the empty image links.
+
+![Screenshot 1 — Login Screen]()
+
+![Screenshot 2 — Signup with OTP]()
+
+![Screenshot 3 — Home Screen]()
+
+![Screenshot 4 — Active Rides]()
+
+![Screenshot 5 — Live Map Tracking]()
+
+![Screenshot 6 — In-ride Chat]()
+
+![Screenshot 7 — Ride History]()
+
+![Screenshot 8 — Profile Screen]()
+
+![Screenshot 9 — Admin Controls]()
 
 ---
 

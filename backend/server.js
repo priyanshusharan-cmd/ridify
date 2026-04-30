@@ -4,6 +4,8 @@ const mongoose = require('mongoose');
 const cors = require('cors');
 const http = require('http');
 const { Server } = require('socket.io');
+const nodemailer = require('nodemailer');
+const bcrypt = require('bcrypt');
 require('dotenv').config();
 
 const app = express();
@@ -19,6 +21,10 @@ const mongoURI = process.env.MONGO_URI;
 mongoose.connect(mongoURI)
   .then(() => console.log("✅ MongoDB Connected!"))
   .catch(err => console.error("❌ DB Error:", err));
+
+// =============================================
+// SCHEMAS & MODELS
+// =============================================
 
 const UserSchema = new mongoose.Schema({
   name: String, age: String, email: { type: String, unique: true }, password: String
@@ -47,7 +53,6 @@ const RideSchema = new mongoose.Schema({
   requests: { type: [String], default: [] },
   passengers: { type: [String], default: [] },
   boardedPassengers: { type: [String], default: [] },
-  // 👈 NEW: Historical arrays to track rejected/kicked users!
   declined: { type: [String], default: [] },
   kicked: { type: [String], default: [] },
   seatAllocations: { type: Map, of: Number, default: {} },
@@ -56,32 +61,165 @@ const RideSchema = new mongoose.Schema({
 RideSchema.index({ pickupCoords: "2dsphere" });
 const Ride = mongoose.model('Ride', RideSchema);
 
+// =============================================
+// NODEMAILER TRANSPORTER
+// =============================================
+
+const transporter = nodemailer.createTransport({
+  service: 'gmail',
+  auth: {
+    user: process.env.EMAIL_USER,
+    pass: process.env.EMAIL_PASS,
+  },
+});
+
+// =============================================
+// IN-MEMORY OTP STORE  { email -> { otp, expiresAt } }
+// =============================================
+
+const otpStore = new Map();
+
+// =============================================
+// ADMIN MIDDLEWARE
+// =============================================
+
+const adminEmails = (process.env.ADMIN_EMAILS || '')
+  .split(',')
+  .map(e => e.trim().toLowerCase())
+  .filter(Boolean);
+
+function adminOnly(req, res, next) {
+  const callerEmail = (req.headers['x-admin-email'] || '').trim().toLowerCase();
+  if (!callerEmail || !adminEmails.includes(callerEmail)) {
+    return res.status(403).json({ error: 'Forbidden: Admin access required.' });
+  }
+  next();
+}
+
+// =============================================
+// SOCKET.IO
+// =============================================
+
 io.on('connection', (socket) => {
   console.log(`📡 Device connected: ${socket.id}`);
 
-  // Receive driver location and broadcast to everyone (filtered on client side by rideId)
   socket.on('driver_location_update', (data) => {
     io.emit('driver_location_update', data);
   });
 });
 
-app.post('/api/auth/register', async (req, res) => {
+// =============================================
+// AUTH ROUTES
+// =============================================
+
+// Send OTP
+app.post('/api/auth/send-otp', async (req, res) => {
   try {
-    const newUser = new User(req.body);
-    await newUser.save();
-    res.status(201).json({ success: true, user: newUser });
-  } catch (err) { res.status(500).json({ error: err.message }); }
+    const { email } = req.body;
+    if (!email) return res.status(400).json({ error: 'Email is required.' });
+
+    const otp = String(Math.floor(1000 + Math.random() * 9000));
+    const expiresAt = Date.now() + 10 * 60 * 1000; // 10-minute expiry
+    otpStore.set(email.toLowerCase(), { otp, expiresAt });
+
+    await transporter.sendMail({
+      from: `"Ridify" <${process.env.EMAIL_USER}>`,
+      to: email,
+      subject: '🚗 Your Ridify Signup OTP',
+      html: `
+        <div style="font-family: Arial, sans-serif; max-width: 480px; margin: auto; padding: 30px; border-radius: 12px; border: 1px solid #e0e0e0;">
+          <h2 style="color: #111;">Welcome to Ridify! 🚗</h2>
+          <p style="color: #444;">Use the one-time code below to complete your sign-up. It expires in <strong>10 minutes</strong>.</p>
+          <div style="font-size: 42px; font-weight: bold; letter-spacing: 10px; text-align: center; padding: 20px 0; color: #111;">${otp}</div>
+          <p style="color: #888; font-size: 13px;">If you did not request this, please ignore this email.</p>
+        </div>
+      `,
+    });
+
+    res.status(200).json({ success: true, message: 'OTP sent to email.' });
+  } catch (err) {
+    console.error('OTP send error:', err);
+    res.status(500).json({ error: err.message });
+  }
 });
 
+// Register (with OTP verification + bcrypt)
+app.post('/api/auth/register', async (req, res) => {
+  try {
+    const { name, age, email, password, otp } = req.body;
+
+    // Basic field validation
+    if (!name || !email || !password) {
+      return res.status(400).json({ error: 'Name, email, and password are required.' });
+    }
+    if (password.length < 8) {
+      return res.status(400).json({ error: 'Password must be at least 8 characters.' });
+    }
+
+    // Verify OTP
+    const record = otpStore.get(email.toLowerCase());
+    if (!record) return res.status(400).json({ error: 'No OTP was sent to this email. Please request one first.' });
+    if (Date.now() > record.expiresAt) {
+      otpStore.delete(email.toLowerCase());
+      return res.status(400).json({ error: 'OTP has expired. Please request a new one.' });
+    }
+    if (record.otp !== String(otp).trim()) {
+      return res.status(400).json({ error: 'Incorrect OTP. Please try again.' });
+    }
+    otpStore.delete(email.toLowerCase());
+
+    // Hash password
+    const hashedPassword = await bcrypt.hash(password, 10);
+
+    const newUser = new User({ name, age, email, password: hashedPassword });
+    await newUser.save();
+    res.status(201).json({ success: true, user: { name: newUser.name, age: newUser.age, email: newUser.email, _id: newUser._id } });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// Login (bcrypt compare — with silent migration for legacy plain-text passwords)
 app.post('/api/auth/login', async (req, res) => {
   try {
     const { email, password } = req.body;
-    const user = await User.findOne({ email, password });
-    if (!user) return res.status(401).json({ error: "Invalid credentials" });
-    res.status(200).json({ success: true, user });
-  } catch (err) { res.status(500).json({ error: err.message }); }
+    if (!email || !password) return res.status(400).json({ error: 'Email and password are required.' });
+
+    const user = await User.findOne({ email });
+    if (!user) return res.status(401).json({ error: 'Invalid credentials' });
+
+    let isMatch = false;
+
+    // Check if stored password looks like a bcrypt hash (starts with $2b$ or $2a$)
+    const isBcryptHash = typeof user.password === 'string' && user.password.startsWith('$2');
+
+    if (isBcryptHash) {
+      // New path: secure bcrypt compare
+      isMatch = await bcrypt.compare(password, user.password);
+    } else {
+      // Legacy path: plain-text password (pre-bcrypt migration)
+      isMatch = (password === user.password);
+      if (isMatch) {
+        // Silently migrate to bcrypt now that we've confirmed the password
+        const hashed = await bcrypt.hash(password, 10);
+        await User.updateOne({ _id: user._id }, { password: hashed });
+        console.log(`🔐 Migrated plain-text password to bcrypt for: ${email}`);
+      }
+    }
+
+    if (!isMatch) return res.status(401).json({ error: 'Invalid credentials' });
+
+    res.status(200).json({
+      success: true,
+      user: { name: user.name, age: user.age, email: user.email, _id: user._id },
+    });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
 });
 
+
+// Delete single user account
 app.delete('/api/auth/user/:email', async (req, res) => {
   try {
     const user = await User.findOne({ email: req.params.email });
@@ -98,7 +236,8 @@ app.delete('/api/auth/user/:email', async (req, res) => {
   } catch (err) { res.status(500).json({ error: err.message }); }
 });
 
-app.delete('/api/auth/users', async (req, res) => {
+// 🔒 ADMIN ONLY: Wipe all users
+app.delete('/api/auth/users', adminOnly, async (req, res) => {
   try {
     await User.deleteMany({});
     await Ride.deleteMany({});
@@ -106,6 +245,10 @@ app.delete('/api/auth/users', async (req, res) => {
     res.status(200).json({ success: true });
   } catch (err) { res.status(500).json({ error: err.message }); }
 });
+
+// =============================================
+// RIDE ROUTES
+// =============================================
 
 app.get('/api/rides/search', async (req, res) => {
   try {
@@ -186,8 +329,8 @@ app.delete('/api/rides/:id', async (req, res) => {
   } catch (err) { res.status(500).json({ error: err.message }); }
 });
 
-// 👈 THE WIPE FIX: Emits a global "wipe" signal!
-app.delete('/api/rides', async (req, res) => {
+// 🔒 ADMIN ONLY: Wipe all rides
+app.delete('/api/rides', adminOnly, async (req, res) => {
   try {
     await Ride.deleteMany({});
     io.emit('database_wiped');
@@ -210,7 +353,6 @@ app.patch('/api/rides/request/:id', async (req, res) => {
   } catch (err) { res.status(500).json({ error: err.message }); }
 });
 
-// 👈 THE CONCURRENCY FIX: Atomic updates guarantee no double-booking!
 app.patch('/api/rides/accept/:id/:riderName', async (req, res) => {
   try {
     let rideData = await Ride.findById(req.params.id);
@@ -223,13 +365,12 @@ app.patch('/api/rides/accept/:id/:riderName', async (req, res) => {
         $addToSet: { passengers: req.params.riderName },
         $inc: { availableSeats: -requestedSeats }
       },
-      { new: true } // Returns the updated document
+      { new: true }
     );
 
     if (ride) {
       if (ride.availableSeats <= 0) {
         ride.status = 'full';
-        // Move everyone else from 'requests' into the 'declined' history array!
         if (ride.requests.length > 0) {
           ride.declined.push(...ride.requests);
           ride.requests = [];
@@ -252,7 +393,7 @@ app.patch('/api/rides/decline/:id/:riderName', async (req, res) => {
       req.params.id,
       {
         $pull: { requests: req.params.riderName },
-        $addToSet: { declined: req.params.riderName } // 👈 Moves to history
+        $addToSet: { declined: req.params.riderName }
       },
       { new: true }
     );
@@ -274,7 +415,7 @@ app.patch('/api/rides/kick/:id/:riderName', async (req, res) => {
       req.params.id,
       {
         $pull: { passengers: req.params.riderName, boardedPassengers: req.params.riderName },
-        $addToSet: { kicked: req.params.riderName }, // 👈 Moves to history
+        $addToSet: { kicked: req.params.riderName },
         $inc: { availableSeats: requestedSeats }
       },
       { new: true }
@@ -338,6 +479,10 @@ app.post('/api/rides/:id/chat', async (req, res) => {
     res.status(200).json({ success: true });
   } catch (err) { res.status(500).json({ error: err.message }); }
 });
+
+// =============================================
+// START SERVER
+// =============================================
 
 let localIp = 'localhost';
 const networkInterfaces = os.networkInterfaces();

@@ -1,6 +1,9 @@
+import 'dart:async';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'home_screen.dart';
 import '../constants.dart';
 
@@ -13,40 +16,97 @@ class LoginScreen extends StatefulWidget {
 class _LoginScreenState extends State<LoginScreen> {
   bool isLoginMode = true;
   bool isLoading = false;
+  bool _obscurePassword = true;
+
+  // OTP state
+  bool _otpSent = false;
+  bool _sendingOtp = false;
+  int _resendCooldown = 0;
+  Timer? _resendTimer;
 
   final TextEditingController nameController = TextEditingController();
   final TextEditingController ageController = TextEditingController();
   final TextEditingController emailController = TextEditingController();
   final TextEditingController passwordController = TextEditingController();
+  final TextEditingController otpController = TextEditingController();
 
   final String serverUrl = "$kBaseUrl/api/auth";
 
-  Future<void> authenticate() async {
-    // 👈 NEW: UI Validation checks!
-    if (emailController.text.trim().isEmpty ||
-        passwordController.text.trim().isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text("Please fill in your Email and Password!"),
-          backgroundColor: Colors.red,
-        ),
-      );
+  @override
+  void dispose() {
+    _resendTimer?.cancel();
+    nameController.dispose();
+    ageController.dispose();
+    emailController.dispose();
+    passwordController.dispose();
+    otpController.dispose();
+    super.dispose();
+  }
+
+  void _startResendCooldown() {
+    setState(() => _resendCooldown = 30);
+    _resendTimer?.cancel();
+    _resendTimer = Timer.periodic(const Duration(seconds: 1), (t) {
+      if (_resendCooldown <= 1) {
+        t.cancel();
+        if (mounted) setState(() => _resendCooldown = 0);
+      } else {
+        if (mounted) setState(() => _resendCooldown--);
+      }
+    });
+  }
+
+  Future<void> _sendOtp() async {
+    final email = emailController.text.trim();
+    if (email.isEmpty) {
+      _showSnack("Please enter your Email first.", Colors.orange);
       return;
     }
-    if (!isLoginMode &&
-        (nameController.text.trim().isEmpty ||
-            ageController.text.trim().isEmpty)) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text("Name and Age are required for Sign Up!"),
-          backgroundColor: Colors.red,
-        ),
+    setState(() => _sendingOtp = true);
+    try {
+      final response = await http.post(
+        Uri.parse("$serverUrl/send-otp"),
+        headers: {"Content-Type": "application/json"},
+        body: jsonEncode({"email": email}),
       );
+      if (response.statusCode == 200) {
+        setState(() => _otpSent = true);
+        _startResendCooldown();
+        _showSnack("OTP sent to $email!", Colors.green);
+      } else {
+        final err = jsonDecode(response.body)['error'] ?? "Failed to send OTP.";
+        _showSnack(err, Colors.red);
+      }
+    } catch (e) {
+      _showSnack("Cannot connect to server.", Colors.orange);
+    } finally {
+      if (mounted) setState(() => _sendingOtp = false);
+    }
+  }
+
+  Future<void> authenticate() async {
+    if (emailController.text.trim().isEmpty ||
+        passwordController.text.trim().isEmpty) {
+      _showSnack("Please fill in your Email and Password!", Colors.red);
       return;
+    }
+    if (passwordController.text.trim().length < 8) {
+      _showSnack("Password must be at least 8 characters.", Colors.red);
+      return;
+    }
+    if (!isLoginMode) {
+      if (nameController.text.trim().isEmpty ||
+          ageController.text.trim().isEmpty) {
+        _showSnack("Name and Age are required for Sign Up!", Colors.red);
+        return;
+      }
+      if (otpController.text.trim().isEmpty) {
+        _showSnack("Please enter the OTP sent to your email.", Colors.red);
+        return;
+      }
     }
 
     setState(() => isLoading = true);
-
     try {
       final url = isLoginMode ? "$serverUrl/login" : "$serverUrl/register";
       final body = isLoginMode
@@ -59,6 +119,7 @@ class _LoginScreenState extends State<LoginScreen> {
               "age": ageController.text.trim(),
               "email": emailController.text.trim(),
               "password": passwordController.text.trim(),
+              "otp": otpController.text.trim(),
             };
 
       final response = await http.post(
@@ -69,39 +130,43 @@ class _LoginScreenState extends State<LoginScreen> {
 
       if (response.statusCode == 200 || response.statusCode == 201) {
         final data = jsonDecode(response.body);
+        final user = data['user'];
+
+        // Persist session
+        final prefs = await SharedPreferences.getInstance();
+        await prefs.setString('user_name', user['name'] ?? "Unknown");
+        await prefs.setString('user_age', user['age'] ?? "18");
+        await prefs.setString('user_email', user['email'] ?? "");
 
         if (mounted) {
           Navigator.pushReplacement(
             context,
             MaterialPageRoute(
               builder: (_) => HomeScreen(
-                userName: data['user']['name'] ?? "Unknown",
-                userAge: data['user']['age'] ?? "18",
-                userEmail: data['user']['email'] ?? "email@example.com",
+                userName: user['name'] ?? "Unknown",
+                userAge: user['age'] ?? "18",
+                userEmail: user['email'] ?? "",
               ),
             ),
           );
         }
       } else {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(
-              jsonDecode(response.body)['error'] ?? "Authentication failed",
-            ),
-            backgroundColor: Colors.red,
-          ),
-        );
+        final err =
+            jsonDecode(response.body)['error'] ?? "Authentication failed";
+        _showSnack(err, Colors.red);
       }
     } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text("Cannot connect to server. Is Node running?"),
-          backgroundColor: Colors.orange,
-        ),
-      );
+      _showSnack("Cannot connect to server. Is Node running?", Colors.orange);
     } finally {
       if (mounted) setState(() => isLoading = false);
     }
+  }
+
+  void _showSnack(String msg, Color color) {
+    if (!mounted) return;
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text(msg), backgroundColor: color),
+    );
   }
 
   @override
@@ -112,35 +177,7 @@ class _LoginScreenState extends State<LoginScreen> {
       appBar: AppBar(
         backgroundColor: Colors.transparent,
         elevation: 0,
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.delete_sweep, color: Colors.redAccent),
-            onPressed: () async {
-              try {
-                await http.delete(
-                  Uri.parse("$kBaseUrl/api/auth/users"),
-                );
-                if (mounted) {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(
-                      content: Text("All Users Deleted!"),
-                      backgroundColor: Colors.red,
-                    ),
-                  );
-                }
-              } catch (e) {
-                if (mounted) {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(
-                      content: Text("Failed to delete users."),
-                      backgroundColor: Colors.red,
-                    ),
-                  );
-                }
-              }
-            },
-          ),
-        ],
+        // No actions — trash icon removed per admin-only design
       ),
       body: SafeArea(
         child: Center(
@@ -165,6 +202,7 @@ class _LoginScreenState extends State<LoginScreen> {
                 ),
                 const SizedBox(height: 40),
 
+                // ── SIGNUP-ONLY FIELDS ──────────────────────────────
                 if (!isLoginMode) ...[
                   _inputField(
                     hint: "Full Name",
@@ -181,21 +219,27 @@ class _LoginScreenState extends State<LoginScreen> {
                   const SizedBox(height: 16),
                 ],
 
+                // ── EMAIL ────────────────────────────────────────────
                 _inputField(
                   hint: "Email",
                   icon: Icons.email_outlined,
                   controller: emailController,
                 ),
                 const SizedBox(height: 16),
-                _inputField(
-                  hint: "Password",
-                  icon: Icons.lock_outline,
-                  isPassword: true,
-                  controller: passwordController,
-                ),
 
-                const SizedBox(height: 25),
+                // ── PASSWORD (with eye toggle) ───────────────────────
+                _passwordField(),
+                const SizedBox(height: 16),
 
+                // ── OTP FIELD (signup only) ───────────────────────────
+                if (!isLoginMode) ...[
+                  _otpRow(),
+                  const SizedBox(height: 16),
+                ],
+
+                const SizedBox(height: 9),
+
+                // ── SUBMIT ────────────────────────────────────────────
                 SizedBox(
                   width: double.infinity,
                   height: 55,
@@ -231,7 +275,15 @@ class _LoginScreenState extends State<LoginScreen> {
                       style: const TextStyle(color: Colors.black54),
                     ),
                     GestureDetector(
-                      onTap: () => setState(() => isLoginMode = !isLoginMode),
+                      onTap: () {
+                        setState(() {
+                          isLoginMode = !isLoginMode;
+                          _otpSent = false;
+                          _resendCooldown = 0;
+                          _resendTimer?.cancel();
+                          otpController.clear();
+                        });
+                      },
                       child: Text(
                         isLoginMode ? "Sign up" : "Log in",
                         style: const TextStyle(fontWeight: FontWeight.bold),
@@ -247,16 +299,95 @@ class _LoginScreenState extends State<LoginScreen> {
     );
   }
 
+  // ── OTP ROW (field + send/resend button) ──────────────────────────────────
+  Widget _otpRow() {
+    return Row(
+      crossAxisAlignment: CrossAxisAlignment.center,
+      children: [
+        Expanded(
+          child: TextField(
+            controller: otpController,
+            keyboardType: TextInputType.number,
+            inputFormatters: [
+              FilteringTextInputFormatter.digitsOnly,
+              LengthLimitingTextInputFormatter(4),
+            ],
+            decoration: InputDecoration(
+              hintText: "4-digit OTP",
+              prefixIcon:
+                  const Icon(Icons.verified_outlined, color: Colors.grey),
+              filled: true,
+              fillColor: Colors.white,
+              border: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(18),
+                borderSide: BorderSide.none,
+              ),
+            ),
+          ),
+        ),
+        const SizedBox(width: 10),
+        _sendingOtp
+            ? const SizedBox(
+                width: 40,
+                height: 40,
+                child: CircularProgressIndicator(strokeWidth: 2),
+              )
+            : TextButton(
+                onPressed: _resendCooldown > 0 ? null : _sendOtp,
+                style: TextButton.styleFrom(
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
+                ),
+                child: Text(
+                  _resendCooldown > 0
+                      ? "Resend (${_resendCooldown}s)"
+                      : (_otpSent ? "Resend OTP" : "Send OTP"),
+                  style: TextStyle(
+                    fontSize: 13,
+                    color: _resendCooldown > 0 ? Colors.grey : Colors.black54,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+              ),
+      ],
+    );
+  }
+
+  // ── PASSWORD FIELD with eye toggle ────────────────────────────────────────
+  Widget _passwordField() {
+    return TextField(
+      controller: passwordController,
+      obscureText: _obscurePassword,
+      keyboardType: TextInputType.visiblePassword,
+      decoration: InputDecoration(
+        hintText: "Password",
+        prefixIcon: const Icon(Icons.lock_outline, color: Colors.grey),
+        suffixIcon: IconButton(
+          icon: Icon(
+            _obscurePassword ? Icons.visibility_off : Icons.visibility,
+            color: Colors.grey,
+          ),
+          onPressed: () => setState(() => _obscurePassword = !_obscurePassword),
+        ),
+        filled: true,
+        fillColor: Colors.white,
+        border: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(18),
+          borderSide: BorderSide.none,
+        ),
+      ),
+    );
+  }
+
+  // ── GENERIC INPUT FIELD ───────────────────────────────────────────────────
   Widget _inputField({
     required String hint,
     required IconData icon,
-    bool isPassword = false,
     bool isNumber = false,
     TextEditingController? controller,
   }) {
     return TextField(
       controller: controller,
-      obscureText: isPassword,
       keyboardType: isNumber ? TextInputType.number : TextInputType.text,
       decoration: InputDecoration(
         hintText: hint,

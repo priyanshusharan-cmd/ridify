@@ -1,12 +1,34 @@
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'screens/login_screen.dart';
+import 'screens/home_screen.dart';
 
-void main() {
-  runApp(const MyApp());
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+
+  // Check for a saved session
+  final prefs = await SharedPreferences.getInstance();
+  final savedName = prefs.getString('user_name');
+  final savedAge = prefs.getString('user_age');
+  final savedEmail = prefs.getString('user_email');
+
+  final bool hasSession =
+      savedName != null && savedEmail != null && savedAge != null;
+
+  runApp(MyApp(
+    initialScreen: hasSession
+        ? HomeScreen(
+            userName: savedName!,
+            userAge: savedAge!,
+            userEmail: savedEmail!,
+          )
+        : const LoginScreen(),
+  ));
 }
 
 class MyApp extends StatelessWidget {
-  const MyApp({super.key});
+  final Widget initialScreen;
+  const MyApp({super.key, required this.initialScreen});
 
   @override
   Widget build(BuildContext context) {
@@ -14,7 +36,7 @@ class MyApp extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       title: 'Ridify',
       theme: ThemeData(primaryColor: Colors.black),
-      home: const LoginScreen(),
+      home: initialScreen,
     );
   }
 }

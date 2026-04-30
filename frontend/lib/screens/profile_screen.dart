@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+import 'package:shared_preferences/shared_preferences.dart';
 import 'login_screen.dart';
 import '../constants.dart';
 
@@ -32,12 +33,28 @@ class _ProfileScreenState extends State<ProfileScreen> {
     email = widget.userEmail;
   }
 
+  // ── LOGOUT ────────────────────────────────────────────────────────────────
+  Future<void> _logout() async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.clear(); // Clear the saved session
+    if (mounted) {
+      Navigator.pushAndRemoveUntil(
+        context,
+        MaterialPageRoute(builder: (_) => const LoginScreen()),
+        (route) => false,
+      );
+    }
+  }
+
+  // ── DELETE OWN ACCOUNT ────────────────────────────────────────────────────
   Future<void> _deleteAccount() async {
     try {
       final response = await http.delete(
         Uri.parse("$kBaseUrl/api/auth/user/$email"),
       );
       if (response.statusCode == 200 && mounted) {
+        final prefs = await SharedPreferences.getInstance();
+        await prefs.clear();
         Navigator.pushAndRemoveUntil(
           context,
           MaterialPageRoute(builder: (_) => const LoginScreen()),
@@ -52,6 +69,68 @@ class _ProfileScreenState extends State<ProfileScreen> {
       }
     } catch (e) {
       print(e);
+    }
+  }
+
+  // ── ADMIN: WIPE ALL USERS ─────────────────────────────────────────────────
+  Future<void> _adminWipeAllUsers() async {
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: const Text(
+          '⚠️ Delete ALL Users',
+          style: TextStyle(fontWeight: FontWeight.bold, color: Colors.red),
+        ),
+        content: const Text(
+          'This permanently deletes every user account and all associated ride data.\n\nYou will be logged out immediately after.',
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(ctx, false),
+            child: const Text('Cancel', style: TextStyle(color: Colors.black)),
+          ),
+          ElevatedButton(
+            style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
+            onPressed: () => Navigator.pop(ctx, true),
+            child: const Text('Yes, Delete All',
+                style: TextStyle(color: Colors.white)),
+          ),
+        ],
+      ),
+    );
+
+    if (confirmed != true || !mounted) return;
+
+    try {
+      final response = await http.delete(
+        Uri.parse("$kBaseUrl/api/auth/users"),
+        headers: {'x-admin-email': email},
+      );
+      if (response.statusCode == 200 && mounted) {
+        final prefs = await SharedPreferences.getInstance();
+        await prefs.clear(); // Auto-logout
+        Navigator.pushAndRemoveUntil(
+          context,
+          MaterialPageRoute(builder: (_) => const LoginScreen()),
+          (route) => false,
+        );
+      } else if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text("Failed to wipe users. Are you an admin?"),
+            backgroundColor: Colors.red,
+          ),
+        );
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text("Connection error."),
+            backgroundColor: Colors.orange,
+          ),
+        );
+      }
     }
   }
 
@@ -130,11 +209,12 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final bool isAdmin = kAdminEmails.contains(email.toLowerCase());
+
     return Scaffold(
       backgroundColor: Colors.white,
       body: SafeArea(
         child: SingleChildScrollView(
-          // 👈 THE FIX: Added 100px bottom padding to clear the floating nav bar!
           padding: const EdgeInsets.only(
             left: 24,
             right: 24,
@@ -191,6 +271,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
               const SizedBox(height: 40),
 
+              // ── LOGOUT ──────────────────────────────────────────────
               SizedBox(
                 width: double.infinity,
                 height: 55,
@@ -201,13 +282,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       borderRadius: BorderRadius.circular(15),
                     ),
                   ),
-                  onPressed: () {
-                    Navigator.pushAndRemoveUntil(
-                      context,
-                      MaterialPageRoute(builder: (_) => const LoginScreen()),
-                      (route) => false,
-                    );
-                  },
+                  onPressed: _logout,
                   icon: const Icon(Icons.logout, color: Colors.red),
                   label: const Text(
                     "Logout",
@@ -219,6 +294,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 ),
               ),
               const SizedBox(height: 15),
+
+              // ── DELETE OWN ACCOUNT ────────────────────────────────
               SizedBox(
                 width: double.infinity,
                 height: 55,
@@ -240,6 +317,33 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   ),
                 ),
               ),
+
+              // ── ADMIN-ONLY: WIPE ALL USERS ────────────────────────
+              if (isAdmin) ...[
+                const SizedBox(height: 15),
+                SizedBox(
+                  width: double.infinity,
+                  height: 55,
+                  child: OutlinedButton.icon(
+                    style: OutlinedButton.styleFrom(
+                      side: const BorderSide(color: Colors.deepOrange),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(15),
+                      ),
+                    ),
+                    onPressed: _adminWipeAllUsers,
+                    icon: const Icon(Icons.delete_sweep,
+                        color: Colors.deepOrange),
+                    label: const Text(
+                      "Admin: Wipe All Users",
+                      style: TextStyle(
+                        color: Colors.deepOrange,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ),
+                ),
+              ],
             ],
           ),
         ),
