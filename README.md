@@ -33,29 +33,6 @@ Once you log in, your session (name, age, email) is stored locally via `shared_p
 
 Logging out (or deleting your account) clears this session, forcing a return to the Login screen on next launch.
 
-![Screenshot — Login Screen]()
-
-![Screenshot — Auto-Login (Home Screen on relaunch)]()
-
----
-
-### Email OTP Verification (Signup)
-When signing up, the backend generates a secure 4-digit OTP and sends it to your email via **Nodemailer / Gmail**. You must enter the correct OTP (valid for 10 minutes) before your account is created.
-
-- The OTP field opens the numeric keyboard automatically.
-- A **"Send OTP"** button appears next to the field; after sending, it becomes a grey **"Resend OTP (30s)"** with a countdown timer.
-
-![Screenshot — Signup Screen with OTP Field]()
-
-![Screenshot — OTP Email received]()
-
----
-
-### Password Visibility Toggle
-Both the Login and Signup password fields include an eye 👁 icon that toggles between hidden and visible text.
-
-![Screenshot — Password Eye Toggle]()
-
 ---
 
 ### Bcrypt Password Hashing
