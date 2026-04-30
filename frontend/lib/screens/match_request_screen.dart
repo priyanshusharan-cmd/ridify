@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'live_tracking_screen.dart';
-import 'constants.dart';
+import '../constants.dart';
 
 class MatchRequestScreen extends StatelessWidget {
   final Map<String, dynamic> rideData;

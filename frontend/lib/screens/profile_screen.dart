@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'login_screen.dart';
-import 'constants.dart';
+import '../constants.dart';
 
 class ProfileScreen extends StatefulWidget {
   final String userName;

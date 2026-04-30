@@ -1,14 +1,30 @@
 {
-  "name": "backend",
+  "name": "ridify-backend",
   "version": "1.0.0",
+  "description": "Ridify backend API – real-time ride-sharing server for students built with Node.js, Express, MongoDB, and Socket.IO.",
   "main": "server.js",
   "scripts": {
-    "start" : "node server.js"
+    "start": "node server.js",
+    "dev": "node --watch server.js"
   },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
-  "description": "",
+  "keywords": [
+    "ridesharing",
+    "carpooling",
+    "nodejs",
+    "express",
+    "socket.io",
+    "mongodb"
+  ],
+  "author": "Priyanshu Sharan",
+  "license": "MIT",
+  "homepage": "https://github.com/priyanshusharan-cmd/ridify#readme",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/priyanshusharan-cmd/ridify.git"
+  },
+  "bugs": {
+    "url": "https://github.com/priyanshusharan-cmd/ridify/issues"
+  },
   "dependencies": {
     "cors": "^2.8.6",
     "dotenv": "^17.4.2",

@@ -4,7 +4,7 @@ import 'dart:convert';
 import 'dart:async';
 import 'package:socket_io_client/socket_io_client.dart' as IO;
 import 'live_tracking_screen.dart';
-import 'constants.dart';
+import '../constants.dart';
 
 class MatchStatusScreen extends StatefulWidget {
   final String driverName;

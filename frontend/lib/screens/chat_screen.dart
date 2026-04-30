@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:socket_io_client/socket_io_client.dart' as IO;
 import 'package:http/http.dart' as http;
 import 'dart:convert';
-import 'constants.dart';
+import '../constants.dart';
 
 class ChatScreen extends StatefulWidget {
   final String myName;

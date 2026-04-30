@@ -9,8 +9,8 @@ import 'live_tracking_screen.dart';
 import 'match_status_screen.dart';
 import 'profile_screen.dart';
 import 'ride_history_screen.dart';
-import 'utils.dart';
-import 'constants.dart';
+import '../utils.dart';
+import '../constants.dart';
 
 class HomeScreen extends StatefulWidget {
   final String userName;

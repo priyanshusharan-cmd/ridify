@@ -3,9 +3,9 @@ import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'package:geolocator/geolocator.dart';
 import 'match_status_screen.dart';
-import 'address_search_widget.dart';
-import 'utils.dart';
-import 'constants.dart';
+import '../widgets/address_search_widget.dart';
+import '../utils.dart';
+import '../constants.dart';
 
 class FindRideScreen extends StatefulWidget {
   final String userName;

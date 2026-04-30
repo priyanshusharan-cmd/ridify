@@ -1,0 +1,49 @@
+# =========================
+# Ridify Monorepo .gitignore
+# =========================
+
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+
+# ─────────────── BACKEND ───────────────
+# Environment / secrets
+backend/.env
+backend/.env.*
+!backend/.env.example
+
+# Node.js
+backend/node_modules/
+backend/npm-debug.log*
+backend/yarn-debug.log*
+backend/yarn-error.log*
+
+# ─────────────── FRONTEND ───────────────
+# Flutter / Dart
+frontend/.dart_tool/
+frontend/.flutter-plugins
+frontend/.flutter-plugins-dependencies
+frontend/.packages
+frontend/build/
+frontend/.fvm/
+
+# Android generated
+frontend/android/.gradle/
+frontend/android/local.properties
+frontend/android/key.properties
+frontend/android/app/google-services.json
+frontend/android/app/*.jks
+
+# iOS generated
+frontend/ios/Pods/
+frontend/ios/.symlinks/
+frontend/ios/Flutter/.last_build_id
+frontend/ios/Flutter/Generated.xcconfig
+frontend/ios/Flutter/ephemeral/
+
+# ─────────────── GENERAL ───────────────
+*.log
+*.tmp
+*.swp
+*.bak

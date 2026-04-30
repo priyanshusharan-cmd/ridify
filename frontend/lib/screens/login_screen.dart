@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'home_screen.dart';
-import 'constants.dart';
+import '../constants.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
