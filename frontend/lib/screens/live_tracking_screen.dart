@@ -64,11 +64,18 @@ class _LiveTrackingScreenState extends State<LiveTrackingScreen> {
     Future.delayed(const Duration(seconds: 5), () {
       if (mounted && driverPosition == null) {
         syncRideStatus();
-        if (!widget.isDriver && rideData != null && rideData!['pickupLat'] != null) {
+        if (!widget.isDriver &&
+            rideData != null &&
+            rideData!['pickupLat'] != null) {
           setState(() {
-            driverPosition = LatLng(rideData!['pickupLat'], rideData!['pickupLng']);
+            driverPosition = LatLng(
+              rideData!['pickupLat'],
+              rideData!['pickupLng'],
+            );
           });
-          try { mapController.move(driverPosition!, 15.0); } catch (_) {}
+          try {
+            mapController.move(driverPosition!, 15.0);
+          } catch (_) {}
         }
       }
     });
@@ -86,14 +93,16 @@ class _LiveTrackingScreenState extends State<LiveTrackingScreen> {
       permission = await Geolocator.requestPermission();
       if (permission == LocationPermission.denied) return;
     }
-    
+
     void applyFallback() {
       if (mounted) {
         setState(() {
           if (widget.isDriver) {
             driverPosition = const LatLng(12.9716, 77.5946);
             Future.delayed(const Duration(milliseconds: 100), () {
-              try { mapController.move(driverPosition!, 15.0); } catch (_) {}
+              try {
+                mapController.move(driverPosition!, 15.0);
+              } catch (_) {}
             });
           } else {
             myPosition = const LatLng(12.9716, 77.5946);
@@ -110,7 +119,8 @@ class _LiveTrackingScreenState extends State<LiveTrackingScreen> {
     try {
       if (widget.isDriver) {
         Position position = await Geolocator.getCurrentPosition(
-            timeLimit: const Duration(seconds: 3));
+          timeLimit: const Duration(seconds: 3),
+        );
         if (mounted) {
           setState(() {
             driverPosition = LatLng(position.latitude, position.longitude);
@@ -119,42 +129,57 @@ class _LiveTrackingScreenState extends State<LiveTrackingScreen> {
           Future.delayed(const Duration(milliseconds: 100), () {
             mapController.move(driverPosition!, 15.0);
           });
-          
+
           socket.emit('driver_location_update', {
             'rideId': widget.rideId,
             'lat': position.latitude,
             'lng': position.longitude,
           });
 
-          positionStreamSubscription = Geolocator.getPositionStream(
-            locationSettings: const LocationSettings(
-              accuracy: LocationAccuracy.high,
-              distanceFilter: 10,
-            )
-          ).listen((Position position) {
-            if (mounted) {
-              setState(() {
-                driverPosition = LatLng(position.latitude, position.longitude);
+          positionStreamSubscription =
+              Geolocator.getPositionStream(
+                locationSettings: const LocationSettings(
+                  accuracy: LocationAccuracy.high,
+                  distanceFilter: 10,
+                ),
+              ).listen((Position position) {
+                if (mounted) {
+                  setState(() {
+                    driverPosition = LatLng(
+                      position.latitude,
+                      position.longitude,
+                    );
+                  });
+                  _fitBounds();
+                  socket.emit('driver_location_update', {
+                    'rideId': widget.rideId,
+                    'lat': position.latitude,
+                    'lng': position.longitude,
+                  });
+                }
               });
-              _fitBounds();
-              socket.emit('driver_location_update', {
-                'rideId': widget.rideId,
-                'lat': position.latitude,
-                'lng': position.longitude,
-              });
-            }
-          });
         }
       } else {
         Position position = await Geolocator.getCurrentPosition(
-            timeLimit: const Duration(seconds: 3));
-        if (mounted) setState(() => myPosition = LatLng(position.latitude, position.longitude));
-        
-        positionStreamSubscription = Geolocator.getPositionStream(
-          locationSettings: const LocationSettings(accuracy: LocationAccuracy.high, distanceFilter: 5)
-        ).listen((Position pos) {
-          if (mounted) setState(() => myPosition = LatLng(pos.latitude, pos.longitude));
-        });
+          timeLimit: const Duration(seconds: 3),
+        );
+        if (mounted)
+          setState(
+            () => myPosition = LatLng(position.latitude, position.longitude),
+          );
+
+        positionStreamSubscription =
+            Geolocator.getPositionStream(
+              locationSettings: const LocationSettings(
+                accuracy: LocationAccuracy.high,
+                distanceFilter: 5,
+              ),
+            ).listen((Position pos) {
+              if (mounted)
+                setState(
+                  () => myPosition = LatLng(pos.latitude, pos.longitude),
+                );
+            });
       }
     } catch (e) {
       print("GPS Error: $e");
@@ -165,12 +190,14 @@ class _LiveTrackingScreenState extends State<LiveTrackingScreen> {
   Future<void> _fetchRoute() async {
     if (rideData == null || driverPosition == null) return;
     if (rideData!['destLat'] == null || rideData!['destLng'] == null) return;
-    
+
     final destLat = rideData!['destLat'];
     final destLng = rideData!['destLng'];
-    
+
     try {
-      final url = Uri.parse('http://router.project-osrm.org/route/v1/driving/${driverPosition!.longitude},${driverPosition!.latitude};$destLng,$destLat?geometries=geojson');
+      final url = Uri.parse(
+        'http://router.project-osrm.org/route/v1/driving/${driverPosition!.longitude},${driverPosition!.latitude};$destLng,$destLat?geometries=geojson',
+      );
       final response = await http.get(url);
       if (response.statusCode == 200) {
         final data = jsonDecode(response.body);
@@ -183,14 +210,14 @@ class _LiveTrackingScreenState extends State<LiveTrackingScreen> {
           }
         }
       }
-    } catch(e) {
+    } catch (e) {
       print("OSRM Error: $e");
     }
   }
 
   void _fitBounds() {
     if (driverPosition == null) return;
-    
+
     LatLng? targetPosition;
     if (widget.isDriver && rideData != null && rideData!['destLat'] != null) {
       targetPosition = LatLng(rideData!['destLat'], rideData!['destLng']);
@@ -200,10 +227,9 @@ class _LiveTrackingScreenState extends State<LiveTrackingScreen> {
 
     if (targetPosition != null) {
       final bounds = LatLngBounds.fromPoints([driverPosition!, targetPosition]);
-      mapController.fitCamera(CameraFit.bounds(
-        bounds: bounds,
-        padding: const EdgeInsets.all(80.0),
-      ));
+      mapController.fitCamera(
+        CameraFit.bounds(bounds: bounds, padding: const EdgeInsets.all(80.0)),
+      );
     } else {
       mapController.move(driverPosition!, 15.0);
     }
@@ -272,7 +298,10 @@ class _LiveTrackingScreenState extends State<LiveTrackingScreen> {
     });
 
     socket.on('driver_location_update', (data) {
-      if (mounted && !widget.isDriver && data != null && data['rideId'] == widget.rideId) {
+      if (mounted &&
+          !widget.isDriver &&
+          data != null &&
+          data['rideId'] == widget.rideId) {
         setState(() {
           driverPosition = LatLng(data['lat'], data['lng']);
         });
@@ -285,7 +314,8 @@ class _LiveTrackingScreenState extends State<LiveTrackingScreen> {
 
     socket.on('ride_ended', (data) {
       if (mounted && data != null) {
-        String eventRideId = data['rideId']?.toString() ?? data['_id']?.toString() ?? '';
+        String eventRideId =
+            data['rideId']?.toString() ?? data['_id']?.toString() ?? '';
         if (eventRideId == widget.rideId) {
           _triggerCompletionScreen();
         }
@@ -303,9 +333,9 @@ class _LiveTrackingScreenState extends State<LiveTrackingScreen> {
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (!mounted) return;
       Navigator.of(context).popUntil((route) => route.isFirst);
-      Navigator.of(context).push(
-        MaterialPageRoute(builder: (_) => const GlobalCompletionScreen()),
-      );
+      Navigator.of(
+        context,
+      ).push(MaterialPageRoute(builder: (_) => const GlobalCompletionScreen()));
     });
   }
 
@@ -349,9 +379,7 @@ class _LiveTrackingScreenState extends State<LiveTrackingScreen> {
   Future<void> kickPassenger(String passengerName) async {
     try {
       await http.patch(
-        Uri.parse(
-          '$kBaseUrl/api/rides/kick/${widget.rideId}/$passengerName',
-        ),
+        Uri.parse('$kBaseUrl/api/rides/kick/${widget.rideId}/$passengerName'),
       );
     } catch (e) {
       print(e);
@@ -361,9 +389,7 @@ class _LiveTrackingScreenState extends State<LiveTrackingScreen> {
   Future<void> endRide() async {
     if (widget.rideId.isEmpty) return;
     try {
-      await http.patch(
-        Uri.parse('$kBaseUrl/api/rides/end/${widget.rideId}'),
-      );
+      await http.patch(Uri.parse('$kBaseUrl/api/rides/end/${widget.rideId}'));
     } catch (e) {
       print(e);
     }
@@ -380,7 +406,9 @@ class _LiveTrackingScreenState extends State<LiveTrackingScreen> {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
-            content: Text("Wait! Not everyone has boarded yet. Kick them out if you want to leave without them."),
+            content: Text(
+              "Wait! Not everyone has boarded yet. Kick them out if you want to leave without them.",
+            ),
             backgroundColor: Colors.red,
           ),
         );
@@ -389,9 +417,7 @@ class _LiveTrackingScreenState extends State<LiveTrackingScreen> {
     }
 
     try {
-      await http.patch(
-        Uri.parse('$kBaseUrl/api/rides/start/${widget.rideId}'),
-      );
+      await http.patch(Uri.parse('$kBaseUrl/api/rides/start/${widget.rideId}'));
     } catch (e) {
       print(e);
     }
@@ -424,7 +450,9 @@ class _LiveTrackingScreenState extends State<LiveTrackingScreen> {
       statusText = "In Progress";
     } else if (isAccepted) {
       if (widget.isDriver) {
-        statusText = allBoarded ? "Ready to End" : "Waiting for passengers...";
+        statusText = allBoarded
+            ? "Ready to Start"
+            : "Waiting for passengers...";
       } else {
         statusText = iHaveBoarded ? "You're in!" : "Arriving";
       }
@@ -443,67 +471,83 @@ class _LiveTrackingScreenState extends State<LiveTrackingScreen> {
         children: [
           Positioned.fill(
             child: driverPosition == null
-              ? const Center(child: CircularProgressIndicator())
-              : FlutterMap(
-                  mapController: mapController,
-                  options: MapOptions(
-                    initialCenter: driverPosition!,
-                    initialZoom: 15.0,
-                  ),
-                  children: [
-                    TileLayer(
-                      urlTemplate: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
-                      userAgentPackageName: 'com.example.ridify',
+                ? const Center(child: CircularProgressIndicator())
+                : FlutterMap(
+                    mapController: mapController,
+                    options: MapOptions(
+                      initialCenter: driverPosition!,
+                      initialZoom: 15.0,
                     ),
-                    if (routePoints.isNotEmpty)
-                      PolylineLayer(
-                        polylines: [
-                          Polyline(
-                            points: routePoints,
-                            strokeWidth: 5.0,
-                            color: Colors.blueAccent,
+                    children: [
+                      TileLayer(
+                        urlTemplate:
+                            'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
+                        userAgentPackageName: 'com.example.ridify',
+                      ),
+                      if (routePoints.isNotEmpty)
+                        PolylineLayer(
+                          polylines: [
+                            Polyline(
+                              points: routePoints,
+                              strokeWidth: 5.0,
+                              color: Colors.blueAccent,
+                            ),
+                          ],
+                        ),
+                      MarkerLayer(
+                        markers: [
+                          if (!widget.isDriver && myPosition != null)
+                            Marker(
+                              point: myPosition!,
+                              width: 20,
+                              height: 20,
+                              child: Container(
+                                decoration: BoxDecoration(
+                                  color: Colors.blueAccent,
+                                  shape: BoxShape.circle,
+                                  border: Border.all(
+                                    color: Colors.white,
+                                    width: 3,
+                                  ),
+                                  boxShadow: const [
+                                    BoxShadow(
+                                      blurRadius: 5,
+                                      color: Colors.black26,
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ),
+                          Marker(
+                            point: driverPosition!,
+                            width: 120,
+                            height: 80,
+                            child: Column(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                Container(
+                                  padding: const EdgeInsets.all(5),
+                                  color: Colors.white,
+                                  child: Text(
+                                    driverLabel,
+                                    style: const TextStyle(
+                                      fontWeight: FontWeight.bold,
+                                      fontSize: 10,
+                                    ),
+                                  ),
+                                ),
+                                const Icon(
+                                  Icons.directions_car,
+                                  color: Colors.red,
+                                  size: 30,
+                                ),
+                              ],
+                            ),
                           ),
                         ],
                       ),
-                    MarkerLayer(
-                      markers: [
-                        if (!widget.isDriver && myPosition != null)
-                          Marker(
-                            point: myPosition!,
-                            width: 20,
-                            height: 20,
-                            child: Container(
-                              decoration: BoxDecoration(
-                                color: Colors.blueAccent,
-                                shape: BoxShape.circle,
-                                border: Border.all(color: Colors.white, width: 3),
-                                boxShadow: const [BoxShadow(blurRadius: 5, color: Colors.black26)],
-                              ),
-                            ),
-                          ),
-                        Marker(
-                          point: driverPosition!,
-                          width: 120,
-                          height: 80,
-                          child: Column(
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              Container(
-                                padding: const EdgeInsets.all(5),
-                                color: Colors.white,
-                                child: Text(
-                                  driverLabel,
-                                  style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 10),
-                                ),
-                              ),
-                              const Icon(Icons.directions_car, color: Colors.red, size: 30),
-                            ],
-                          ),
-                        ),
-                      ],
-                    ),
-                  ],
-                ),
+                    ],
+                  ),
           ),
           Positioned(
             top: 20,
@@ -516,10 +560,18 @@ class _LiveTrackingScreenState extends State<LiveTrackingScreen> {
                   color: Colors.white,
                   shape: BoxShape.circle,
                   boxShadow: [
-                    BoxShadow(color: Colors.black.withValues(alpha: 0.2), blurRadius: 6, offset: const Offset(0, 3)),
+                    BoxShadow(
+                      color: Colors.black.withValues(alpha: 0.2),
+                      blurRadius: 6,
+                      offset: const Offset(0, 3),
+                    ),
                   ],
                 ),
-                child: const Icon(Icons.my_location, color: Colors.black, size: 20),
+                child: const Icon(
+                  Icons.my_location,
+                  color: Colors.black,
+                  size: 20,
+                ),
               ),
             ),
           ),
