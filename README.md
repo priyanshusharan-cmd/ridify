@@ -57,22 +57,41 @@ We believe security shouldn't compromise simplicity:
 
 ## 📸 Experience Ridify
 
-> *Below are placeholders for the major screens within the Ridify application.*
+> *A complete walkthrough of the Ridify ecosystem, featuring 20 unique states across the Passenger and Driver journeys, live routing, and real-time data sync.*
 
-| Login & Home | Discovery & Posting |
+### 🚪 Authentication & User Hub
+| Login & Registration | Profile & History |
 |---|---|
-| **Login Screen**<br>![Login Screen]() | **Home Screen**<br>![Home Screen]() |
-| **Find Ride Screen**<br>![Find Ride Screen]() | **Offer Ride Screen**<br>![Offer Ride Screen]() |
+| **Login**<br>![Login](frontend/assets/screenshots/login.jpg) | **Signup**<br>![Signup](frontend/assets/screenshots/signup.jpg) |
+| **User Profile**<br>![Profile](frontend/assets/screenshots/profile.jpg) | **Ride History**<br>![History](frontend/assets/screenshots/rideHistory.jpg) |
 
-| Tracking & Status | Communication |
+### 💰 Dynamic Dashboards
+| Initial State | Active State |
 |---|---|
-| **Active Rides**<br>![Active Rides]() | **Match Request/Status**<br>![Match Request/Status]() |
-| **In-ride Chat**<br>![In-ride Chat]() | **Live Map Tracking**<br>![Live Map Tracking]() |
+| **New Dashboard**<br>![Home](frontend/assets/screenshots/home.jpg) | **Earnings & Spending**<br>![Earnings](frontend/assets/screenshots/toatalEarning&Spending.jpg) |
 
-| History & Profile | Administration |
+### 🚘 The Marketplace
+| Passenger Search | Driver Hosting |
 |---|---|
-| **Ride History**<br>![Ride History]() | **Profile Screen**<br>![Profile Screen]() |
-| **Admin Controls**<br>![Admin Controls]() | |
+| **Search Form**<br>![Find Ride](frontend/assets/screenshots/findRide.jpg) | **Create Listing**<br>![Offer Ride](frontend/assets/screenshots/offerRide.jpg) |
+| **Available Rides**<br>![Available Rides](frontend/assets/screenshots/availableRides.jpg) | **Driver Match Requests**<br>![Match Request](frontend/assets/screenshots/matchRequest.jpg) |
+| **Request Processing**<br>![Match Status](frontend/assets/screenshots/matchStatus.jpg) | **Ongoing Activity**<br>![Activity](frontend/assets/screenshots/activity.jpg) |
+
+### 📱 Live Journey: Passenger Perspective
+| Approaching | Boarded |
+|---|---|
+| **Driver Arriving**<br>![Driver Arriving](frontend/assets/screenshots/liveTrackingScreen.jpg) | **You're In!**<br>![Boarded](frontend/assets/screenshots/liveTrackingScreen5.jpg) |
+
+### 🚗 Live Journey: Driver Perspective & Chat
+| Route Management | Communication |
+|---|---|
+| **Waiting for Passengers**<br>![Waiting](frontend/assets/screenshots/liveTrackingScreen2.jpg) | **Ride In Progress**<br>![In Progress](frontend/assets/screenshots/liveTrackingScreen4.jpg) |
+| **Ready to End**<br>![Ready to End](frontend/assets/screenshots/liveTrackingScreen3.jpg) | **Socket.IO Live Chat**<br>![Chat](frontend/assets/screenshots/chatScreen.jpg) |
+
+### 🏁 Ride Completion
+| Driver Success | Passenger Success |
+|---|---|
+| **Driver Completion**<br>![Driver Done](frontend/assets/screenshots/rideCompletedDriverScreen.jpg) | **Rider Completion**<br>![Rider Done](frontend/assets/screenshots/rideCompletedRiderScreen.jpg) |
 
 ---
 
