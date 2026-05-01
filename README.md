@@ -170,7 +170,7 @@ We believe security shouldn't compromise simplicity:
   <tr>
     <td valign="top" align="center">
       <b>Waiting for Passengers</b><br>
-      <img src="frontend/assets/screenshots/liveTrackingScreen2.jpg" alt="Waiting" width="250">
+      <img src="frontend/assets/screenshots/liveTrackingScreen.jpg" alt="Waiting" width="250">
     </td>
     <td valign="top" align="center">
       <b>Ride In Progress</b><br>
@@ -180,7 +180,7 @@ We believe security shouldn't compromise simplicity:
   <tr>
     <td valign="top" align="center">
       <b>Ready to End</b><br>
-      <img src="frontend/assets/screenshots/liveTrackingScreen3.jpg" alt="Ready to End" width="250">
+      <img src="frontend/assets/screenshots/liveTrackingScreen5.jpg" alt="Ready to End" width="250">
     </td>
     <td valign="top" align="center">
       <b>Socket.IO Live Chat</b><br>
