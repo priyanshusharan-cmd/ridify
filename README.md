@@ -152,11 +152,11 @@ We believe security shouldn't compromise simplicity:
   <tr>
     <td valign="top" align="center">
       <b>Driver Arriving</b><br>
-      <img src="frontend/assets/screenshots/liveTrackingScreen.jpg" alt="Driver Arriving" width="250">
+      <img src="frontend/assets/screenshots/liveTrackingScreen2.jpg" alt="Driver Arriving" width="250">
     </td>
     <td valign="top" align="center">
       <b>You're In!</b><br>
-      <img src="frontend/assets/screenshots/liveTrackingScreen5.jpg" alt="Boarded" width="250">
+      <img src="frontend/assets/screenshots/liveTrackingScreen3.jpg" alt="Boarded" width="250">
     </td>
   </tr>
 </table>
