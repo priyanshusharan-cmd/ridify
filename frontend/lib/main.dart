@@ -18,9 +18,9 @@ void main() async {
   runApp(MyApp(
     initialScreen: hasSession
         ? HomeScreen(
-            userName: savedName!,
-            userAge: savedAge!,
-            userEmail: savedEmail!,
+            userName: savedName,
+            userAge: savedAge,
+            userEmail: savedEmail,
           )
         : const LoginScreen(),
   ));

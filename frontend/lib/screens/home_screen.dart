@@ -69,7 +69,6 @@ class _HomeScreenState extends State<HomeScreen> {
     socket.on('ride_cancelled', (_) => fetchRides());
 
     socket.on('ride_ended', (data) {
-      print("RIDE ENDED SIGNAL: \$data");
       fetchRides();
       if (mounted && data != null) {
         List passengers = data['passengers'] is List ? data['passengers'] : [];
@@ -81,7 +80,6 @@ class _HomeScreenState extends State<HomeScreen> {
             boarded.contains(widget.userName);
             
         if (wasMyRide) {
-          // If we are currently pushing/popping routes, wait a frame.
           WidgetsBinding.instance.addPostFrameCallback((_) {
             if (!mounted) return;
             Navigator.of(context).popUntil((route) => route.isFirst);
@@ -141,7 +139,7 @@ class _HomeScreenState extends State<HomeScreen> {
               backgroundColor: Colors.black,
               elevation: 0,
               centerTitle: false,
-              titleSpacing: 24, // Matches the body padding exactly
+              titleSpacing: 24,
               title: Row(
                 children: [
                   ClipRRect(
@@ -510,7 +508,7 @@ class _ActiveRidesTab extends StatelessWidget {
         onRefresh();
       }
     } catch (e) {
-      print(e);
+      debugPrint("$e");
     }
   }
 
@@ -529,7 +527,7 @@ class _ActiveRidesTab extends StatelessWidget {
         onRefresh();
       }
     } catch (e) {
-      print(e);
+      debugPrint("$e");
     }
   }
 
@@ -792,7 +790,7 @@ class _ActiveRidesTab extends StatelessWidget {
                     ),
                   ),
                 );
-              }).toList(),
+              }),
               const Divider(height: 30),
             ],
 

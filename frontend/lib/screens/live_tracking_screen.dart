@@ -247,8 +247,9 @@ class _LiveTrackingScreenState extends State<LiveTrackingScreen> {
     });
 
     socket.on('passenger_boarded', (data) {
-      if (mounted && data != null && data['_id'] == widget.rideId)
+      if (mounted && data != null && data['_id'] == widget.rideId) {
         syncRideStatus();
+      }
     });
 
     socket.on('ride_started', (data) {
@@ -262,10 +263,11 @@ class _LiveTrackingScreenState extends State<LiveTrackingScreen> {
 
     socket.on('passenger_kicked', (data) {
       if (mounted && data != null && data['rideId'] == widget.rideId) {
-        if (data['kickedUser'] == widget.myName)
+        if (data['kickedUser'] == widget.myName) {
           _kickSelfOut();
-        else
+        } else {
           syncRideStatus();
+        }
       }
     });
 
@@ -418,13 +420,14 @@ class _LiveTrackingScreenState extends State<LiveTrackingScreen> {
         (rideData?['boardedPassengers']?.length ?? 0);
 
     String statusText = "Pending";
-    if (isStarted)
+    if (isStarted) {
       statusText = "In Progress";
-    else if (isAccepted) {
-      if (widget.isDriver)
+    } else if (isAccepted) {
+      if (widget.isDriver) {
         statusText = allBoarded ? "Ready to End" : "Waiting for passengers...";
-      else
+      } else {
         statusText = iHaveBoarded ? "You're in!" : "Arriving";
+      }
     }
 
     return Scaffold(
@@ -513,7 +516,7 @@ class _LiveTrackingScreenState extends State<LiveTrackingScreen> {
                   color: Colors.white,
                   shape: BoxShape.circle,
                   boxShadow: [
-                    BoxShadow(color: Colors.black.withOpacity(0.2), blurRadius: 6, offset: const Offset(0, 3)),
+                    BoxShadow(color: Colors.black.withValues(alpha: 0.2), blurRadius: 6, offset: const Offset(0, 3)),
                   ],
                 ),
                 child: const Icon(Icons.my_location, color: Colors.black, size: 20),
@@ -531,7 +534,7 @@ class _LiveTrackingScreenState extends State<LiveTrackingScreen> {
                 ),
                 boxShadow: [
                   BoxShadow(
-                    color: Colors.black.withOpacity(0.1),
+                    color: Colors.black.withValues(alpha: 0.1),
                     blurRadius: 10,
                   ),
                 ],
