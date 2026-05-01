@@ -60,38 +60,152 @@ We believe security shouldn't compromise simplicity:
 > *A complete walkthrough of the Ridify ecosystem, featuring 20 unique states across the Passenger and Driver journeys, live routing, and real-time data sync.*
 
 ### 🚪 Authentication & User Hub
-| Login & Registration | Profile & History |
-|:---:|:---:|
-| **Login**<br><img src="frontend/assets/screenshots/login.jpg" alt="Login" width="250"> | **Signup**<br><img src="frontend/assets/screenshots/signup.jpg" alt="Signup" width="250"> |
-| **User Profile**<br><img src="frontend/assets/screenshots/profile.jpg" alt="Profile" width="250"> | **Ride History**<br><img src="frontend/assets/screenshots/rideHistory.jpg" alt="History" width="250"> |
+<table>
+  <tr>
+    <th width="50%">Login & Registration</th>
+    <th width="50%">Profile & History</th>
+  </tr>
+  <tr>
+    <td valign="top" align="center">
+      <b>Login</b><br>
+      <img src="frontend/assets/screenshots/login.jpg" alt="Login" width="250">
+    </td>
+    <td valign="top" align="center">
+      <b>Signup</b><br>
+      <img src="frontend/assets/screenshots/signup.jpg" alt="Signup" width="250">
+    </td>
+  </tr>
+  <tr>
+    <td valign="top" align="center">
+      <b>User Profile</b><br>
+      <img src="frontend/assets/screenshots/profile.jpg" alt="Profile" width="250">
+    </td>
+    <td valign="top" align="center">
+      <b>Ride History</b><br>
+      <img src="frontend/assets/screenshots/rideHistory.jpg" alt="History" width="250">
+    </td>
+  </tr>
+</table>
 
 ### 💰 Dynamic Dashboards
-| Initial State | Active State |
-|:---:|:---:|
-| **New Dashboard**<br><img src="frontend/assets/screenshots/home.jpg" alt="Home" width="250"> | **Earnings & Spending**<br><img src="frontend/assets/screenshots/toatalEarning&Spending.jpg" alt="Earnings" width="250"> |
+<table>
+  <tr>
+    <th width="50%">Initial State</th>
+    <th width="50%">Active State</th>
+  </tr>
+  <tr>
+    <td valign="top" align="center">
+      <b>New Dashboard</b><br>
+      <img src="frontend/assets/screenshots/home.jpg" alt="Home" width="250">
+    </td>
+    <td valign="top" align="center">
+      <b>Earnings & Spending</b><br>
+      <img src="frontend/assets/screenshots/toatalEarning&Spending.jpg" alt="Earnings" width="250">
+    </td>
+  </tr>
+</table>
 
 ### 🚘 The Marketplace
-| Passenger Search | Driver Hosting |
-|:---:|:---:|
-| **Search Form**<br><img src="frontend/assets/screenshots/findRide.jpg" alt="Find Ride" width="250"> | **Create Listing**<br><img src="frontend/assets/screenshots/offerRide.jpg" alt="Offer Ride" width="250"> |
-| **Available Rides**<br><img src="frontend/assets/screenshots/availableRides.jpg" alt="Available Rides" width="250"> | **Driver Match Requests**<br><img src="frontend/assets/screenshots/matchRequest.jpg" alt="Match Request" width="250"> |
-| **Request Processing**<br><img src="frontend/assets/screenshots/matchStatus.jpg" alt="Match Status" width="250"> | **Ongoing Activity**<br><img src="frontend/assets/screenshots/activity.jpg" alt="Activity" width="250"> |
+<table>
+  <tr>
+    <th width="50%">Passenger Search</th>
+    <th width="50%">Driver Hosting</th>
+  </tr>
+  <tr>
+    <td valign="top" align="center">
+      <b>Search Form</b><br>
+      <img src="frontend/assets/screenshots/findRide.jpg" alt="Find Ride" width="250">
+    </td>
+    <td valign="top" align="center">
+      <b>Create Listing</b><br>
+      <img src="frontend/assets/screenshots/offerRide.jpg" alt="Offer Ride" width="250">
+    </td>
+  </tr>
+  <tr>
+    <td valign="top" align="center">
+      <b>Available Rides</b><br>
+      <img src="frontend/assets/screenshots/availableRides.jpg" alt="Available Rides" width="250">
+    </td>
+    <td valign="top" align="center">
+      <b>Driver Match Requests</b><br>
+      <img src="frontend/assets/screenshots/matchRequest.jpg" alt="Match Request" width="250">
+    </td>
+  </tr>
+  <tr>
+    <td valign="top" align="center">
+      <b>Request Processing</b><br>
+      <img src="frontend/assets/screenshots/matchStatus.jpg" alt="Match Status" width="250">
+    </td>
+    <td valign="top" align="center">
+      <b>Ongoing Activity</b><br>
+      <img src="frontend/assets/screenshots/activity.jpg" alt="Activity" width="250">
+    </td>
+  </tr>
+</table>
 
 ### 📱 Live Journey: Passenger Perspective
-| Approaching | Boarded |
-|:---:|:---:|
-| **Driver Arriving**<br><img src="frontend/assets/screenshots/liveTrackingScreen.jpg" alt="Driver Arriving" width="250"> | **You're In!**<br><img src="frontend/assets/screenshots/liveTrackingScreen5.jpg" alt="Boarded" width="250"> |
+<table>
+  <tr>
+    <th width="50%">Approaching</th>
+    <th width="50%">Boarded</th>
+  </tr>
+  <tr>
+    <td valign="top" align="center">
+      <b>Driver Arriving</b><br>
+      <img src="frontend/assets/screenshots/liveTrackingScreen.jpg" alt="Driver Arriving" width="250">
+    </td>
+    <td valign="top" align="center">
+      <b>You're In!</b><br>
+      <img src="frontend/assets/screenshots/liveTrackingScreen5.jpg" alt="Boarded" width="250">
+    </td>
+  </tr>
+</table>
 
 ### 🚗 Live Journey: Driver Perspective & Chat
-| Route Management | Communication |
-|:---:|:---:|
-| **Waiting for Passengers**<br><img src="frontend/assets/screenshots/liveTrackingScreen2.jpg" alt="Waiting" width="250"> | **Ride In Progress**<br><img src="frontend/assets/screenshots/liveTrackingScreen4.jpg" alt="In Progress" width="250"> |
-| **Ready to End**<br><img src="frontend/assets/screenshots/liveTrackingScreen3.jpg" alt="Ready to End" width="250"> | **Socket.IO Live Chat**<br><img src="frontend/assets/screenshots/chatScreen.jpg" alt="Chat" width="250"> |
+<table>
+  <tr>
+    <th width="50%">Route Management</th>
+    <th width="50%">Communication</th>
+  </tr>
+  <tr>
+    <td valign="top" align="center">
+      <b>Waiting for Passengers</b><br>
+      <img src="frontend/assets/screenshots/liveTrackingScreen2.jpg" alt="Waiting" width="250">
+    </td>
+    <td valign="top" align="center">
+      <b>Ride In Progress</b><br>
+      <img src="frontend/assets/screenshots/liveTrackingScreen4.jpg" alt="In Progress" width="250">
+    </td>
+  </tr>
+  <tr>
+    <td valign="top" align="center">
+      <b>Ready to End</b><br>
+      <img src="frontend/assets/screenshots/liveTrackingScreen3.jpg" alt="Ready to End" width="250">
+    </td>
+    <td valign="top" align="center">
+      <b>Socket.IO Live Chat</b><br>
+      <img src="frontend/assets/screenshots/chatScreen.jpg" alt="Chat" width="250">
+    </td>
+  </tr>
+</table>
 
 ### 🏁 Ride Completion
-| Driver Success | Passenger Success |
-|:---:|:---:|
-| **Driver Completion**<br><img src="frontend/assets/screenshots/rideCompletedDriverScreen.jpg" alt="Driver Done" width="250"> | **Rider Completion**<br><img src="frontend/assets/screenshots/rideCompletedRiderScreen.jpg" alt="Rider Done" width="250"> |
+<table>
+  <tr>
+    <th width="50%">Driver Success</th>
+    <th width="50%">Passenger Success</th>
+  </tr>
+  <tr>
+    <td valign="top" align="center">
+      <b>Driver Completion</b><br>
+      <img src="frontend/assets/screenshots/rideCompletedDriverScreen.jpg" alt="Driver Done" width="250">
+    </td>
+    <td valign="top" align="center">
+      <b>Rider Completion</b><br>
+      <img src="frontend/assets/screenshots/rideCompletedRiderScreen.jpg" alt="Rider Done" width="250">
+    </td>
+  </tr>
+</table>
 
 ---
 
