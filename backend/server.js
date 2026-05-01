@@ -100,6 +100,9 @@ io.on('connection', (socket) => {
 // AUTH ROUTES
 // =============================================
 
+// Welcome route
+app.get('/', (req, res) => { res.send('🚗 Ridify Backend API is running successfully!'); });
+
 // Register (bcrypt — no OTP required)
 app.post('/api/auth/register', async (req, res) => {
   try {
