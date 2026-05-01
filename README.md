@@ -61,37 +61,37 @@ We believe security shouldn't compromise simplicity:
 
 ### 🚪 Authentication & User Hub
 | Login & Registration | Profile & History |
-|---|---|
-| **Login**<br>![Login](frontend/assets/screenshots/login.jpg) | **Signup**<br>![Signup](frontend/assets/screenshots/signup.jpg) |
-| **User Profile**<br>![Profile](frontend/assets/screenshots/profile.jpg) | **Ride History**<br>![History](frontend/assets/screenshots/rideHistory.jpg) |
+|:---:|:---:|
+| **Login**<br><img src="frontend/assets/screenshots/login.jpg" alt="Login" width="250"> | **Signup**<br><img src="frontend/assets/screenshots/signup.jpg" alt="Signup" width="250"> |
+| **User Profile**<br><img src="frontend/assets/screenshots/profile.jpg" alt="Profile" width="250"> | **Ride History**<br><img src="frontend/assets/screenshots/rideHistory.jpg" alt="History" width="250"> |
 
 ### 💰 Dynamic Dashboards
 | Initial State | Active State |
-|---|---|
-| **New Dashboard**<br>![Home](frontend/assets/screenshots/home.jpg) | **Earnings & Spending**<br>![Earnings](frontend/assets/screenshots/toatalEarning&Spending.jpg) |
+|:---:|:---:|
+| **New Dashboard**<br><img src="frontend/assets/screenshots/home.jpg" alt="Home" width="250"> | **Earnings & Spending**<br><img src="frontend/assets/screenshots/toatalEarning&Spending.jpg" alt="Earnings" width="250"> |
 
 ### 🚘 The Marketplace
 | Passenger Search | Driver Hosting |
-|---|---|
-| **Search Form**<br>![Find Ride](frontend/assets/screenshots/findRide.jpg) | **Create Listing**<br>![Offer Ride](frontend/assets/screenshots/offerRide.jpg) |
-| **Available Rides**<br>![Available Rides](frontend/assets/screenshots/availableRides.jpg) | **Driver Match Requests**<br>![Match Request](frontend/assets/screenshots/matchRequest.jpg) |
-| **Request Processing**<br>![Match Status](frontend/assets/screenshots/matchStatus.jpg) | **Ongoing Activity**<br>![Activity](frontend/assets/screenshots/activity.jpg) |
+|:---:|:---:|
+| **Search Form**<br><img src="frontend/assets/screenshots/findRide.jpg" alt="Find Ride" width="250"> | **Create Listing**<br><img src="frontend/assets/screenshots/offerRide.jpg" alt="Offer Ride" width="250"> |
+| **Available Rides**<br><img src="frontend/assets/screenshots/availableRides.jpg" alt="Available Rides" width="250"> | **Driver Match Requests**<br><img src="frontend/assets/screenshots/matchRequest.jpg" alt="Match Request" width="250"> |
+| **Request Processing**<br><img src="frontend/assets/screenshots/matchStatus.jpg" alt="Match Status" width="250"> | **Ongoing Activity**<br><img src="frontend/assets/screenshots/activity.jpg" alt="Activity" width="250"> |
 
 ### 📱 Live Journey: Passenger Perspective
 | Approaching | Boarded |
-|---|---|
-| **Driver Arriving**<br>![Driver Arriving](frontend/assets/screenshots/liveTrackingScreen.jpg) | **You're In!**<br>![Boarded](frontend/assets/screenshots/liveTrackingScreen5.jpg) |
+|:---:|:---:|
+| **Driver Arriving**<br><img src="frontend/assets/screenshots/liveTrackingScreen.jpg" alt="Driver Arriving" width="250"> | **You're In!**<br><img src="frontend/assets/screenshots/liveTrackingScreen5.jpg" alt="Boarded" width="250"> |
 
 ### 🚗 Live Journey: Driver Perspective & Chat
 | Route Management | Communication |
-|---|---|
-| **Waiting for Passengers**<br>![Waiting](frontend/assets/screenshots/liveTrackingScreen2.jpg) | **Ride In Progress**<br>![In Progress](frontend/assets/screenshots/liveTrackingScreen4.jpg) |
-| **Ready to End**<br>![Ready to End](frontend/assets/screenshots/liveTrackingScreen3.jpg) | **Socket.IO Live Chat**<br>![Chat](frontend/assets/screenshots/chatScreen.jpg) |
+|:---:|:---:|
+| **Waiting for Passengers**<br><img src="frontend/assets/screenshots/liveTrackingScreen2.jpg" alt="Waiting" width="250"> | **Ride In Progress**<br><img src="frontend/assets/screenshots/liveTrackingScreen4.jpg" alt="In Progress" width="250"> |
+| **Ready to End**<br><img src="frontend/assets/screenshots/liveTrackingScreen3.jpg" alt="Ready to End" width="250"> | **Socket.IO Live Chat**<br><img src="frontend/assets/screenshots/chatScreen.jpg" alt="Chat" width="250"> |
 
 ### 🏁 Ride Completion
 | Driver Success | Passenger Success |
-|---|---|
-| **Driver Completion**<br>![Driver Done](frontend/assets/screenshots/rideCompletedDriverScreen.jpg) | **Rider Completion**<br>![Rider Done](frontend/assets/screenshots/rideCompletedRiderScreen.jpg) |
+|:---:|:---:|
+| **Driver Completion**<br><img src="frontend/assets/screenshots/rideCompletedDriverScreen.jpg" alt="Driver Done" width="250"> | **Rider Completion**<br><img src="frontend/assets/screenshots/rideCompletedRiderScreen.jpg" alt="Rider Done" width="250"> |
 
 ---
 
