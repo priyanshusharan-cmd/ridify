@@ -65,7 +65,7 @@ class _FindRideScreenState extends State<FindRideScreen> {
         }
       }
     } catch (e) {
-      print("Autofill Error: $e");
+      debugPrint("Autofill Error: $e");
     }
   }
 
@@ -156,7 +156,7 @@ class _FindRideScreenState extends State<FindRideScreen> {
         }
       }
     } catch (e) {
-      print("❌ Network Error: $e");
+      debugPrint("❌ Network Error: $e");
     } finally {
       if (mounted) setState(() => isSearching = false);
     }
@@ -184,7 +184,7 @@ class _FindRideScreenState extends State<FindRideScreen> {
         );
       }
     } catch (e) {
-      print("❌ Request Error: $e");
+      debugPrint("❌ Request Error: $e");
     }
   }
 

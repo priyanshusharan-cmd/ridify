@@ -1,7 +1,9 @@
-// const String kBaseUrl = "https://sanjuana-monocular-hyun.ngrok-free.dev";
-const String kBaseUrl = "https://ridify.onrender.com";
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 
-/// Emails that have admin privileges (match the backend ADMIN_EMAILS .env var).
-const List<String> kAdminEmails = [
-  'priyanshu0sharan@gmail.com',
-];
+/// The base URL for backend API calls, pulled from .env or defaulting to production.
+String get kBaseUrl => dotenv.env['BACKEND_URL'] ?? "https://ridify.onrender.com";
+
+/// Emails that have admin privileges, pulled from .env or defaulting to a hardcoded list.
+List<String> get kAdminEmails => [
+      dotenv.env['ADMIN_EMAIL'] ?? 'priyanshu0sharan@gmail.com',
+    ];

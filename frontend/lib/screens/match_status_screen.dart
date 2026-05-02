@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'dart:async';
-import 'package:socket_io_client/socket_io_client.dart' as IO;
+import 'package:socket_io_client/socket_io_client.dart' as io;
 import 'live_tracking_screen.dart';
 import '../constants.dart';
 
@@ -24,7 +24,7 @@ class MatchStatusScreen extends StatefulWidget {
 
 class _MatchStatusScreenState extends State<MatchStatusScreen> {
   Timer? _pollingTimer;
-  late IO.Socket socket;
+  late io.Socket socket;
   bool isDeclined = false;
   String declineMessage = "Request Declined";
 
@@ -36,7 +36,7 @@ class _MatchStatusScreenState extends State<MatchStatusScreen> {
       (_) => pollRideStatus(),
     );
 
-    socket = IO.io(kBaseUrl, <String, dynamic>{
+    socket = io.io(kBaseUrl, <String, dynamic>{
       'transports': ['websocket'],
       'autoConnect': true,
     });
@@ -114,7 +114,7 @@ class _MatchStatusScreenState extends State<MatchStatusScreen> {
         }
       }
     } catch (e) {
-      print(e);
+      debugPrint(e.toString());
     }
   }
 
@@ -148,7 +148,7 @@ class _MatchStatusScreenState extends State<MatchStatusScreen> {
               borderRadius: BorderRadius.circular(30),
               boxShadow: [
                 BoxShadow(
-                  color: Colors.black.withOpacity(0.05),
+                  color: Colors.black.withValues(alpha: 0.05),
                   blurRadius: 20,
                   spreadRadius: 5,
                 ),

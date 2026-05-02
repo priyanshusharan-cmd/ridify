@@ -62,7 +62,7 @@ class _RideHistoryScreenState extends State<RideHistoryScreen> {
         });
       }
     } catch (e) {
-      print("Error fetching history: $e");
+      debugPrint("Error fetching history: $e");
     } finally {
       if (mounted) setState(() => isLoading = false);
     }

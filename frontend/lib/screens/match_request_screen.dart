@@ -30,7 +30,7 @@ class MatchRequestScreen extends StatelessWidget {
         );
       }
     } catch (e) {
-      print("Error: $e");
+      debugPrint("Error: $e");
     }
   }
 

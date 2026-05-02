@@ -66,7 +66,7 @@ class _AddressSearchWidgetState extends State<AddressSearchWidget> {
         }
       }
     } catch (e) {
-      print("Search error: $e");
+      debugPrint("Search error: $e");
     } finally {
       setState(() => _isLoading = false);
     }

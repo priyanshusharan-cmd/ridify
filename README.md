@@ -234,6 +234,9 @@ npm start
 # Navigate to frontend directory
 cd frontend
 
+# Create your environment file
+cp .env.example .env   # Update with your BACKEND_URL and ADMIN_EMAIL
+
 # Install Flutter dependencies
 flutter pub get
 

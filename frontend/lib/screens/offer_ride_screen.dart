@@ -141,7 +141,7 @@ class _OfferRideScreenState extends State<OfferRideScreen> {
         );
       }
     } catch (e) {
-      print("Error: $e");
+      debugPrint("Error: $e");
     } finally {
       if (mounted) setState(() => isPosting = false);
     }

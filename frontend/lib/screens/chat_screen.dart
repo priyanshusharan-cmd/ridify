@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:socket_io_client/socket_io_client.dart' as IO;
+import 'package:socket_io_client/socket_io_client.dart' as io;
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 import '../constants.dart';
@@ -21,7 +21,7 @@ class ChatScreen extends StatefulWidget {
 }
 
 class _ChatScreenState extends State<ChatScreen> {
-  late IO.Socket socket;
+  late io.Socket socket;
   final TextEditingController _controller = TextEditingController();
   final List<Map<String, dynamic>> messages = [];
 
@@ -69,12 +69,12 @@ class _ChatScreenState extends State<ChatScreen> {
         });
       }
     } catch (e) {
-      print(e);
+      debugPrint(e.toString());
     }
   }
 
   void initSocket() {
-    socket = IO.io(kBaseUrl, <String, dynamic>{
+    socket = io.io(kBaseUrl, <String, dynamic>{
       'transports': ['websocket'],
       'autoConnect': true,
     });
@@ -99,7 +99,7 @@ class _ChatScreenState extends State<ChatScreen> {
         body: jsonEncode({"sender": widget.myName, "text": text, "timestamp": timeString}),
       );
     } catch (e) {
-      print(e);
+      debugPrint(e.toString());
     }
   }
 

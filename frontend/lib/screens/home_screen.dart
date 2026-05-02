@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'dart:async';
-import 'package:socket_io_client/socket_io_client.dart' as IO;
+import 'package:socket_io_client/socket_io_client.dart' as io;
 import 'find_ride_screen.dart';
 import 'offer_ride_screen.dart';
 import 'live_tracking_screen.dart';
@@ -31,7 +31,7 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
   int _currentIndex = 0;
-  late IO.Socket socket;
+  late io.Socket socket;
   List<dynamic> allRides = [];
   Timer? _pollingTimer;
 
@@ -55,12 +55,12 @@ class _HomeScreenState extends State<HomeScreen> {
         setState(() => allRides = jsonDecode(response.body));
       }
     } catch (e) {
-      print("❌ Fetch Error: $e");
+      debugPrint("❌ Fetch Error: $e");
     }
   }
 
   void initSocket() {
-    socket = IO.io(kBaseUrl, <String, dynamic>{
+    socket = io.io(kBaseUrl, <String, dynamic>{
       'transports': ['websocket'],
       'autoConnect': true,
     });
@@ -200,7 +200,7 @@ class _HomeScreenState extends State<HomeScreen> {
                           Uri.parse("$kBaseUrl/api/rides"),
                           headers: {'x-admin-email': widget.userEmail},
                         );
-                        if (mounted) {
+                        if (context.mounted) {
                           ScaffoldMessenger.of(context).showSnackBar(
                             const SnackBar(
                               content: Text("All rides wiped!"),
@@ -518,6 +518,7 @@ class _ActiveRidesTab extends StatelessWidget {
         Uri.parse("$kBaseUrl/api/rides/$id"),
       );
       if (res.statusCode == 200) {
+        if (!context.mounted) return;
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
             content: Text("Ride offer cancelled"),
@@ -670,7 +671,7 @@ class _ActiveRidesTab extends StatelessWidget {
                       ),
                     ),
                   )
-                  .toList(),
+                  ,
               const Divider(height: 30),
             ],
 
@@ -852,7 +853,7 @@ class _ActiveRidesTab extends StatelessWidget {
                       ),
                     ),
                   )
-                  .toList(),
+                  ,
               const Divider(height: 30),
             ],
 
@@ -932,7 +933,7 @@ class _ActiveRidesTab extends StatelessWidget {
                       ),
                     ),
                   )
-                  .toList(),
+                  ,
             ],
 
           ],

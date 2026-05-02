@@ -55,11 +55,13 @@ class _ProfileScreenState extends State<ProfileScreen> {
       if (response.statusCode == 200 && mounted) {
         final prefs = await SharedPreferences.getInstance();
         await prefs.clear();
+        if (!mounted) return;
         Navigator.pushAndRemoveUntil(
           context,
           MaterialPageRoute(builder: (_) => const LoginScreen()),
           (route) => false,
         );
+        if (!mounted) return;
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
             content: Text("Account successfully deleted"),
@@ -68,7 +70,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
         );
       }
     } catch (e) {
-      print(e);
+      debugPrint(e.toString());
     }
   }
 
@@ -109,8 +111,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
       if (response.statusCode == 200 && mounted) {
         final prefs = await SharedPreferences.getInstance();
         await prefs.clear(); // Auto-logout
-        Navigator.pushAndRemoveUntil(
-          context,
+        if (!context.mounted) return;
+        Navigator.of(context).pushAndRemoveUntil(
           MaterialPageRoute(builder: (_) => const LoginScreen()),
           (route) => false,
         );

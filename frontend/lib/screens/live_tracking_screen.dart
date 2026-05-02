@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:socket_io_client/socket_io_client.dart' as IO;
+import 'package:socket_io_client/socket_io_client.dart' as io;
 import 'package:http/http.dart' as http;
 import 'dart:async';
 import 'dart:convert';
@@ -31,7 +31,7 @@ class LiveTrackingScreen extends StatefulWidget {
 }
 
 class _LiveTrackingScreenState extends State<LiveTrackingScreen> {
-  late IO.Socket socket;
+  late io.Socket socket;
   late bool isAccepted;
   bool isStarted = false;
   Timer? _pollingTimer;
@@ -119,7 +119,7 @@ class _LiveTrackingScreenState extends State<LiveTrackingScreen> {
     try {
       if (widget.isDriver) {
         Position position = await Geolocator.getCurrentPosition(
-          timeLimit: const Duration(seconds: 3),
+          locationSettings: const LocationSettings(timeLimit: Duration(seconds: 3)),
         );
         if (mounted) {
           setState(() {
@@ -161,12 +161,13 @@ class _LiveTrackingScreenState extends State<LiveTrackingScreen> {
         }
       } else {
         Position position = await Geolocator.getCurrentPosition(
-          timeLimit: const Duration(seconds: 3),
+          locationSettings: const LocationSettings(timeLimit: Duration(seconds: 3)),
         );
-        if (mounted)
+        if (mounted) {
           setState(
             () => myPosition = LatLng(position.latitude, position.longitude),
           );
+        }
 
         positionStreamSubscription =
             Geolocator.getPositionStream(
@@ -175,14 +176,15 @@ class _LiveTrackingScreenState extends State<LiveTrackingScreen> {
                 distanceFilter: 5,
               ),
             ).listen((Position pos) {
-              if (mounted)
+              if (mounted) {
                 setState(
                   () => myPosition = LatLng(pos.latitude, pos.longitude),
                 );
+              }
             });
       }
     } catch (e) {
-      print("GPS Error: $e");
+      debugPrint("GPS Error: $e");
       applyFallback();
     }
   }
@@ -211,7 +213,7 @@ class _LiveTrackingScreenState extends State<LiveTrackingScreen> {
         }
       }
     } catch (e) {
-      print("OSRM Error: $e");
+      debugPrint("OSRM Error: $e");
     }
   }
 
@@ -262,12 +264,12 @@ class _LiveTrackingScreenState extends State<LiveTrackingScreen> {
         });
       }
     } catch (e) {
-      print(e);
+      debugPrint(e.toString());
     }
   }
 
   void initSocket() {
-    socket = IO.io(kBaseUrl, <String, dynamic>{
+    socket = io.io(kBaseUrl, <String, dynamic>{
       'transports': ['websocket'],
       'autoConnect': true,
     });
@@ -372,7 +374,7 @@ class _LiveTrackingScreenState extends State<LiveTrackingScreen> {
         ),
       );
     } catch (e) {
-      print(e);
+      debugPrint(e.toString());
     }
   }
 
@@ -382,7 +384,7 @@ class _LiveTrackingScreenState extends State<LiveTrackingScreen> {
         Uri.parse('$kBaseUrl/api/rides/kick/${widget.rideId}/$passengerName'),
       );
     } catch (e) {
-      print(e);
+      debugPrint(e.toString());
     }
   }
 
@@ -391,7 +393,7 @@ class _LiveTrackingScreenState extends State<LiveTrackingScreen> {
     try {
       await http.patch(Uri.parse('$kBaseUrl/api/rides/end/${widget.rideId}'));
     } catch (e) {
-      print(e);
+      debugPrint(e.toString());
     }
   }
 
@@ -419,7 +421,7 @@ class _LiveTrackingScreenState extends State<LiveTrackingScreen> {
     try {
       await http.patch(Uri.parse('$kBaseUrl/api/rides/start/${widget.rideId}'));
     } catch (e) {
-      print(e);
+      debugPrint(e.toString());
     }
   }
 
