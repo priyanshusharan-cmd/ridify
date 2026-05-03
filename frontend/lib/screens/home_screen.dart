@@ -142,16 +142,6 @@ class _HomeScreenState extends State<HomeScreen> {
               titleSpacing: 24,
               title: Row(
                 children: [
-                  ClipRRect(
-                    borderRadius: BorderRadius.circular(10),
-                    child: Image.asset(
-                      'assets/icon.png',
-                      height: 115,
-                      width: 65,
-                      fit: BoxFit.cover,
-                    ),
-                  ),
-                  const SizedBox(width: 10),
                   const Text(
                     "Ridify",
                     style: TextStyle(
@@ -159,6 +149,16 @@ class _HomeScreenState extends State<HomeScreen> {
                       fontSize: 28,
                       fontWeight: FontWeight.bold,
                       letterSpacing: -1,
+                    ),
+                  ),
+                  const SizedBox(width: 8),
+                  ClipRRect(
+                    borderRadius: BorderRadius.circular(10),
+                    child: Image.asset(
+                      'assets/icon.png',
+                      height: 115,
+                      width: 65,
+                      fit: BoxFit.cover,
                     ),
                   ),
                 ],
