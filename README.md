@@ -1,6 +1,5 @@
 <div align="center">
-  <img src="frontend/assets/icon.png" alt="Ridify Logo" width="120" />
-  
+  <img src="frontend/assets/icon.png" alt="Ridify Logo" width="180" />
   # 🚗 Ridify
 
   ### **Real-time ride-sharing, reimagined for students.**  
