@@ -1,18 +1,16 @@
 <div align="center">
+  <img src="frontend/assets/icon.png" alt="Ridify Logo" width="120" />
+  
+  # 🚗 Ridify
 
-<img src="frontend/assets/icon.png" alt="Ridify Logo" width="200" />
+  ### **Real-time ride-sharing, reimagined for students.**  
+  *Offer a seat, find a ride, track it live, and split the cost — all in one seamless experience.*
 
-# 🚗 Ridify
-
-### **Real-time ride-sharing, reimagined for students.**  
-*Offer a seat, find a ride, track it live, and split the cost — all in one seamless experience.*
-
-[![License: MIT](https://img.shields.io/badge/License-MIT-F1C40F?style=for-the-badge&logo=opensourceinitiative&logoColor=white)](LICENSE)
-[![Flutter](https://img.shields.io/badge/Flutter-3.x-02569B?style=for-the-badge&logo=flutter&logoColor=white)](https://flutter.dev)
-[![Node.js](https://img.shields.io/badge/Node.js-Express-339933?style=for-the-badge&logo=node.js&logoColor=white)](https://nodejs.org)
-[![MongoDB](https://img.shields.io/badge/MongoDB-Atlas-47A248?style=for-the-badge&logo=mongodb&logoColor=white)](https://mongodb.com)
-[![Socket.IO](https://img.shields.io/badge/Socket.IO-4.x-010101?style=for-the-badge&logo=socket.io&logoColor=white)](https://socket.io)
-
+  [![License: MIT](https://img.shields.io/badge/License-MIT-F1C40F?style=for-the-badge&logo=opensourceinitiative&logoColor=white)](LICENSE)
+  [![Flutter](https://img.shields.io/badge/Flutter-3.x-02569B?style=for-the-badge&logo=flutter&logoColor=white)](https://flutter.dev)
+  [![Node.js](https://img.shields.io/badge/Node.js-Express-339933?style=for-the-badge&logo=node.js&logoColor=white)](https://nodejs.org)
+  [![MongoDB](https://img.shields.io/badge/MongoDB-Atlas-47A248?style=for-the-badge&logo=mongodb&logoColor=white)](https://mongodb.com)
+  [![Socket.IO](https://img.shields.io/badge/Socket.IO-4.x-010101?style=for-the-badge&logo=socket.io&logoColor=white)](https://socket.io)
 </div>
 
 ---
