@@ -12,6 +12,52 @@ import 'ride_history_screen.dart';
 import '../utils.dart';
 import '../constants.dart';
 
+// ─────────────────────────────────────────────────────────────────────────────
+//  Animation constants
+//
+//  Timeline (controller 0.0 → 1.0, total = 5 s):
+//
+//    0.000 → 0.600  Phase 1  – car enters from far-left (-200 px, fully hidden),
+//                              sweeps across screen, "paints" Ridify text as its
+//                              BACK BUMPER passes each letter, then exits fully
+//                              off the right edge.
+//                              Curve: easeIn  → stationary start, fastest exit.
+//
+//    0.600 → 0.605  Teleport – car snaps instantly back to x = -200 (invisible).
+//
+//    0.605 → 1.000  Phase 2  – car drives in from far-left again, decelerates
+//                              and comes to a dead stop exactly to the right of
+//                              "Ridify".  No second adjustment.
+//                              Curve: easeOut → fast entry, smooth dead-stop.
+//
+//  Key design decisions that eliminate each reported glitch:
+//
+//  ① Dead start        – _kCarOffLeft = -200 guarantees the car is invisible on
+//                        the very first frame (progress == 0 → carX == -200).
+//
+//  ② Ghost text sync   – revealFactor is keyed to the car's BACK BUMPER (carX),
+//                        not the front.  Text only appears where the car has
+//                        already passed.  _ridifyTextWidth is measured at runtime
+//                        with TextPainter (same style as the Text widget) so the
+//                        factor is always exact – no hardcoded guesses.
+//
+//  ③ Constant exit     – Phase 1 uses Curves.easeIn, which is slowest at the
+//                        start and FASTEST at the end.  The car never brakes
+//                        while leaving the screen.
+//
+//  ④ Perfect stop      – Phase 2 uses Curves.easeOut (fast entry → smooth stop).
+//                        _parkingX is derived from the same TextPainter width, so
+//                        the frozen-Stack final state is pixel-identical to a
+//                        static Row.  We NEVER switch rendering modes (no static
+//                        Row fallback), so there is no layout-jump at completion.
+// ─────────────────────────────────────────────────────────────────────────────
+const double _kCarW = 75.0; // car width  – never changes
+const double _kCarH = 120.0; // car height – never changes
+const double _kCarOffLeft = -200.0; // guaranteed off-screen starting X
+const double _kCarGap = 8.0; // px gap between text right-edge and car
+const double _kPhase1End = 0.600; // fraction where Phase 1 ends
+const double _kTeleportEnd =
+    0.605; // fraction where teleport ends / Phase 2 starts
 
 class HomeScreen extends StatefulWidget {
   final String userName;
@@ -29,15 +75,58 @@ class HomeScreen extends StatefulWidget {
   State<HomeScreen> createState() => _HomeScreenState();
 }
 
-class _HomeScreenState extends State<HomeScreen> {
+class _HomeScreenState extends State<HomeScreen>
+    with SingleTickerProviderStateMixin {
   int _currentIndex = 0;
   late io.Socket socket;
   List<dynamic> allRides = [];
   Timer? _pollingTimer;
 
+  // ── Startup animation ──────────────────────────────────────────────────────
+  late AnimationController _startupController;
+  static bool _hasPlayedStartupAnimation = false;
+
+  /// Exact pixel width of the "Ridify" label, measured once at startup via
+  /// TextPainter using the identical TextStyle as the real Text widget.
+  late final double _ridifyTextWidth;
+
+  /// X-coordinate of the car's LEFT edge when it is parked (Phase 2 final pos).
+  late final double _parkingX;
+
+  // ── initState ──────────────────────────────────────────────────────────────
   @override
   void initState() {
     super.initState();
+
+    // Measure "Ridify" exactly once so parkingX is always pixel-perfect.
+    final tp = TextPainter(
+      text: const TextSpan(
+        text: 'Ridify',
+        style: TextStyle(
+          color: Colors.white,
+          fontSize: 28,
+          fontWeight: FontWeight.bold,
+          letterSpacing: -1,
+        ),
+      ),
+      textDirection: TextDirection.ltr,
+    )..layout();
+    _ridifyTextWidth = tp.width;
+    _parkingX = _ridifyTextWidth + _kCarGap;
+
+    // Animation controller – runs linearly; all easing is applied per-phase.
+    _startupController = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 5000),
+    );
+
+    if (!_hasPlayedStartupAnimation) {
+      _startupController.forward();
+      _hasPlayedStartupAnimation = true;
+    } else {
+      _startupController.value = 1.0;
+    }
+
     fetchRides();
     initSocket();
     _pollingTimer = Timer.periodic(
@@ -46,11 +135,44 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
+  // ── Animation helpers ──────────────────────────────────────────────────────
+
+  /// Returns the car's left-edge X in the AppBar title Stack coordinate space.
+  double _carX(double progress, double screenWidth) {
+    if (progress < _kPhase1End) {
+      // Phase 1: easeIn → starts stationary, accelerates, exits at full speed.
+      final double t = progress / _kPhase1End; // normalised 0→1
+      final double eased = Curves.easeIn.transform(t);
+      // Travel: _kCarOffLeft (-200) → (screenWidth + _kCarW)  [fully off-right]
+      return _kCarOffLeft + (screenWidth - _kCarOffLeft + _kCarW) * eased;
+    } else if (progress < _kTeleportEnd) {
+      // Teleport: snap instantly; car is invisible off the left edge.
+      return _kCarOffLeft;
+    } else {
+      // Phase 2: easeOut → fast entry, smooth deceleration, dead stop.
+      final double t = (progress - _kTeleportEnd) / (1.0 - _kTeleportEnd);
+      final double eased = Curves.easeOut.transform(t);
+      // Travel: _kCarOffLeft (-200) → _parkingX (measured parking spot)
+      return _kCarOffLeft + (_parkingX - _kCarOffLeft) * eased;
+    }
+  }
+
+  /// Fraction of the "Ridify" text that should be visible (0.0 – 1.0).
+  ///
+  /// Text is revealed ONLY behind the car's back bumper (left edge = carX):
+  ///   carX ≤ 0           → 0.0  (nothing visible – dead start, car still left)
+  ///   0 < carX < textW   → carX / textW  (partial reveal tracks back bumper)
+  ///   carX ≥ textW       → 1.0  (fully revealed)
+  /// After Phase 1 the text is locked at 1.0 forever.
+  double _revealFactor(double progress, double carX) {
+    if (progress >= _kPhase1End) return 1.0;
+    return (carX / _ridifyTextWidth).clamp(0.0, 1.0);
+  }
+
+  // ── Data fetching ──────────────────────────────────────────────────────────
   Future<void> fetchRides() async {
     try {
-      final response = await http.get(
-        Uri.parse("$kBaseUrl/api/rides"),
-      );
+      final response = await http.get(Uri.parse("$kBaseUrl/api/rides"));
       if (response.statusCode == 200 && mounted) {
         setState(() => allRides = jsonDecode(response.body));
       }
@@ -71,14 +193,18 @@ class _HomeScreenState extends State<HomeScreen> {
     socket.on('ride_ended', (data) {
       fetchRides();
       if (mounted && data != null) {
-        List passengers = data['passengers'] is List ? data['passengers'] : [];
-        List boarded = data['boardedPassengers'] is List ? data['boardedPassengers'] : [];
-        
-        bool wasMyRide =
+        final List passengers = data['passengers'] is List
+            ? data['passengers']
+            : [];
+        final List boarded = data['boardedPassengers'] is List
+            ? data['boardedPassengers']
+            : [];
+
+        final bool wasMyRide =
             data['riderName'] == widget.userName ||
             passengers.contains(widget.userName) ||
             boarded.contains(widget.userName);
-            
+
         if (wasMyRide) {
           WidgetsBinding.instance.addPostFrameCallback((_) {
             if (!mounted) return;
@@ -102,13 +228,15 @@ class _HomeScreenState extends State<HomeScreen> {
   void dispose() {
     _pollingTimer?.cancel();
     socket.dispose();
+    _startupController.dispose();
     super.dispose();
   }
 
+  // ── Build ──────────────────────────────────────────────────────────────────
   @override
   Widget build(BuildContext context) {
     int requestsForMeCount = 0;
-    for (var r in allRides.where(
+    for (final r in allRides.where(
       (r) =>
           r['riderName'] == widget.userName &&
           r['status'] != 'cancelled' &&
@@ -136,85 +264,127 @@ class _HomeScreenState extends State<HomeScreen> {
     return Scaffold(
       backgroundColor: const Color(0xFFF5F5F5),
       appBar: AppBar(
-              backgroundColor: Colors.black,
-              elevation: 0,
-              centerTitle: false,
-              titleSpacing: 24,
-              title: Row(
-                children: [
-                  const Text(
-                    "Ridify",
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontSize: 28,
-                      fontWeight: FontWeight.bold,
-                      letterSpacing: -1,
-                    ),
-                  ),
-                  const SizedBox(width: 8),
-                  ClipRRect(
-                    borderRadius: BorderRadius.circular(10),
-                    child: Image.asset(
-                      'assets/icon.png',
-                      height: 115,
-                      width: 65,
-                      fit: BoxFit.cover,
-                    ),
-                  ),
-                ],
-              ),
-              actions: [
-                if (kAdminEmails.contains(widget.userEmail.toLowerCase()))
-                  IconButton(
-                    icon: const Icon(Icons.delete_sweep, color: Colors.redAccent),
-                    tooltip: 'Admin: Wipe All Rides',
-                    onPressed: () async {
-                      final confirmed = await showDialog<bool>(
-                        context: context,
-                        builder: (ctx) => AlertDialog(
-                          title: const Text(
-                            '⚠️ Wipe All Rides',
-                            style: TextStyle(fontWeight: FontWeight.bold),
-                          ),
-                          content: const Text(
-                            'This wipes the database of all rides and broadcasts a reset to all connected users. Are you sure?',
-                          ),
-                          actions: [
-                            TextButton(
-                              onPressed: () => Navigator.pop(ctx, false),
-                              child: const Text('Cancel',
-                                  style: TextStyle(color: Colors.black)),
-                            ),
-                            ElevatedButton(
-                              style: ElevatedButton.styleFrom(
-                                  backgroundColor: Colors.red),
-                              onPressed: () => Navigator.pop(ctx, true),
-                              child: const Text('Yes, Wipe',
-                                  style: TextStyle(color: Colors.white)),
-                            ),
-                          ],
-                        ),
-                      );
-                      if (confirmed == true && mounted) {
-                        await http.delete(
-                          Uri.parse("$kBaseUrl/api/rides"),
-                          headers: {'x-admin-email': widget.userEmail},
-                        );
-                        if (context.mounted) {
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            const SnackBar(
-                              content: Text("All rides wiped!"),
-                              backgroundColor: Colors.red,
-                            ),
-                          );
-                        }
-                      }
-                    },
-                  ),
-              ],
-            ),
-      body: pages[_currentIndex],
+        backgroundColor: Colors.black,
+        elevation: 0,
+        centerTitle: false,
+        titleSpacing: 24,
+        title: LayoutBuilder(
+          builder: (context, constraints) {
+            return AnimatedBuilder(
+              animation: _startupController,
+              builder: (context, _) {
+                final double progress = _startupController.value;
+                final double screenWidth = constraints.maxWidth;
+                final double carX = _carX(progress, screenWidth);
+                final double revealF = _revealFactor(progress, carX);
 
+                // ── Title Stack ────────────────────────────────────────────
+                //
+                // This Stack is ALWAYS used – even after the animation ends.
+                // When progress == 1.0 it is simply frozen:
+                //   revealF == 1.0      → text fully visible
+                //   carX    == _parkingX → car at rest beside text
+                //
+                // Because _parkingX is derived from the same TextPainter style
+                // as the Text widget, the frozen Stack is pixel-identical to
+                // what a Row would produce – with zero visual jump.
+                //
+                return Stack(
+                  clipBehavior: Clip.none, // car can overhang during Phase 1
+                  alignment: Alignment.centerLeft,
+                  children: [
+                    // ── "Ridify" label – left-to-right reveal ──────────────
+                    ClipRect(
+                      child: Align(
+                        alignment: Alignment.centerLeft,
+                        widthFactor: revealF,
+                        child: const Text(
+                          'Ridify',
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontSize: 28,
+                            fontWeight: FontWeight.bold,
+                            letterSpacing: -1,
+                          ),
+                        ),
+                      ),
+                    ),
+
+                    // ── Car logo ───────────────────────────────────────────
+                    Transform.translate(
+                      offset: Offset(carX, 0),
+                      child: ClipRRect(
+                        borderRadius: BorderRadius.circular(10),
+                        child: Image.asset(
+                          'assets/icon.png',
+                          width: _kCarW, // fixed – never changes
+                          height: _kCarH, // fixed – never changes
+                          fit: BoxFit.cover,
+                        ),
+                      ),
+                    ),
+                  ],
+                );
+              },
+            );
+          },
+        ),
+        actions: [
+          if (kAdminEmails.contains(widget.userEmail.toLowerCase()))
+            IconButton(
+              icon: const Icon(Icons.delete_sweep, color: Colors.redAccent),
+              tooltip: 'Admin: Wipe All Rides',
+              onPressed: () async {
+                final confirmed = await showDialog<bool>(
+                  context: context,
+                  builder: (ctx) => AlertDialog(
+                    title: const Text(
+                      '⚠️ Wipe All Rides',
+                      style: TextStyle(fontWeight: FontWeight.bold),
+                    ),
+                    content: const Text(
+                      'This wipes the database of all rides and broadcasts a reset to all connected users. Are you sure?',
+                    ),
+                    actions: [
+                      TextButton(
+                        onPressed: () => Navigator.pop(ctx, false),
+                        child: const Text(
+                          'Cancel',
+                          style: TextStyle(color: Colors.black),
+                        ),
+                      ),
+                      ElevatedButton(
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: Colors.red,
+                        ),
+                        onPressed: () => Navigator.pop(ctx, true),
+                        child: const Text(
+                          'Yes, Wipe',
+                          style: TextStyle(color: Colors.white),
+                        ),
+                      ),
+                    ],
+                  ),
+                );
+                if (confirmed == true && mounted) {
+                  await http.delete(
+                    Uri.parse("$kBaseUrl/api/rides"),
+                    headers: {'x-admin-email': widget.userEmail},
+                  );
+                  if (context.mounted) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(
+                        content: Text("All rides wiped!"),
+                        backgroundColor: Colors.red,
+                      ),
+                    );
+                  }
+                }
+              },
+            ),
+        ],
+      ),
+      body: pages[_currentIndex],
       bottomNavigationBar: BottomNavigationBar(
         backgroundColor: Colors.black,
         currentIndex: _currentIndex,
@@ -245,27 +415,28 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
+  // ── Home tab ───────────────────────────────────────────────────────────────
   Widget _buildHomeTab() {
     double totalEarnings = 0;
     double totalSpending = 0;
-    
-    for (var ride in allRides) {
+
+    for (final ride in allRides) {
       if (ride['status'] == 'completed') {
-        double fare = double.tryParse(ride['fare'].toString()) ?? 0.0;
-        List boarded = ride['boardedPassengers'] as List? ?? [];
-        
+        final double fare = double.tryParse(ride['fare'].toString()) ?? 0.0;
+        final List boarded = ride['boardedPassengers'] as List? ?? [];
+
         if (ride['riderName'] == widget.userName) {
           int totalAllocatedSeats = 0;
-          for (var p in boarded) {
-            Map? allocations = ride['seatAllocations'] as Map?;
-            int allocated = (allocations?[p] as num?)?.toInt() ?? 1;
-            totalAllocatedSeats += allocated;
+          for (final p in boarded) {
+            final Map? allocations = ride['seatAllocations'] as Map?;
+            totalAllocatedSeats += (allocations?[p] as num?)?.toInt() ?? 1;
           }
-          totalEarnings += (fare * totalAllocatedSeats);
+          totalEarnings += fare * totalAllocatedSeats;
         } else if (boarded.contains(widget.userName)) {
-          Map? allocations = ride['seatAllocations'] as Map?;
-          int mySeats = (allocations?[widget.userName] as num?)?.toInt() ?? 1;
-          totalSpending += (fare * mySeats);
+          final Map? allocations = ride['seatAllocations'] as Map?;
+          final int mySeats =
+              (allocations?[widget.userName] as num?)?.toInt() ?? 1;
+          totalSpending += fare * mySeats;
         }
       }
     }
@@ -324,7 +495,11 @@ class _HomeScreenState extends State<HomeScreen> {
                             color: Colors.green.shade100,
                             shape: BoxShape.circle,
                           ),
-                          child: const Icon(Icons.arrow_downward, color: Colors.green, size: 24),
+                          child: const Icon(
+                            Icons.arrow_downward,
+                            color: Colors.green,
+                            size: 24,
+                          ),
                         ),
                         const SizedBox(height: 12),
                         const Text(
@@ -366,7 +541,11 @@ class _HomeScreenState extends State<HomeScreen> {
                             color: Colors.red.shade100,
                             shape: BoxShape.circle,
                           ),
-                          child: const Icon(Icons.arrow_upward, color: Colors.red, size: 24),
+                          child: const Icon(
+                            Icons.arrow_upward,
+                            color: Colors.red,
+                            size: 24,
+                          ),
                         ),
                         const SizedBox(height: 12),
                         const Text(
@@ -488,6 +667,9 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 }
 
+// ─────────────────────────────────────────────────────────────────────────────
+//  Active Rides Tab
+// ─────────────────────────────────────────────────────────────────────────────
 class _ActiveRidesTab extends StatelessWidget {
   final List<dynamic> rides;
   final String myName;
@@ -504,9 +686,7 @@ class _ActiveRidesTab extends StatelessWidget {
   Future<void> _action(String url, BuildContext context) async {
     try {
       final res = await http.patch(Uri.parse(url));
-      if (res.statusCode == 200) {
-        onRefresh();
-      }
+      if (res.statusCode == 200) onRefresh();
     } catch (e) {
       debugPrint("$e");
     }
@@ -514,9 +694,7 @@ class _ActiveRidesTab extends StatelessWidget {
 
   Future<void> _cancelOfferedRide(String id, BuildContext context) async {
     try {
-      final res = await http.delete(
-        Uri.parse("$kBaseUrl/api/rides/$id"),
-      );
+      final res = await http.delete(Uri.parse("$kBaseUrl/api/rides/$id"));
       if (res.statusCode == 200) {
         if (!context.mounted) return;
         ScaffoldMessenger.of(context).showSnackBar(
@@ -534,35 +712,37 @@ class _ActiveRidesTab extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    List activeRidesOnly = rides
+    final List activeRidesOnly = rides
         .where((r) => r['status'] != 'cancelled' && r['status'] != 'completed')
         .toList();
-    List myOfferedRides = activeRidesOnly
+
+    final List myOfferedRides = activeRidesOnly
         .where((r) => r['riderName'] == myName && r['status'] == 'available')
         .toList();
 
-    List<Map<String, dynamic>> driverRequests = [];
-    for (var r in activeRidesOnly.where((r) => r['riderName'] == myName)) {
-      for (var requester in (r['requests'] ?? [])) {
+    final List<Map<String, dynamic>> driverRequests = [];
+    for (final r in activeRidesOnly.where((r) => r['riderName'] == myName)) {
+      for (final requester in (r['requests'] ?? [])) {
         driverRequests.add({"ride": r, "requester": requester});
       }
     }
 
-    List myPendingRequests = activeRidesOnly
+    final List myPendingRequests = activeRidesOnly
         .where((r) => (r['requests'] ?? []).contains(myName))
         .toList();
 
-    List liveRides = activeRidesOnly.where((r) {
-      bool isDriver = r['riderName'] == myName;
-      bool isPassenger = (r['passengers'] ?? []).contains(myName);
-      bool isActive =
+    final List liveRides = activeRidesOnly.where((r) {
+      final bool isDriver = r['riderName'] == myName;
+      final bool isPassenger = (r['passengers'] ?? []).contains(myName);
+      final bool isActive =
           r['status'] == 'accepted' ||
           r['status'] == 'full' ||
           r['status'] == 'started';
       return (isDriver || isPassenger) && isActive;
     }).toList();
 
-    bool isEmpty = myOfferedRides.isEmpty &&
+    final bool isEmpty =
+        myOfferedRides.isEmpty &&
         driverRequests.isEmpty &&
         myPendingRequests.isEmpty &&
         liveRides.isEmpty;
@@ -619,6 +799,7 @@ class _ActiveRidesTab extends StatelessWidget {
             ),
             const SizedBox(height: 20),
 
+            // ── Your posted rides ──────────────────────────────────────────
             if (myOfferedRides.isNotEmpty) ...[
               const Text(
                 "Your Posted Rides",
@@ -629,52 +810,50 @@ class _ActiveRidesTab extends StatelessWidget {
                 ),
               ),
               const SizedBox(height: 10),
-              ...myOfferedRides
-                  .map(
-                    (r) => Card(
-                      elevation: 0,
-                      color: Colors.white,
-                      margin: const EdgeInsets.only(bottom: 15),
-                      shape: RoundedRectangleBorder(
-                        side: const BorderSide(color: Colors.black12),
-                        borderRadius: BorderRadius.circular(15),
+              ...myOfferedRides.map(
+                (r) => Card(
+                  elevation: 0,
+                  color: Colors.white,
+                  margin: const EdgeInsets.only(bottom: 15),
+                  shape: RoundedRectangleBorder(
+                    side: const BorderSide(color: Colors.black12),
+                    borderRadius: BorderRadius.circular(15),
+                  ),
+                  child: ListTile(
+                    leading: const Icon(
+                      Icons.directions_car,
+                      color: Colors.black,
+                    ),
+                    title: Text(
+                      "${formatAddress(r['pickupLocation'])} → ${formatAddress(r['destination'])}",
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: const TextStyle(
+                        fontWeight: FontWeight.bold,
+                        fontSize: 14,
                       ),
-                      child: ListTile(
-                        leading: const Icon(
-                          Icons.directions_car,
-                          color: Colors.black,
-                        ),
-                        title: Text(
-                          "${formatAddress(r['pickupLocation'])} → ${formatAddress(r['destination'])}",
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
-                          style: const TextStyle(
-                            fontWeight: FontWeight.bold,
-                            fontSize: 14,
-                          ),
-                        ),
-                        subtitle: Text(
-                          "${r['availableSeats']} Seats • ${r['departureTime']}",
-                          style: const TextStyle(color: Colors.black54),
-                        ),
-                        trailing: TextButton(
-                          onPressed: () =>
-                              _cancelOfferedRide(r['_id'], context),
-                          child: const Text(
-                            "Cancel Offer",
-                            style: TextStyle(
-                              color: Colors.red,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
+                    ),
+                    subtitle: Text(
+                      "${r['availableSeats']} Seats • ${r['departureTime']}",
+                      style: const TextStyle(color: Colors.black54),
+                    ),
+                    trailing: TextButton(
+                      onPressed: () => _cancelOfferedRide(r['_id'], context),
+                      child: const Text(
+                        "Cancel Offer",
+                        style: TextStyle(
+                          color: Colors.red,
+                          fontWeight: FontWeight.bold,
                         ),
                       ),
                     ),
-                  )
-                  ,
+                  ),
+                ),
+              ),
               const Divider(height: 30),
             ],
 
+            // ── Driver – incoming match requests ───────────────────────────
             if (driverRequests.isNotEmpty) ...[
               const Text(
                 "Match Requests (Needs Action)",
@@ -795,6 +974,7 @@ class _ActiveRidesTab extends StatelessWidget {
               const Divider(height: 30),
             ],
 
+            // ── Passenger – pending requests ───────────────────────────────
             if (myPendingRequests.isNotEmpty) ...[
               const Text(
                 "Pending Requests (Rider)",
@@ -805,58 +985,57 @@ class _ActiveRidesTab extends StatelessWidget {
                 ),
               ),
               const SizedBox(height: 10),
-              ...myPendingRequests
-                  .map(
-                    (r) => GestureDetector(
-                      onTap: () => Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (_) => MatchStatusScreen(
-                            driverName: r['riderName'],
-                            rideId: r['_id'],
-                            riderName: myName,
-                          ),
-                        ),
+              ...myPendingRequests.map(
+                (r) => GestureDetector(
+                  onTap: () => Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (_) => MatchStatusScreen(
+                        driverName: r['riderName'],
+                        rideId: r['_id'],
+                        riderName: myName,
                       ),
-                      child: Card(
-                        elevation: 0,
-                        color: Colors.white,
-                        margin: const EdgeInsets.only(bottom: 15),
-                        shape: RoundedRectangleBorder(
-                          side: const BorderSide(color: Colors.black12),
-                          borderRadius: BorderRadius.circular(15),
+                    ),
+                  ),
+                  child: Card(
+                    elevation: 0,
+                    color: Colors.white,
+                    margin: const EdgeInsets.only(bottom: 15),
+                    shape: RoundedRectangleBorder(
+                      side: const BorderSide(color: Colors.black12),
+                      borderRadius: BorderRadius.circular(15),
+                    ),
+                    child: ListTile(
+                      leading: const CircularProgressIndicator(
+                        strokeWidth: 2,
+                        color: Colors.black,
+                      ),
+                      title: Text(
+                        "Waiting for ${r['riderName']}",
+                        style: const TextStyle(fontWeight: FontWeight.bold),
+                      ),
+                      subtitle: const Text("Tap to view status"),
+                      trailing: TextButton(
+                        onPressed: () => _action(
+                          "$kBaseUrl/api/rides/decline/${r['_id']}/$myName",
+                          context,
                         ),
-                        child: ListTile(
-                          leading: const CircularProgressIndicator(
-                            strokeWidth: 2,
-                            color: Colors.black,
-                          ),
-                          title: Text(
-                            "Waiting for ${r['riderName']}",
-                            style: const TextStyle(fontWeight: FontWeight.bold),
-                          ),
-                          subtitle: const Text("Tap to view status"),
-                          trailing: TextButton(
-                            onPressed: () => _action(
-                              "$kBaseUrl/api/rides/decline/${r['_id']}/$myName",
-                              context,
-                            ),
-                            child: const Text(
-                              "Cancel",
-                              style: TextStyle(
-                                color: Colors.red,
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ),
+                        child: const Text(
+                          "Cancel",
+                          style: TextStyle(
+                            color: Colors.red,
+                            fontWeight: FontWeight.bold,
                           ),
                         ),
                       ),
                     ),
-                  )
-                  ,
+                  ),
+                ),
+              ),
               const Divider(height: 30),
             ],
 
+            // ── Live / ongoing rides ───────────────────────────────────────
             if (liveRides.isNotEmpty) ...[
               const Text(
                 "Ongoing Rides",
@@ -867,75 +1046,72 @@ class _ActiveRidesTab extends StatelessWidget {
                 ),
               ),
               const SizedBox(height: 10),
-              ...liveRides
-                  .map(
-                    (r) => Card(
-                      elevation: 4,
-                      shadowColor: Colors.black26,
-                      color: Colors.black,
-                      margin: const EdgeInsets.only(bottom: 15),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(20),
+              ...liveRides.map(
+                (r) => Card(
+                  elevation: 4,
+                  shadowColor: Colors.black26,
+                  color: Colors.black,
+                  margin: const EdgeInsets.only(bottom: 15),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(20),
+                  ),
+                  child: ListTile(
+                    contentPadding: const EdgeInsets.all(16),
+                    leading: const Icon(
+                      Icons.map,
+                      color: Colors.white,
+                      size: 30,
+                    ),
+                    title: Text(
+                      r['status'] == 'started' ? "In Progress" : "Arriving",
+                      style: const TextStyle(
+                        color: Colors.white,
+                        fontWeight: FontWeight.bold,
                       ),
-                      child: ListTile(
-                        contentPadding: const EdgeInsets.all(16),
-                        leading: const Icon(
-                          Icons.map,
-                          color: Colors.white,
-                          size: 30,
+                    ),
+                    subtitle: Text(
+                      r['riderName'] == myName
+                          ? "You are Driving"
+                          : "Riding with ${r['riderName']}",
+                      style: const TextStyle(color: Colors.white70),
+                    ),
+                    trailing: ElevatedButton(
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.white,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(10),
                         ),
-                        title: Text(
-                          r['status'] == 'started' ? "In Progress" : "Arriving",
-                          style: const TextStyle(
-                            color: Colors.white,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                        subtitle: Text(
-                          r['riderName'] == myName
-                              ? "You are Driving"
-                              : "Riding with ${r['riderName']}",
-                          style: const TextStyle(color: Colors.white70),
-                        ),
-                        trailing: ElevatedButton(
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: Colors.white,
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(10),
+                      ),
+                      onPressed: () =>
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (_) => LiveTrackingScreen(
+                                isDriver: r['riderName'] == myName,
+                                isAlreadyAccepted: true,
+                                rideId: r['_id'],
+                                myName: myName,
+                                otherUserName: r['riderName'] == myName
+                                    ? "Group"
+                                    : r['riderName'],
+                              ),
                             ),
-                          ),
-                          onPressed: () =>
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (_) => LiveTrackingScreen(
-                                    isDriver: r['riderName'] == myName,
-                                    isAlreadyAccepted: true,
-                                    rideId: r['_id'],
-                                    myName: myName,
-                                    otherUserName: r['riderName'] == myName
-                                        ? "Group"
-                                        : r['riderName'],
-                                  ),
-                                ),
-                              ).then((_) {
-                                onRefresh();
-                                onGoHome();
-                              }),
-                          child: const Text(
-                            "Open Map",
-                            style: TextStyle(
-                              color: Colors.black,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
+                          ).then((_) {
+                            onRefresh();
+                            onGoHome();
+                          }),
+                      child: const Text(
+                        "Open Map",
+                        style: TextStyle(
+                          color: Colors.black,
+                          fontWeight: FontWeight.bold,
                         ),
                       ),
                     ),
-                  )
-                  ,
+                  ),
+                ),
+              ),
             ],
-
           ],
         ),
       ),
@@ -943,11 +1119,14 @@ class _ActiveRidesTab extends StatelessWidget {
   }
 }
 
+// ─────────────────────────────────────────────────────────────────────────────
+//  Global Completion Screen
+// ─────────────────────────────────────────────────────────────────────────────
 class GlobalCompletionScreen extends StatefulWidget {
   const GlobalCompletionScreen({super.key});
+
   @override
-  State<GlobalCompletionScreen> createState() =>
-      _GlobalCompletionScreenState();
+  State<GlobalCompletionScreen> createState() => _GlobalCompletionScreenState();
 }
 
 class _GlobalCompletionScreenState extends State<GlobalCompletionScreen> {
