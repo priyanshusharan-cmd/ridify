@@ -316,7 +316,7 @@ class _HomeScreenState extends State<HomeScreen>
                       child: ClipRRect(
                         borderRadius: BorderRadius.circular(10),
                         child: Image.asset(
-                          'assets/icon.png',
+                          'assets/iconWithoutBackground.png',
                           width: _kCarW, // fixed – never changes
                           height: _kCarH, // fixed – never changes
                           fit: BoxFit.cover,
