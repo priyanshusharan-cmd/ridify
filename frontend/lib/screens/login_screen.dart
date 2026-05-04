@@ -21,7 +21,23 @@ class _LoginScreenState extends State<LoginScreen> {
   final TextEditingController emailController = TextEditingController();
   final TextEditingController passwordController = TextEditingController();
 
+  // ── FOCUS NODES (one per field) ───────────────────────────────────────────
+  final FocusNode _nameFocus = FocusNode();
+  final FocusNode _ageFocus = FocusNode();
+  final FocusNode _emailFocus = FocusNode();
+  final FocusNode _passwordFocus = FocusNode();
+
   final String serverUrl = "$kBaseUrl/api/auth";
+
+  @override
+  void initState() {
+    super.initState();
+    // Rebuild whenever any field gains or loses focus so the border updates
+    _nameFocus.addListener(() => setState(() {}));
+    _ageFocus.addListener(() => setState(() {}));
+    _emailFocus.addListener(() => setState(() {}));
+    _passwordFocus.addListener(() => setState(() {}));
+  }
 
   @override
   void dispose() {
@@ -29,6 +45,10 @@ class _LoginScreenState extends State<LoginScreen> {
     ageController.dispose();
     emailController.dispose();
     passwordController.dispose();
+    _nameFocus.dispose();
+    _ageFocus.dispose();
+    _emailFocus.dispose();
+    _passwordFocus.dispose();
     super.dispose();
   }
 
@@ -119,8 +139,19 @@ class _LoginScreenState extends State<LoginScreen> {
 
   void _showSnack(String msg, Color color) {
     if (!mounted) return;
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text(msg), backgroundColor: color),
+    ScaffoldMessenger.of(
+      context,
+    ).showSnackBar(SnackBar(content: Text(msg), backgroundColor: color));
+  }
+
+  // ── BORDER HELPER ─────────────────────────────────────────────────────────
+  // Returns a thick black border when the field is focused, none otherwise.
+  OutlineInputBorder _border(bool focused) {
+    return OutlineInputBorder(
+      borderRadius: BorderRadius.circular(18),
+      borderSide: focused
+          ? const BorderSide(color: Colors.black, width: 2.5)
+          : BorderSide.none,
     );
   }
 
@@ -163,6 +194,7 @@ class _LoginScreenState extends State<LoginScreen> {
                     hint: "Full Name",
                     icon: Icons.person_outline,
                     controller: nameController,
+                    focusNode: _nameFocus,
                   ),
                   const SizedBox(height: 16),
                   _inputField(
@@ -170,6 +202,7 @@ class _LoginScreenState extends State<LoginScreen> {
                     icon: Icons.cake_outlined,
                     isNumber: true,
                     controller: ageController,
+                    focusNode: _ageFocus,
                   ),
                   const SizedBox(height: 16),
                 ],
@@ -179,6 +212,7 @@ class _LoginScreenState extends State<LoginScreen> {
                   hint: "Email",
                   icon: Icons.email_outlined,
                   controller: emailController,
+                  focusNode: _emailFocus,
                 ),
                 const SizedBox(height: 16),
 
@@ -246,8 +280,10 @@ class _LoginScreenState extends State<LoginScreen> {
 
   // ── PASSWORD FIELD with eye toggle ────────────────────────────────────────
   Widget _passwordField() {
+    final focused = _passwordFocus.hasFocus;
     return TextField(
       controller: passwordController,
+      focusNode: _passwordFocus,
       obscureText: _obscurePassword,
       keyboardType: TextInputType.visiblePassword,
       decoration: InputDecoration(
@@ -262,10 +298,9 @@ class _LoginScreenState extends State<LoginScreen> {
         ),
         filled: true,
         fillColor: Colors.white,
-        border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(18),
-          borderSide: BorderSide.none,
-        ),
+        border: _border(false),
+        enabledBorder: _border(false),
+        focusedBorder: _border(true),
       ),
     );
   }
@@ -276,19 +311,21 @@ class _LoginScreenState extends State<LoginScreen> {
     required IconData icon,
     bool isNumber = false,
     TextEditingController? controller,
+    required FocusNode focusNode,
   }) {
+    final focused = focusNode.hasFocus;
     return TextField(
       controller: controller,
+      focusNode: focusNode,
       keyboardType: isNumber ? TextInputType.number : TextInputType.text,
       decoration: InputDecoration(
         hintText: hint,
         prefixIcon: Icon(icon, color: Colors.grey),
         filled: true,
         fillColor: Colors.white,
-        border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(18),
-          borderSide: BorderSide.none,
-        ),
+        border: _border(false),
+        enabledBorder: _border(false),
+        focusedBorder: _border(true),
       ),
     );
   }

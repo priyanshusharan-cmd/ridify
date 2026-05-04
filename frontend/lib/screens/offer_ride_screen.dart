@@ -81,10 +81,13 @@ class _OfferRideScreenState extends State<OfferRideScreen> {
     if (pickupController.text.isEmpty ||
         destinationController.text.isEmpty ||
         priceController.text.isEmpty ||
-        pickupLat == null || destLat == null) {
+        pickupLat == null ||
+        destLat == null) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
-          content: Text("Please select valid locations from the dropdown and fill all fields!"),
+          content: Text(
+            "Please select valid locations from the dropdown and fill all fields!",
+          ),
           backgroundColor: Colors.red,
         ),
       );
@@ -95,9 +98,10 @@ class _OfferRideScreenState extends State<OfferRideScreen> {
 
     DateTime dateToUse = _selectedDate ?? DateTime.now();
     TimeOfDay timeToUse = _selectedTime ?? TimeOfDay.now();
-    
-    String timeString = "${dateToUse.day}/${dateToUse.month}/${dateToUse.year} at ${timeToUse.format(context)}";
-    
+
+    String timeString =
+        "${dateToUse.day}/${dateToUse.month}/${dateToUse.year} at ${timeToUse.format(context)}";
+
     final dt = DateTime(
       dateToUse.year,
       dateToUse.month,
@@ -105,7 +109,7 @@ class _OfferRideScreenState extends State<OfferRideScreen> {
       timeToUse.hour,
       timeToUse.minute,
     );
-    
+
     // Expires 15 minutes AFTER the scheduled departure time
     int expiresAtEpoch = dt.millisecondsSinceEpoch + (15 * 60 * 1000);
 

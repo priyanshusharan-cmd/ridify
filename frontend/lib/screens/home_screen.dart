@@ -53,11 +53,11 @@ import '../constants.dart';
 // ─────────────────────────────────────────────────────────────────────────────
 const double _kCarW = 75.0; // car width  – never changes
 const double _kCarH = 120.0; // car height – never changes
-const double _kCarOffLeft = -200.0; // guaranteed off-screen starting X
+const double _kCarOffLeft = -125.0; // guaranteed off-screen starting X
 const double _kCarGap = 8.0; // px gap between text right-edge and car
 const double _kPhase1End = 0.600; // fraction where Phase 1 ends
 const double _kTeleportEnd =
-    0.605; // fraction where teleport ends / Phase 2 starts
+    0.560; // fraction where teleport ends / Phase 2 starts
 
 class HomeScreen extends StatefulWidget {
   final String userName;
@@ -166,7 +166,7 @@ class _HomeScreenState extends State<HomeScreen>
   /// After Phase 1 the text is locked at 1.0 forever.
   double _revealFactor(double progress, double carX) {
     if (progress >= _kPhase1End) return 1.0;
-    return (carX / _ridifyTextWidth).clamp(0.0, 1.0);
+    return ((carX + 5.0) / _ridifyTextWidth).clamp(0.0, 1.0);
   }
 
   // ── Data fetching ──────────────────────────────────────────────────────────
