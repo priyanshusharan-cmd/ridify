@@ -22,7 +22,6 @@ class _OfferRideScreenState extends State<OfferRideScreen> {
   double? destLat;
   double? destLng;
 
-  // 👈 NEW: Vehicle State Logic
   String selectedVehicle = 'Sedan';
   int selectedSeats = 1;
   bool isPosting = false;
@@ -32,7 +31,6 @@ class _OfferRideScreenState extends State<OfferRideScreen> {
 
   final String serverUrl = "$kBaseUrl/api/rides";
 
-  // 👈 NEW: Dynamic Seat limits
   int getMaxSeats() {
     if (selectedVehicle == 'Bike') return 1;
     if (selectedVehicle == 'Sedan') return 4;
@@ -42,7 +40,6 @@ class _OfferRideScreenState extends State<OfferRideScreen> {
   void _onVehicleChanged(String vehicle) {
     setState(() {
       selectedVehicle = vehicle;
-      // Reset seat to 1 if they switch vehicles
       selectedSeats = 1;
     });
   }
@@ -129,14 +126,18 @@ class _OfferRideScreenState extends State<OfferRideScreen> {
           "expiresAt": expiresAtEpoch,
           "fare": int.parse(priceController.text),
           "status": "available",
-          "vehicleType": selectedVehicle, // 👈 NEW
-          "totalSeats": selectedSeats, // 👈 NEW
-          "availableSeats": selectedSeats, // 👈 NEW
+          "vehicleType": selectedVehicle,
+          "totalSeats": selectedSeats,
+          "availableSeats": selectedSeats,
         }),
       );
 
       if (response.statusCode == 201 && mounted) {
-        Navigator.pop(context);
+        // ── Navigation Result ─────────────────────────────────────────────────
+        // Pop with 'ride_posted' so the HomeScreen can detect this specific
+        // success and trigger the Victory Lap — no Socket.IO, no broadcast.
+        // Only the person who just tapped "Offer Ride" will see the animation.
+        Navigator.pop(context, 'ride_posted');
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
             content: Text("Ride offered successfully!"),
@@ -218,7 +219,7 @@ class _OfferRideScreenState extends State<OfferRideScreen> {
             ),
             const SizedBox(height: 20),
 
-            // 👈 NEW: Vehicle Selection
+            // Vehicle Selection
             const Text(
               "Vehicle Type",
               style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
@@ -341,7 +342,7 @@ class _OfferRideScreenState extends State<OfferRideScreen> {
             ),
             const SizedBox(height: 30),
 
-            // 👈 NEW: Dynamic Seats Generation
+            // Dynamic Seats
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [

@@ -15,7 +15,7 @@ import '../constants.dart';
 // ─────────────────────────────────────────────────────────────────────────────
 //  Animation constants
 //
-//  Timeline (controller 0.0 → 1.0, total = 5 s):
+//  STARTUP Timeline (controller 0.0 → 1.0, total = 5 s):
 //
 //    0.000 → 0.600  Phase 1  – car enters from far-left (-200 px, fully hidden),
 //                              sweeps across screen, "paints" Ridify text as its
@@ -30,34 +30,30 @@ import '../constants.dart';
 //                              "Ridify".  No second adjustment.
 //                              Curve: easeOut → fast entry, smooth dead-stop.
 //
-//  Key design decisions that eliminate each reported glitch:
+//  VICTORY LAP Timeline (controller 0.0 → 1.0, total = 3 s):
 //
-//  ① Dead start        – _kCarOffLeft = -200 guarantees the car is invisible on
-//                        the very first frame (progress == 0 → carX == -200).
+//    0.000 → 0.450  Phase A  – car accelerates from parking spot, exits right.
+//                              Curve: easeIn  → smooth departure, fastest exit.
 //
-//  ② Ghost text sync   – revealFactor is keyed to the car's BACK BUMPER (carX),
-//                        not the front.  Text only appears where the car has
-//                        already passed.  _ridifyTextWidth is measured at runtime
-//                        with TextPainter (same style as the Text widget) so the
-//                        factor is always exact – no hardcoded guesses.
+//    0.450 → 0.500  Teleport – car snaps instantly back to x = _kCarOffLeft.
 //
-//  ③ Constant exit     – Phase 1 uses Curves.easeIn, which is slowest at the
-//                        start and FASTEST at the end.  The car never brakes
-//                        while leaving the screen.
+//    0.500 → 1.000  Phase B  – car enters from left, decelerates, re-parks.
+//                              Curve: easeOut → fast entry, smooth dead-stop.
 //
-//  ④ Perfect stop      – Phase 2 uses Curves.easeOut (fast entry → smooth stop).
-//                        _parkingX is derived from the same TextPainter width, so
-//                        the frozen-Stack final state is pixel-identical to a
-//                        static Row.  We NEVER switch rendering modes (no static
-//                        Row fallback), so there is no layout-jump at completion.
+//    Text stays fully visible (revealFactor = 1.0) for the entire victory lap.
 // ─────────────────────────────────────────────────────────────────────────────
 const double _kCarW = 75.0; // car width  – never changes
 const double _kCarH = 120.0; // car height – never changes
 const double _kCarOffLeft = -125.0; // guaranteed off-screen starting X
 const double _kCarGap = 8.0; // px gap between text right-edge and car
-const double _kPhase1End = 0.600; // fraction where Phase 1 ends
+const double _kPhase1End = 0.600; // startup: fraction where Phase 1 ends
 const double _kTeleportEnd =
-    0.560; // fraction where teleport ends / Phase 2 starts
+    0.560; // startup: fraction where teleport ends / Phase 2 starts
+
+// Victory lap phase boundaries
+const double _kVPhase1End = 0.450; // fraction where car exits right
+const double _kVTeleportEnd =
+    0.500; // fraction where teleport snaps / Phase B starts
 
 class HomeScreen extends StatefulWidget {
   final String userName;
@@ -75,8 +71,8 @@ class HomeScreen extends StatefulWidget {
   State<HomeScreen> createState() => _HomeScreenState();
 }
 
-class _HomeScreenState extends State<HomeScreen>
-    with SingleTickerProviderStateMixin {
+// TickerProviderStateMixin (not Single) because we now have TWO controllers.
+class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
   int _currentIndex = 0;
   late io.Socket socket;
   List<dynamic> allRides = [];
@@ -86,11 +82,18 @@ class _HomeScreenState extends State<HomeScreen>
   late AnimationController _startupController;
   static bool _hasPlayedStartupAnimation = false;
 
+  // ── Victory Lap animation ──────────────────────────────────────────────────
+  late AnimationController _victoryController;
+
+  /// True while the victory lap car is in motion.
+  /// Extra taps are ignored while this is true (anti-spam guard).
+  bool _isVictoryLapRunning = false;
+
   /// Exact pixel width of the "Ridify" label, measured once at startup via
   /// TextPainter using the identical TextStyle as the real Text widget.
   late final double _ridifyTextWidth;
 
-  /// X-coordinate of the car's LEFT edge when it is parked (Phase 2 final pos).
+  /// X-coordinate of the car's LEFT edge when it is parked (startup Phase 2 final pos).
   late final double _parkingX;
 
   // ── initState ──────────────────────────────────────────────────────────────
@@ -114,7 +117,7 @@ class _HomeScreenState extends State<HomeScreen>
     _ridifyTextWidth = tp.width;
     _parkingX = _ridifyTextWidth + _kCarGap;
 
-    // Animation controller – runs linearly; all easing is applied per-phase.
+    // Startup controller – runs linearly; all easing is applied per-phase.
     _startupController = AnimationController(
       vsync: this,
       duration: const Duration(milliseconds: 5000),
@@ -127,6 +130,12 @@ class _HomeScreenState extends State<HomeScreen>
       _startupController.value = 1.0;
     }
 
+    // Victory lap controller – 3 s total.
+    _victoryController = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 3000),
+    );
+
     fetchRides();
     initSocket();
     _pollingTimer = Timer.periodic(
@@ -137,13 +146,12 @@ class _HomeScreenState extends State<HomeScreen>
 
   // ── Animation helpers ──────────────────────────────────────────────────────
 
-  /// Returns the car's left-edge X in the AppBar title Stack coordinate space.
+  /// Returns the car's left-edge X for the STARTUP animation.
   double _carX(double progress, double screenWidth) {
     if (progress < _kPhase1End) {
       // Phase 1: easeIn → starts stationary, accelerates, exits at full speed.
-      final double t = progress / _kPhase1End; // normalised 0→1
+      final double t = progress / _kPhase1End;
       final double eased = Curves.easeIn.transform(t);
-      // Travel: _kCarOffLeft (-200) → (screenWidth + _kCarW)  [fully off-right]
       return _kCarOffLeft + (screenWidth - _kCarOffLeft + _kCarW) * eased;
     } else if (progress < _kTeleportEnd) {
       // Teleport: snap instantly; car is invisible off the left edge.
@@ -152,21 +160,56 @@ class _HomeScreenState extends State<HomeScreen>
       // Phase 2: easeOut → fast entry, smooth deceleration, dead stop.
       final double t = (progress - _kTeleportEnd) / (1.0 - _kTeleportEnd);
       final double eased = Curves.easeOut.transform(t);
-      // Travel: _kCarOffLeft (-200) → _parkingX (measured parking spot)
+      return _kCarOffLeft + (_parkingX - _kCarOffLeft) * eased;
+    }
+  }
+
+  /// Returns the car's left-edge X for the VICTORY LAP animation.
+  ///
+  /// Phase A : car accelerates out of parking spot and exits off the right.
+  /// Teleport: car snaps back to the far-left (invisible).
+  /// Phase B : car enters from the left, decelerates, and re-parks.
+  double _victoryCarX(double progress, double screenWidth) {
+    if (progress < _kVPhase1End) {
+      // Phase A: easeIn – smooth launch from parking spot → off right edge.
+      final double t = progress / _kVPhase1End;
+      final double eased = Curves.easeIn.transform(t);
+      // Travel: _parkingX → (screenWidth + _kCarW)  [fully off-right]
+      return _parkingX + (screenWidth + _kCarW - _parkingX) * eased;
+    } else if (progress < _kVTeleportEnd) {
+      // Teleport: invisible wrap to the left.
+      return _kCarOffLeft;
+    } else {
+      // Phase B: easeOut – fast entry from left → dead stop at _parkingX.
+      final double t = (progress - _kVTeleportEnd) / (1.0 - _kVTeleportEnd);
+      final double eased = Curves.easeOut.transform(t);
       return _kCarOffLeft + (_parkingX - _kCarOffLeft) * eased;
     }
   }
 
   /// Fraction of the "Ridify" text that should be visible (0.0 – 1.0).
   ///
-  /// Text is revealed ONLY behind the car's back bumper (left edge = carX):
-  ///   carX ≤ 0           → 0.0  (nothing visible – dead start, car still left)
-  ///   0 < carX < textW   → carX / textW  (partial reveal tracks back bumper)
-  ///   carX ≥ textW       → 1.0  (fully revealed)
-  /// After Phase 1 the text is locked at 1.0 forever.
+  /// During the VICTORY LAP, text is always 1.0 (already fully painted).
+  /// During the STARTUP animation, text is revealed behind the car's back bumper.
   double _revealFactor(double progress, double carX) {
     if (progress >= _kPhase1End) return 1.0;
     return ((carX + 5.0) / _ridifyTextWidth).clamp(0.0, 1.0);
+  }
+
+  // ── Victory Lap trigger ────────────────────────────────────────────────────
+
+  /// Starts the victory lap.  Silently ignored if:
+  ///   • The startup animation is still playing (car is busy).
+  ///   • A victory lap is already in progress (anti-spam guard).
+  void _triggerVictoryLap() {
+    if (_isVictoryLapRunning) return;
+    if (_startupController.isAnimating) return;
+
+    setState(() => _isVictoryLapRunning = true);
+
+    _victoryController.forward(from: 0.0).then((_) {
+      if (mounted) setState(() => _isVictoryLapRunning = false);
+    });
   }
 
   // ── Data fetching ──────────────────────────────────────────────────────────
@@ -229,6 +272,7 @@ class _HomeScreenState extends State<HomeScreen>
     _pollingTimer?.cancel();
     socket.dispose();
     _startupController.dispose();
+    _victoryController.dispose();
     super.dispose();
   }
 
@@ -270,30 +314,43 @@ class _HomeScreenState extends State<HomeScreen>
         titleSpacing: 24,
         title: LayoutBuilder(
           builder: (context, constraints) {
+            // We merge both controllers so the builder fires on every tick of
+            // whichever controller is currently active.
             return AnimatedBuilder(
-              animation: _startupController,
+              animation: Listenable.merge([
+                _startupController,
+                _victoryController,
+              ]),
               builder: (context, _) {
-                final double progress = _startupController.value;
                 final double screenWidth = constraints.maxWidth;
-                final double carX = _carX(progress, screenWidth);
-                final double revealF = _revealFactor(progress, carX);
+                final double carX;
+                final double revealF;
 
-                // ── Title Stack ────────────────────────────────────────────
+                if (_isVictoryLapRunning) {
+                  // ── Victory Lap mode ───────────────────────────────────────
+                  // Text is already fully painted — keep revealF at 1.0 the
+                  // whole time so "Ridify" never disappears during the lap.
+                  carX = _victoryCarX(_victoryController.value, screenWidth);
+                  revealF = 1.0;
+                } else {
+                  // ── Startup / idle mode ────────────────────────────────────
+                  final double progress = _startupController.value;
+                  carX = _carX(progress, screenWidth);
+                  revealF = _revealFactor(progress, carX);
+                }
+
+                // ── Title Stack ──────────────────────────────────────────────
                 //
-                // This Stack is ALWAYS used – even after the animation ends.
-                // When progress == 1.0 it is simply frozen:
-                //   revealF == 1.0      → text fully visible
-                //   carX    == _parkingX → car at rest beside text
-                //
+                // This Stack is ALWAYS used – even after all animation ends.
+                // When frozen at idle: revealF == 1.0 and carX == _parkingX.
                 // Because _parkingX is derived from the same TextPainter style
                 // as the Text widget, the frozen Stack is pixel-identical to
-                // what a Row would produce – with zero visual jump.
-                //
+                // what a static Row would produce – with zero visual jump.
                 return Stack(
                   clipBehavior: Clip.none, // car can overhang during Phase 1
                   alignment: Alignment.centerLeft,
                   children: [
-                    // ── "Ridify" label – left-to-right reveal ──────────────
+                    // ── "Ridify" label – left-to-right reveal ────────────────
                     ClipRect(
                       child: Align(
                         alignment: Alignment.centerLeft,
@@ -310,15 +367,15 @@ class _HomeScreenState extends State<HomeScreen>
                       ),
                     ),
 
-                    // ── Car logo ───────────────────────────────────────────
+                    // ── Car logo ──────────────────────────────────────────────
                     Transform.translate(
                       offset: Offset(carX, 0),
                       child: ClipRRect(
                         borderRadius: BorderRadius.circular(10),
                         child: Image.asset(
                           'assets/iconWithoutBackground.png',
-                          width: _kCarW, // fixed – never changes
-                          height: _kCarH, // fixed – never changes
+                          width: _kCarW,
+                          height: _kCarH,
                           fit: BoxFit.cover,
                         ),
                       ),
@@ -388,7 +445,16 @@ class _HomeScreenState extends State<HomeScreen>
       bottomNavigationBar: BottomNavigationBar(
         backgroundColor: Colors.black,
         currentIndex: _currentIndex,
-        onTap: (index) => setState(() => _currentIndex = index),
+        onTap: (index) {
+          // ── Easter Egg ───────────────────────────────────────────────────
+          // If the user is already on the Home tab and taps Home again,
+          // trigger the Victory Lap instead of a normal nav switch.
+          if (index == 0 && _currentIndex == 0) {
+            _triggerVictoryLap();
+            return; // don't call setState – we're already on index 0
+          }
+          setState(() => _currentIndex = index);
+        },
         type: BottomNavigationBarType.fixed,
         selectedItemColor: Colors.white,
         unselectedItemColor: Colors.white54,
@@ -456,12 +522,21 @@ class _HomeScreenState extends State<HomeScreen>
               "Offer a Ride",
               "Share your journey",
               true,
-              () => Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (_) => OfferRideScreen(userName: widget.userName),
-                ),
-              ).then((_) => fetchRides()),
+              () =>
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (_) =>
+                          OfferRideScreen(userName: widget.userName),
+                    ),
+                  ).then((result) {
+                    // ── Success Celebration ────────────────────────────────────
+                    // offer_ride_screen.dart pops with 'ride_posted' on success.
+                    // Only the person who just posted gets this trigger – no
+                    // Socket.IO, no broadcast, purely local navigation result.
+                    if (result == 'ride_posted') _triggerVictoryLap();
+                    fetchRides();
+                  }),
             ),
             const SizedBox(height: 16),
             _actionCard(
@@ -599,7 +674,7 @@ class _HomeScreenState extends State<HomeScreen>
                         ),
                         SizedBox(height: 5),
                         Text(
-                          "Always verify your co-passenger's details and share your ride status with a friend.",
+                          "Always verify your co-passenger's details and share your ride with a friend.",
                           style: TextStyle(
                             color: Colors.black87,
                             fontSize: 13,
