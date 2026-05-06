@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
-import '../utils.dart';
-import '../constants.dart';
+import '../core/utils.dart';
+import '../core/constants.dart';
 
 class RideHistoryScreen extends StatefulWidget {
   final String userName;

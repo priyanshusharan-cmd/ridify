@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 import '../widgets/address_search_widget.dart';
-import '../constants.dart';
+import '../core/constants.dart';
 
 class OfferRideScreen extends StatefulWidget {
   final String userName;
