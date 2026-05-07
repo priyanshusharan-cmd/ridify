@@ -69,6 +69,7 @@ flutter:
   assets:
     - assets/icon.png
     - assets/iconWithoutBackground.png
+    - assets/splashScreenCar.png
     - .env
 
   # An image asset can refer to one or more resolution-specific "variants", see
@@ -101,5 +102,6 @@ flutter_launcher_icons:
   android: "launcher_icon"
   ios: true
   image_path: "assets/icon.png"
-  adaptive_icon_background: "assets/icon.png"
+  adaptive_icon_foreground: "assets/iconWithoutBackground.png"
+  adaptive_icon_background: "#000000"
   min_sdk_android: 21
