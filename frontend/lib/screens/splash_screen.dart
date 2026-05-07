@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:http/http.dart' as http;
+import '../core/constants.dart';
 import 'home_screen.dart';
 import 'login_screen.dart';
 
@@ -47,6 +49,10 @@ class _SplashScreenState extends State<SplashScreen>
   @override
   void initState() {
     super.initState();
+
+    // Fire off a background request to wake up the Render backend server.
+    // This happens asynchronously and will NOT block the splash animation.
+    _wakeBackendServer();
 
     // ── CHANGE: Use a cubic Bézier that mimics a real car's acceleration
     // profile — a brief "pull-away" ease-in that transitions into a smooth,
@@ -200,6 +206,25 @@ class _SplashScreenState extends State<SplashScreen>
             FadeTransition(opacity: animation, child: child),
       ),
     );
+  }
+
+  /// Sends a lightweight, non-blocking ping to the backend server.
+  /// Since the backend is hosted on a free tier (e.g., Render), it might
+  /// be asleep. Waking it up during the splash screen ensures it's ready
+  /// by the time the user interacts with the app.
+  void _wakeBackendServer() async {
+    try {
+      // kBaseUrl is loaded from .env via constants.dart
+      final uri = Uri.parse(kBaseUrl);
+      // We don't await the result or do anything with the response.
+      // This is purely a fire-and-forget request to start the cold boot.
+      http.get(uri).catchError((_) {
+        // Ignore any errors (e.g., network issues) so it doesn't crash
+        return http.Response('', 500);
+      });
+    } catch (e) {
+      // Silently fail if something goes wrong (e.g., malformed URL)
+    }
   }
 
   @override
