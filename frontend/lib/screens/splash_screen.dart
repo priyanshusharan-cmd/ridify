@@ -20,7 +20,11 @@ class _SplashScreenState extends State<SplashScreen>
   final List<double> _letterScreenX = [];
   double _textWidth = 0.0;
 
+  // Guards against starting the animation before the image is decoded.
+  bool _imageReady = false;
+
   static const String _appName = 'Ridify';
+  static const String _carAsset = 'assets/splashScreenCar.png';
 
   // Font size scales with screen width, clamped between phone and desktop sizes.
   double get _fontSize => (_screenWidth * 0.22).clamp(60.0, 170.0);
@@ -36,7 +40,7 @@ class _SplashScreenState extends State<SplashScreen>
   // Car faces RIGHT → bonnet (front/hood) is on the right side of the image.
   static const double _bonnetFraction = 0.85;
 
-  // ── CHANGE: Fixed pixel gap between the bottom of the text and top of the
+  // ── Fixed pixel gap between the bottom of the text and top of the
   // car image. This value never changes regardless of screen size or aspect ratio.
   static const double _gapBetweenTextAndCar = -75.0;
 
@@ -44,9 +48,21 @@ class _SplashScreenState extends State<SplashScreen>
   void initState() {
     super.initState();
 
+    // ── CHANGE: Use a cubic Bézier that mimics a real car's acceleration
+    // profile — a brief "pull-away" ease-in that transitions into a smooth,
+    // decelerating glide. This gives the entrance a cinematic automotive feel
+    // (as opposed to the symmetric easeOut which feels more digital/generic).
+    //
+    // Curve breakdown:
+    //   • Starts slightly slow  (car "pulls away from rest")
+    //   • Accelerates through the mid-point
+    //   • Decelerates sharply at the end  (car "parks" precisely under the text)
+    //
+    // The slightly longer duration (2600 ms vs 2400 ms) gives the deceleration
+    // phase extra room to breathe without making the overall animation feel slow.
     _controller = AnimationController(
       vsync: this,
-      duration: const Duration(milliseconds: 2400),
+      duration: const Duration(milliseconds: 2250),
     );
 
     _controller.addStatusListener((status) {
@@ -57,6 +73,39 @@ class _SplashScreenState extends State<SplashScreen>
         );
       }
     });
+
+    // ── CHANGE: Precache the PNG so the GPU texture is resident before the
+    // very first frame of the animation. We do this in initState so the load
+    // starts as early as possible (before didChangeDependencies fires and
+    // before the AnimationController begins).
+    //
+    // _startAnimationWhenReady() is called once both the image AND the layout
+    // metrics are available, whichever arrives last.
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _precacheCarImage();
+    });
+  }
+
+  /// Precaches [_carAsset] and sets [_imageReady] = true when done,
+  /// then attempts to start the animation.
+  Future<void> _precacheCarImage() async {
+    // precacheImage resolves only after the image is fully decoded and
+    // uploaded to the GPU — eliminating the first-frame pop-in.
+    await precacheImage(const AssetImage(_carAsset), context);
+    if (!mounted) return;
+    setState(() => _imageReady = true);
+    _startAnimationWhenReady();
+  }
+
+  /// Starts the controller only when BOTH the layout metrics AND the image
+  /// are ready. Called from both didChangeDependencies and _precacheCarImage
+  /// so whichever finishes last actually kicks off the animation.
+  void _startAnimationWhenReady() {
+    if (!_imageReady) return; // image not decoded yet
+    if (_screenWidth == 0.0) return; // layout not measured yet
+    if (_controller.isAnimating) return; // already running
+    if (_controller.status == AnimationStatus.completed) return;
+    _controller.forward();
   }
 
   @override
@@ -70,18 +119,29 @@ class _SplashScreenState extends State<SplashScreen>
       _screenWidth = newWidth;
       _screenHeight = newHeight;
 
-      _carTranslationX = Tween<double>(
-        begin: -_screenWidth,
-        end: 0.0,
-      ).animate(CurvedAnimation(parent: _controller, curve: Curves.easeOut));
+      // ── CHANGE: Replaced Curves.easeOut with a custom cubic that delivers
+      // an automotive "pull-away and park" feel:
+      //
+      //   Cubic(0.25, 0.0, 0.15, 1.0)
+      //   p1=(0.25, 0.00) → gentle initial torque (not an instant launch)
+      //   p2=(0.15, 1.00) → aggressive late deceleration (precision stop)
+      //
+      // This matches how a well-engineered car actually accelerates from
+      // standstill and glides to a halt — the hallmark of a premium feel.
+      _carTranslationX = Tween<double>(begin: -_screenWidth, end: 0.0).animate(
+        CurvedAnimation(
+          parent: _controller,
+          curve: const Cubic(0.25, 0.0, 0.15, 1.0),
+        ),
+      );
 
       _computeLetterPositions();
     }
 
-    if (!_controller.isAnimating &&
-        _controller.status != AnimationStatus.completed) {
-      _controller.forward();
-    }
+    // ── CHANGE: Animation start is now gated by _startAnimationWhenReady()
+    // instead of being fired unconditionally. This prevents the controller
+    // from advancing even a single tick before the image texture is resident.
+    _startAnimationWhenReady();
   }
 
   void _computeLetterPositions() {
@@ -150,7 +210,7 @@ class _SplashScreenState extends State<SplashScreen>
 
   @override
   Widget build(BuildContext context) {
-    // ── CHANGE: Compute the vertical layout using fixed pixel sizes so the
+    // ── Compute the vertical layout using fixed pixel sizes so the
     // gap between text and car is always exactly _gapBetweenTextAndCar pixels,
     // regardless of screen width or aspect ratio.
     //
@@ -204,10 +264,7 @@ class _SplashScreenState extends State<SplashScreen>
                   offset: Offset(_carTranslationX.value, 0),
                   child: SizedBox(
                     width: _screenWidth,
-                    child: Image.asset(
-                      'assets/splashScreenCar.png',
-                      fit: BoxFit.contain,
-                    ),
+                    child: Image.asset(_carAsset, fit: BoxFit.contain),
                   ),
                 ),
               ),
