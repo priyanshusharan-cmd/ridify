@@ -132,14 +132,14 @@ class _SplashScreenState extends State<SplashScreen>
       context,
       PageRouteBuilder(
         transitionDuration: const Duration(milliseconds: 500),
-        pageBuilder: (_, animation, __) => hasSession
+        pageBuilder: (context, animation, secondaryAnimation) => hasSession
             ? HomeScreen(
                 userName: savedName,
                 userAge: savedAge,
                 userEmail: savedEmail,
               )
             : const LoginScreen(),
-        transitionsBuilder: (_, animation, __, child) =>
+        transitionsBuilder: (context, animation, secondaryAnimation, child) =>
             FadeTransition(opacity: animation, child: child),
       ),
     );

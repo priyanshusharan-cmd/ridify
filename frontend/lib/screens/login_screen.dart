@@ -280,7 +280,6 @@ class _LoginScreenState extends State<LoginScreen> {
 
   // ── PASSWORD FIELD with eye toggle ────────────────────────────────────────
   Widget _passwordField() {
-    final focused = _passwordFocus.hasFocus;
     return TextField(
       controller: passwordController,
       focusNode: _passwordFocus,
@@ -313,7 +312,6 @@ class _LoginScreenState extends State<LoginScreen> {
     TextEditingController? controller,
     required FocusNode focusNode,
   }) {
-    final focused = focusNode.hasFocus;
     return TextField(
       controller: controller,
       focusNode: focusNode,
