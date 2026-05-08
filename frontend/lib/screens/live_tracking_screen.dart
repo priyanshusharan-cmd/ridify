@@ -228,10 +228,20 @@ class _LiveTrackingScreenState extends State<LiveTrackingScreen> {
     }
 
     if (targetPosition != null) {
-      final bounds = LatLngBounds.fromPoints([driverPosition!, targetPosition]);
-      mapController.fitCamera(
-        CameraFit.bounds(bounds: bounds, padding: const EdgeInsets.all(80.0)),
-      );
+      // Guard against identical points which cause NaN in bounds calculation
+      if (driverPosition!.latitude == targetPosition.latitude &&
+          driverPosition!.longitude == targetPosition.longitude) {
+        mapController.move(driverPosition!, 15.0);
+        return;
+      }
+      try {
+        final bounds = LatLngBounds.fromPoints([driverPosition!, targetPosition]);
+        mapController.fitCamera(
+          CameraFit.bounds(bounds: bounds, padding: const EdgeInsets.all(80.0)),
+        );
+      } catch (_) {
+        mapController.move(driverPosition!, 15.0);
+      }
     } else {
       mapController.move(driverPosition!, 15.0);
     }
@@ -436,6 +446,11 @@ class _LiveTrackingScreenState extends State<LiveTrackingScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final panelBg = isDark ? const Color(0xFF1E1E1E) : Colors.white;
+    final panelTextColor = isDark ? Colors.white : Colors.black;
+    final panelSubTextColor = isDark ? Colors.white54 : Colors.grey;
+
     String driverLabel = widget.isDriver
         ? "Me (Driver)"
         : "${widget.otherUserName} (Driver)";
@@ -473,7 +488,7 @@ class _LiveTrackingScreenState extends State<LiveTrackingScreen> {
         children: [
           Positioned.fill(
             child: driverPosition == null
-                ? const Center(child: CircularProgressIndicator())
+                ? Center(child: CircularProgressIndicator(color: isDark ? Colors.white : Colors.black))
                 : FlutterMap(
                     mapController: mapController,
                     options: MapOptions(
@@ -535,6 +550,7 @@ class _LiveTrackingScreenState extends State<LiveTrackingScreen> {
                                     style: const TextStyle(
                                       fontWeight: FontWeight.bold,
                                       fontSize: 10,
+                                      color: Colors.black,
                                     ),
                                   ),
                                 ),
@@ -582,7 +598,7 @@ class _LiveTrackingScreenState extends State<LiveTrackingScreen> {
             child: Container(
               padding: const EdgeInsets.all(20),
               decoration: BoxDecoration(
-                color: Colors.white,
+                color: panelBg,
                 borderRadius: const BorderRadius.vertical(
                   top: Radius.circular(30),
                 ),
@@ -601,7 +617,7 @@ class _LiveTrackingScreenState extends State<LiveTrackingScreen> {
                     crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
                       CircleAvatar(
-                        backgroundColor: Colors.black,
+                        backgroundColor: isDark ? const Color(0xFF2C2C2C) : Colors.black,
                         child: Text(
                           isAccepted
                               ? (widget.isDriver
@@ -623,15 +639,18 @@ class _LiveTrackingScreenState extends State<LiveTrackingScreen> {
                                       ? "Ride Group"
                                       : widget.otherUserName)
                                 : "Finding Match...",
-                            style: const TextStyle(
+                            style: TextStyle(
                               fontSize: 18,
                               fontWeight: FontWeight.bold,
+                              color: panelTextColor,
                             ),
                           ),
                           Text(
                             statusText,
                             style: TextStyle(
-                              color: isStarted ? Colors.blue : Colors.green,
+                              color: isStarted
+                                  ? (isDark ? Colors.blue.shade300 : Colors.blue)
+                                  : (isDark ? Colors.green.shade300 : Colors.green),
                               fontWeight: FontWeight.bold,
                               fontSize: 13,
                             ),
@@ -642,18 +661,18 @@ class _LiveTrackingScreenState extends State<LiveTrackingScreen> {
                       if (!widget.isDriver && isAccepted && !iHaveBoarded)
                         ElevatedButton(
                           style: ElevatedButton.styleFrom(
-                            backgroundColor: Colors.green,
+                            backgroundColor: isDark ? const Color(0xFF1B4332) : Colors.green,
                           ),
                           onPressed: boardRide,
                           child: const Text(
-                            "Start",
+                            "Board",
                             style: TextStyle(color: Colors.white),
                           ),
                         ),
                       if (widget.isDriver && !isStarted)
                         ElevatedButton(
                           style: ElevatedButton.styleFrom(
-                            backgroundColor: Colors.blue,
+                            backgroundColor: isDark ? const Color(0xFF1A3A5C) : Colors.blue,
                           ),
                           onPressed: startRide,
                           child: const Text(
@@ -664,7 +683,7 @@ class _LiveTrackingScreenState extends State<LiveTrackingScreen> {
                       if (widget.isDriver && isStarted)
                         ElevatedButton(
                           style: ElevatedButton.styleFrom(
-                            backgroundColor: Colors.red,
+                            backgroundColor: isDark ? const Color(0xFF5C1A1A) : Colors.red,
                           ),
                           onPressed: endRide,
                           child: const Text(
@@ -678,14 +697,14 @@ class _LiveTrackingScreenState extends State<LiveTrackingScreen> {
                   if (widget.isDriver &&
                       rideData != null &&
                       (rideData!['passengers'] as List).isNotEmpty) ...[
-                    const Divider(height: 30),
-                    const Align(
+                    Divider(height: 30, color: isDark ? Colors.white24 : null),
+                    Align(
                       alignment: Alignment.centerLeft,
                       child: Text(
                         "Passengers",
                         style: TextStyle(
                           fontWeight: FontWeight.bold,
-                          color: Colors.grey,
+                          color: panelSubTextColor,
                         ),
                       ),
                     ),
@@ -696,23 +715,26 @@ class _LiveTrackingScreenState extends State<LiveTrackingScreen> {
                         contentPadding: EdgeInsets.zero,
                         leading: CircleAvatar(
                           radius: 15,
-                          backgroundColor: Colors.grey[200],
+                          backgroundColor: isDark ? const Color(0xFF2C2C2C) : Colors.grey[200],
                           child: Text(
                             p.toString().substring(0, 1).toUpperCase(),
-                            style: const TextStyle(color: Colors.black),
+                            style: TextStyle(color: panelTextColor),
                           ),
                         ),
                         title: Text(
                           p,
-                          style: const TextStyle(
+                          style: TextStyle(
                             fontWeight: FontWeight.bold,
                             fontSize: 14,
+                            color: panelTextColor,
                           ),
                         ),
                         subtitle: Text(
                           isBoarded ? "Boarded" : "Waiting",
                           style: TextStyle(
-                            color: isBoarded ? Colors.green : Colors.orange,
+                            color: isBoarded
+                                ? (isDark ? Colors.green.shade300 : Colors.green)
+                                : Colors.orange,
                             fontSize: 12,
                           ),
                         ),
@@ -735,7 +757,7 @@ class _LiveTrackingScreenState extends State<LiveTrackingScreen> {
                     height: 55,
                     child: ElevatedButton.icon(
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.black,
+                        backgroundColor: isDark ? const Color(0xFF2C2C2C) : Colors.black,
                       ),
                       onPressed: () => Navigator.push(
                         context,

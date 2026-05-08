@@ -111,17 +111,34 @@ class _ChatScreenState extends State<ChatScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+
+    // Chat bubble colors
+    final myBubbleColor = isDark ? const Color(0xFF2C2C2C) : Colors.black;
+    final otherBubbleColor = isDark ? const Color(0xFF1E1E1E) : Colors.grey[200]!;
+    final myTextColor = Colors.white;
+    final otherTextColor = isDark ? Colors.white : Colors.black;
+    final otherNameColor = isDark ? Colors.blue.shade300 : Colors.blue[800]!;
+    final timestampMyColor = Colors.white70;
+    final timestampOtherColor = isDark ? Colors.white38 : Colors.black54;
+
+    // Input area
+    final inputBgColor = isDark ? const Color(0xFF1E1E1E) : Colors.white;
+    final inputFieldColor = isDark ? const Color(0xFF2C2C2C) : Colors.grey[100]!;
+    final inputTextColor = isDark ? Colors.white : Colors.black;
+    final sendButtonColor = isDark ? const Color(0xFF2C2C2C) : Colors.black;
+
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       appBar: AppBar(
         backgroundColor: Colors.black,
         iconTheme: const IconThemeData(color: Colors.white),
         title: Row(
           children: [
-            const CircleAvatar(
+            CircleAvatar(
               radius: 18,
-              backgroundColor: Colors.white,
-              child: Icon(Icons.group, color: Colors.black),
+              backgroundColor: isDark ? const Color(0xFF2C2C2C) : Colors.white,
+              child: Icon(Icons.group, color: isDark ? Colors.white : Colors.black),
             ),
             const SizedBox(width: 12),
             Expanded(
@@ -166,7 +183,7 @@ class _ChatScreenState extends State<ChatScreen> {
                       vertical: 10,
                     ),
                     decoration: BoxDecoration(
-                      color: isMe ? Colors.black : Colors.grey[200],
+                      color: isMe ? myBubbleColor : otherBubbleColor,
                       borderRadius: BorderRadius.circular(20),
                     ),
                     child: Column(
@@ -178,7 +195,7 @@ class _ChatScreenState extends State<ChatScreen> {
                             child: Text(
                               messages[index]['sender'] ?? "Unknown",
                               style: TextStyle(
-                                color: Colors.blue[800],
+                                color: otherNameColor,
                                 fontSize: 12,
                                 fontWeight: FontWeight.bold,
                               ),
@@ -187,7 +204,7 @@ class _ChatScreenState extends State<ChatScreen> {
                         Text(
                           messages[index]['text'] ?? "",
                           style: TextStyle(
-                            color: isMe ? Colors.white : Colors.black,
+                            color: isMe ? myTextColor : otherTextColor,
                             fontSize: 15,
                           ),
                         ),
@@ -195,7 +212,7 @@ class _ChatScreenState extends State<ChatScreen> {
                         Text(
                           messages[index]['timestamp'] ?? "",
                           style: TextStyle(
-                            color: isMe ? Colors.white70 : Colors.black54,
+                            color: isMe ? timestampMyColor : timestampOtherColor,
                             fontSize: 10,
                           ),
                         ),
@@ -208,16 +225,18 @@ class _ChatScreenState extends State<ChatScreen> {
           ),
           Container(
             padding: const EdgeInsets.all(15),
-            color: Colors.white,
+            color: inputBgColor,
             child: Row(
               children: [
                 Expanded(
                   child: TextField(
                     controller: _controller,
+                    style: TextStyle(color: inputTextColor),
                     decoration: InputDecoration(
                       hintText: "Type a message...",
+                      hintStyle: TextStyle(color: inputTextColor.withValues(alpha: 0.5)),
                       filled: true,
-                      fillColor: Colors.grey[100],
+                      fillColor: inputFieldColor,
                       border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(30),
                         borderSide: BorderSide.none,
@@ -228,10 +247,10 @@ class _ChatScreenState extends State<ChatScreen> {
                 const SizedBox(width: 10),
                 GestureDetector(
                   onTap: sendMessage,
-                  child: const CircleAvatar(
+                  child: CircleAvatar(
                     radius: 25,
-                    backgroundColor: Colors.black,
-                    child: Icon(Icons.send, color: Colors.white),
+                    backgroundColor: sendButtonColor,
+                    child: const Icon(Icons.send, color: Colors.white),
                   ),
                 ),
               ],

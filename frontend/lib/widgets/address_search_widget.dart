@@ -100,11 +100,11 @@ class _AddressSearchWidgetState extends State<AddressSearchWidget> {
             borderRadius: BorderRadius.circular(10),
             child: Container(
               constraints: const BoxConstraints(maxHeight: 200),
-              decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.circular(10),
-                border: Border.all(color: Colors.black12),
-              ),
+                decoration: BoxDecoration(
+                  color: Theme.of(context).cardColor,
+                  borderRadius: BorderRadius.circular(10),
+                  border: Border.all(color: Theme.of(context).dividerColor),
+                ),
               child: ListView.builder(
                 padding: EdgeInsets.zero,
                 shrinkWrap: true,
@@ -116,7 +116,10 @@ class _AddressSearchWidgetState extends State<AddressSearchWidget> {
                       item['display_name'],
                       maxLines: 2,
                       overflow: TextOverflow.ellipsis,
-                      style: const TextStyle(fontSize: 13),
+                      style: TextStyle(
+                        fontSize: 13,
+                        color: Theme.of(context).textTheme.bodyLarge?.color,
+                      ),
                     ),
                     onTap: () {
                       widget.controller.text = item['display_name'];
@@ -163,10 +166,12 @@ class _AddressSearchWidgetState extends State<AddressSearchWidget> {
         controller: widget.controller,
         onChanged: _onChanged,
         textAlignVertical: TextAlignVertical.center,
+        style: TextStyle(color: Theme.of(context).textTheme.bodyLarge?.color),
         decoration: InputDecoration(
           contentPadding: const EdgeInsets.symmetric(vertical: 15),
           prefixIcon: Icon(widget.prefixIcon, color: widget.iconColor),
           hintText: widget.hintText,
+          hintStyle: TextStyle(color: Theme.of(context).textTheme.bodyMedium?.color?.withValues(alpha: 0.5)),
           border: InputBorder.none,
           suffixIcon: _isLoading
               ? const Padding(

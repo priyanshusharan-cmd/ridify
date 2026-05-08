@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:provider/provider.dart';
 import 'login_screen.dart';
 import '../core/constants.dart';
+import '../core/theme_provider.dart';
 
 class ProfileScreen extends StatefulWidget {
   final String userName;
@@ -89,7 +91,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(ctx, false),
-            child: const Text('Cancel', style: TextStyle(color: Colors.black)),
+            child: Text('Cancel', style: TextStyle(color: Theme.of(context).textTheme.bodyLarge?.color)),
           ),
           ElevatedButton(
             style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
@@ -150,7 +152,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: const Text("Cancel", style: TextStyle(color: Colors.black)),
+            child: Text("Cancel", style: TextStyle(color: Theme.of(context).textTheme.bodyLarge?.color)),
           ),
           ElevatedButton(
             style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
@@ -190,7 +192,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
             child: const Text("Cancel"),
           ),
           ElevatedButton(
-            style: ElevatedButton.styleFrom(backgroundColor: Colors.black),
+            style: ElevatedButton.styleFrom(
+              backgroundColor: Theme.of(context).brightness == Brightness.dark ? const Color(0xFF2C2C2C) : Colors.black,
+            ),
             onPressed: () {
               onSave(controller.text);
               Navigator.pop(context);
@@ -212,9 +216,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
   @override
   Widget build(BuildContext context) {
     final bool isAdmin = kAdminEmails.contains(email.toLowerCase());
+    final isDark = Theme.of(context).brightness == Brightness.dark;
 
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       body: SafeArea(
         child: SingleChildScrollView(
           padding: const EdgeInsets.only(
@@ -225,18 +230,51 @@ class _ProfileScreenState extends State<ProfileScreen> {
           ),
           child: Column(
             children: [
-              const Text(
-                "My Profile",
-                style: TextStyle(fontSize: 28, fontWeight: FontWeight.bold),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text(
+                    "My Profile",
+                    style: TextStyle(
+                      fontSize: 28,
+                      fontWeight: FontWeight.bold,
+                      color: Theme.of(context).textTheme.bodyLarge?.color,
+                    ),
+                  ),
+                  PopupMenuButton<ThemeMode>(
+                    icon: Icon(
+                      Icons.dark_mode_outlined,
+                      color: Theme.of(context).iconTheme.color,
+                    ),
+                    onSelected: (ThemeMode mode) {
+                      Provider.of<ThemeProvider>(context, listen: false)
+                          .setThemeMode(mode);
+                    },
+                    itemBuilder: (BuildContext context) => <PopupMenuEntry<ThemeMode>>[
+                      const PopupMenuItem<ThemeMode>(
+                        value: ThemeMode.light,
+                        child: Text('Light Mode'),
+                      ),
+                      const PopupMenuItem<ThemeMode>(
+                        value: ThemeMode.dark,
+                        child: Text('Dark Mode'),
+                      ),
+                      const PopupMenuItem<ThemeMode>(
+                        value: ThemeMode.system,
+                        child: Text('Use Device Settings'),
+                      ),
+                    ],
+                  ),
+                ],
               ),
               const SizedBox(height: 20),
               CircleAvatar(
                 radius: 45,
-                backgroundColor: Colors.black,
+                backgroundColor: isDark ? Colors.white : Colors.black,
                 child: Text(
                   getInitials(fullName),
-                  style: const TextStyle(
-                    color: Colors.white,
+                  style: TextStyle(
+                    color: isDark ? Colors.black : Colors.white,
                     fontSize: 28,
                     fontWeight: FontWeight.bold,
                   ),
@@ -245,9 +283,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
               const SizedBox(height: 15),
               Text(
                 fullName,
-                style: const TextStyle(
+                style: TextStyle(
                   fontSize: 22,
                   fontWeight: FontWeight.bold,
+                  color: Theme.of(context).textTheme.bodyLarge?.color,
                 ),
               ),
               const SizedBox(height: 40),
@@ -359,11 +398,12 @@ class _ProfileScreenState extends State<ProfileScreen> {
     String value,
     Function(String) onSave,
   ) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 10),
       child: Row(
         children: [
-          Icon(icon, color: Colors.black54, size: 22),
+          Icon(icon, color: isDark ? Colors.white70 : Colors.black54, size: 22),
           const SizedBox(width: 15),
           Expanded(
             child: Column(
@@ -371,14 +411,14 @@ class _ProfileScreenState extends State<ProfileScreen> {
               children: [
                 Text(
                   title,
-                  style: const TextStyle(color: Colors.grey, fontSize: 12),
+                  style: TextStyle(color: isDark ? Colors.white54 : Colors.grey, fontSize: 12),
                 ),
                 Text(
                   value,
-                  style: const TextStyle(
+                  style: TextStyle(
                     fontWeight: FontWeight.bold,
                     fontSize: 15,
-                    color: Colors.black87,
+                    color: Theme.of(context).textTheme.bodyLarge?.color,
                   ),
                 ),
               ],

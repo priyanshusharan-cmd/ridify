@@ -128,14 +128,14 @@ class _MatchStatusScreenState extends State<MatchStatusScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFFF5F5F5),
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       appBar: AppBar(
-        backgroundColor: Colors.black,
-        title: const Text(
+        backgroundColor: Theme.of(context).appBarTheme.backgroundColor,
+        title: Text(
           "Match Status",
-          style: TextStyle(color: Colors.white),
+          style: TextStyle(color: Theme.of(context).appBarTheme.titleTextStyle?.color ?? Colors.white),
         ),
-        iconTheme: const IconThemeData(color: Colors.white),
+        iconTheme: IconThemeData(color: Theme.of(context).appBarTheme.iconTheme?.color ?? Colors.white),
       ),
       body: Center(
         child: Padding(
@@ -144,7 +144,7 @@ class _MatchStatusScreenState extends State<MatchStatusScreen> {
             padding: const EdgeInsets.all(40),
             width: double.infinity,
             decoration: BoxDecoration(
-              color: Colors.white,
+              color: Theme.of(context).cardColor,
               borderRadius: BorderRadius.circular(30),
               boxShadow: [
                 BoxShadow(
@@ -160,11 +160,12 @@ class _MatchStatusScreenState extends State<MatchStatusScreen> {
                   ? [
                       const Icon(Icons.cancel, color: Colors.red, size: 80),
                       const SizedBox(height: 30),
-                      const Text(
+                      Text(
                         "Declined",
                         style: TextStyle(
                           fontSize: 24,
                           fontWeight: FontWeight.bold,
+                          color: Theme.of(context).textTheme.bodyLarge?.color,
                         ),
                       ),
                       const SizedBox(height: 10),
@@ -177,45 +178,46 @@ class _MatchStatusScreenState extends State<MatchStatusScreen> {
                         ),
                       ),
                       const SizedBox(height: 30),
-                      SizedBox(
-                        width: double.infinity,
-                        height: 50,
-                        child: ElevatedButton(
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: Colors.black,
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(15),
+                        SizedBox(
+                          width: double.infinity,
+                          height: 50,
+                          child: ElevatedButton(
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: Theme.of(context).brightness == Brightness.dark ? const Color(0xFF2C2C2C) : Colors.black,
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(15),
+                              ),
                             ),
-                          ),
-                          onPressed: () => Navigator.popUntil(
-                            context,
-                            (route) => route.isFirst,
-                          ),
-                          child: const Text(
-                            "Go Back",
-                            style: TextStyle(
-                              color: Colors.white,
-                              fontWeight: FontWeight.bold,
+                            onPressed: () => Navigator.popUntil(
+                              context,
+                              (route) => route.isFirst,
+                            ),
+                            child: const Text(
+                              "Go Back",
+                              style: TextStyle(
+                                color: Colors.white,
+                                fontWeight: FontWeight.bold,
+                              ),
                             ),
                           ),
                         ),
-                      ),
                     ]
                   : [
-                      const SizedBox(
+                      SizedBox(
                         width: 80,
                         height: 80,
                         child: CircularProgressIndicator(
-                          color: Colors.black,
+                          color: Theme.of(context).primaryColor,
                           strokeWidth: 6,
                         ),
                       ),
                       const SizedBox(height: 40),
-                      const Text(
+                      Text(
                         "Request Sent!",
                         style: TextStyle(
                           fontSize: 26,
                           fontWeight: FontWeight.bold,
+                          color: Theme.of(context).textTheme.bodyLarge?.color,
                         ),
                       ),
                       const SizedBox(height: 10),

@@ -36,8 +36,16 @@ class MatchRequestScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final textColor = isDark ? Colors.white : Colors.black;
+    final subTextColor = isDark ? Colors.white54 : Colors.grey;
+    final cardBg = isDark ? const Color(0xFF1E1E1E) : const Color(0xFFF9F9F9);
+    final acceptBtnColor = isDark ? const Color(0xFF2C2C2C) : Colors.black;
+    final declineBorderColor = isDark ? Colors.white54 : Colors.black;
+    final declineTextColor = isDark ? Colors.white : Colors.black;
+
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       appBar: AppBar(
         backgroundColor: Colors.black,
         iconTheme: const IconThemeData(color: Colors.white),
@@ -47,38 +55,38 @@ class MatchRequestScreen extends StatelessWidget {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            const CircleAvatar(
+            CircleAvatar(
               radius: 40,
-              backgroundColor: Colors.green,
-              child: Icon(Icons.check, color: Colors.white, size: 40),
+              backgroundColor: isDark ? const Color(0xFF1B4332) : Colors.green,
+              child: const Icon(Icons.check, color: Colors.white, size: 40),
             ),
             const SizedBox(height: 20),
-            const Text(
+            Text(
               "Match Found!",
-              style: TextStyle(fontSize: 28, fontWeight: FontWeight.bold),
+              style: TextStyle(fontSize: 28, fontWeight: FontWeight.bold, color: textColor),
             ),
 
             // 👈 THE FIX: Using the dynamic name
             Text(
               "${rideData['requestingRider'] ?? 'A student'} wants to join your journey",
-              style: const TextStyle(color: Colors.grey),
+              style: TextStyle(color: subTextColor),
             ),
 
             const SizedBox(height: 40),
             Container(
               padding: const EdgeInsets.all(20),
               decoration: BoxDecoration(
-                color: const Color(0xFFF9F9F9),
+                color: cardBg,
                 borderRadius: BorderRadius.circular(20),
               ),
               child: Column(
                 children: [
                   Row(
                     children: [
-                      const CircleAvatar(
+                      CircleAvatar(
                         radius: 25,
-                        backgroundColor: Colors.black,
-                        child: Icon(Icons.person, color: Colors.white),
+                        backgroundColor: acceptBtnColor,
+                        child: const Icon(Icons.person, color: Colors.white),
                       ),
                       const SizedBox(width: 15),
                       Column(
@@ -86,14 +94,15 @@ class MatchRequestScreen extends StatelessWidget {
                         children: [
                           Text(
                             rideData['requestingRider'] ?? "Rider",
-                            style: const TextStyle(
+                            style: TextStyle(
                               fontSize: 18,
                               fontWeight: FontWeight.bold,
+                              color: textColor,
                             ),
                           ),
-                          const Text(
+                          Text(
                             "Ridify Member",
-                            style: TextStyle(color: Colors.grey),
+                            style: TextStyle(color: subTextColor),
                           ),
                         ],
                       ),
@@ -107,7 +116,7 @@ class MatchRequestScreen extends StatelessWidget {
               width: double.infinity,
               height: 55,
               child: ElevatedButton(
-                style: ElevatedButton.styleFrom(backgroundColor: Colors.black),
+                style: ElevatedButton.styleFrom(backgroundColor: acceptBtnColor),
                 onPressed: () => acceptRide(context),
                 child: const Text(
                   "Accept",
@@ -120,10 +129,13 @@ class MatchRequestScreen extends StatelessWidget {
               width: double.infinity,
               height: 55,
               child: OutlinedButton(
+                style: OutlinedButton.styleFrom(
+                  side: BorderSide(color: declineBorderColor),
+                ),
                 onPressed: () => Navigator.pop(context),
-                child: const Text(
+                child: Text(
                   "Decline",
-                  style: TextStyle(color: Colors.black),
+                  style: TextStyle(color: declineTextColor),
                 ),
               ),
             ),

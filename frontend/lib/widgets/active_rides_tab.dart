@@ -136,11 +136,15 @@ class ActiveRidesTab extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Padding(
-              padding: EdgeInsets.all(24.0),
+            Padding(
+              padding: const EdgeInsets.all(24.0),
               child: Text(
                 "Activity",
-                style: TextStyle(fontSize: 28, fontWeight: FontWeight.bold),
+                style: TextStyle(
+                  fontSize: 28, 
+                  fontWeight: FontWeight.bold,
+                  color: Theme.of(context).textTheme.bodyLarge?.color,
+                ),
               ),
             ),
             Expanded(
@@ -177,9 +181,13 @@ class ActiveRidesTab extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Text(
+            Text(
               "Activity",
-              style: TextStyle(fontSize: 28, fontWeight: FontWeight.bold),
+              style: TextStyle(
+                fontSize: 28, 
+                fontWeight: FontWeight.bold,
+                color: Theme.of(context).textTheme.bodyLarge?.color,
+              ),
             ),
             const SizedBox(height: 20),
 
@@ -202,10 +210,10 @@ class ActiveRidesTab extends StatelessWidget {
 
                 return Card(
                   elevation: 0,
-                  color: Colors.white,
+                  color: Theme.of(context).cardColor,
                   margin: const EdgeInsets.only(bottom: 15),
                   shape: RoundedRectangleBorder(
-                    side: const BorderSide(color: Colors.black12),
+                    side: BorderSide(color: Theme.of(context).dividerColor),
                     borderRadius: BorderRadius.circular(15),
                   ),
                   child: Theme(
@@ -233,7 +241,7 @@ class ActiveRidesTab extends StatelessWidget {
                               ),
                             ),
                           const SizedBox(width: 8),
-                          const Icon(Icons.expand_more, color: Colors.black54),
+                          Icon(Icons.expand_more, color: Theme.of(context).textTheme.bodyMedium?.color?.withValues(alpha: 0.5)),
                         ],
                       ),
                       title: Column(
@@ -247,7 +255,7 @@ class ActiveRidesTab extends StatelessWidget {
                                 child: Row(
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
-                                    const Icon(Icons.directions_car, color: Colors.black),
+                                    Icon(Icons.directions_car, color: Theme.of(context).iconTheme.color),
                                     const SizedBox(width: 8),
                                     Expanded(
                                       child: Column(
@@ -255,13 +263,13 @@ class ActiveRidesTab extends StatelessWidget {
                                         children: [
                                           Text(
                                             "${r['availableSeats']} Seats Left",
-                                            style: const TextStyle(color: Colors.black, fontWeight: FontWeight.bold),
+                                            style: TextStyle(color: Theme.of(context).textTheme.bodyLarge?.color, fontWeight: FontWeight.bold),
                                             overflow: TextOverflow.ellipsis,
                                           ),
                                           const SizedBox(height: 2),
                                           Text(
                                             "${r['departureTime']}",
-                                            style: const TextStyle(color: Colors.black54, fontSize: 13, fontWeight: FontWeight.w600),
+                                            style: TextStyle(color: Theme.of(context).textTheme.bodyMedium?.color?.withValues(alpha: 0.5), fontSize: 13, fontWeight: FontWeight.w600),
                                             overflow: TextOverflow.ellipsis,
                                           ),
                                         ],
@@ -316,7 +324,7 @@ class ActiveRidesTab extends StatelessWidget {
                             ],
                           ),
                           const SizedBox(height: 12),
-                          _buildTimelineAddress(r['pickupLocation']?.toString(), r['destination']?.toString(), false),
+                          _buildTimelineAddress(r['pickupLocation']?.toString(), r['destination']?.toString(), Theme.of(context).brightness == Brightness.dark),
                         ],
                       ),
                       children: [
@@ -341,7 +349,7 @@ class ActiveRidesTab extends StatelessWidget {
                                   Row(
                                     children: [
                                       CircleAvatar(
-                                        backgroundColor: Colors.black,
+                                        backgroundColor: Theme.of(context).brightness == Brightness.dark ? const Color(0xFF2C2C2C) : Colors.black,
                                         child: Text(
                                           requester.toString().substring(0, 1).toUpperCase(),
                                           style: const TextStyle(
@@ -447,10 +455,10 @@ class ActiveRidesTab extends StatelessWidget {
                   ),
                   child: Card(
                     elevation: 0,
-                    color: Colors.white,
+                    color: Theme.of(context).cardColor,
                     margin: const EdgeInsets.only(bottom: 15),
                     shape: RoundedRectangleBorder(
-                      side: const BorderSide(color: Colors.black12),
+                      side: BorderSide(color: Theme.of(context).dividerColor),
                       borderRadius: BorderRadius.circular(15),
                     ),
                     child: Padding(
@@ -464,12 +472,12 @@ class ActiveRidesTab extends StatelessWidget {
                               Expanded(
                                 child: Row(
                                   children: [
-                                    const SizedBox(
+                                    SizedBox(
                                       width: 20,
                                       height: 20,
                                       child: CircularProgressIndicator(
                                         strokeWidth: 2,
-                                        color: Colors.black,
+                                        color: Theme.of(context).primaryColor,
                                       ),
                                     ),
                                     const SizedBox(width: 12),
@@ -479,10 +487,10 @@ class ActiveRidesTab extends StatelessWidget {
                                         children: [
                                           Text(
                                             "Waiting for ${r['riderName']}",
-                                            style: const TextStyle(fontWeight: FontWeight.bold),
+                                            style: TextStyle(fontWeight: FontWeight.bold, color: Theme.of(context).textTheme.bodyLarge?.color),
                                             overflow: TextOverflow.ellipsis,
                                           ),
-                                          const Text("Tap to view status", style: TextStyle(color: Colors.black54, fontSize: 12)),
+                                          Text("Tap to view status", style: TextStyle(color: Theme.of(context).textTheme.bodyMedium?.color?.withValues(alpha: 0.5), fontSize: 12)),
                                         ],
                                       ),
                                     ),
@@ -505,7 +513,7 @@ class ActiveRidesTab extends StatelessWidget {
                             ],
                           ),
                           const SizedBox(height: 16),
-                          _buildTimelineAddress(r['pickupLocation']?.toString(), r['destination']?.toString(), false),
+                          _buildTimelineAddress(r['pickupLocation']?.toString(), r['destination']?.toString(), Theme.of(context).brightness == Brightness.dark),
                         ],
                       ),
                     ),
@@ -530,7 +538,7 @@ class ActiveRidesTab extends StatelessWidget {
                 (r) => Card(
                   elevation: 4,
                   shadowColor: Colors.black26,
-                  color: Colors.black,
+                  color: Theme.of(context).brightness == Brightness.dark ? const Color(0xFF2C2C2C) : Colors.black,
                   margin: const EdgeInsets.only(bottom: 15),
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(20),
@@ -580,7 +588,7 @@ class ActiveRidesTab extends StatelessWidget {
                             const SizedBox(width: 8),
                             ElevatedButton(
                               style: ElevatedButton.styleFrom(
-                                backgroundColor: Colors.white,
+                                backgroundColor: Theme.of(context).brightness == Brightness.dark ? const Color(0xFF1E1E1E) : Colors.white,
                                 shape: RoundedRectangleBorder(
                                   borderRadius: BorderRadius.circular(10),
                                 ),
@@ -603,10 +611,10 @@ class ActiveRidesTab extends StatelessWidget {
                                     onRefresh();
                                     onGoHome();
                                   }),
-                              child: const Text(
+                              child: Text(
                                 "Open Map",
                                 style: TextStyle(
-                                  color: Colors.black,
+                                  color: Theme.of(context).brightness == Brightness.dark ? Colors.white : Colors.black,
                                   fontWeight: FontWeight.bold,
                                 ),
                               ),

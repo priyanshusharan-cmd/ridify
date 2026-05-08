@@ -34,7 +34,7 @@ class _GlobalCompletionScreenState extends State<GlobalCompletionScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.green,
+      backgroundColor: Theme.of(context).brightness == Brightness.dark ? const Color(0xFF1B4332) : Colors.green,
       body: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,

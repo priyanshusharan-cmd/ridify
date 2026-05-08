@@ -88,12 +88,17 @@ class _FindRideScreenState extends State<FindRideScreen> {
       initialDate: DateTime.now(),
       firstDate: DateTime.now(),
       lastDate: DateTime(2100),
-      builder: (context, child) => Theme(
-        data: Theme.of(
-          context,
-        ).copyWith(colorScheme: const ColorScheme.light(primary: Colors.black)),
-        child: child!,
-      ),
+      builder: (context, child) {
+        final isDark = Theme.of(context).brightness == Brightness.dark;
+        return Theme(
+          data: Theme.of(context).copyWith(
+            colorScheme: isDark
+                ? const ColorScheme.dark(primary: Colors.white, onPrimary: Colors.black, surface: Color(0xFF1E1E1E))
+                : const ColorScheme.light(primary: Colors.black, onPrimary: Colors.white),
+          ),
+          child: child!,
+        );
+      },
     );
     if (picked != null) setState(() => _selectedDate = picked);
   }
@@ -102,12 +107,17 @@ class _FindRideScreenState extends State<FindRideScreen> {
     final TimeOfDay? picked = await showTimePicker(
       context: context,
       initialTime: TimeOfDay.now(),
-      builder: (context, child) => Theme(
-        data: Theme.of(
-          context,
-        ).copyWith(colorScheme: const ColorScheme.light(primary: Colors.black)),
-        child: child!,
-      ),
+      builder: (context, child) {
+        final isDark = Theme.of(context).brightness == Brightness.dark;
+        return Theme(
+          data: Theme.of(context).copyWith(
+            colorScheme: isDark
+                ? const ColorScheme.dark(primary: Colors.white, onPrimary: Colors.black, surface: Color(0xFF1E1E1E))
+                : const ColorScheme.light(primary: Colors.black, onPrimary: Colors.white),
+          ),
+          child: child!,
+        );
+      },
     );
     if (picked != null) setState(() => _selectedTime = picked);
   }
@@ -200,9 +210,9 @@ class _FindRideScreenState extends State<FindRideScreen> {
           maxChildSize: 0.95,
           builder: (_, controller) {
             return Container(
-              decoration: const BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.vertical(top: Radius.circular(30)),
+              decoration: BoxDecoration(
+                color: Theme.of(context).scaffoldBackgroundColor,
+                borderRadius: const BorderRadius.vertical(top: Radius.circular(30)),
               ),
               child: ListView(
                 controller: controller,
@@ -239,12 +249,12 @@ class _FindRideScreenState extends State<FindRideScreen> {
                           borderRadius: BorderRadius.circular(15),
                         ),
                         elevation: 0,
-                        color: Colors.grey[50],
+                        color: Theme.of(context).cardColor,
                         child: ListTile(
                           contentPadding: const EdgeInsets.all(15),
-                          leading: const CircleAvatar(
-                            backgroundColor: Colors.black,
-                            child: Icon(Icons.person, color: Colors.white),
+                          leading: CircleAvatar(
+                            backgroundColor: Theme.of(context).brightness == Brightness.dark ? const Color(0xFF2C2C2C) : Colors.black,
+                            child: const Icon(Icons.person, color: Colors.white),
                           ),
                           title: Text(
                             ride['riderName'] ?? "Driver",
@@ -275,7 +285,7 @@ class _FindRideScreenState extends State<FindRideScreen> {
                               ),
                               ElevatedButton(
                                 style: ElevatedButton.styleFrom(
-                                  backgroundColor: Colors.black,
+                                  backgroundColor: Theme.of(context).brightness == Brightness.dark ? const Color(0xFF2C2C2C) : Colors.black,
                                   minimumSize: const Size(60, 30),
                                 ),
                                 onPressed: () => sendRideRequest(
@@ -315,17 +325,17 @@ class _FindRideScreenState extends State<FindRideScreen> {
         : _selectedTime!.format(context);
 
     return Scaffold(
-      backgroundColor: const Color(0xFFF9F9F9),
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       appBar: AppBar(
-        backgroundColor: Colors.black,
+        backgroundColor: Theme.of(context).appBarTheme.backgroundColor,
         elevation: 0,
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back, color: Colors.white),
+          icon: Icon(Icons.arrow_back, color: Theme.of(context).appBarTheme.iconTheme?.color ?? Colors.white),
           onPressed: () => Navigator.pop(context),
         ),
-        title: const Text(
+        title: Text(
           "Find a Ride",
-          style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+          style: TextStyle(color: Theme.of(context).appBarTheme.titleTextStyle?.color ?? Colors.white, fontWeight: FontWeight.bold),
         ),
       ),
       body: SingleChildScrollView(
@@ -336,9 +346,9 @@ class _FindRideScreenState extends State<FindRideScreen> {
             Container(
               padding: const EdgeInsets.all(16),
               decoration: BoxDecoration(
-                color: Colors.white,
+                color: Theme.of(context).cardColor,
                 borderRadius: BorderRadius.circular(20),
-                border: Border.all(color: Colors.black12),
+                border: Border.all(color: Theme.of(context).dividerColor),
               ),
               child: Column(
                 children: [
@@ -354,7 +364,7 @@ class _FindRideScreenState extends State<FindRideScreen> {
                       });
                     },
                   ),
-                  const Divider(height: 1, color: Colors.black12),
+                  Divider(height: 1, color: Theme.of(context).dividerColor),
                   AddressSearchWidget(
                     controller: destinationController,
                     hintText: "Destination",
@@ -390,21 +400,23 @@ class _FindRideScreenState extends State<FindRideScreen> {
                       margin: const EdgeInsets.symmetric(horizontal: 4),
                       padding: const EdgeInsets.symmetric(vertical: 12),
                       decoration: BoxDecoration(
-                        color: isSelected ? Colors.black : Colors.white,
+                        color: isSelected
+                            ? (Theme.of(context).brightness == Brightness.dark ? const Color(0xFF2C2C2C) : Colors.black)
+                            : Theme.of(context).cardColor,
                         borderRadius: BorderRadius.circular(15),
-                        border: Border.all(color: Colors.black12),
+                        border: Border.all(color: Theme.of(context).dividerColor),
                       ),
                       child: Column(
                         children: [
                           Icon(
                             icon,
-                            color: isSelected ? Colors.white : Colors.black54,
+                            color: isSelected ? Colors.white : Theme.of(context).textTheme.bodyMedium?.color?.withValues(alpha: 0.5),
                           ),
                           const SizedBox(height: 5),
                           Text(
                             type,
                             style: TextStyle(
-                              color: isSelected ? Colors.white : Colors.black,
+                              color: isSelected ? Colors.white : Theme.of(context).textTheme.bodyLarge?.color,
                               fontWeight: FontWeight.bold,
                               fontSize: 13,
                             ),
@@ -426,24 +438,24 @@ class _FindRideScreenState extends State<FindRideScreen> {
                     child: Container(
                       padding: const EdgeInsets.all(16),
                       decoration: BoxDecoration(
-                        color: Colors.white,
+                        color: Theme.of(context).cardColor,
                         borderRadius: BorderRadius.circular(15),
-                        border: Border.all(color: Colors.black12),
+                        border: Border.all(color: Theme.of(context).dividerColor),
                       ),
                       child: Row(
                         children: [
-                          const Icon(
+                          Icon(
                             Icons.calendar_today_outlined,
                             size: 20,
-                            color: Colors.black54,
+                            color: Theme.of(context).iconTheme.color?.withValues(alpha: 0.6),
                           ),
                           const SizedBox(width: 10),
                           Text(
                             dateText,
                             style: TextStyle(
                               color: _selectedDate == null
-                                  ? Colors.black54
-                                  : Colors.black,
+                                  ? Theme.of(context).textTheme.bodyMedium?.color?.withValues(alpha: 0.5)
+                                  : Theme.of(context).textTheme.bodyLarge?.color,
                               fontWeight: _selectedDate == null
                                   ? FontWeight.normal
                                   : FontWeight.bold,
@@ -461,24 +473,24 @@ class _FindRideScreenState extends State<FindRideScreen> {
                     child: Container(
                       padding: const EdgeInsets.all(16),
                       decoration: BoxDecoration(
-                        color: Colors.white,
+                        color: Theme.of(context).cardColor,
                         borderRadius: BorderRadius.circular(15),
-                        border: Border.all(color: Colors.black12),
+                        border: Border.all(color: Theme.of(context).dividerColor),
                       ),
                       child: Row(
                         children: [
-                          const Icon(
+                          Icon(
                             Icons.access_time,
                             size: 20,
-                            color: Colors.black54,
+                            color: Theme.of(context).iconTheme.color?.withValues(alpha: 0.6),
                           ),
                           const SizedBox(width: 10),
                           Text(
                             timeText,
                             style: TextStyle(
                               color: _selectedTime == null
-                                  ? Colors.black54
-                                  : Colors.black,
+                                  ? Theme.of(context).textTheme.bodyMedium?.color?.withValues(alpha: 0.5)
+                                  : Theme.of(context).textTheme.bodyLarge?.color,
                               fontWeight: _selectedTime == null
                                   ? FontWeight.normal
                                   : FontWeight.bold,
@@ -519,10 +531,10 @@ class _FindRideScreenState extends State<FindRideScreen> {
                     height: 60,
                     decoration: BoxDecoration(
                       color: selectedSeats == seats
-                          ? Colors.black
-                          : Colors.white,
+                          ? (Theme.of(context).brightness == Brightness.dark ? const Color(0xFF2C2C2C) : Colors.black)
+                          : Theme.of(context).cardColor,
                       borderRadius: BorderRadius.circular(15),
-                      border: Border.all(color: Colors.black12),
+                      border: Border.all(color: Theme.of(context).dividerColor),
                     ),
                     child: Center(
                       child: Text(
@@ -530,7 +542,7 @@ class _FindRideScreenState extends State<FindRideScreen> {
                         style: TextStyle(
                           color: selectedSeats == seats
                               ? Colors.white
-                              : Colors.black,
+                              : Theme.of(context).textTheme.bodyLarge?.color,
                           fontWeight: FontWeight.bold,
                           fontSize: 18,
                         ),
@@ -547,7 +559,7 @@ class _FindRideScreenState extends State<FindRideScreen> {
               height: 60,
               child: ElevatedButton(
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.black,
+                  backgroundColor: Theme.of(context).brightness == Brightness.dark ? const Color(0xFF2C2C2C) : Colors.black,
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(30),
                   ),

@@ -50,12 +50,17 @@ class _OfferRideScreenState extends State<OfferRideScreen> {
       initialDate: DateTime.now(),
       firstDate: DateTime.now(),
       lastDate: DateTime(2100),
-      builder: (context, child) => Theme(
-        data: Theme.of(
-          context,
-        ).copyWith(colorScheme: const ColorScheme.light(primary: Colors.black)),
-        child: child!,
-      ),
+      builder: (context, child) {
+        final isDark = Theme.of(context).brightness == Brightness.dark;
+        return Theme(
+          data: Theme.of(context).copyWith(
+            colorScheme: isDark
+                ? const ColorScheme.dark(primary: Colors.white, onPrimary: Colors.black, surface: Color(0xFF1E1E1E))
+                : const ColorScheme.light(primary: Colors.black, onPrimary: Colors.white),
+          ),
+          child: child!,
+        );
+      },
     );
     if (picked != null) setState(() => _selectedDate = picked);
   }
@@ -64,12 +69,17 @@ class _OfferRideScreenState extends State<OfferRideScreen> {
     final TimeOfDay? picked = await showTimePicker(
       context: context,
       initialTime: TimeOfDay.now(),
-      builder: (context, child) => Theme(
-        data: Theme.of(
-          context,
-        ).copyWith(colorScheme: const ColorScheme.light(primary: Colors.black)),
-        child: child!,
-      ),
+      builder: (context, child) {
+        final isDark = Theme.of(context).brightness == Brightness.dark;
+        return Theme(
+          data: Theme.of(context).copyWith(
+            colorScheme: isDark
+                ? const ColorScheme.dark(primary: Colors.white, onPrimary: Colors.black, surface: Color(0xFF1E1E1E))
+                : const ColorScheme.light(primary: Colors.black, onPrimary: Colors.white),
+          ),
+          child: child!,
+        );
+      },
     );
     if (picked != null) setState(() => _selectedTime = picked);
   }
@@ -162,17 +172,17 @@ class _OfferRideScreenState extends State<OfferRideScreen> {
         : _selectedTime!.format(context);
 
     return Scaffold(
-      backgroundColor: const Color(0xFFF9F9F9),
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       appBar: AppBar(
-        backgroundColor: Colors.black,
+        backgroundColor: Theme.of(context).appBarTheme.backgroundColor,
         elevation: 0,
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back, color: Colors.white),
+          icon: Icon(Icons.arrow_back, color: Theme.of(context).appBarTheme.iconTheme?.color ?? Colors.white),
           onPressed: () => Navigator.pop(context),
         ),
-        title: const Text(
+        title: Text(
           "Offer a Ride",
-          style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+          style: TextStyle(color: Theme.of(context).appBarTheme.titleTextStyle?.color ?? Colors.white, fontWeight: FontWeight.bold),
         ),
       ),
       body: SingleChildScrollView(
@@ -183,9 +193,9 @@ class _OfferRideScreenState extends State<OfferRideScreen> {
             Container(
               padding: const EdgeInsets.all(16),
               decoration: BoxDecoration(
-                color: Colors.white,
+                color: Theme.of(context).cardColor,
                 borderRadius: BorderRadius.circular(20),
-                border: Border.all(color: Colors.black12),
+                border: Border.all(color: Theme.of(context).dividerColor),
               ),
               child: Column(
                 children: [
@@ -201,7 +211,7 @@ class _OfferRideScreenState extends State<OfferRideScreen> {
                       });
                     },
                   ),
-                  const Divider(height: 1, color: Colors.black12),
+                  Divider(height: 1, color: Theme.of(context).dividerColor),
                   AddressSearchWidget(
                     controller: destinationController,
                     hintText: "Your Destination",
@@ -240,21 +250,23 @@ class _OfferRideScreenState extends State<OfferRideScreen> {
                       margin: const EdgeInsets.symmetric(horizontal: 5),
                       padding: const EdgeInsets.symmetric(vertical: 15),
                       decoration: BoxDecoration(
-                        color: isSelected ? Colors.black : Colors.white,
+                        color: isSelected
+                            ? (Theme.of(context).brightness == Brightness.dark ? const Color(0xFF2C2C2C) : Colors.black)
+                            : Theme.of(context).cardColor,
                         borderRadius: BorderRadius.circular(15),
-                        border: Border.all(color: Colors.black12),
+                        border: Border.all(color: Theme.of(context).dividerColor),
                       ),
                       child: Column(
                         children: [
                           Icon(
                             icon,
-                            color: isSelected ? Colors.white : Colors.black54,
+                            color: isSelected ? Colors.white : Theme.of(context).textTheme.bodyMedium?.color?.withValues(alpha: 0.5),
                           ),
                           const SizedBox(height: 5),
                           Text(
                             type,
                             style: TextStyle(
-                              color: isSelected ? Colors.white : Colors.black,
+                              color: isSelected ? Colors.white : Theme.of(context).textTheme.bodyLarge?.color,
                               fontWeight: FontWeight.bold,
                             ),
                           ),
@@ -275,24 +287,24 @@ class _OfferRideScreenState extends State<OfferRideScreen> {
                     child: Container(
                       padding: const EdgeInsets.all(16),
                       decoration: BoxDecoration(
-                        color: Colors.white,
+                        color: Theme.of(context).cardColor,
                         borderRadius: BorderRadius.circular(15),
-                        border: Border.all(color: Colors.black12),
+                        border: Border.all(color: Theme.of(context).dividerColor),
                       ),
                       child: Row(
                         children: [
-                          const Icon(
+                          Icon(
                             Icons.calendar_today_outlined,
                             size: 20,
-                            color: Colors.black54,
+                            color: Theme.of(context).iconTheme.color?.withValues(alpha: 0.6),
                           ),
                           const SizedBox(width: 10),
                           Text(
                             dateText,
                             style: TextStyle(
                               color: _selectedDate == null
-                                  ? Colors.black54
-                                  : Colors.black,
+                                  ? Theme.of(context).textTheme.bodyMedium?.color?.withValues(alpha: 0.5)
+                                  : Theme.of(context).textTheme.bodyLarge?.color,
                               fontWeight: _selectedDate == null
                                   ? FontWeight.normal
                                   : FontWeight.bold,
@@ -310,24 +322,24 @@ class _OfferRideScreenState extends State<OfferRideScreen> {
                     child: Container(
                       padding: const EdgeInsets.all(16),
                       decoration: BoxDecoration(
-                        color: Colors.white,
+                        color: Theme.of(context).cardColor,
                         borderRadius: BorderRadius.circular(15),
-                        border: Border.all(color: Colors.black12),
+                        border: Border.all(color: Theme.of(context).dividerColor),
                       ),
                       child: Row(
                         children: [
-                          const Icon(
+                          Icon(
                             Icons.access_time,
                             size: 20,
-                            color: Colors.black54,
+                            color: Theme.of(context).iconTheme.color?.withValues(alpha: 0.6),
                           ),
                           const SizedBox(width: 10),
                           Text(
                             timeText,
                             style: TextStyle(
                               color: _selectedTime == null
-                                  ? Colors.black54
-                                  : Colors.black,
+                                  ? Theme.of(context).textTheme.bodyMedium?.color?.withValues(alpha: 0.5)
+                                  : Theme.of(context).textTheme.bodyLarge?.color,
                               fontWeight: _selectedTime == null
                                   ? FontWeight.normal
                                   : FontWeight.bold,
@@ -369,10 +381,10 @@ class _OfferRideScreenState extends State<OfferRideScreen> {
                     height: 60,
                     decoration: BoxDecoration(
                       color: selectedSeats == seats
-                          ? Colors.black
-                          : Colors.white,
+                          ? (Theme.of(context).brightness == Brightness.dark ? const Color(0xFF2C2C2C) : Colors.black)
+                          : Theme.of(context).cardColor,
                       borderRadius: BorderRadius.circular(15),
-                      border: Border.all(color: Colors.black12),
+                      border: Border.all(color: Theme.of(context).dividerColor),
                     ),
                     child: Center(
                       child: Text(
@@ -380,7 +392,7 @@ class _OfferRideScreenState extends State<OfferRideScreen> {
                         style: TextStyle(
                           color: selectedSeats == seats
                               ? Colors.white
-                              : Colors.black,
+                              : Theme.of(context).textTheme.bodyLarge?.color,
                           fontWeight: FontWeight.bold,
                           fontSize: 18,
                         ),
@@ -400,14 +412,25 @@ class _OfferRideScreenState extends State<OfferRideScreen> {
             TextField(
               controller: priceController,
               keyboardType: TextInputType.number,
+              style: TextStyle(color: Theme.of(context).textTheme.bodyLarge?.color),
               decoration: InputDecoration(
                 prefixText: "₹ ",
+                prefixStyle: TextStyle(color: Theme.of(context).textTheme.bodyLarge?.color),
                 hintText: "Enter price",
+                hintStyle: TextStyle(color: Theme.of(context).textTheme.bodyMedium?.color?.withValues(alpha: 0.5)),
                 filled: true,
-                fillColor: Colors.white,
+                fillColor: Theme.of(context).cardColor,
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(15),
-                  borderSide: const BorderSide(color: Colors.black12),
+                  borderSide: BorderSide(color: Theme.of(context).dividerColor),
+                ),
+                enabledBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(15),
+                  borderSide: BorderSide(color: Theme.of(context).dividerColor),
+                ),
+                focusedBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(15),
+                  borderSide: BorderSide(color: Theme.of(context).primaryColor),
                 ),
               ),
             ),
@@ -417,7 +440,7 @@ class _OfferRideScreenState extends State<OfferRideScreen> {
               height: 60,
               child: ElevatedButton(
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.black,
+                  backgroundColor: Theme.of(context).brightness == Brightness.dark ? const Color(0xFF2C2C2C) : Colors.black,
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(30),
                   ),

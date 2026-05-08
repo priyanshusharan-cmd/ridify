@@ -145,12 +145,12 @@ class _LoginScreenState extends State<LoginScreen> {
   }
 
   // ── BORDER HELPER ─────────────────────────────────────────────────────────
-  // Returns a thick black border when the field is focused, none otherwise.
+  // Returns a thick primary border when the field is focused, none otherwise.
   OutlineInputBorder _border(bool focused) {
     return OutlineInputBorder(
       borderRadius: BorderRadius.circular(18),
       borderSide: focused
-          ? const BorderSide(color: Colors.black, width: 2.5)
+          ? BorderSide(color: Theme.of(context).primaryColor, width: 2.5)
           : BorderSide.none,
     );
   }
@@ -158,7 +158,7 @@ class _LoginScreenState extends State<LoginScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFFF5F5F5),
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       extendBodyBehindAppBar: true,
       appBar: AppBar(
         backgroundColor: Colors.transparent,
@@ -182,9 +182,13 @@ class _LoginScreenState extends State<LoginScreen> {
                   ),
                 ),
                 const SizedBox(height: 20),
-                const Text(
+                Text(
                   "Ridify",
-                  style: TextStyle(fontSize: 34, fontWeight: FontWeight.bold),
+                  style: TextStyle(
+                    fontSize: 34, 
+                    fontWeight: FontWeight.bold,
+                    color: Theme.of(context).textTheme.bodyLarge?.color,
+                  ),
                 ),
                 const SizedBox(height: 40),
 
@@ -228,7 +232,7 @@ class _LoginScreenState extends State<LoginScreen> {
                   height: 55,
                   child: ElevatedButton(
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.black,
+                      backgroundColor: Theme.of(context).brightness == Brightness.dark ? const Color(0xFF2C2C2C) : Colors.black,
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(30),
                       ),
@@ -255,7 +259,7 @@ class _LoginScreenState extends State<LoginScreen> {
                       isLoginMode
                           ? "Don't have an account? "
                           : "Already have an account? ",
-                      style: const TextStyle(color: Colors.black54),
+                      style: TextStyle(color: Theme.of(context).brightness == Brightness.dark ? Colors.white54 : Colors.black54),
                     ),
                     GestureDetector(
                       onTap: () {
@@ -265,7 +269,10 @@ class _LoginScreenState extends State<LoginScreen> {
                       },
                       child: Text(
                         isLoginMode ? "Sign up" : "Log in",
-                        style: const TextStyle(fontWeight: FontWeight.bold),
+                        style: TextStyle(
+                          fontWeight: FontWeight.bold,
+                          color: Theme.of(context).textTheme.bodyLarge?.color,
+                        ),
                       ),
                     ),
                   ],
@@ -287,6 +294,7 @@ class _LoginScreenState extends State<LoginScreen> {
       keyboardType: TextInputType.visiblePassword,
       decoration: InputDecoration(
         hintText: "Password",
+        hintStyle: TextStyle(color: Theme.of(context).brightness == Brightness.dark ? Colors.white54 : Colors.black54),
         prefixIcon: const Icon(Icons.lock_outline, color: Colors.grey),
         suffixIcon: IconButton(
           icon: Icon(
@@ -296,7 +304,7 @@ class _LoginScreenState extends State<LoginScreen> {
           onPressed: () => setState(() => _obscurePassword = !_obscurePassword),
         ),
         filled: true,
-        fillColor: Colors.white,
+        fillColor: Theme.of(context).cardColor,
         border: _border(false),
         enabledBorder: _border(false),
         focusedBorder: _border(true),
@@ -318,9 +326,10 @@ class _LoginScreenState extends State<LoginScreen> {
       keyboardType: isNumber ? TextInputType.number : TextInputType.text,
       decoration: InputDecoration(
         hintText: hint,
+        hintStyle: TextStyle(color: Theme.of(context).brightness == Brightness.dark ? Colors.white54 : Colors.black54),
         prefixIcon: Icon(icon, color: Colors.grey),
         filled: true,
-        fillColor: Colors.white,
+        fillColor: Theme.of(context).cardColor,
         border: _border(false),
         enabledBorder: _border(false),
         focusedBorder: _border(true),

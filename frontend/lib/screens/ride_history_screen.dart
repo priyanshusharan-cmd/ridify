@@ -71,22 +71,26 @@ class _RideHistoryScreenState extends State<RideHistoryScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFFF9F9F9),
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       body: SafeArea(
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Padding(
-              padding: EdgeInsets.all(24.0),
+            Padding(
+              padding: const EdgeInsets.all(24.0),
               child: Text(
                 "Ride History",
-                style: TextStyle(fontSize: 28, fontWeight: FontWeight.bold),
+                style: TextStyle(
+                  fontSize: 28, 
+                  fontWeight: FontWeight.bold,
+                  color: Theme.of(context).textTheme.bodyLarge?.color,
+                ),
               ),
             ),
             Expanded(
               child: isLoading
-                  ? const Center(
-                      child: CircularProgressIndicator(color: Colors.black),
+                  ? Center(
+                      child: CircularProgressIndicator(color: Theme.of(context).primaryColor),
                     )
                   : myCompletedRides.isEmpty
                   ? Center(
@@ -133,19 +137,21 @@ class _RideHistoryScreenState extends State<RideHistoryScreen> {
                             ride['kicked'] != null &&
                             (ride['kicked'] as List).contains(uname);
 
+                        final isDark = Theme.of(context).brightness == Brightness.dark;
+
                         String statusText = "Completed";
-                        Color statusColor = Colors.grey;
+                        Color statusColor = isDark ? Colors.grey.shade400 : Colors.grey;
                         if (isCancelled) {
                           statusText = "Cancelled";
-                          statusColor = Colors.red;
+                          statusColor = isDark ? Colors.red.shade300 : Colors.red;
                         }
                         if (wasDeclined) {
                           statusText = "Declined";
-                          statusColor = Colors.orange;
+                          statusColor = isDark ? Colors.orange.shade300 : Colors.orange;
                         }
                         if (wasKicked) {
                           statusText = "Removed from Ride";
-                          statusColor = Colors.redAccent;
+                          statusColor = isDark ? Colors.red.shade300 : Colors.redAccent;
                         }
 
                         return Card(
@@ -154,7 +160,7 @@ class _RideHistoryScreenState extends State<RideHistoryScreen> {
                             borderRadius: BorderRadius.circular(15),
                           ),
                           elevation: 0,
-                          color: Colors.white,
+                          color: Theme.of(context).cardColor,
                           child: Padding(
                             padding: const EdgeInsets.all(16),
                             child: Column(
@@ -171,8 +177,8 @@ class _RideHistoryScreenState extends State<RideHistoryScreen> {
                                       ),
                                       decoration: BoxDecoration(
                                         color: wasIDriver
-                                            ? Colors.blue[50]
-                                            : Colors.green[50],
+                                            ? (isDark ? const Color(0xFF1A2633) : Colors.blue[50])
+                                            : (isDark ? const Color(0xFF162B1D) : Colors.green[50]),
                                         borderRadius: BorderRadius.circular(8),
                                       ),
                                       child: Text(
@@ -181,8 +187,8 @@ class _RideHistoryScreenState extends State<RideHistoryScreen> {
                                             : "Requested (Rider)",
                                         style: TextStyle(
                                           color: wasIDriver
-                                              ? Colors.blue[700]
-                                              : Colors.green[700],
+                                              ? (isDark ? Colors.blue.shade300 : Colors.blue[700])
+                                              : (isDark ? Colors.green.shade300 : Colors.green[700]),
                                           fontWeight: FontWeight.bold,
                                           fontSize: 12,
                                         ),
@@ -190,9 +196,10 @@ class _RideHistoryScreenState extends State<RideHistoryScreen> {
                                     ),
                                     Text(
                                       "₹${ride['fare'] ?? '0'}",
-                                      style: const TextStyle(
+                                      style: TextStyle(
                                         fontWeight: FontWeight.bold,
                                         fontSize: 16,
+                                        color: Theme.of(context).textTheme.bodyLarge?.color,
                                       ),
                                     ),
                                   ],
@@ -211,8 +218,9 @@ class _RideHistoryScreenState extends State<RideHistoryScreen> {
                                         formatAddress(ride['pickupLocation']?.toString()),
                                         maxLines: 1,
                                         overflow: TextOverflow.ellipsis,
-                                        style: const TextStyle(
+                                        style: TextStyle(
                                           fontWeight: FontWeight.w600,
+                                          color: Theme.of(context).textTheme.bodyLarge?.color,
                                         ),
                                       ),
                                     ),
@@ -227,7 +235,7 @@ class _RideHistoryScreenState extends State<RideHistoryScreen> {
                                   child: Container(
                                     height: 20,
                                     width: 2,
-                                    color: Colors.black12,
+                                    color: Theme.of(context).dividerColor,
                                   ),
                                 ),
                                 Row(
@@ -243,8 +251,9 @@ class _RideHistoryScreenState extends State<RideHistoryScreen> {
                                         formatAddress(ride['destination']?.toString()),
                                         maxLines: 1,
                                         overflow: TextOverflow.ellipsis,
-                                        style: const TextStyle(
+                                        style: TextStyle(
                                           fontWeight: FontWeight.w600,
+                                          color: Theme.of(context).textTheme.bodyLarge?.color,
                                         ),
                                       ),
                                     ),
@@ -257,8 +266,8 @@ class _RideHistoryScreenState extends State<RideHistoryScreen> {
                                   children: [
                                     Text(
                                       "With: ${wasIDriver ? 'Ride Group' : (ride['riderName'] ?? 'Driver')}",
-                                      style: const TextStyle(
-                                        color: Colors.black54,
+                                      style: TextStyle(
+                                        color: Theme.of(context).textTheme.bodyMedium?.color?.withValues(alpha: 0.5),
                                       ),
                                     ),
                                     Text(

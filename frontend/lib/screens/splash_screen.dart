@@ -31,10 +31,10 @@ class _SplashScreenState extends State<SplashScreen>
   // Font size scales with screen width, clamped between phone and desktop sizes.
   double get _fontSize => (_screenWidth * 0.22).clamp(60.0, 170.0);
 
-  TextStyle get _ridifyStyle => TextStyle(
+  TextStyle _ridifyStyle(BuildContext context) => TextStyle(
     fontSize: _fontSize,
     fontWeight: FontWeight.bold,
-    color: Colors.black,
+    color: Theme.of(context).textTheme.bodyLarge?.color,
     fontFamily: 'Georgia',
     height: 1.0,
   );
@@ -152,7 +152,7 @@ class _SplashScreenState extends State<SplashScreen>
 
   void _computeLetterPositions() {
     final painter = TextPainter(
-      text: TextSpan(text: _appName, style: _ridifyStyle),
+      text: TextSpan(text: _appName, style: _ridifyStyle(context)),
       textDirection: TextDirection.ltr,
     )..layout(maxWidth: double.infinity);
 
@@ -256,7 +256,7 @@ class _SplashScreenState extends State<SplashScreen>
     final double carTop = blockTop + textHeight + _gapBetweenTextAndCar;
 
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       body: AnimatedBuilder(
         animation: _controller,
         builder: (context, _) {
@@ -274,7 +274,7 @@ class _SplashScreenState extends State<SplashScreen>
                     for (int i = 0; i < _appName.length; i++)
                       Opacity(
                         opacity: _opacityFor(i),
-                        child: Text(_appName[i], style: _ridifyStyle),
+                        child: Text(_appName[i], style: _ridifyStyle(context)),
                       ),
                   ],
                 ),

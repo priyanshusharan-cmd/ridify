@@ -305,9 +305,9 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
     ];
 
     return Scaffold(
-      backgroundColor: const Color(0xFFF5F5F5),
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       appBar: AppBar(
-        backgroundColor: Colors.black,
+        backgroundColor: Theme.of(context).appBarTheme.backgroundColor,
         elevation: 0,
         centerTitle: false,
         titleSpacing: 24,
@@ -442,7 +442,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
       ),
       body: pages[_currentIndex],
       bottomNavigationBar: BottomNavigationBar(
-        backgroundColor: Colors.black,
+        backgroundColor: Theme.of(context).bottomNavigationBarTheme.backgroundColor,
         currentIndex: _currentIndex,
         onTap: (index) {
           // ── Easter Egg ───────────────────────────────────────────────────
@@ -455,8 +455,8 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
           setState(() => _currentIndex = index);
         },
         type: BottomNavigationBarType.fixed,
-        selectedItemColor: Colors.white,
-        unselectedItemColor: Colors.white54,
+        selectedItemColor: Theme.of(context).bottomNavigationBarTheme.selectedItemColor,
+        unselectedItemColor: Theme.of(context).bottomNavigationBarTheme.unselectedItemColor,
         items: [
           const BottomNavigationBarItem(icon: Icon(Icons.home), label: "Home"),
           BottomNavigationBarItem(
@@ -482,6 +482,23 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
 
   // ── Home tab ───────────────────────────────────────────────────────────────
   Widget _buildHomeTab() {
+    final isDarkTheme = Theme.of(context).brightness == Brightness.dark;
+    
+    final Color earningsBg = isDarkTheme ? const Color(0xFF162B1D) : Colors.green.shade50;
+    final Color earningsBorder = isDarkTheme ? const Color(0xFF23472C) : Colors.green.shade100;
+    final Color earningsIconBg = isDarkTheme ? const Color(0xFF1E3F26) : Colors.green.shade100;
+    final Color earningsText = isDarkTheme ? Colors.green.shade300 : Colors.green;
+    
+    final Color spendingBg = isDarkTheme ? const Color(0xFF331A1A) : Colors.red.shade50;
+    final Color spendingBorder = isDarkTheme ? const Color(0xFF4D2626) : Colors.red.shade100;
+    final Color spendingIconBg = isDarkTheme ? const Color(0xFF402020) : Colors.red.shade100;
+    final Color spendingText = isDarkTheme ? Colors.red.shade300 : Colors.red;
+    
+    final Color safetyBg = isDarkTheme ? const Color(0xFF1A2633) : Colors.blue.shade50;
+    final Color safetyBorder = isDarkTheme ? const Color(0xFF26394D) : Colors.blue.shade100;
+    final Color safetyText = isDarkTheme ? Colors.blue.shade300 : Colors.blue;
+    final Color mainTextColor = isDarkTheme ? Colors.white : Colors.black87;
+
     double totalEarnings = 0;
     double totalSpending = 0;
 
@@ -514,7 +531,11 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
           children: [
             Text(
               "Hello, ${widget.userName.split(' ')[0]}! 👋",
-              style: const TextStyle(fontSize: 26, fontWeight: FontWeight.bold),
+              style: TextStyle(
+                fontSize: 26, 
+                fontWeight: FontWeight.bold,
+                color: Theme.of(context).textTheme.bodyLarge?.color,
+              ),
             ),
             const SizedBox(height: 25),
             _actionCard(
@@ -556,9 +577,9 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                   child: Container(
                     padding: const EdgeInsets.all(16),
                     decoration: BoxDecoration(
-                      color: Colors.green.shade50,
+                      color: earningsBg,
                       borderRadius: BorderRadius.circular(20),
-                      border: Border.all(color: Colors.green.shade100),
+                      border: Border.all(color: earningsBorder),
                     ),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
@@ -566,20 +587,20 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                         Container(
                           padding: const EdgeInsets.all(10),
                           decoration: BoxDecoration(
-                            color: Colors.green.shade100,
+                            color: earningsIconBg,
                             shape: BoxShape.circle,
                           ),
-                          child: const Icon(
+                          child: Icon(
                             Icons.arrow_downward,
-                            color: Colors.green,
+                            color: earningsText,
                             size: 24,
                           ),
                         ),
                         const SizedBox(height: 12),
-                        const Text(
+                        Text(
                           "Total Earnings",
                           style: TextStyle(
-                            color: Colors.green,
+                            color: earningsText,
                             fontWeight: FontWeight.bold,
                             fontSize: 14,
                           ),
@@ -587,8 +608,8 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                         const SizedBox(height: 4),
                         Text(
                           "₹${totalEarnings.toStringAsFixed(0)}",
-                          style: const TextStyle(
-                            color: Colors.black87,
+                          style: TextStyle(
+                            color: mainTextColor,
                             fontSize: 22,
                             fontWeight: FontWeight.bold,
                           ),
@@ -602,9 +623,9 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                   child: Container(
                     padding: const EdgeInsets.all(16),
                     decoration: BoxDecoration(
-                      color: Colors.red.shade50,
+                      color: spendingBg,
                       borderRadius: BorderRadius.circular(20),
-                      border: Border.all(color: Colors.red.shade100),
+                      border: Border.all(color: spendingBorder),
                     ),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
@@ -612,20 +633,20 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                         Container(
                           padding: const EdgeInsets.all(10),
                           decoration: BoxDecoration(
-                            color: Colors.red.shade100,
+                            color: spendingIconBg,
                             shape: BoxShape.circle,
                           ),
-                          child: const Icon(
+                          child: Icon(
                             Icons.arrow_upward,
-                            color: Colors.red,
+                            color: spendingText,
                             size: 24,
                           ),
                         ),
                         const SizedBox(height: 12),
-                        const Text(
+                        Text(
                           "Total Spending",
                           style: TextStyle(
-                            color: Colors.red,
+                            color: spendingText,
                             fontWeight: FontWeight.bold,
                             fontSize: 14,
                           ),
@@ -633,8 +654,8 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                         const SizedBox(height: 4),
                         Text(
                           "₹${totalSpending.toStringAsFixed(0)}",
-                          style: const TextStyle(
-                            color: Colors.black87,
+                          style: TextStyle(
+                            color: mainTextColor,
                             fontSize: 22,
                             fontWeight: FontWeight.bold,
                           ),
@@ -650,15 +671,15 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
               width: double.infinity,
               padding: const EdgeInsets.all(20),
               decoration: BoxDecoration(
-                color: Colors.blue.shade50,
+                color: safetyBg,
                 borderRadius: BorderRadius.circular(20),
-                border: Border.all(color: Colors.blue.shade100),
+                border: Border.all(color: safetyBorder),
               ),
-              child: const Row(
+              child: Row(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Icon(Icons.security, color: Colors.blue, size: 30),
-                  SizedBox(width: 15),
+                  Icon(Icons.security, color: safetyText, size: 30),
+                  const SizedBox(width: 15),
                   Expanded(
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
@@ -666,16 +687,16 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                         Text(
                           "Safety First",
                           style: TextStyle(
-                            color: Colors.blue,
+                            color: safetyText,
                             fontWeight: FontWeight.bold,
                             fontSize: 16,
                           ),
                         ),
-                        SizedBox(height: 5),
+                        const SizedBox(height: 5),
                         Text(
                           "Always verify your co-passenger's details and share your ride with a friend.",
                           style: TextStyle(
-                            color: Colors.black87,
+                            color: mainTextColor,
                             fontSize: 13,
                             height: 1.4,
                           ),
@@ -695,24 +716,42 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
   Widget _actionCard(
     String title,
     String subtitle,
-    bool isDark,
+    bool isPrimary,
     VoidCallback onTap,
   ) {
+    final isDarkTheme = Theme.of(context).brightness == Brightness.dark;
+    
+    // In light mode: primary card is black, secondary is white.
+    // In dark mode: primary card is dark charcoal, secondary is dark grey (cardColor).
+    final bgColor = isPrimary 
+      ? (isDarkTheme ? const Color(0xFF2C2C2C) : Colors.black)
+      : Theme.of(context).cardColor;
+      
+    final fgColor = isPrimary 
+      ? Colors.white
+      : Theme.of(context).textTheme.bodyLarge?.color;
+      
+    final subColor = isPrimary
+      ? Colors.white70
+      : (isDarkTheme ? Colors.white54 : Colors.black54);
+      
+    final borderColor = isDarkTheme ? Colors.transparent : Colors.black12;
+
     return GestureDetector(
       onTap: onTap,
       child: Container(
         width: double.infinity,
         padding: const EdgeInsets.all(24),
         decoration: BoxDecoration(
-          color: isDark ? Colors.black : Colors.white,
+          color: bgColor,
           borderRadius: BorderRadius.circular(24),
-          border: isDark ? null : Border.all(color: Colors.black12),
+          border: Border.all(color: isPrimary ? Colors.transparent : borderColor),
         ),
         child: Row(
           children: [
             Icon(
-              isDark ? Icons.directions_car : Icons.search,
-              color: isDark ? Colors.white : Colors.black,
+              isPrimary ? Icons.directions_car : Icons.search,
+              color: fgColor,
             ),
             const SizedBox(width: 16),
             Column(
@@ -721,7 +760,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                 Text(
                   title,
                   style: TextStyle(
-                    color: isDark ? Colors.white : Colors.black,
+                    color: fgColor,
                     fontWeight: FontWeight.bold,
                     fontSize: 18,
                   ),
@@ -729,7 +768,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                 Text(
                   subtitle,
                   style: TextStyle(
-                    color: isDark ? Colors.white70 : Colors.black54,
+                    color: subColor,
                   ),
                 ),
               ],
