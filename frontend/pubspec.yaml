@@ -37,6 +37,7 @@ dependencies:
   http: ^1.2.0
   socket_io_client: ^3.1.4
   flutter_map: ^7.0.2
+  flutter_map_cancellable_tile_provider: ^3.0.2
   latlong2: ^0.9.1
   geolocator: ^14.0.2
   shared_preferences: ^2.3.2
