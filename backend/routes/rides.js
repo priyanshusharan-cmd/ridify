@@ -38,7 +38,7 @@ router.get('/search', async (req, res) => {
             type: "Point",
             coordinates: [parseFloat(lng), parseFloat(lat)]
           },
-          $maxDistance: 500
+          $maxDistance: 2000
         }
       };
       if (destination) {
