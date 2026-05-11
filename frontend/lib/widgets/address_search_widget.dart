@@ -43,7 +43,7 @@ class _AddressSearchWidgetState extends State<AddressSearchWidget> {
 
     try {
       final url = Uri.parse(
-          'https://nominatim.openstreetmap.org/search?q=$query, Bengaluru&format=json&limit=5&countrycodes=in');
+          'https://nominatim.openstreetmap.org/search?q=$query&format=json&limit=5&countrycodes=in');
       final response = await http.get(url, headers: {
         'User-Agent': 'ridify_app/1.0',
       });

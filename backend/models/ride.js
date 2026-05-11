@@ -43,6 +43,7 @@ const RideSchema = new mongoose.Schema({
   boardedPassengers: { type: [String], default: [] },
   droppedPassengers: { type: [String], default: [] },
   paidPassengers: { type: [String], default: [] },
+  arrivedAt: { type: [String], default: [] },
   declined: { type: [String], default: [] },
   kicked: { type: [String], default: [] },
   seatAllocations: { type: Map, of: Number, default: {} },

@@ -188,7 +188,7 @@ router.delete('/', adminOnly, async (req, res) => {
 
 router.patch('/request/:id', async (req, res) => {
   try {
-    const { riderName, seats, computedFare, computedDistance, startIndex, endIndex, pickupLat, pickupLng, destLat, destLng } = req.body;
+    const { riderName, seats, computedFare, computedDistance, startIndex, endIndex, pickupLat, pickupLng, destLat, destLng, pickupLocation, destination } = req.body;
     
     const ride = await Ride.findById(req.params.id);
     if (!ride) return res.status(404).json({ error: "Ride not found" });
@@ -200,7 +200,7 @@ router.patch('/request/:id', async (req, res) => {
     ride.requests.push(riderName);
     if (!ride.riderDetails) ride.riderDetails = new Map();
     ride.riderDetails.set(riderName, {
-      pickupLat, pickupLng, destLat, destLng,
+      pickupLat, pickupLng, destLat, destLng, pickupLocation, destination,
       fare: computedFare, distance: computedDistance, seats,
       startIndex, endIndex, paid: false
     });
@@ -262,6 +262,22 @@ router.patch('/kick/:id/:riderName', async (req, res) => {
 
     await ride.save();
     req.io.emit('passenger_kicked', { rideId: ride._id, kickedUser: req.params.riderName, ride });
+    res.status(200).json(ride);
+  } catch (err) { res.status(500).json({ error: err.message }); }
+});
+
+router.patch('/arrive/:id/:riderName', async (req, res) => {
+  try {
+    let ride = await Ride.findById(req.params.id);
+    if (!ride) return res.status(404).json({ error: "Ride not found" });
+
+    if (!ride.arrivedAt) ride.arrivedAt = [];
+    if (!ride.arrivedAt.includes(req.params.riderName)) {
+      ride.arrivedAt.push(req.params.riderName);
+    }
+    await ride.save();
+    
+    req.io.emit('driver_arrived', { rideId: ride._id, riderName: req.params.riderName, ride });
     res.status(200).json(ride);
   } catch (err) { res.status(500).json({ error: err.message }); }
 });

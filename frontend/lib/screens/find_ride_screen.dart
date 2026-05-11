@@ -190,7 +190,9 @@ class _FindRideScreenState extends State<FindRideScreen> {
           "pickupLat": pickupLat,
           "pickupLng": pickupLng,
           "destLat": destLat,
-          "destLng": destLng
+          "destLng": destLng,
+          "pickupLocation": pickupController.text,
+          "destination": destinationController.text
         }),
       );
 
@@ -451,6 +453,7 @@ class _FindRideScreenState extends State<FindRideScreen> {
                   child: GestureDetector(
                     onTap: () => _onVehicleChanged(type),
                     child: Container(
+                      height: 85,
                       margin: const EdgeInsets.symmetric(horizontal: 4),
                       padding: const EdgeInsets.symmetric(vertical: 12),
                       decoration: BoxDecoration(
@@ -458,7 +461,10 @@ class _FindRideScreenState extends State<FindRideScreen> {
                             ? (Theme.of(context).brightness == Brightness.dark ? const Color(0xFF2C2C2C) : Colors.black)
                             : Theme.of(context).cardColor,
                         borderRadius: BorderRadius.circular(15),
-                        border: Border.all(color: Theme.of(context).dividerColor),
+                        border: Border.all(
+                          color: isSelected ? Colors.white : Colors.transparent,
+                          width: 2.0,
+                        ),
                       ),
                       child: Column(
                         children: [
@@ -588,7 +594,10 @@ class _FindRideScreenState extends State<FindRideScreen> {
                           ? (Theme.of(context).brightness == Brightness.dark ? const Color(0xFF2C2C2C) : Colors.black)
                           : Theme.of(context).cardColor,
                       borderRadius: BorderRadius.circular(15),
-                      border: Border.all(color: Theme.of(context).dividerColor),
+                      border: Border.all(
+                        color: selectedSeats == seats ? Colors.white : Colors.transparent,
+                        width: 2.0,
+                      ),
                     ),
                     child: Center(
                       child: Text(
