@@ -341,14 +341,19 @@ class ActiveRidesTab extends StatelessWidget {
                             final int requestedSeats = (riderDetail?['seats'] as num?)?.toInt() ?? ((r['seatAllocations'] as Map?)?[requester] as num?)?.toInt() ?? 1;
                             final num fare = riderDetail?['fare'] ?? r['fare'] ?? 0;
                             final num distance = riderDetail?['distance'] ?? 0;
+                            final String pickupAddr = (riderDetail?['pickupLocation'] ?? '').toString();
+                            final String destAddr = (riderDetail?['destination'] ?? '').toString();
+                            String shortPickup = pickupAddr.length > 50 ? '${pickupAddr.substring(0, 50)}...' : pickupAddr;
+                            String shortDest = destAddr.length > 50 ? '${destAddr.substring(0, 50)}...' : destAddr;
                             
                             return Padding(
                               padding: const EdgeInsets.only(left: 16.0, right: 16.0, bottom: 16.0),
                               child: Container(
-                                padding: const EdgeInsets.all(12),
+                                padding: const EdgeInsets.all(14),
                                 decoration: BoxDecoration(
-                                  color: Theme.of(context).brightness == Brightness.dark ? const Color(0xFF1E1E1E) : Colors.grey.shade100,
-                                  borderRadius: BorderRadius.circular(15),
+                                  color: Theme.of(context).brightness == Brightness.dark ? const Color(0xFF1E1E1E) : Colors.grey.shade50,
+                                  borderRadius: BorderRadius.circular(16),
+                                  border: Border.all(color: Theme.of(context).brightness == Brightness.dark ? Colors.white10 : Colors.black12),
                                 ),
                                 child: Column(
                                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -357,94 +362,54 @@ class ActiveRidesTab extends StatelessWidget {
                                       children: [
                                         CircleAvatar(
                                           backgroundColor: Theme.of(context).brightness == Brightness.dark ? const Color(0xFF2C2C2C) : Colors.black,
-                                          child: Text(
-                                            requester.toString().substring(0, 1).toUpperCase(),
-                                            style: const TextStyle(
-                                              color: Colors.white,
-                                              fontWeight: FontWeight.bold,
-                                            ),
-                                          ),
+                                          child: Text(requester.toString().substring(0, 1).toUpperCase(), style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
                                         ),
                                         const SizedBox(width: 12),
                                         Expanded(
                                           child: Column(
                                             crossAxisAlignment: CrossAxisAlignment.start,
                                             children: [
-                                              Text(
-                                                "$requester wants to join",
-                                                style: const TextStyle(
-                                                  fontWeight: FontWeight.bold,
-                                                  fontSize: 16,
-                                                ),
-                                              ),
-                                              Text(
-                                                "$requestedSeats Seat(s) • ${distance.toStringAsFixed(1)} km",
-                                                style: TextStyle(
-                                                  color: Theme.of(context).textTheme.bodyMedium?.color?.withValues(alpha: 0.6),
-                                                  fontSize: 13,
-                                                ),
-                                              ),
+                                              Text("$requester", style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
+                                              Text("$requestedSeats Seat(s) • ${distance.toStringAsFixed(1)} km", style: TextStyle(color: Theme.of(context).textTheme.bodyMedium?.color?.withValues(alpha: 0.6), fontSize: 12)),
                                             ],
                                           ),
                                         ),
-                                        Text(
-                                          "₹$fare",
-                                          style: const TextStyle(
-                                            fontWeight: FontWeight.bold,
-                                            fontSize: 18,
-                                            color: Colors.green,
-                                          ),
+                                        Container(
+                                          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                                          decoration: BoxDecoration(color: Colors.green.withValues(alpha: 0.15), borderRadius: BorderRadius.circular(20)),
+                                          child: Text("₹$fare", style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16, color: Colors.green)),
                                         ),
                                       ],
                                     ),
-                                    const SizedBox(height: 16),
+                                    if (shortPickup.isNotEmpty || shortDest.isNotEmpty) ...[
+                                      const SizedBox(height: 10),
+                                      Container(
+                                        padding: const EdgeInsets.all(10),
+                                        decoration: BoxDecoration(
+                                          color: Theme.of(context).brightness == Brightness.dark ? const Color(0xFF252525) : Colors.white,
+                                          borderRadius: BorderRadius.circular(10),
+                                        ),
+                                        child: Column(children: [
+                                          if (shortPickup.isNotEmpty) Row(children: [const Icon(Icons.circle, color: Colors.green, size: 10), const SizedBox(width: 8), Expanded(child: Text(shortPickup, style: TextStyle(fontSize: 11, color: Theme.of(context).textTheme.bodyMedium?.color?.withValues(alpha: 0.7)), maxLines: 1, overflow: TextOverflow.ellipsis))]),
+                                          if (shortPickup.isNotEmpty && shortDest.isNotEmpty) Padding(padding: const EdgeInsets.only(left: 4, top: 2, bottom: 2), child: Container(height: 12, width: 2, color: Theme.of(context).brightness == Brightness.dark ? Colors.white24 : Colors.black12)),
+                                          if (shortDest.isNotEmpty) Row(children: [const Icon(Icons.circle, color: Colors.red, size: 10), const SizedBox(width: 8), Expanded(child: Text(shortDest, style: TextStyle(fontSize: 11, color: Theme.of(context).textTheme.bodyMedium?.color?.withValues(alpha: 0.7)), maxLines: 1, overflow: TextOverflow.ellipsis))]),
+                                        ]),
+                                      ),
+                                    ],
+                                    const SizedBox(height: 12),
                                     Row(
                                       children: [
-                                        Expanded(
-                                          child: OutlinedButton(
-                                            style: OutlinedButton.styleFrom(
-                                              side: const BorderSide(color: Colors.redAccent),
-                                              padding: const EdgeInsets.symmetric(vertical: 12),
-                                              shape: RoundedRectangleBorder(
-                                                borderRadius: BorderRadius.circular(10),
-                                              ),
-                                            ),
-                                            onPressed: () => _action(
-                                              "$kBaseUrl/api/rides/decline/${r['_id']}/$requester",
-                                              context,
-                                            ),
-                                            child: const Text(
-                                              "Decline",
-                                              style: TextStyle(
-                                                color: Colors.redAccent,
-                                                fontWeight: FontWeight.bold,
-                                              ),
-                                            ),
-                                          ),
-                                        ),
+                                        Expanded(child: OutlinedButton(
+                                          style: OutlinedButton.styleFrom(side: const BorderSide(color: Colors.redAccent), padding: const EdgeInsets.symmetric(vertical: 12), shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10))),
+                                          onPressed: () => _action("$kBaseUrl/api/rides/decline/${r['_id']}/$requester", context),
+                                          child: const Text("Decline", style: TextStyle(color: Colors.redAccent, fontWeight: FontWeight.bold)),
+                                        )),
                                         const SizedBox(width: 12),
-                                        Expanded(
-                                          child: ElevatedButton(
-                                            style: ElevatedButton.styleFrom(
-                                              backgroundColor: Colors.black,
-                                              padding: const EdgeInsets.symmetric(vertical: 12),
-                                              shape: RoundedRectangleBorder(
-                                                borderRadius: BorderRadius.circular(10),
-                                              ),
-                                            ),
-                                            onPressed: () => _action(
-                                              "$kBaseUrl/api/rides/accept/${r['_id']}/$requester",
-                                              context,
-                                            ),
-                                            child: const Text(
-                                              "Accept",
-                                              style: TextStyle(
-                                                color: Colors.white,
-                                                fontWeight: FontWeight.bold,
-                                              ),
-                                            ),
-                                          ),
-                                        ),
+                                        Expanded(child: ElevatedButton(
+                                          style: ElevatedButton.styleFrom(backgroundColor: Colors.black, padding: const EdgeInsets.symmetric(vertical: 12), shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10))),
+                                          onPressed: () => _action("$kBaseUrl/api/rides/accept/${r['_id']}/$requester", context),
+                                          child: const Text("Accept", style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
+                                        )),
                                       ],
                                     ),
                                   ],

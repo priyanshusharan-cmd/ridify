@@ -4,7 +4,6 @@ import 'dart:convert';
 import 'package:geolocator/geolocator.dart';
 import 'match_status_screen.dart';
 import '../widgets/address_search_widget.dart';
-import '../core/utils.dart';
 import '../core/constants.dart';
 
 class FindRideScreen extends StatefulWidget {
@@ -175,7 +174,11 @@ class _FindRideScreenState extends State<FindRideScreen> {
     }
   }
 
+  bool _isSendingRequest = false;
+
   Future<void> sendRideRequest(dynamic ride, String driverName) async {
+    if (_isSendingRequest) return;
+    _isSendingRequest = true;
     try {
       final response = await http.patch(
         Uri.parse("$kBaseUrl/api/rides/request/${ride['_id']}"),
@@ -208,9 +211,16 @@ class _FindRideScreenState extends State<FindRideScreen> {
             ),
           ),
         );
+      } else if (mounted) {
+        final err = jsonDecode(response.body)['error'] ?? "Request failed";
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(err), backgroundColor: Colors.red),
+        );
       }
     } catch (e) {
       debugPrint("❌ Request Error: $e");
+    } finally {
+      _isSendingRequest = false;
     }
   }
 

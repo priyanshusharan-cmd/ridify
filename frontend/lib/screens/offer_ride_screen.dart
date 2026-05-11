@@ -189,14 +189,15 @@ class _OfferRideScreenState extends State<OfferRideScreen> {
       child: GestureDetector(
         onTap: () => setState(() => routePreference = value),
         child: Container(
+          height: 110,
           margin: const EdgeInsets.symmetric(horizontal: 4),
           padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 8),
           decoration: BoxDecoration(
             color: isSelected ? (isDark ? const Color(0xFF2C2C2C) : Colors.black) : Theme.of(context).cardColor,
             borderRadius: BorderRadius.circular(15),
             border: Border.all(
-              color: isSelected ? Colors.white : Theme.of(context).dividerColor, // Modified to be white instead of green
-              width: isSelected ? 2 : 1,
+              color: isSelected ? Colors.white : Colors.transparent,
+              width: 2.0,
             ),
           ),
           child: Column(
