@@ -39,6 +39,10 @@ io.on('connection', (socket) => {
   socket.on('driver_location_update', (data) => {
     io.emit('driver_location_update', data);
   });
+  
+  socket.on('driver_arrived', (data) => {
+    io.emit('driver_arrived', data);
+  });
 });
 
 // =============================================

@@ -26,6 +26,10 @@ class _OfferRideScreenState extends State<OfferRideScreen> {
   int selectedSeats = 1;
   bool isPosting = false;
 
+  String routePreference = 'flexible';
+  List<Map<String, dynamic>> routePath = [];
+  double totalDistance = 0.0;
+
   DateTime? _selectedDate;
   TimeOfDay? _selectedTime;
 
@@ -42,6 +46,27 @@ class _OfferRideScreenState extends State<OfferRideScreen> {
       selectedVehicle = vehicle;
       selectedSeats = 1;
     });
+  }
+
+  Future<void> fetchRoute() async {
+    if (pickupLat == null || destLat == null) return;
+    try {
+      final url = "https://router.project-osrm.org/route/v1/driving/$pickupLng,$pickupLat;$destLng,$destLat?geometries=geojson&overview=full";
+      final response = await http.get(Uri.parse(url));
+      if (response.statusCode == 200) {
+        final data = json.decode(response.body);
+        if (data['routes'] != null && data['routes'].isNotEmpty) {
+          final route = data['routes'][0];
+          setState(() {
+            totalDistance = route['distance'] / 1000.0; // in km
+            final coordinates = route['geometry']['coordinates'];
+            routePath = (coordinates as List).map<Map<String, dynamic>>((c) => {"lng": c[0], "lat": c[1]}).toList();
+          });
+        }
+      }
+    } catch (e) {
+      debugPrint("Failed to fetch route: $e");
+    }
   }
 
   Future<void> _pickDate(BuildContext context) async {
@@ -92,10 +117,18 @@ class _OfferRideScreenState extends State<OfferRideScreen> {
         destLat == null) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
-          content: Text(
-            "Please select valid locations from the dropdown and fill all fields!",
-          ),
+          content: Text("Please select valid locations from the dropdown and fill all fields!"),
           backgroundColor: Colors.red,
+        ),
+      );
+      return;
+    }
+
+    if (totalDistance < 1.5) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text("Ride must be at least 1.5 km long."),
+          backgroundColor: Colors.orange,
         ),
       );
       return;
@@ -106,18 +139,9 @@ class _OfferRideScreenState extends State<OfferRideScreen> {
     DateTime dateToUse = _selectedDate ?? DateTime.now();
     TimeOfDay timeToUse = _selectedTime ?? TimeOfDay.now();
 
-    String timeString =
-        "${dateToUse.day}/${dateToUse.month}/${dateToUse.year} at ${timeToUse.format(context)}";
+    String timeString = "${dateToUse.day}/${dateToUse.month}/${dateToUse.year} at ${timeToUse.format(context)}";
 
-    final dt = DateTime(
-      dateToUse.year,
-      dateToUse.month,
-      dateToUse.day,
-      timeToUse.hour,
-      timeToUse.minute,
-    );
-
-    // Expires 15 minutes AFTER the scheduled departure time
+    final dt = DateTime(dateToUse.year, dateToUse.month, dateToUse.day, timeToUse.hour, timeToUse.minute);
     int expiresAtEpoch = dt.millisecondsSinceEpoch + (15 * 60 * 1000);
 
     try {
@@ -139,20 +163,16 @@ class _OfferRideScreenState extends State<OfferRideScreen> {
           "vehicleType": selectedVehicle,
           "totalSeats": selectedSeats,
           "availableSeats": selectedSeats,
+          "routePath": routePath,
+          "totalDistance": totalDistance,
+          "routePreference": routePreference
         }),
       );
 
       if (response.statusCode == 201 && mounted) {
-        // ── Navigation Result ─────────────────────────────────────────────────
-        // Pop with 'ride_posted' so the HomeScreen can detect this specific
-        // success and trigger the Victory Lap — no Socket.IO, no broadcast.
-        // Only the person who just tapped "Offer Ride" will see the animation.
         Navigator.pop(context, 'ride_posted');
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text("Ride offered successfully!"),
-            backgroundColor: Colors.green,
-          ),
+          const SnackBar(content: Text("Ride offered successfully!"), backgroundColor: Colors.green),
         );
       }
     } catch (e) {
@@ -162,14 +182,56 @@ class _OfferRideScreenState extends State<OfferRideScreen> {
     }
   }
 
+  Widget _buildPreferenceCard(String title, String description, String value, IconData icon) {
+    bool isSelected = routePreference == value;
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    return Expanded(
+      child: GestureDetector(
+        onTap: () => setState(() => routePreference = value),
+        child: Container(
+          margin: const EdgeInsets.symmetric(horizontal: 4),
+          padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 8),
+          decoration: BoxDecoration(
+            color: isSelected ? (isDark ? const Color(0xFF2C2C2C) : Colors.black) : Theme.of(context).cardColor,
+            borderRadius: BorderRadius.circular(15),
+            border: Border.all(
+              color: isSelected ? Colors.white : Theme.of(context).dividerColor, // Modified to be white instead of green
+              width: isSelected ? 2 : 1,
+            ),
+          ),
+          child: Column(
+            children: [
+              Icon(icon, color: isSelected ? Colors.white : Theme.of(context).iconTheme.color?.withOpacity(0.6), size: 28),
+              const SizedBox(height: 8),
+              Text(
+                title,
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                  color: isSelected ? Colors.white : Theme.of(context).textTheme.bodyLarge?.color,
+                  fontWeight: FontWeight.bold,
+                  fontSize: 13,
+                ),
+              ),
+              const SizedBox(height: 4),
+              Text(
+                description,
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                  color: isSelected ? Colors.white70 : Theme.of(context).textTheme.bodySmall?.color,
+                  fontSize: 11,
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
-    String dateText = _selectedDate == null
-        ? "dd/mm/yyyy"
-        : "${_selectedDate!.day}/${_selectedDate!.month}/${_selectedDate!.year}";
-    String timeText = _selectedTime == null
-        ? "--:--"
-        : _selectedTime!.format(context);
+    String dateText = _selectedDate == null ? "dd/mm/yyyy" : "${_selectedDate!.day}/${_selectedDate!.month}/${_selectedDate!.year}";
+    String timeText = _selectedTime == null ? "--:--" : _selectedTime!.format(context);
 
     return Scaffold(
       backgroundColor: Theme.of(context).scaffoldBackgroundColor,
@@ -209,6 +271,7 @@ class _OfferRideScreenState extends State<OfferRideScreen> {
                         pickupLat = lat;
                         pickupLng = lon;
                       });
+                      fetchRoute();
                     },
                   ),
                   Divider(height: 1, color: Theme.of(context).dividerColor),
@@ -222,10 +285,25 @@ class _OfferRideScreenState extends State<OfferRideScreen> {
                         destLat = lat;
                         destLng = lon;
                       });
+                      fetchRoute();
                     },
                   ),
                 ],
               ),
+            ),
+            const SizedBox(height: 20),
+
+            const Text("Route Flexibility", style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+            const SizedBox(height: 4),
+            const Text("Choose how flexible you want your route to be", style: TextStyle(color: Colors.grey, fontSize: 13)),
+            const SizedBox(height: 10),
+            Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                _buildPreferenceCard("Flexible", "Pickup & drop anywhere", "flexible", Icons.route_outlined),
+                _buildPreferenceCard("Shared Start", "Same pickup, flexible drop", "shared_start", Icons.call_split),
+                _buildPreferenceCard("Nonstop", "Exact pickup and drop only", "nonstop", Icons.straight),
+              ],
             ),
             const SizedBox(height: 20),
 
@@ -238,11 +316,7 @@ class _OfferRideScreenState extends State<OfferRideScreen> {
             Row(
               children: ['Bike', 'Sedan', 'SUV'].map((type) {
                 bool isSelected = selectedVehicle == type;
-                IconData icon = type == 'Bike'
-                    ? Icons.motorcycle
-                    : type == 'Sedan'
-                    ? Icons.directions_car
-                    : Icons.airport_shuttle;
+                IconData icon = type == 'Bike' ? Icons.motorcycle : type == 'Sedan' ? Icons.directions_car : Icons.airport_shuttle;
                 return Expanded(
                   child: GestureDetector(
                     onTap: () => _onVehicleChanged(type),
@@ -250,18 +324,13 @@ class _OfferRideScreenState extends State<OfferRideScreen> {
                       margin: const EdgeInsets.symmetric(horizontal: 5),
                       padding: const EdgeInsets.symmetric(vertical: 15),
                       decoration: BoxDecoration(
-                        color: isSelected
-                            ? (Theme.of(context).brightness == Brightness.dark ? const Color(0xFF2C2C2C) : Colors.black)
-                            : Theme.of(context).cardColor,
+                        color: isSelected ? (Theme.of(context).brightness == Brightness.dark ? const Color(0xFF2C2C2C) : Colors.black) : Theme.of(context).cardColor,
                         borderRadius: BorderRadius.circular(15),
                         border: Border.all(color: Theme.of(context).dividerColor),
                       ),
                       child: Column(
                         children: [
-                          Icon(
-                            icon,
-                            color: isSelected ? Colors.white : Theme.of(context).textTheme.bodyMedium?.color?.withValues(alpha: 0.5),
-                          ),
+                          Icon(icon, color: isSelected ? Colors.white : Theme.of(context).textTheme.bodyMedium?.color?.withOpacity(0.5)),
                           const SizedBox(height: 5),
                           Text(
                             type,
@@ -293,21 +362,13 @@ class _OfferRideScreenState extends State<OfferRideScreen> {
                       ),
                       child: Row(
                         children: [
-                          Icon(
-                            Icons.calendar_today_outlined,
-                            size: 20,
-                            color: Theme.of(context).iconTheme.color?.withValues(alpha: 0.6),
-                          ),
+                          Icon(Icons.calendar_today_outlined, size: 20, color: Theme.of(context).iconTheme.color?.withOpacity(0.6)),
                           const SizedBox(width: 10),
                           Text(
                             dateText,
                             style: TextStyle(
-                              color: _selectedDate == null
-                                  ? Theme.of(context).textTheme.bodyMedium?.color?.withValues(alpha: 0.5)
-                                  : Theme.of(context).textTheme.bodyLarge?.color,
-                              fontWeight: _selectedDate == null
-                                  ? FontWeight.normal
-                                  : FontWeight.bold,
+                              color: _selectedDate == null ? Theme.of(context).textTheme.bodyMedium?.color?.withOpacity(0.5) : Theme.of(context).textTheme.bodyLarge?.color,
+                              fontWeight: _selectedDate == null ? FontWeight.normal : FontWeight.bold,
                             ),
                           ),
                         ],
@@ -328,21 +389,13 @@ class _OfferRideScreenState extends State<OfferRideScreen> {
                       ),
                       child: Row(
                         children: [
-                          Icon(
-                            Icons.access_time,
-                            size: 20,
-                            color: Theme.of(context).iconTheme.color?.withValues(alpha: 0.6),
-                          ),
+                          Icon(Icons.access_time, size: 20, color: Theme.of(context).iconTheme.color?.withOpacity(0.6)),
                           const SizedBox(width: 10),
                           Text(
                             timeText,
                             style: TextStyle(
-                              color: _selectedTime == null
-                                  ? Theme.of(context).textTheme.bodyMedium?.color?.withValues(alpha: 0.5)
-                                  : Theme.of(context).textTheme.bodyLarge?.color,
-                              fontWeight: _selectedTime == null
-                                  ? FontWeight.normal
-                                  : FontWeight.bold,
+                              color: _selectedTime == null ? Theme.of(context).textTheme.bodyMedium?.color?.withOpacity(0.5) : Theme.of(context).textTheme.bodyLarge?.color,
+                              fontWeight: _selectedTime == null ? FontWeight.normal : FontWeight.bold,
                             ),
                           ),
                         ],
@@ -354,18 +407,11 @@ class _OfferRideScreenState extends State<OfferRideScreen> {
             ),
             const SizedBox(height: 30),
 
-            // Dynamic Seats
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                const Text(
-                  "Seats Available",
-                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-                ),
-                Text(
-                  "Max: ${getMaxSeats()}",
-                  style: const TextStyle(color: Colors.grey),
-                ),
+                const Text("Seats Available", style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+                Text("Max: ${getMaxSeats()}", style: const TextStyle(color: Colors.grey)),
               ],
             ),
             const SizedBox(height: 15),
@@ -380,9 +426,7 @@ class _OfferRideScreenState extends State<OfferRideScreen> {
                     width: 60,
                     height: 60,
                     decoration: BoxDecoration(
-                      color: selectedSeats == seats
-                          ? (Theme.of(context).brightness == Brightness.dark ? const Color(0xFF2C2C2C) : Colors.black)
-                          : Theme.of(context).cardColor,
+                      color: selectedSeats == seats ? (Theme.of(context).brightness == Brightness.dark ? const Color(0xFF2C2C2C) : Colors.black) : Theme.of(context).cardColor,
                       borderRadius: BorderRadius.circular(15),
                       border: Border.all(color: Theme.of(context).dividerColor),
                     ),
@@ -390,9 +434,7 @@ class _OfferRideScreenState extends State<OfferRideScreen> {
                       child: Text(
                         "$seats",
                         style: TextStyle(
-                          color: selectedSeats == seats
-                              ? Colors.white
-                              : Theme.of(context).textTheme.bodyLarge?.color,
+                          color: selectedSeats == seats ? Colors.white : Theme.of(context).textTheme.bodyLarge?.color,
                           fontWeight: FontWeight.bold,
                           fontSize: 18,
                         ),
@@ -404,10 +446,7 @@ class _OfferRideScreenState extends State<OfferRideScreen> {
             ),
 
             const SizedBox(height: 30),
-            const Text(
-              "Price per Seat",
-              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-            ),
+            const Text("Base Price (Full Route)", style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
             const SizedBox(height: 15),
             TextField(
               controller: priceController,
@@ -416,22 +455,13 @@ class _OfferRideScreenState extends State<OfferRideScreen> {
               decoration: InputDecoration(
                 prefixText: "₹ ",
                 prefixStyle: TextStyle(color: Theme.of(context).textTheme.bodyLarge?.color),
-                hintText: "Enter price",
-                hintStyle: TextStyle(color: Theme.of(context).textTheme.bodyMedium?.color?.withValues(alpha: 0.5)),
+                hintText: "Enter base price",
+                hintStyle: TextStyle(color: Theme.of(context).textTheme.bodyMedium?.color?.withOpacity(0.5)),
                 filled: true,
                 fillColor: Theme.of(context).cardColor,
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(15),
-                  borderSide: BorderSide(color: Theme.of(context).dividerColor),
-                ),
-                enabledBorder: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(15),
-                  borderSide: BorderSide(color: Theme.of(context).dividerColor),
-                ),
-                focusedBorder: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(15),
-                  borderSide: BorderSide(color: Theme.of(context).primaryColor),
-                ),
+                border: OutlineInputBorder(borderRadius: BorderRadius.circular(15), borderSide: BorderSide(color: Theme.of(context).dividerColor)),
+                enabledBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(15), borderSide: BorderSide(color: Theme.of(context).dividerColor)),
+                focusedBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(15), borderSide: BorderSide(color: Theme.of(context).primaryColor)),
               ),
             ),
             const SizedBox(height: 40),
@@ -441,21 +471,12 @@ class _OfferRideScreenState extends State<OfferRideScreen> {
               child: ElevatedButton(
                 style: ElevatedButton.styleFrom(
                   backgroundColor: Theme.of(context).brightness == Brightness.dark ? const Color(0xFF2C2C2C) : Colors.black,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(30),
-                  ),
+                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(30)),
                 ),
                 onPressed: isPosting ? null : postRideOffer,
                 child: isPosting
                     ? const CircularProgressIndicator(color: Colors.white)
-                    : const Text(
-                        "Offer Ride",
-                        style: TextStyle(
-                          color: Colors.white,
-                          fontSize: 18,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
+                    : const Text("Offer Ride", style: TextStyle(color: Colors.white, fontSize: 18, fontWeight: FontWeight.bold)),
               ),
             ),
           ],

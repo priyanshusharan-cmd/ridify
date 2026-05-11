@@ -21,12 +21,15 @@ class _FindRideScreenState extends State<FindRideScreen> {
 
   String selectedVehicle = 'Any';
   int selectedSeats = 1;
+  double walkableRadius = 2000; // Default 2km
   bool isSearching = false;
 
   DateTime? _selectedDate;
   TimeOfDay? _selectedTime;
   double? pickupLat;
   double? pickupLng;
+  double? destLat;
+  double? destLng;
 
   final String serverUrl = "$kBaseUrl/api/rides/search";
 
@@ -124,10 +127,10 @@ class _FindRideScreenState extends State<FindRideScreen> {
 
   Future<void> startSearch() async {
     if (pickupController.text.trim().isEmpty ||
-        destinationController.text.trim().isEmpty) {
+        destinationController.text.trim().isEmpty || pickupLat == null || destLat == null) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
-          content: Text("Please enter both your Pickup and Destination!"),
+          content: Text("Please select valid locations for both Pickup and Destination!"),
           backgroundColor: Colors.redAccent,
         ),
       );
@@ -141,7 +144,7 @@ class _FindRideScreenState extends State<FindRideScreen> {
       String dateStr = "${dateToSearch.day}/${dateToSearch.month}/${dateToSearch.year}";
 
       final Uri searchUri = Uri.parse(
-        "$serverUrl?pickup=${pickupController.text}&destination=${destinationController.text}&seats=$selectedSeats&vehicle=$selectedVehicle&date=$dateStr${pickupLat != null ? '&lat=$pickupLat&lng=$pickupLng' : ''}",
+        "$serverUrl?pickup=${Uri.encodeComponent(pickupController.text)}&destination=${Uri.encodeComponent(destinationController.text)}&seats=$selectedSeats&vehicle=$selectedVehicle&date=$dateStr&lat=$pickupLat&lng=$pickupLng&destLat=$destLat&destLng=$destLng&radius=${walkableRadius.toInt()}",
       );
 
       final response = await http.get(searchUri);
@@ -156,7 +159,7 @@ class _FindRideScreenState extends State<FindRideScreen> {
           if (validRides.isEmpty) {
             ScaffoldMessenger.of(context).showSnackBar(
               const SnackBar(
-                content: Text("No rides found matching your needs."),
+                content: Text("No rides found matching your route and criteria."),
                 backgroundColor: Colors.orange,
               ),
             );
@@ -172,12 +175,23 @@ class _FindRideScreenState extends State<FindRideScreen> {
     }
   }
 
-  Future<void> sendRideRequest(String rideId, String driverName) async {
+  Future<void> sendRideRequest(dynamic ride, String driverName) async {
     try {
       final response = await http.patch(
-        Uri.parse("$kBaseUrl/api/rides/request/$rideId"),
+        Uri.parse("$kBaseUrl/api/rides/request/${ride['_id']}"),
         headers: {"Content-Type": "application/json"},
-        body: jsonEncode({"riderName": widget.userName, "seats": selectedSeats}),
+        body: jsonEncode({
+          "riderName": widget.userName,
+          "seats": selectedSeats,
+          "computedFare": ride['computedFare'],
+          "computedDistance": ride['computedDistance'],
+          "startIndex": ride['startIndex'],
+          "endIndex": ride['endIndex'],
+          "pickupLat": pickupLat,
+          "pickupLng": pickupLng,
+          "destLat": destLat,
+          "destLng": destLng
+        }),
       );
 
       if (response.statusCode == 200 && mounted) {
@@ -187,7 +201,7 @@ class _FindRideScreenState extends State<FindRideScreen> {
           MaterialPageRoute(
             builder: (_) => MatchStatusScreen(
               driverName: driverName,
-              rideId: rideId,
+              rideId: ride['_id'],
               riderName: widget.userName,
             ),
           ),
@@ -243,6 +257,9 @@ class _FindRideScreenState extends State<FindRideScreen> {
                     itemCount: rides.length,
                     itemBuilder: (context, index) {
                       final ride = rides[index];
+                      final computedFare = ride['computedFare'] ?? ride['fare'];
+                      final computedDistance = ride['computedDistance'] != null ? ride['computedDistance'].toStringAsFixed(1) : "?";
+                      
                       return Card(
                         margin: const EdgeInsets.only(bottom: 12),
                         shape: RoundedRectangleBorder(
@@ -264,12 +281,10 @@ class _FindRideScreenState extends State<FindRideScreen> {
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               Text(
-                                "${formatAddress(ride['pickupLocation'])} → ${formatAddress(ride['destination'])}",
-                                maxLines: 1,
-                                overflow: TextOverflow.ellipsis,
+                                "Dist: $computedDistance km • ${ride['vehicleType'] ?? 'Car'} • ${ride['routePreference'] == 'nonstop' ? 'Nonstop' : 'Flexible'}",
                               ),
                               Text(
-                                "${ride['vehicleType'] ?? 'Car'} • ${ride['availableSeats'] ?? '1'} seats left\nDeparts: ${ride['departureTime'] ?? "Now"}",
+                                "Departs: ${ride['departureTime'] ?? "Now"}",
                               ),
                             ],
                           ),
@@ -277,7 +292,7 @@ class _FindRideScreenState extends State<FindRideScreen> {
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
                               Text(
-                                "₹${ride['fare']}",
+                                "₹$computedFare",
                                 style: const TextStyle(
                                   fontWeight: FontWeight.bold,
                                   fontSize: 16,
@@ -289,7 +304,7 @@ class _FindRideScreenState extends State<FindRideScreen> {
                                   minimumSize: const Size(60, 30),
                                 ),
                                 onPressed: () => sendRideRequest(
-                                  ride['_id'],
+                                  ride,
                                   ride['riderName'] ?? "Driver",
                                 ),
                                 child: const Text(
@@ -370,14 +385,53 @@ class _FindRideScreenState extends State<FindRideScreen> {
                     hintText: "Destination",
                     prefixIcon: Icons.flag_outlined,
                     iconColor: Colors.red,
-                    onSelected: (name, lat, lon) {},
+                    onSelected: (name, lat, lon) {
+                      setState(() {
+                        destLat = lat;
+                        destLng = lon;
+                      });
+                    },
                   ),
                 ],
               ),
             ),
             const SizedBox(height: 20),
 
-            // 👈 THE FIX: Upgraded Vehicle Type Selector!
+            const Text(
+              "Walkable Radius (Match Distance)",
+              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+            ),
+            const SizedBox(height: 10),
+            Row(
+              children: [
+                const Text("500m", style: TextStyle(color: Colors.grey)),
+                Expanded(
+                  child: Slider(
+                    value: walkableRadius,
+                    min: 500,
+                    max: 5000,
+                    divisions: 9,
+                    activeColor: Theme.of(context).brightness == Brightness.dark ? Colors.white : Colors.black,
+                    inactiveColor: Theme.of(context).dividerColor,
+                    label: "${(walkableRadius / 1000).toStringAsFixed(1)} km",
+                    onChanged: (val) {
+                      setState(() {
+                        walkableRadius = val;
+                      });
+                    },
+                  ),
+                ),
+                const Text("5km", style: TextStyle(color: Colors.grey)),
+              ],
+            ),
+            Center(
+              child: Text(
+                "Searching within ${(walkableRadius / 1000).toStringAsFixed(1)} km of your stops",
+                style: const TextStyle(fontWeight: FontWeight.bold),
+              ),
+            ),
+            const SizedBox(height: 20),
+
             const Text(
               "Preferred Vehicle",
               style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
@@ -410,7 +464,7 @@ class _FindRideScreenState extends State<FindRideScreen> {
                         children: [
                           Icon(
                             icon,
-                            color: isSelected ? Colors.white : Theme.of(context).textTheme.bodyMedium?.color?.withValues(alpha: 0.5),
+                            color: isSelected ? Colors.white : Theme.of(context).textTheme.bodyMedium?.color?.withOpacity(0.5),
                           ),
                           const SizedBox(height: 5),
                           Text(
@@ -447,14 +501,14 @@ class _FindRideScreenState extends State<FindRideScreen> {
                           Icon(
                             Icons.calendar_today_outlined,
                             size: 20,
-                            color: Theme.of(context).iconTheme.color?.withValues(alpha: 0.6),
+                            color: Theme.of(context).iconTheme.color?.withOpacity(0.6),
                           ),
                           const SizedBox(width: 10),
                           Text(
                             dateText,
                             style: TextStyle(
                               color: _selectedDate == null
-                                  ? Theme.of(context).textTheme.bodyMedium?.color?.withValues(alpha: 0.5)
+                                  ? Theme.of(context).textTheme.bodyMedium?.color?.withOpacity(0.5)
                                   : Theme.of(context).textTheme.bodyLarge?.color,
                               fontWeight: _selectedDate == null
                                   ? FontWeight.normal
@@ -482,14 +536,14 @@ class _FindRideScreenState extends State<FindRideScreen> {
                           Icon(
                             Icons.access_time,
                             size: 20,
-                            color: Theme.of(context).iconTheme.color?.withValues(alpha: 0.6),
+                            color: Theme.of(context).iconTheme.color?.withOpacity(0.6),
                           ),
                           const SizedBox(width: 10),
                           Text(
                             timeText,
                             style: TextStyle(
                               color: _selectedTime == null
-                                  ? Theme.of(context).textTheme.bodyMedium?.color?.withValues(alpha: 0.5)
+                                  ? Theme.of(context).textTheme.bodyMedium?.color?.withOpacity(0.5)
                                   : Theme.of(context).textTheme.bodyLarge?.color,
                               fontWeight: _selectedTime == null
                                   ? FontWeight.normal

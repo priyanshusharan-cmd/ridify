@@ -205,7 +205,6 @@ class ActiveRidesTab extends StatelessWidget {
               ...myOfferedRides.map((r) {
                 final List requests = r['requests'] as List? ?? [];
                 final int reqCount = requests.length;
-                final Map seatAllocations = r['seatAllocations'] as Map? ?? {};
                 final List passengers = r['passengers'] as List? ?? [];
 
                 return Card(
@@ -338,87 +337,118 @@ class ActiveRidesTab extends StatelessWidget {
                           )
                         else
                           ...requests.map((requester) {
-                            final int requestedSeats = (seatAllocations[requester] as num?)?.toInt() ?? 1;
+                            final riderDetail = (r['riderDetails'] as Map?)?[requester] as Map?;
+                            final int requestedSeats = (riderDetail?['seats'] as num?)?.toInt() ?? ((r['seatAllocations'] as Map?)?[requester] as num?)?.toInt() ?? 1;
+                            final num fare = riderDetail?['fare'] ?? r['fare'] ?? 0;
+                            final num distance = riderDetail?['distance'] ?? 0;
+                            
                             return Padding(
                               padding: const EdgeInsets.only(left: 16.0, right: 16.0, bottom: 16.0),
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  const Divider(),
-                                  const SizedBox(height: 8),
-                                  Row(
-                                    children: [
-                                      CircleAvatar(
-                                        backgroundColor: Theme.of(context).brightness == Brightness.dark ? const Color(0xFF2C2C2C) : Colors.black,
-                                        child: Text(
-                                          requester.toString().substring(0, 1).toUpperCase(),
-                                          style: const TextStyle(
-                                            color: Colors.white,
-                                            fontWeight: FontWeight.bold,
-                                          ),
-                                        ),
-                                      ),
-                                      const SizedBox(width: 12),
-                                      Expanded(
-                                        child: Text(
-                                          "$requester wants to join • Needs $requestedSeats Seat(s)",
-                                          style: const TextStyle(
-                                            fontWeight: FontWeight.bold,
-                                            fontSize: 14,
-                                          ),
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                  const SizedBox(height: 16),
-                                  Row(
-                                    children: [
-                                      Expanded(
-                                        child: OutlinedButton(
-                                          style: OutlinedButton.styleFrom(
-                                            side: const BorderSide(color: Colors.red),
-                                            shape: RoundedRectangleBorder(
-                                              borderRadius: BorderRadius.circular(10),
-                                            ),
-                                          ),
-                                          onPressed: () => _action(
-                                            "$kBaseUrl/api/rides/decline/${r['_id']}/$requester",
-                                            context,
-                                          ),
-                                          child: const Text(
-                                            "Decline",
-                                            style: TextStyle(
-                                              color: Colors.red,
-                                              fontWeight: FontWeight.bold,
-                                            ),
-                                          ),
-                                        ),
-                                      ),
-                                      const SizedBox(width: 12),
-                                      Expanded(
-                                        child: ElevatedButton(
-                                          style: ElevatedButton.styleFrom(
-                                            backgroundColor: Colors.green,
-                                            shape: RoundedRectangleBorder(
-                                              borderRadius: BorderRadius.circular(10),
-                                            ),
-                                          ),
-                                          onPressed: () => _action(
-                                            "$kBaseUrl/api/rides/accept/${r['_id']}/$requester",
-                                            context,
-                                          ),
-                                          child: const Text(
-                                            "Accept",
-                                            style: TextStyle(
+                              child: Container(
+                                padding: const EdgeInsets.all(12),
+                                decoration: BoxDecoration(
+                                  color: Theme.of(context).brightness == Brightness.dark ? const Color(0xFF1E1E1E) : Colors.grey.shade100,
+                                  borderRadius: BorderRadius.circular(15),
+                                ),
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Row(
+                                      children: [
+                                        CircleAvatar(
+                                          backgroundColor: Theme.of(context).brightness == Brightness.dark ? const Color(0xFF2C2C2C) : Colors.black,
+                                          child: Text(
+                                            requester.toString().substring(0, 1).toUpperCase(),
+                                            style: const TextStyle(
                                               color: Colors.white,
                                               fontWeight: FontWeight.bold,
                                             ),
                                           ),
                                         ),
-                                      ),
-                                    ],
-                                  ),
-                                ],
+                                        const SizedBox(width: 12),
+                                        Expanded(
+                                          child: Column(
+                                            crossAxisAlignment: CrossAxisAlignment.start,
+                                            children: [
+                                              Text(
+                                                "$requester wants to join",
+                                                style: const TextStyle(
+                                                  fontWeight: FontWeight.bold,
+                                                  fontSize: 16,
+                                                ),
+                                              ),
+                                              Text(
+                                                "$requestedSeats Seat(s) • ${distance.toStringAsFixed(1)} km",
+                                                style: TextStyle(
+                                                  color: Theme.of(context).textTheme.bodyMedium?.color?.withValues(alpha: 0.6),
+                                                  fontSize: 13,
+                                                ),
+                                              ),
+                                            ],
+                                          ),
+                                        ),
+                                        Text(
+                                          "₹$fare",
+                                          style: const TextStyle(
+                                            fontWeight: FontWeight.bold,
+                                            fontSize: 18,
+                                            color: Colors.green,
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                    const SizedBox(height: 16),
+                                    Row(
+                                      children: [
+                                        Expanded(
+                                          child: OutlinedButton(
+                                            style: OutlinedButton.styleFrom(
+                                              side: const BorderSide(color: Colors.redAccent),
+                                              padding: const EdgeInsets.symmetric(vertical: 12),
+                                              shape: RoundedRectangleBorder(
+                                                borderRadius: BorderRadius.circular(10),
+                                              ),
+                                            ),
+                                            onPressed: () => _action(
+                                              "$kBaseUrl/api/rides/decline/${r['_id']}/$requester",
+                                              context,
+                                            ),
+                                            child: const Text(
+                                              "Decline",
+                                              style: TextStyle(
+                                                color: Colors.redAccent,
+                                                fontWeight: FontWeight.bold,
+                                              ),
+                                            ),
+                                          ),
+                                        ),
+                                        const SizedBox(width: 12),
+                                        Expanded(
+                                          child: ElevatedButton(
+                                            style: ElevatedButton.styleFrom(
+                                              backgroundColor: Colors.black,
+                                              padding: const EdgeInsets.symmetric(vertical: 12),
+                                              shape: RoundedRectangleBorder(
+                                                borderRadius: BorderRadius.circular(10),
+                                              ),
+                                            ),
+                                            onPressed: () => _action(
+                                              "$kBaseUrl/api/rides/accept/${r['_id']}/$requester",
+                                              context,
+                                            ),
+                                            child: const Text(
+                                              "Accept",
+                                              style: TextStyle(
+                                                color: Colors.white,
+                                                fontWeight: FontWeight.bold,
+                                              ),
+                                            ),
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ],
+                                ),
                               ),
                             );
                           }),

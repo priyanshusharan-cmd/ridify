@@ -1,5 +1,6 @@
 const express = require('express');
 const Ride = require('../models/ride');
+const turf = require('@turf/turf');
 
 const router = express.Router();
 
@@ -16,40 +17,122 @@ function adminOnly(req, res, next) {
   next();
 }
 
+function checkCapacity(ride, newStartIndex, newEndIndex, requestedSeats) {
+  const changes = [];
+  
+  for (const pName of ride.passengers) {
+    const p = ride.riderDetails?.get(pName);
+    if (p) {
+      changes.push({ index: p.startIndex, change: p.seats });
+      changes.push({ index: p.endIndex, change: -p.seats });
+    }
+  }
+  for (const rName of ride.requests) {
+    const r = ride.riderDetails?.get(rName);
+    if (r) {
+      changes.push({ index: r.startIndex, change: r.seats });
+      changes.push({ index: r.endIndex, change: -r.seats });
+    }
+  }
+
+  changes.push({ index: newStartIndex, change: requestedSeats });
+  changes.push({ index: newEndIndex, change: -requestedSeats });
+
+  changes.sort((a, b) => a.index - b.index);
+
+  let currentSeats = 0;
+  let maxSeats = 0;
+  for (const c of changes) {
+    currentSeats += c.change;
+    if (currentSeats > maxSeats) maxSeats = currentSeats;
+  }
+
+  return maxSeats <= ride.totalSeats;
+}
+
 router.get('/search', async (req, res) => {
   try {
-    const { pickup, destination, seats, vehicle, lat, lng, date } = req.query;
+    const { pickup, destination, seats, vehicle, lat, lng, destLat, destLng, radius, date } = req.query;
     const currentTime = Date.now();
+    const searchRadius = parseInt(radius) || 2000;
+    const reqSeats = parseInt(seats) || 1;
 
     const matchQuery = {
-      status: { $in: ['available', 'accepted'] },
-      $or: [{ expiresAt: { $gt: currentTime } }, { expiresAt: null }, { expiresAt: { $exists: false } }],
-      availableSeats: { $gte: parseInt(seats) || 1 }
+      status: { $in: ['available', 'accepted', 'started'] }, // Can join even if started
+      $or: [{ expiresAt: { $gt: currentTime } }, { expiresAt: null }, { expiresAt: { $exists: false } }]
     };
     if (vehicle && vehicle !== 'Any') matchQuery.vehicleType = vehicle;
-    if (date) {
-      matchQuery.departureTime = { $regex: new RegExp(`^${date}`, 'i') };
-    }
+    if (date) matchQuery.departureTime = { $regex: new RegExp(`^${date}`, 'i') };
 
-    if (lat && lng) {
-      matchQuery.pickupCoords = {
-        $near: {
-          $geometry: {
-            type: "Point",
-            coordinates: [parseFloat(lng), parseFloat(lat)]
-          },
-          $maxDistance: 2000
+    const activeRides = await Ride.find(matchQuery);
+    const results = [];
+
+    if (lat && lng && destLat && destLng) {
+      const pickupPoint = turf.point([parseFloat(lng), parseFloat(lat)]);
+      const destPoint = turf.point([parseFloat(destLng), parseFloat(destLat)]);
+
+      for (const ride of activeRides) {
+        if (!ride.routePath || ride.routePath.length < 2) continue;
+
+        let minPickupDist = Infinity;
+        let startIndex = -1;
+        let minDestDist = Infinity;
+        let endIndex = -1;
+
+        for (let i = 0; i < ride.routePath.length; i++) {
+          const pt = ride.routePath[i];
+          const ptPoint = turf.point([pt.lng, pt.lat]);
+          
+          const distToPickup = turf.distance(pickupPoint, ptPoint, { units: 'meters' });
+          if (distToPickup < minPickupDist) {
+            minPickupDist = distToPickup;
+            startIndex = i;
+          }
+          
+          const distToDest = turf.distance(destPoint, ptPoint, { units: 'meters' });
+          if (distToDest < minDestDist) {
+            minDestDist = distToDest;
+            endIndex = i;
+          }
         }
-      };
-      if (destination) {
-        matchQuery.destination = { $regex: new RegExp(destination, 'i') };
-      }
-    } else {
-      matchQuery.pickupLocation = { $regex: new RegExp(pickup || '', 'i') };
-      matchQuery.destination = { $regex: new RegExp(destination || '', 'i') };
-    }
 
-    res.status(200).json(await Ride.find(matchQuery));
+        if (minPickupDist <= searchRadius && minDestDist <= searchRadius && startIndex < endIndex) {
+          let tripDistance = 0;
+          for (let i = startIndex; i < endIndex; i++) {
+            tripDistance += turf.distance(
+              turf.point([ride.routePath[i].lng, ride.routePath[i].lat]),
+              turf.point([ride.routePath[i+1].lng, ride.routePath[i+1].lat]),
+              { units: 'kilometers' }
+            );
+          }
+
+          if (tripDistance < 1.5) continue; // Minimum distance check
+
+          // Preferences check
+          const isStartClose = startIndex < (ride.routePath.length * 0.1); // within first 10% of route
+          const isEndClose = endIndex > (ride.routePath.length * 0.9);   // within last 10% of route
+          
+          if (ride.routePreference === 'shared_start' && !isStartClose) continue;
+          if (ride.routePreference === 'nonstop' && (!isStartClose || !isEndClose)) continue;
+
+          if (checkCapacity(ride, startIndex, endIndex, reqSeats)) {
+            let percentage = tripDistance / (ride.totalDistance || tripDistance || 1);
+            if (percentage > 1) percentage = 1;
+            const computedFare = Math.round(ride.fare * percentage);
+
+            const rideObj = ride.toObject();
+            rideObj.computedFare = computedFare;
+            rideObj.computedDistance = tripDistance;
+            rideObj.startIndex = startIndex;
+            rideObj.endIndex = endIndex;
+            results.push(rideObj);
+          }
+        }
+      }
+      res.status(200).json(results);
+    } else {
+      res.status(400).json({ error: "Missing coordinates for precise matching" });
+    }
   } catch (err) { res.status(500).json({ error: err.message }); }
 });
 
@@ -95,7 +178,6 @@ router.delete('/:id', async (req, res) => {
   } catch (err) { res.status(500).json({ error: err.message }); }
 });
 
-// 🔒 ADMIN ONLY: Wipe all rides
 router.delete('/', adminOnly, async (req, res) => {
   try {
     await Ride.deleteMany({});
@@ -106,95 +188,79 @@ router.delete('/', adminOnly, async (req, res) => {
 
 router.patch('/request/:id', async (req, res) => {
   try {
-    const updatedRide = await Ride.findByIdAndUpdate(
-      req.params.id,
-      { 
-        $addToSet: { requests: req.body.riderName },
-        $set: { [`seatAllocations.${req.body.riderName}`]: req.body.seats || 1 }
-      },
-      { returnDocument: 'after' }
-    );
-    req.io.emit('new_ride_request', updatedRide);
+    const { riderName, seats, computedFare, computedDistance, startIndex, endIndex, pickupLat, pickupLng, destLat, destLng } = req.body;
+    
+    const ride = await Ride.findById(req.params.id);
+    if (!ride) return res.status(404).json({ error: "Ride not found" });
+
+    if (!checkCapacity(ride, startIndex, endIndex, seats)) {
+      return res.status(400).json({ error: "Capacity exceeded for this segment" });
+    }
+
+    ride.requests.push(riderName);
+    if (!ride.riderDetails) ride.riderDetails = new Map();
+    ride.riderDetails.set(riderName, {
+      pickupLat, pickupLng, destLat, destLng,
+      fare: computedFare, distance: computedDistance, seats,
+      startIndex, endIndex, paid: false
+    });
+    
+    await ride.save();
+    req.io.emit('new_ride_request', ride);
     res.status(200).json({ success: true });
   } catch (err) { res.status(500).json({ error: err.message }); }
 });
 
 router.patch('/accept/:id/:riderName', async (req, res) => {
   try {
-    let rideData = await Ride.findById(req.params.id);
-    let requestedSeats = rideData?.seatAllocations?.get(req.params.riderName) || 1;
+    let ride = await Ride.findById(req.params.id);
+    if (!ride) return res.status(404).json({ error: "Ride not found" });
 
-    let ride = await Ride.findOneAndUpdate(
-      { _id: req.params.id, availableSeats: { $gte: requestedSeats }, passengers: { $ne: req.params.riderName } },
-      {
-        $pull: { requests: req.params.riderName },
-        $addToSet: { passengers: req.params.riderName },
-        $inc: { availableSeats: -requestedSeats }
-      },
-      { new: true }
-    );
+    const riderDetail = ride.riderDetails?.get(req.params.riderName);
+    if (!riderDetail) return res.status(400).json({ error: "Rider details not found" });
 
-    if (ride) {
-      if (ride.availableSeats <= 0) {
-        ride.status = 'full';
-        if (ride.requests.length > 0) {
-          ride.declined.push(...ride.requests);
-          ride.requests = [];
-        }
-      } else if (ride.status === 'available') {
-        ride.status = 'accepted';
-      }
-      await ride.save();
-      req.io.emit('ride_accepted', ride);
-      res.status(200).json(ride);
-    } else {
-      res.status(400).json({ error: "Seat unavailable or already booked." });
-    }
+    ride.requests = ride.requests.filter(r => r !== req.params.riderName);
+    ride.passengers.push(req.params.riderName);
+
+    // Don't modify availableSeats simply, as it's dynamic. We just change status if full.
+    // To check if full entirely, we could do a complex check, but let's just let it be 'accepted' or 'started' 
+    // unless the maximum possible seats across the entire route is reached (hard to define without a new request).
+    if (ride.status === 'available') ride.status = 'accepted';
+
+    await ride.save();
+    req.io.emit('ride_accepted', ride);
+    res.status(200).json(ride);
   } catch (err) { res.status(500).json({ error: err.message }); }
 });
 
 router.patch('/decline/:id/:riderName', async (req, res) => {
   try {
-    let ride = await Ride.findByIdAndUpdate(
-      req.params.id,
-      {
-        $pull: { requests: req.params.riderName },
-        $addToSet: { declined: req.params.riderName }
-      },
-      { new: true }
-    );
-    if (ride.requests.length === 0 && ride.passengers.length === 0) {
+    let ride = await Ride.findById(req.params.id);
+    if (!ride) return res.status(404).json({ error: "Ride not found" });
+
+    ride.requests = ride.requests.filter(r => r !== req.params.riderName);
+    ride.declined.push(req.params.riderName);
+    
+    if (ride.requests.length === 0 && ride.passengers.length === 0 && ride.status !== 'started') {
       ride.status = 'available';
-      await ride.save();
     }
-    req.io.emit('ride_cancelled', ride);
+    
+    await ride.save();
+    req.io.emit('ride_cancelled', ride); // or a new event 'request_declined'
     res.status(200).json(ride);
   } catch (err) { res.status(500).json({ error: err.message }); }
 });
 
 router.patch('/kick/:id/:riderName', async (req, res) => {
   try {
-    let rideData = await Ride.findById(req.params.id);
-    let requestedSeats = rideData?.seatAllocations?.get(req.params.riderName) || 1;
+    let ride = await Ride.findById(req.params.id);
+    if (!ride) return res.status(404).json({ error: "Ride not found" });
 
-    let ride = await Ride.findByIdAndUpdate(
-      req.params.id,
-      {
-        $pull: { passengers: req.params.riderName, boardedPassengers: req.params.riderName },
-        $addToSet: { kicked: req.params.riderName },
-        $inc: { availableSeats: requestedSeats }
-      },
-      { new: true }
-    );
+    ride.passengers = ride.passengers.filter(p => p !== req.params.riderName);
+    ride.boardedPassengers = ride.boardedPassengers.filter(p => p !== req.params.riderName);
+    ride.kicked.push(req.params.riderName);
 
-    if (ride) {
-      if (ride.passengers.length === 0 && ride.requests.length === 0) {
-        ride.status = 'available';
-      } else if (ride.status === 'full') {
-        ride.status = 'accepted';
-      }
-      await ride.save();
-    }
+    await ride.save();
     req.io.emit('passenger_kicked', { rideId: ride._id, kickedUser: req.params.riderName, ride });
     res.status(200).json(ride);
   } catch (err) { res.status(500).json({ error: err.message }); }
@@ -202,12 +268,83 @@ router.patch('/kick/:id/:riderName', async (req, res) => {
 
 router.patch('/board/:id/:riderName', async (req, res) => {
   try {
-    let ride = await Ride.findByIdAndUpdate(
-      req.params.id,
-      { $addToSet: { boardedPassengers: req.params.riderName } },
-      { returnDocument: 'after' }
-    );
+    let ride = await Ride.findById(req.params.id);
+    if (!ride) return res.status(404).json({ error: "Ride not found" });
+
+    // Ensure physical capacity isn't exceeded currently
+    // We sum seats of ALL currently boarded passengers
+    let currentlyOccupied = 0;
+    for (const pName of ride.boardedPassengers) {
+      currentlyOccupied += ride.riderDetails?.get(pName)?.seats || 1;
+    }
+    const toBoard = ride.riderDetails?.get(req.params.riderName)?.seats || 1;
+
+    if (currentlyOccupied + toBoard > ride.totalSeats) {
+       return res.status(400).json({ error: "Physical car is full!" });
+    }
+
+    if (!ride.boardedPassengers.includes(req.params.riderName)) {
+      ride.boardedPassengers.push(req.params.riderName);
+    }
+
+    await ride.save();
     req.io.emit('passenger_boarded', ride);
+    res.status(200).json(ride);
+  } catch (err) { res.status(500).json({ error: err.message }); }
+});
+
+// Drop-off passenger
+router.patch('/dropoff/:id/:riderName', async (req, res) => {
+  try {
+    let ride = await Ride.findById(req.params.id);
+    if (!ride) return res.status(404).json({ error: "Ride not found" });
+
+    ride.boardedPassengers = ride.boardedPassengers.filter(p => p !== req.params.riderName);
+    ride.passengers = ride.passengers.filter(p => p !== req.params.riderName);
+    
+    if (!ride.droppedPassengers) ride.droppedPassengers = [];
+    if (!ride.droppedPassengers.includes(req.params.riderName)) {
+      ride.droppedPassengers.push(req.params.riderName);
+    }
+
+    await ride.save();
+    
+    req.io.emit('passenger_dropped', { 
+      rideId: ride._id, 
+      riderName: req.params.riderName, 
+      fare: ride.riderDetails?.get(req.params.riderName)?.fare,
+      ride 
+    });
+    
+    res.status(200).json(ride);
+  } catch (err) { res.status(500).json({ error: err.message }); }
+});
+
+// Passenger pays
+router.patch('/pay/:id/:riderName', async (req, res) => {
+  try {
+    let ride = await Ride.findById(req.params.id);
+    if (!ride) return res.status(404).json({ error: "Ride not found" });
+
+    const detail = ride.riderDetails?.get(req.params.riderName);
+    if (detail) {
+      detail.paid = true;
+      ride.riderDetails.set(req.params.riderName, detail);
+    }
+    
+    if (!ride.paidPassengers) ride.paidPassengers = [];
+    if (!ride.paidPassengers.includes(req.params.riderName)) {
+      ride.paidPassengers.push(req.params.riderName);
+    }
+
+    await ride.save();
+    
+    req.io.emit('passenger_paid', { 
+      rideId: ride._id, 
+      riderName: req.params.riderName, 
+      ride 
+    });
+    
     res.status(200).json(ride);
   } catch (err) { res.status(500).json({ error: err.message }); }
 });
@@ -216,7 +353,7 @@ router.patch('/start/:id', async (req, res) => {
   try {
     const updatedRide = await Ride.findByIdAndUpdate(
       req.params.id,
-      { status: 'started', availableSeats: 0 },
+      { status: 'started' },
       { new: true }
     );
     req.io.emit('ride_started', updatedRide);
@@ -226,14 +363,24 @@ router.patch('/start/:id', async (req, res) => {
 
 router.patch('/end/:id', async (req, res) => {
   try {
-    const updatedRide = await Ride.findByIdAndUpdate(req.params.id, { status: 'completed' }, { new: true });
+    let ride = await Ride.findById(req.params.id);
+    if (!ride) return res.status(404).json({ error: "Ride not found" });
+
+    // The master "End Trip" button is only allowed if the car is completely empty
+    if (ride.boardedPassengers.length > 0) {
+      return res.status(400).json({ error: "Cannot end trip. Passengers are still boarded." });
+    }
+
+    ride.status = 'completed';
+    await ride.save();
+
     req.io.emit('ride_ended', {
-        rideId: updatedRide._id,
-        passengers: updatedRide.passengers,
-        riderName: updatedRide.riderName,
-        boardedPassengers: updatedRide.boardedPassengers
+        rideId: ride._id,
+        passengers: ride.passengers,
+        riderName: ride.riderName,
+        boardedPassengers: ride.boardedPassengers
     });
-    res.status(200).json(updatedRide);
+    res.status(200).json(ride);
   } catch (err) { res.status(500).json({ error: err.message }); }
 });
 

@@ -8,7 +8,7 @@ import 'offer_ride_screen.dart';
 import 'profile_screen.dart';
 import 'ride_history_screen.dart';
 import '../widgets/active_rides_tab.dart';
-import 'global_completion_screen.dart';
+import 'completion_screen.dart';
 import '../core/constants.dart';
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -252,7 +252,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
             if (!mounted) return;
             Navigator.of(context).popUntil((route) => route.isFirst);
             Navigator.of(context).push(
-              MaterialPageRoute(builder: (_) => const GlobalCompletionScreen()),
+              MaterialPageRoute(builder: (_) => const CompletionScreen()),
             );
             setState(() => _currentIndex = 0);
           });

@@ -26,6 +26,7 @@
     "url": "https://github.com/priyanshusharan-cmd/ridify/issues"
   },
   "dependencies": {
+    "@turf/turf": "^7.3.5",
     "bcrypt": "^6.0.0",
     "cors": "^2.8.6",
     "dotenv": "^17.4.2",
