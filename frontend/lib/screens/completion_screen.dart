@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
-import 'package:socket_io_client/socket_io_client.dart' as io;
 import 'dart:async';
 import '../core/constants.dart';
+import '../core/socket_service.dart';
 
 class CompletionScreen extends StatefulWidget {
   final bool isDriver;
@@ -26,13 +26,14 @@ class _CompletionScreenState extends State<CompletionScreen> {
   int countdown = 5;
   Timer? _timer;
   bool isPaid = false;
-  late io.Socket socket;
 
   @override
   void initState() {
     super.initState();
-    // Connect socket to sever live ride connections properly
-    socket = io.io(kBaseUrl, <String, dynamic>{'transports': ['websocket'], 'autoConnect': true});
+    // Ensure we're in this ride's room for payment events
+    if (widget.rideId.isNotEmpty) {
+      SocketService().joinRide(widget.rideId);
+    }
 
     if (widget.isDriver || widget.fareAmount == 0) {
       // Driver green completion screen - auto countdown
@@ -54,8 +55,6 @@ class _CompletionScreenState extends State<CompletionScreen> {
   Future<void> markAsPaid() async {
     try {
       await http.patch(Uri.parse('$kBaseUrl/api/rides/pay/${widget.rideId}/${widget.myName}'));
-      // Disconnect socket to sever live connections
-      socket.dispose();
       setState(() {
         isPaid = true;
       });
@@ -68,7 +67,6 @@ class _CompletionScreenState extends State<CompletionScreen> {
   @override
   void dispose() {
     _timer?.cancel();
-    socket.dispose();
     super.dispose();
   }
 

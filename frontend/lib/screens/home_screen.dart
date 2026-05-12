@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'dart:async';
-import 'package:socket_io_client/socket_io_client.dart' as io;
+import '../core/socket_service.dart';
 import 'find_ride_screen.dart';
 import 'offer_ride_screen.dart';
 import 'profile_screen.dart';
@@ -73,7 +73,6 @@ class HomeScreen extends StatefulWidget {
 // TickerProviderStateMixin (not Single) because we now have TWO controllers.
 class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
   int _currentIndex = 0;
-  late io.Socket socket;
   List<dynamic> allRides = [];
 
 
@@ -136,7 +135,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
     );
 
     fetchRides();
-    initSocket();
+    _initSocket();
   }
 
   // ── Animation helpers ──────────────────────────────────────────────────────
@@ -208,6 +207,19 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
   }
 
   // ── Data fetching ──────────────────────────────────────────────────────────
+  /// Update a single ride in the local list (avoids re-fetching ALL rides)
+  void _upsertRide(Map<String, dynamic> rideData) {
+    if (!mounted) return;
+    setState(() {
+      final idx = allRides.indexWhere((r) => r['_id'].toString() == rideData['_id'].toString());
+      if (idx >= 0) {
+        allRides[idx] = rideData;
+      } else {
+        allRides.add(rideData);
+      }
+    });
+  }
+
   Future<void> fetchRides() async {
     try {
       final response = await http.get(Uri.parse("$kBaseUrl/api/rides"));
@@ -219,14 +231,21 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
     }
   }
 
-  void initSocket() {
-    socket = io.io(kBaseUrl, <String, dynamic>{
-      'transports': ['websocket'],
-      'autoConnect': true,
+  void _initSocket() {
+    final socketService = SocketService();
+    socketService.registerUser(widget.userName);
+    final socket = socketService.socket;
+
+    // Direct state updates — no re-fetch needed
+    socket.on('new_ride_request', (data) {
+      if (data != null) _upsertRide(Map<String, dynamic>.from(data));
     });
-    socket.on('new_ride_request', (_) => fetchRides());
-    socket.on('ride_accepted', (_) => fetchRides());
-    socket.on('ride_cancelled', (_) => fetchRides());
+    socket.on('ride_accepted', (data) {
+      if (data != null) _upsertRide(Map<String, dynamic>.from(data));
+    });
+    socket.on('ride_cancelled', (data) {
+      if (data != null) _upsertRide(Map<String, dynamic>.from(data));
+    });
 
     // ride_ended: only the DRIVER sees the green completion screen
     // Riders are handled via passenger_dropped in live_tracking_screen
@@ -253,14 +272,16 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
     });
 
     socket.on('database_wiped', (_) {
-      fetchRides();
-      if (mounted) Navigator.popUntil(context, (route) => route.isFirst);
+      if (mounted) {
+        setState(() => allRides = []);
+        Navigator.popUntil(context, (route) => route.isFirst);
+      }
     });
   }
 
   @override
   void dispose() {
-    socket.dispose();
+    // Socket is shared singleton — don't dispose it
     _startupController.dispose();
     _victoryController.dispose();
     super.dispose();

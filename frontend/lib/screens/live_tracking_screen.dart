@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:socket_io_client/socket_io_client.dart' as io;
+import '../core/socket_service.dart';
 import 'package:http/http.dart' as http;
 import 'dart:async';
 import 'dart:convert';
@@ -35,6 +36,7 @@ class _LiveTrackingScreenState extends State<LiveTrackingScreen> {
   final MapController mapController = MapController();
   StreamSubscription<Position>? positionStreamSubscription;
   bool _isNavigatingToCompletion = false;
+  final List<MapEntry<String, void Function(dynamic)>> _socketListeners = [];
 
   @override
   void initState() {
@@ -154,9 +156,25 @@ class _LiveTrackingScreenState extends State<LiveTrackingScreen> {
     } catch (e) { debugPrint(e.toString()); }
   }
 
+  /// Register a socket listener with automatic cleanup tracking.
+  void _on(String event, void Function(dynamic) handler) {
+    socket.on(event, handler);
+    _socketListeners.add(MapEntry(event, handler));
+  }
+
+  void _removeAllListeners() {
+    for (final entry in _socketListeners) {
+      socket.off(entry.key, entry.value);
+    }
+    _socketListeners.clear();
+  }
+
   void initSocket() {
-    socket = io.io(kBaseUrl, <String, dynamic>{'transports': ['websocket'], 'autoConnect': true});
-    socket.on('passenger_boarded', (data) {
+    final socketService = SocketService();
+    socket = socketService.socket;
+    socketService.joinRide(widget.rideId);
+
+    _on('passenger_boarded', (data) {
       if (data == null) return;
       final map = Map<String, dynamic>.from(data);
       if (mounted && map['_id'].toString() == widget.rideId) {
@@ -165,7 +183,7 @@ class _LiveTrackingScreenState extends State<LiveTrackingScreen> {
         });
       }
     });
-    socket.on('passenger_dropped', (data) {
+    _on('passenger_dropped', (data) {
       if (data == null) return;
       final map = Map<String, dynamic>.from(data);
       if (mounted && map['rideId'].toString() == widget.rideId) {
@@ -180,7 +198,7 @@ class _LiveTrackingScreenState extends State<LiveTrackingScreen> {
         }
       }
     });
-    socket.on('driver_arrived', (data) {
+    _on('driver_arrived', (data) {
       if (data == null) return;
       final map = Map<String, dynamic>.from(data);
       if (mounted && map['rideId'].toString() == widget.rideId) {
@@ -196,7 +214,7 @@ class _LiveTrackingScreenState extends State<LiveTrackingScreen> {
         }
       }
     });
-    socket.on('ride_started', (data) {
+    _on('ride_started', (data) {
       if (data == null) return;
       final map = Map<String, dynamic>.from(data);
       if (mounted && map['_id'].toString() == widget.rideId) {
@@ -206,7 +224,7 @@ class _LiveTrackingScreenState extends State<LiveTrackingScreen> {
         });
       }
     });
-    socket.on('passenger_kicked', (data) {
+    _on('passenger_kicked', (data) {
       if (data == null) return;
       final map = Map<String, dynamic>.from(data);
       if (mounted && map['rideId'].toString() == widget.rideId) {
@@ -221,7 +239,7 @@ class _LiveTrackingScreenState extends State<LiveTrackingScreen> {
         }
       }
     });
-    socket.on('driver_location_update', (data) {
+    _on('driver_location_update', (data) {
       if (data == null) return;
       final map = Map<String, dynamic>.from(data);
       if (mounted && !widget.isDriver && map['rideId'].toString() == widget.rideId) {
@@ -232,7 +250,7 @@ class _LiveTrackingScreenState extends State<LiveTrackingScreen> {
       }
     });
     // ride_ended: only driver sees the green completion screen
-    socket.on('ride_ended', (data) {
+    _on('ride_ended', (data) {
       if (data == null) return;
       final map = Map<String, dynamic>.from(data);
       if (mounted && widget.isDriver) {
@@ -397,7 +415,13 @@ class _LiveTrackingScreenState extends State<LiveTrackingScreen> {
   }
 
   @override
-  void dispose() { _routeTimer?.cancel(); positionStreamSubscription?.cancel(); socket.dispose(); super.dispose(); }
+  void dispose() {
+    _routeTimer?.cancel();
+    positionStreamSubscription?.cancel();
+    _removeAllListeners();
+    SocketService().leaveRide(widget.rideId);
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {

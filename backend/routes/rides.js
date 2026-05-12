@@ -50,6 +50,7 @@ function checkCapacity(ride, newStartIndex, newEndIndex, requestedSeats) {
   return maxSeats <= ride.totalSeats;
 }
 
+// ── Search rides ─────────────────────────────────────────────────────────────
 router.get('/search', async (req, res) => {
   try {
     const { pickup, destination, seats, vehicle, lat, lng, destLat, destLng, radius, date } = req.query;
@@ -155,6 +156,7 @@ router.get('/:id', async (req, res) => {
   try { res.status(200).json(await Ride.findById(req.params.id)); } catch (err) { res.status(500).json({ error: err.message }); }
 });
 
+// ── Create ride — join driver into room ──────────────────────────────────────
 router.post('/', async (req, res) => {
   try {
     const data = req.body;
@@ -166,18 +168,25 @@ router.post('/', async (req, res) => {
     }
     const newRide = new Ride(data);
     await newRide.save();
+
+    // Join driver into the ride's socket room
+    const rideId = newRide._id.toString();
+    req.joinUserToRide(data.riderName, rideId);
+
     res.status(201).json({ success: true, ride: newRide });
   } catch (err) { res.status(500).json({ error: err.message }); }
 });
 
+// ── Cancel ride — scoped to room ─────────────────────────────────────────────
 router.delete('/:id', async (req, res) => {
   try {
     const updatedRide = await Ride.findByIdAndUpdate(req.params.id, { status: 'cancelled' }, { returnDocument: 'after' });
-    req.io.emit('ride_cancelled', updatedRide);
+    req.io.to(req.params.id).emit('ride_cancelled', updatedRide.toJSON());
     res.status(200).json({ success: true });
   } catch (err) { res.status(500).json({ error: err.message }); }
 });
 
+// ── Wipe all — global broadcast (admin only) ────────────────────────────────
 router.delete('/', adminOnly, async (req, res) => {
   try {
     await Ride.deleteMany({});
@@ -186,7 +195,7 @@ router.delete('/', adminOnly, async (req, res) => {
   } catch (err) { res.status(500).json({ error: err.message }); }
 });
 
-// ── Request a ride (with duplicate prevention) ─────────────────────────────
+// ── Request a ride — join requester + scoped emit ────────────────────────────
 router.patch('/request/:id', async (req, res) => {
   try {
     const { riderName, seats, computedFare, computedDistance, startIndex, endIndex, pickupLat, pickupLng, destLat, destLng, pickupLocation, destination } = req.body;
@@ -215,12 +224,16 @@ router.patch('/request/:id', async (req, res) => {
     });
     
     await ride.save();
-    req.io.emit('new_ride_request', ride.toJSON());
+
+    const rideId = ride._id.toString();
+    req.joinUserToRide(riderName, rideId);
+    req.io.to(rideId).emit('new_ride_request', ride.toJSON());
+
     res.status(200).json({ success: true });
   } catch (err) { res.status(500).json({ error: err.message }); }
 });
 
-// ── Accept a rider (with auto-decline for nonstop/shared_start when full) ──
+// ── Accept a rider — scoped emit ─────────────────────────────────────────────
 router.patch('/accept/:id/:riderName', async (req, res) => {
   try {
     let ride = await Ride.findById(req.params.id);
@@ -262,11 +275,13 @@ router.patch('/accept/:id/:riderName', async (req, res) => {
     }
 
     await ride.save();
-    req.io.emit('ride_accepted', ride.toJSON());
+    const rideId = ride._id.toString();
+    req.io.to(rideId).emit('ride_accepted', ride.toJSON());
     res.status(200).json(ride);
   } catch (err) { res.status(500).json({ error: err.message }); }
 });
 
+// ── Decline — scoped emit ────────────────────────────────────────────────────
 router.patch('/decline/:id/:riderName', async (req, res) => {
   try {
     let ride = await Ride.findById(req.params.id);
@@ -282,11 +297,13 @@ router.patch('/decline/:id/:riderName', async (req, res) => {
     }
     
     await ride.save();
-    req.io.emit('ride_cancelled', ride.toJSON());
+    const rideId = ride._id.toString();
+    req.io.to(rideId).emit('ride_cancelled', ride.toJSON());
     res.status(200).json(ride);
   } catch (err) { res.status(500).json({ error: err.message }); }
 });
 
+// ── Kick passenger — scoped emit + targeted notify ──────────────────────────
 router.patch('/kick/:id/:riderName', async (req, res) => {
   try {
     let ride = await Ride.findById(req.params.id);
@@ -298,27 +315,27 @@ router.patch('/kick/:id/:riderName', async (req, res) => {
     ride.kicked.push(req.params.riderName);
 
     await ride.save();
-    req.io.emit('passenger_kicked', { rideId: ride._id.toString(), kickedUser: req.params.riderName, ride: ride.toJSON() });
+    const rideId = ride._id.toString();
+    const payload = { rideId, kickedUser: req.params.riderName, ride: ride.toJSON() };
+    req.io.to(rideId).emit('passenger_kicked', payload);
+    // Also target the kicked user directly (they may have left the room)
+    req.emitToUser(req.params.riderName, 'passenger_kicked', payload);
     res.status(200).json(ride);
   } catch (err) { res.status(500).json({ error: err.message }); }
 });
 
-// ── Driver arrived for a specific passenger ────────────────────────────────
-// For nonstop/shared_start: arriving for one passenger auto-arrives ALL
-// passengers since they share the same pickup.
+// ── Driver arrived — scoped emit ─────────────────────────────────────────────
 router.patch('/arrive/:id/:riderName', async (req, res) => {
   try {
     let ride = await Ride.findById(req.params.id);
     if (!ride) return res.status(404).json({ error: "Ride not found" });
 
-    // Validate ride is started
     if (ride.status !== 'started') {
       return res.status(400).json({ error: "First start the ride" });
     }
 
     if (!ride.arrivedAt) ride.arrivedAt = [];
 
-    // For flexible: check capacity before allowing arrive
     if (ride.routePreference === 'flexible') {
       const riderDetail = ride.riderDetails?.get(req.params.riderName);
       const neededSeats = riderDetail?.seats || 1;
@@ -333,7 +350,6 @@ router.patch('/arrive/:id/:riderName', async (req, res) => {
         ride.arrivedAt.push(req.params.riderName);
       }
     } else if (ride.routePreference === 'nonstop' || ride.routePreference === 'shared_start') {
-      // Auto-arrive ALL waiting passengers (same pickup point)
       for (const pName of ride.passengers) {
         if (!ride.arrivedAt.includes(pName) && 
             !ride.boardedPassengers.includes(pName) && 
@@ -344,17 +360,18 @@ router.patch('/arrive/:id/:riderName', async (req, res) => {
     }
     
     await ride.save();
-    req.io.emit('driver_arrived', { rideId: ride._id.toString(), riderName: req.params.riderName, ride: ride.toJSON() });
+    const rideId = ride._id.toString();
+    req.io.to(rideId).emit('driver_arrived', { rideId, riderName: req.params.riderName, ride: ride.toJSON() });
     res.status(200).json(ride);
   } catch (err) { res.status(500).json({ error: err.message }); }
 });
 
+// ── Board passenger — scoped emit ────────────────────────────────────────────
 router.patch('/board/:id/:riderName', async (req, res) => {
   try {
     let ride = await Ride.findById(req.params.id);
     if (!ride) return res.status(404).json({ error: "Ride not found" });
 
-    // Ensure physical capacity isn't exceeded currently
     let currentlyOccupied = 0;
     for (const pName of ride.boardedPassengers) {
       currentlyOccupied += ride.riderDetails?.get(pName)?.seats || 1;
@@ -370,12 +387,13 @@ router.patch('/board/:id/:riderName', async (req, res) => {
     }
 
     await ride.save();
-    req.io.emit('passenger_boarded', ride.toJSON());
+    const rideId = ride._id.toString();
+    req.io.to(rideId).emit('passenger_boarded', ride.toJSON());
     res.status(200).json(ride);
   } catch (err) { res.status(500).json({ error: err.message }); }
 });
 
-// Drop-off passenger
+// ── Drop-off passenger — scoped emit ─────────────────────────────────────────
 router.patch('/dropoff/:id/:riderName', async (req, res) => {
   try {
     let ride = await Ride.findById(req.params.id);
@@ -390,19 +408,19 @@ router.patch('/dropoff/:id/:riderName', async (req, res) => {
     }
 
     await ride.save();
-    
-    req.io.emit('passenger_dropped', { 
-      rideId: ride._id.toString(), 
+    const rideId = ride._id.toString();
+    const payload = { 
+      rideId, 
       riderName: req.params.riderName, 
       fare: ride.riderDetails?.get(req.params.riderName)?.fare,
       ride: ride.toJSON()
-    });
-    
+    };
+    req.io.to(rideId).emit('passenger_dropped', payload);
     res.status(200).json(ride);
   } catch (err) { res.status(500).json({ error: err.message }); }
 });
 
-// Passenger pays
+// ── Passenger pays — scoped emit ─────────────────────────────────────────────
 router.patch('/pay/:id/:riderName', async (req, res) => {
   try {
     let ride = await Ride.findById(req.params.id);
@@ -420,17 +438,13 @@ router.patch('/pay/:id/:riderName', async (req, res) => {
     }
 
     await ride.save();
-    
-    req.io.emit('passenger_paid', { 
-      rideId: ride._id.toString(), 
-      riderName: req.params.riderName, 
-      ride: ride.toJSON()
-    });
-    
+    const rideId = ride._id.toString();
+    req.io.to(rideId).emit('passenger_paid', { rideId, riderName: req.params.riderName, ride: ride.toJSON() });
     res.status(200).json(ride);
   } catch (err) { res.status(500).json({ error: err.message }); }
 });
 
+// ── Start ride — scoped emit ─────────────────────────────────────────────────
 router.patch('/start/:id', async (req, res) => {
   try {
     const updatedRide = await Ride.findByIdAndUpdate(
@@ -438,17 +452,18 @@ router.patch('/start/:id', async (req, res) => {
       { status: 'started' },
       { new: true }
     );
-    req.io.emit('ride_started', updatedRide.toJSON());
+    const rideId = updatedRide._id.toString();
+    req.io.to(rideId).emit('ride_started', updatedRide.toJSON());
     res.status(200).json(updatedRide);
   } catch (err) { res.status(500).json({ error: err.message }); }
 });
 
+// ── End ride — scoped emit ───────────────────────────────────────────────────
 router.patch('/end/:id', async (req, res) => {
   try {
     let ride = await Ride.findById(req.params.id);
     if (!ride) return res.status(404).json({ error: "Ride not found" });
 
-    // The master "End Trip" button is only allowed if the car is completely empty
     if (ride.boardedPassengers.length > 0 || ride.passengers.length > 0) {
       return res.status(400).json({ error: "Cannot end trip. Passengers are still active." });
     }
@@ -456,8 +471,9 @@ router.patch('/end/:id', async (req, res) => {
     ride.status = 'completed';
     await ride.save();
 
-    req.io.emit('ride_ended', {
-        rideId: ride._id,
+    const rideId = ride._id.toString();
+    req.io.to(rideId).emit('ride_ended', {
+        rideId,
         passengers: ride.droppedPassengers,
         riderName: ride.riderName,
         boardedPassengers: ride.boardedPassengers
@@ -466,11 +482,12 @@ router.patch('/end/:id', async (req, res) => {
   } catch (err) { res.status(500).json({ error: err.message }); }
 });
 
+// ── Chat — scoped emit ──────────────────────────────────────────────────────
 router.post('/:id/chat', async (req, res) => {
   try {
     const { sender, text, timestamp } = req.body;
     await Ride.findByIdAndUpdate(req.params.id, { $push: { chatMessages: { sender, text, timestamp } } });
-    req.io.emit('receive_message', { rideId: req.params.id, sender, text, timestamp });
+    req.io.to(req.params.id).emit('receive_message', { rideId: req.params.id, sender, text, timestamp });
     res.status(200).json({ success: true });
   } catch (err) { res.status(500).json({ error: err.message }); }
 });

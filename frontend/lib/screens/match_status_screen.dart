@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:socket_io_client/socket_io_client.dart' as io;
+import '../core/socket_service.dart';
 import 'live_tracking_screen.dart';
-import '../core/constants.dart';
 
 class MatchStatusScreen extends StatefulWidget {
   final String driverName;
@@ -24,17 +24,29 @@ class _MatchStatusScreenState extends State<MatchStatusScreen> {
   late io.Socket socket;
   bool isDeclined = false;
   String declineMessage = "Request Declined";
+  final List<MapEntry<String, void Function(dynamic)>> _socketListeners = [];
+
+  void _on(String event, void Function(dynamic) handler) {
+    socket.on(event, handler);
+    _socketListeners.add(MapEntry(event, handler));
+  }
+
+  void _removeAllListeners() {
+    for (final entry in _socketListeners) {
+      socket.off(entry.key, entry.value);
+    }
+    _socketListeners.clear();
+  }
 
   @override
   void initState() {
     super.initState();
 
-    socket = io.io(kBaseUrl, <String, dynamic>{
-      'transports': ['websocket'],
-      'autoConnect': true,
-    });
+    final socketService = SocketService();
+    socket = socketService.socket;
+    socketService.joinRide(widget.rideId);
 
-    socket.on('ride_accepted', (data) {
+    _on('ride_accepted', (data) {
       if (data == null) return;
       final map = Map<String, dynamic>.from(data);
       if (mounted && map['_id'].toString() == widget.rideId) {
@@ -55,7 +67,7 @@ class _MatchStatusScreenState extends State<MatchStatusScreen> {
       }
     });
 
-    socket.on('ride_cancelled', (data) {
+    _on('ride_cancelled', (data) {
       if (data == null) return;
       final map = Map<String, dynamic>.from(data);
       if (mounted && map['_id'].toString() == widget.rideId) {
@@ -66,17 +78,15 @@ class _MatchStatusScreenState extends State<MatchStatusScreen> {
       }
     });
 
-    // 👈 THE FIX: Listens for DB Wipe to reset screen!
-    socket.on('database_wiped', (_) {
+    _on('database_wiped', (_) {
       if (mounted) Navigator.popUntil(context, (route) => route.isFirst);
     });
   }
 
-
-
   @override
   void dispose() {
-    socket.dispose();
+    _removeAllListeners();
+    SocketService().leaveRide(widget.rideId);
     super.dispose();
   }
 

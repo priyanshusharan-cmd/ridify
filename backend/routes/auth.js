@@ -92,7 +92,8 @@ router.delete('/user/:email', async (req, res) => {
         { $pull: { passengers: user.name, requests: user.name, boardedPassengers: user.name }, $inc: { availableSeats: 1 } }
       );
       await User.findOneAndDelete({ email: req.params.email });
-      req.io.emit('ride_ended', {});
+      // Notify all clients to refresh (user deletion affects multiple rides)
+      req.io.emit('database_wiped');
     }
     res.status(200).json({ success: true });
   } catch (err) { res.status(500).json({ error: err.message }); }

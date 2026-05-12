@@ -3,6 +3,7 @@ import 'package:socket_io_client/socket_io_client.dart' as io;
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 import '../core/constants.dart';
+import '../core/socket_service.dart';
 
 class ChatScreen extends StatefulWidget {
   final String myName;
@@ -24,6 +25,12 @@ class _ChatScreenState extends State<ChatScreen> {
   late io.Socket socket;
   final TextEditingController _controller = TextEditingController();
   final List<Map<String, dynamic>> messages = [];
+  final List<MapEntry<String, void Function(dynamic)>> _socketListeners = [];
+
+  void _on(String event, void Function(dynamic) handler) {
+    socket.on(event, handler);
+    _socketListeners.add(MapEntry(event, handler));
+  }
 
   @override
   void initState() {
@@ -74,11 +81,8 @@ class _ChatScreenState extends State<ChatScreen> {
   }
 
   void initSocket() {
-    socket = io.io(kBaseUrl, <String, dynamic>{
-      'transports': ['websocket'],
-      'autoConnect': true,
-    });
-    socket.on('receive_message', (data) {
+    socket = SocketService().socket;
+    _on('receive_message', (data) {
       if (mounted && data['rideId'] == widget.rideId) {
         setState(() => messages.add(data));
       }
@@ -105,7 +109,10 @@ class _ChatScreenState extends State<ChatScreen> {
 
   @override
   void dispose() {
-    socket.dispose();
+    for (final entry in _socketListeners) {
+      socket.off(entry.key, entry.value);
+    }
+    _socketListeners.clear();
     super.dispose();
   }
 
