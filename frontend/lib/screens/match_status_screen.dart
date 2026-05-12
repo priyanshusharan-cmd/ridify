@@ -31,10 +31,6 @@ class _MatchStatusScreenState extends State<MatchStatusScreen> {
   @override
   void initState() {
     super.initState();
-    _pollingTimer = Timer.periodic(
-      const Duration(seconds: 2),
-      (_) => pollRideStatus(),
-    );
 
     socket = io.io(kBaseUrl, <String, dynamic>{
       'transports': ['websocket'],
@@ -120,7 +116,6 @@ class _MatchStatusScreenState extends State<MatchStatusScreen> {
 
   @override
   void dispose() {
-    _pollingTimer?.cancel();
     socket.dispose();
     super.dispose();
   }

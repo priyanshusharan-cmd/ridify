@@ -137,10 +137,6 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
 
     fetchRides();
     initSocket();
-    _pollingTimer = Timer.periodic(
-      const Duration(seconds: 3),
-      (_) => fetchRides(),
-    );
   }
 
   // ── Animation helpers ──────────────────────────────────────────────────────
@@ -264,7 +260,6 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
 
   @override
   void dispose() {
-    _pollingTimer?.cancel();
     socket.dispose();
     _startupController.dispose();
     _victoryController.dispose();

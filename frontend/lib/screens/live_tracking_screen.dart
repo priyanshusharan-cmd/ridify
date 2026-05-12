@@ -42,7 +42,6 @@ class _LiveTrackingScreenState extends State<LiveTrackingScreen> {
     isAccepted = widget.isDriver || widget.isAlreadyAccepted;
     initSocket();
     syncRideStatus();
-    _pollingTimer = Timer.periodic(const Duration(milliseconds: 1500), (_) => syncRideStatus());
     _routeTimer = Timer.periodic(const Duration(seconds: 30), (_) => _fetchRoute());
     _initLocationTracking();
     Future.delayed(const Duration(seconds: 5), () {
@@ -159,13 +158,19 @@ class _LiveTrackingScreenState extends State<LiveTrackingScreen> {
     socket = io.io(kBaseUrl, <String, dynamic>{'transports': ['websocket'], 'autoConnect': true});
     socket.on('passenger_boarded', (data) {
       if (mounted && data != null && data['_id'] == widget.rideId) {
-        syncRideStatus();
+        setState(() {
+          rideData = data;
+        });
       }
     });
     socket.on('passenger_dropped', (data) {
       if (mounted && data != null && data['rideId'] == widget.rideId) {
         if (!widget.isDriver && data['riderName'] == widget.myName) {
           _triggerPaymentScreen(data['fare'] ?? 0);
+        } else if (data['ride'] != null) {
+          setState(() {
+            rideData = data['ride'];
+          });
         } else {
           syncRideStatus();
         }
@@ -173,7 +178,13 @@ class _LiveTrackingScreenState extends State<LiveTrackingScreen> {
     });
     socket.on('driver_arrived', (data) {
       if (mounted && data != null && data['rideId'] == widget.rideId) {
-        syncRideStatus();
+        if (data['ride'] != null) {
+          setState(() {
+            rideData = data['ride'];
+          });
+        } else {
+          syncRideStatus();
+        }
         if (!widget.isDriver && (data['riderName'] == widget.myName || (rideData?['arrivedAt'] ?? []).contains(widget.myName))) {
           ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("Driver has arrived! Please board."), backgroundColor: Colors.green));
         }
@@ -191,6 +202,10 @@ class _LiveTrackingScreenState extends State<LiveTrackingScreen> {
       if (mounted && data != null && data['rideId'] == widget.rideId) {
         if (data['kickedUser'] == widget.myName) {
           _kickSelfOut();
+        } else if (data['ride'] != null) {
+          setState(() {
+            rideData = data['ride'];
+          });
         } else {
           syncRideStatus();
         }
@@ -247,23 +262,65 @@ class _LiveTrackingScreenState extends State<LiveTrackingScreen> {
   }
 
   Future<void> driverArriveForPassenger(String name) async {
+    // Optimistic UI update
+    setState(() {
+      if (rideData != null) {
+        List arrived = List.from(rideData!['arrivedAt'] ?? []);
+        if (!arrived.contains(name)) arrived.add(name);
+        rideData!['arrivedAt'] = arrived;
+      }
+    });
     try {
       final response = await http.patch(Uri.parse('$kBaseUrl/api/rides/arrive/${widget.rideId}/$name'));
       if (response.statusCode != 200 && mounted) {
         final error = jsonDecode(response.body)['error'] ?? 'Failed';
         ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(error), backgroundColor: Colors.red));
+        syncRideStatus(); // Rollback/Sync
       }
-    } catch (e) { debugPrint(e.toString()); }
+    } catch (e) { debugPrint(e.toString()); syncRideStatus(); }
   }
   Future<void> boardRide() async {
     if (widget.rideId.isEmpty) return;
+    // Optimistic UI update
+    setState(() {
+      if (rideData != null) {
+        List boarded = List.from(rideData!['boardedPassengers'] ?? []);
+        if (!boarded.contains(widget.myName)) boarded.add(widget.myName);
+        rideData!['boardedPassengers'] = boarded;
+      }
+    });
     try {
       final response = await http.patch(Uri.parse('$kBaseUrl/api/rides/board/${widget.rideId}/${widget.myName}'));
-      if (response.statusCode != 200 && mounted) { ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(jsonDecode(response.body)['error'] ?? "Failed to board"), backgroundColor: Colors.red)); }
-    } catch (e) { debugPrint(e.toString()); }
+      if (response.statusCode != 200 && mounted) { 
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(jsonDecode(response.body)['error'] ?? "Failed to board"), backgroundColor: Colors.red)); 
+        syncRideStatus();
+      }
+    } catch (e) { debugPrint(e.toString()); syncRideStatus(); }
   }
-  Future<void> kickPassenger(String name) async { try { await http.patch(Uri.parse('$kBaseUrl/api/rides/kick/${widget.rideId}/$name')); } catch (e) { debugPrint(e.toString()); } }
-  Future<void> _executeDropOff(String name) async { try { await http.patch(Uri.parse('$kBaseUrl/api/rides/dropoff/${widget.rideId}/$name')); } catch (e) { debugPrint(e.toString()); } }
+  Future<void> kickPassenger(String name) async { 
+    // Optimistic UI update
+    setState(() {
+      if (rideData != null) {
+        rideData!['passengers'] = (rideData!['passengers'] as List).where((p) => p != name).toList();
+        rideData!['boardedPassengers'] = (rideData!['boardedPassengers'] as List).where((p) => p != name).toList();
+        rideData!['arrivedAt'] = (rideData!['arrivedAt'] as List).where((p) => p != name).toList();
+      }
+    });
+    try { await http.patch(Uri.parse('$kBaseUrl/api/rides/kick/${widget.rideId}/$name')); } catch (e) { debugPrint(e.toString()); syncRideStatus(); } 
+  }
+  Future<void> _executeDropOff(String name) async { 
+    // Optimistic UI update
+    setState(() {
+      if (rideData != null) {
+        rideData!['boardedPassengers'] = (rideData!['boardedPassengers'] as List).where((p) => p != name).toList();
+        rideData!['passengers'] = (rideData!['passengers'] as List).where((p) => p != name).toList();
+        List dropped = List.from(rideData!['droppedPassengers'] ?? []);
+        if (!dropped.contains(name)) dropped.add(name);
+        rideData!['droppedPassengers'] = dropped;
+      }
+    });
+    try { await http.patch(Uri.parse('$kBaseUrl/api/rides/dropoff/${widget.rideId}/$name')); } catch (e) { debugPrint(e.toString()); syncRideStatus(); } 
+  }
 
   Future<void> dropOffPassenger(String name) async {
     int fare = rideData?['riderDetails']?[name]?['fare'] ?? 0;
@@ -278,9 +335,21 @@ class _LiveTrackingScreenState extends State<LiveTrackingScreen> {
     List bp = rideData?['boardedPassengers'] ?? [];
     List ps = rideData?['passengers'] ?? [];
     if (bp.isNotEmpty || ps.isNotEmpty) { if (mounted) ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("Cannot end trip. Passengers still active."), backgroundColor: Colors.red)); return; }
-    try { await http.patch(Uri.parse('$kBaseUrl/api/rides/end/${widget.rideId}')); } catch (e) { debugPrint(e.toString()); }
+    // Optimistic UI update
+    setState(() {
+      if (rideData != null) rideData!['status'] = 'completed';
+    });
+    try { await http.patch(Uri.parse('$kBaseUrl/api/rides/end/${widget.rideId}')); } catch (e) { debugPrint(e.toString()); syncRideStatus(); }
   }
-  Future<void> startRide() async { if (widget.rideId.isEmpty) return; try { await http.patch(Uri.parse('$kBaseUrl/api/rides/start/${widget.rideId}')); } catch (e) { debugPrint(e.toString()); } }
+  Future<void> startRide() async { 
+    if (widget.rideId.isEmpty) return; 
+    // Optimistic UI update
+    setState(() {
+      isStarted = true;
+      if (rideData != null) rideData!['status'] = 'started';
+    });
+    try { await http.patch(Uri.parse('$kBaseUrl/api/rides/start/${widget.rideId}')); } catch (e) { debugPrint(e.toString()); syncRideStatus(); } 
+  }
 
   // Returns {title, address} for the next stop header
   Map<String, String> _getNextStopInfo() {
@@ -314,7 +383,7 @@ class _LiveTrackingScreenState extends State<LiveTrackingScreen> {
   }
 
   @override
-  void dispose() { _pollingTimer?.cancel(); _routeTimer?.cancel(); positionStreamSubscription?.cancel(); socket.dispose(); super.dispose(); }
+  void dispose() { _routeTimer?.cancel(); positionStreamSubscription?.cancel(); socket.dispose(); super.dispose(); }
 
   @override
   Widget build(BuildContext context) {

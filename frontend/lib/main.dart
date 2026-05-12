@@ -28,14 +28,12 @@ class MyApp extends StatefulWidget {
 }
 
 class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
-  Timer? _pingTimer;
+
 
   @override
   void initState() {
     super.initState();
     WidgetsBinding.instance.addObserver(this);
-    // Start periodic background ping every 10 minutes to keep server awake
-    _pingTimer = Timer.periodic(const Duration(minutes: 10), (_) => _pingBackend());
   }
 
   @override
@@ -58,7 +56,6 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
 
   @override
   void dispose() {
-    _pingTimer?.cancel();
     WidgetsBinding.instance.removeObserver(this);
     super.dispose();
   }
