@@ -1,7 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:http/http.dart' as http;
-import 'dart:convert';
-import 'dart:async';
 import 'package:socket_io_client/socket_io_client.dart' as io;
 import 'live_tracking_screen.dart';
 import '../core/constants.dart';
@@ -38,8 +35,10 @@ class _MatchStatusScreenState extends State<MatchStatusScreen> {
     });
 
     socket.on('ride_accepted', (data) {
-      if (mounted && data != null && data['_id'] == widget.rideId) {
-        if ((data['passengers'] ?? []).contains(widget.riderName)) {
+      if (data == null) return;
+      final map = Map<String, dynamic>.from(data);
+      if (mounted && map['_id'] == widget.rideId) {
+        if ((map['passengers'] ?? []).contains(widget.riderName)) {
           Navigator.pushReplacement(
             context,
             MaterialPageRoute(
@@ -57,7 +56,9 @@ class _MatchStatusScreenState extends State<MatchStatusScreen> {
     });
 
     socket.on('ride_cancelled', (data) {
-      if (mounted && data != null && data['_id'] == widget.rideId) {
+      if (data == null) return;
+      final map = Map<String, dynamic>.from(data);
+      if (mounted && map['_id'] == widget.rideId) {
         setState(() {
           isDeclined = true;
           declineMessage = "The driver cancelled this ride offer.";

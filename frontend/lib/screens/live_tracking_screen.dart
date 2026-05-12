@@ -157,19 +157,23 @@ class _LiveTrackingScreenState extends State<LiveTrackingScreen> {
   void initSocket() {
     socket = io.io(kBaseUrl, <String, dynamic>{'transports': ['websocket'], 'autoConnect': true});
     socket.on('passenger_boarded', (data) {
-      if (mounted && data != null && data['_id'] == widget.rideId) {
+      if (data == null) return;
+      final map = Map<String, dynamic>.from(data);
+      if (mounted && map['_id'] == widget.rideId) {
         setState(() {
-          rideData = data;
+          rideData = map;
         });
       }
     });
     socket.on('passenger_dropped', (data) {
-      if (mounted && data != null && data['rideId'] == widget.rideId) {
-        if (!widget.isDriver && data['riderName'] == widget.myName) {
-          _triggerPaymentScreen(data['fare'] ?? 0);
-        } else if (data['ride'] != null) {
+      if (data == null) return;
+      final map = Map<String, dynamic>.from(data);
+      if (mounted && map['rideId'] == widget.rideId) {
+        if (!widget.isDriver && map['riderName'] == widget.myName) {
+          _triggerPaymentScreen(map['fare'] ?? 0);
+        } else if (map['ride'] != null) {
           setState(() {
-            rideData = data['ride'];
+            rideData = map['ride'];
           });
         } else {
           syncRideStatus();
@@ -177,34 +181,40 @@ class _LiveTrackingScreenState extends State<LiveTrackingScreen> {
       }
     });
     socket.on('driver_arrived', (data) {
-      if (mounted && data != null && data['rideId'] == widget.rideId) {
-        if (data['ride'] != null) {
+      if (data == null) return;
+      final map = Map<String, dynamic>.from(data);
+      if (mounted && map['rideId'] == widget.rideId) {
+        if (map['ride'] != null) {
           setState(() {
-            rideData = data['ride'];
+            rideData = map['ride'];
           });
         } else {
           syncRideStatus();
         }
-        if (!widget.isDriver && (data['riderName'] == widget.myName || (rideData?['arrivedAt'] ?? []).contains(widget.myName))) {
+        if (!widget.isDriver && (map['riderName'] == widget.myName || (rideData?['arrivedAt'] ?? []).contains(widget.myName))) {
           ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("Driver has arrived! Please board."), backgroundColor: Colors.green));
         }
       }
     });
     socket.on('ride_started', (data) {
-      if (mounted && data != null && data['_id'] == widget.rideId) {
+      if (data == null) return;
+      final map = Map<String, dynamic>.from(data);
+      if (mounted && map['_id'] == widget.rideId) {
         setState(() {
           isStarted = true;
-          rideData = data;
+          rideData = map;
         });
       }
     });
     socket.on('passenger_kicked', (data) {
-      if (mounted && data != null && data['rideId'] == widget.rideId) {
-        if (data['kickedUser'] == widget.myName) {
+      if (data == null) return;
+      final map = Map<String, dynamic>.from(data);
+      if (mounted && map['rideId'] == widget.rideId) {
+        if (map['kickedUser'] == widget.myName) {
           _kickSelfOut();
-        } else if (data['ride'] != null) {
+        } else if (map['ride'] != null) {
           setState(() {
-            rideData = data['ride'];
+            rideData = map['ride'];
           });
         } else {
           syncRideStatus();
@@ -212,8 +222,10 @@ class _LiveTrackingScreenState extends State<LiveTrackingScreen> {
       }
     });
     socket.on('driver_location_update', (data) {
-      if (mounted && !widget.isDriver && data != null && data['rideId'] == widget.rideId) {
-        setState(() => driverPosition = LatLng(data['lat'], data['lng']));
+      if (data == null) return;
+      final map = Map<String, dynamic>.from(data);
+      if (mounted && !widget.isDriver && map['rideId'] == widget.rideId) {
+        setState(() => driverPosition = LatLng(map['lat'], map['lng']));
         try {
           _fitBounds();
         } catch (_) {}
@@ -221,8 +233,10 @@ class _LiveTrackingScreenState extends State<LiveTrackingScreen> {
     });
     // ride_ended: only driver sees the green completion screen
     socket.on('ride_ended', (data) {
-      if (mounted && data != null && widget.isDriver) {
-        String id = data['rideId']?.toString() ?? data['_id']?.toString() ?? '';
+      if (data == null) return;
+      final map = Map<String, dynamic>.from(data);
+      if (mounted && widget.isDriver) {
+        String id = map['rideId']?.toString() ?? map['_id']?.toString() ?? '';
         if (id == widget.rideId) {
           _triggerCompletionScreen();
         }
@@ -245,7 +259,7 @@ class _LiveTrackingScreenState extends State<LiveTrackingScreen> {
   void _triggerPaymentScreen(int fareAmount) {
     if (_isNavigatingToCompletion || !mounted) return;
     _isNavigatingToCompletion = true;
-    _pollingTimer?.cancel();
+
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (!mounted) return;
       Navigator.of(context).popUntil((route) => route.isFirst);
@@ -254,7 +268,7 @@ class _LiveTrackingScreenState extends State<LiveTrackingScreen> {
   }
 
   void _kickSelfOut() {
-    _pollingTimer?.cancel();
+
     showDialog(context: context, barrierDismissible: false, builder: (_) => AlertDialog(
       title: const Text("Removed from Ride"), content: const Text("The driver has removed you from this ride."),
       actions: [TextButton(onPressed: () { Navigator.pop(context); Navigator.popUntil(context, (route) => route.isFirst); }, child: const Text("OK", style: TextStyle(color: Colors.red, fontWeight: FontWeight.bold)))],
@@ -420,7 +434,7 @@ class _LiveTrackingScreenState extends State<LiveTrackingScreen> {
           child: driverPosition == null ? Center(child: CircularProgressIndicator(color: isDark ? Colors.white : Colors.black)) : FlutterMap(
             mapController: mapController, options: MapOptions(initialCenter: driverPosition!, initialZoom: 15.0),
             children: [
-              TileLayer(urlTemplate: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png', userAgentPackageName: 'com.example.ridify', tileProvider: const CancellableNetworkTileProvider()),
+              TileLayer(urlTemplate: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png', userAgentPackageName: 'com.example.ridify', tileProvider: CancellableNetworkTileProvider()),
               if (routePoints.isNotEmpty) PolylineLayer(polylines: [Polyline(points: routePoints, strokeWidth: 5.0, color: Colors.blueAccent)]),
               MarkerLayer(markers: [
                 if (!widget.isDriver && myPosition != null) Marker(point: myPosition!, width: 20, height: 20, child: Container(decoration: BoxDecoration(color: Colors.blueAccent, shape: BoxShape.circle, border: Border.all(color: Colors.white, width: 3), boxShadow: const [BoxShadow(blurRadius: 5, color: Colors.black26)]))),
