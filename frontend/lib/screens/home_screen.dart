@@ -75,7 +75,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
   int _currentIndex = 0;
   late io.Socket socket;
   List<dynamic> allRides = [];
-  Timer? _pollingTimer;
+
 
   // ── Startup animation ──────────────────────────────────────────────────────
   late AnimationController _startupController;

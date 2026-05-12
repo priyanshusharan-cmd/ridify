@@ -23,7 +23,7 @@ class MatchStatusScreen extends StatefulWidget {
 }
 
 class _MatchStatusScreenState extends State<MatchStatusScreen> {
-  Timer? _pollingTimer;
+
   late io.Socket socket;
   bool isDeclined = false;
   String declineMessage = "Request Declined";
@@ -40,7 +40,6 @@ class _MatchStatusScreenState extends State<MatchStatusScreen> {
     socket.on('ride_accepted', (data) {
       if (mounted && data != null && data['_id'] == widget.rideId) {
         if ((data['passengers'] ?? []).contains(widget.riderName)) {
-          _pollingTimer?.cancel();
           Navigator.pushReplacement(
             context,
             MaterialPageRoute(
@@ -63,7 +62,6 @@ class _MatchStatusScreenState extends State<MatchStatusScreen> {
           isDeclined = true;
           declineMessage = "The driver cancelled this ride offer.";
         });
-        _pollingTimer?.cancel();
       }
     });
 
@@ -73,46 +71,7 @@ class _MatchStatusScreenState extends State<MatchStatusScreen> {
     });
   }
 
-  Future<void> pollRideStatus() async {
-    try {
-      final response = await http.get(
-        Uri.parse('$kBaseUrl/api/rides/${widget.rideId}'),
-      );
-      if (response.statusCode == 200 && mounted) {
-        final ride = jsonDecode(response.body);
 
-        if ((ride['passengers'] ?? []).contains(widget.riderName)) {
-          _pollingTimer?.cancel();
-          Navigator.pushReplacement(
-            context,
-            MaterialPageRoute(
-              builder: (_) => LiveTrackingScreen(
-                isDriver: false,
-                isAlreadyAccepted: true,
-                rideId: widget.rideId,
-                myName: widget.riderName,
-                otherUserName: widget.driverName,
-              ),
-            ),
-          );
-        } else if (ride['status'] == 'cancelled') {
-          setState(() {
-            isDeclined = true;
-            declineMessage = "The driver cancelled this ride offer.";
-          });
-          _pollingTimer?.cancel();
-        } else if ((ride['declined'] ?? []).contains(widget.riderName)) {
-          setState(() {
-            isDeclined = true;
-            declineMessage = "${widget.driverName} declined your request.";
-          });
-          _pollingTimer?.cancel();
-        }
-      }
-    } catch (e) {
-      debugPrint(e.toString());
-    }
-  }
 
   @override
   void dispose() {

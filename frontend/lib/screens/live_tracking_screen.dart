@@ -26,7 +26,7 @@ class _LiveTrackingScreenState extends State<LiveTrackingScreen> {
   late io.Socket socket;
   late bool isAccepted;
   bool isStarted = false;
-  Timer? _pollingTimer;
+
   Map<String, dynamic>? rideData;
   LatLng? driverPosition;
   LatLng? myPosition;
@@ -420,7 +420,7 @@ class _LiveTrackingScreenState extends State<LiveTrackingScreen> {
           child: driverPosition == null ? Center(child: CircularProgressIndicator(color: isDark ? Colors.white : Colors.black)) : FlutterMap(
             mapController: mapController, options: MapOptions(initialCenter: driverPosition!, initialZoom: 15.0),
             children: [
-              TileLayer(urlTemplate: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png', userAgentPackageName: 'com.example.ridify', tileProvider: CancellableNetworkTileProvider()),
+              TileLayer(urlTemplate: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png', userAgentPackageName: 'com.example.ridify', tileProvider: const CancellableNetworkTileProvider()),
               if (routePoints.isNotEmpty) PolylineLayer(polylines: [Polyline(points: routePoints, strokeWidth: 5.0, color: Colors.blueAccent)]),
               MarkerLayer(markers: [
                 if (!widget.isDriver && myPosition != null) Marker(point: myPosition!, width: 20, height: 20, child: Container(decoration: BoxDecoration(color: Colors.blueAccent, shape: BoxShape.circle, border: Border.all(color: Colors.white, width: 3), boxShadow: const [BoxShadow(blurRadius: 5, color: Colors.black26)]))),

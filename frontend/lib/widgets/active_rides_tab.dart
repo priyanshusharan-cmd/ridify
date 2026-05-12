@@ -169,14 +169,13 @@ class _ActiveRidesTabState extends State<ActiveRidesTab> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Padding(
-              padding: const EdgeInsets.all(24.0),
+            const Padding(
+              padding: EdgeInsets.all(24.0),
               child: Text(
                 "Activity",
                 style: TextStyle(
                   fontSize: 28, 
                   fontWeight: FontWeight.bold,
-                  color: Theme.of(context).textTheme.bodyLarge?.color,
                 ),
               ),
             ),
@@ -214,12 +213,11 @@ class _ActiveRidesTabState extends State<ActiveRidesTab> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(
+            const Text(
               "Activity",
               style: TextStyle(
                 fontSize: 28, 
                 fontWeight: FontWeight.bold,
-                color: Theme.of(context).textTheme.bodyLarge?.color,
               ),
             ),
             const SizedBox(height: 20),
