@@ -37,7 +37,7 @@ class _MatchStatusScreenState extends State<MatchStatusScreen> {
     socket.on('ride_accepted', (data) {
       if (data == null) return;
       final map = Map<String, dynamic>.from(data);
-      if (mounted && map['_id'] == widget.rideId) {
+      if (mounted && map['_id'].toString() == widget.rideId) {
         if ((map['passengers'] ?? []).contains(widget.riderName)) {
           Navigator.pushReplacement(
             context,
@@ -58,7 +58,7 @@ class _MatchStatusScreenState extends State<MatchStatusScreen> {
     socket.on('ride_cancelled', (data) {
       if (data == null) return;
       final map = Map<String, dynamic>.from(data);
-      if (mounted && map['_id'] == widget.rideId) {
+      if (mounted && map['_id'].toString() == widget.rideId) {
         setState(() {
           isDeclined = true;
           declineMessage = "The driver cancelled this ride offer.";

@@ -215,7 +215,7 @@ router.patch('/request/:id', async (req, res) => {
     });
     
     await ride.save();
-    req.io.emit('new_ride_request', ride);
+    req.io.emit('new_ride_request', ride.toJSON());
     res.status(200).json({ success: true });
   } catch (err) { res.status(500).json({ error: err.message }); }
 });
@@ -262,7 +262,7 @@ router.patch('/accept/:id/:riderName', async (req, res) => {
     }
 
     await ride.save();
-    req.io.emit('ride_accepted', ride);
+    req.io.emit('ride_accepted', ride.toJSON());
     res.status(200).json(ride);
   } catch (err) { res.status(500).json({ error: err.message }); }
 });
@@ -282,7 +282,7 @@ router.patch('/decline/:id/:riderName', async (req, res) => {
     }
     
     await ride.save();
-    req.io.emit('ride_cancelled', ride);
+    req.io.emit('ride_cancelled', ride.toJSON());
     res.status(200).json(ride);
   } catch (err) { res.status(500).json({ error: err.message }); }
 });
@@ -298,7 +298,7 @@ router.patch('/kick/:id/:riderName', async (req, res) => {
     ride.kicked.push(req.params.riderName);
 
     await ride.save();
-    req.io.emit('passenger_kicked', { rideId: ride._id, kickedUser: req.params.riderName, ride });
+    req.io.emit('passenger_kicked', { rideId: ride._id.toString(), kickedUser: req.params.riderName, ride: ride.toJSON() });
     res.status(200).json(ride);
   } catch (err) { res.status(500).json({ error: err.message }); }
 });
@@ -344,7 +344,7 @@ router.patch('/arrive/:id/:riderName', async (req, res) => {
     }
     
     await ride.save();
-    req.io.emit('driver_arrived', { rideId: ride._id, riderName: req.params.riderName, ride });
+    req.io.emit('driver_arrived', { rideId: ride._id.toString(), riderName: req.params.riderName, ride: ride.toJSON() });
     res.status(200).json(ride);
   } catch (err) { res.status(500).json({ error: err.message }); }
 });
@@ -370,7 +370,7 @@ router.patch('/board/:id/:riderName', async (req, res) => {
     }
 
     await ride.save();
-    req.io.emit('passenger_boarded', ride);
+    req.io.emit('passenger_boarded', ride.toJSON());
     res.status(200).json(ride);
   } catch (err) { res.status(500).json({ error: err.message }); }
 });
@@ -392,10 +392,10 @@ router.patch('/dropoff/:id/:riderName', async (req, res) => {
     await ride.save();
     
     req.io.emit('passenger_dropped', { 
-      rideId: ride._id, 
+      rideId: ride._id.toString(), 
       riderName: req.params.riderName, 
       fare: ride.riderDetails?.get(req.params.riderName)?.fare,
-      ride 
+      ride: ride.toJSON()
     });
     
     res.status(200).json(ride);
@@ -422,9 +422,9 @@ router.patch('/pay/:id/:riderName', async (req, res) => {
     await ride.save();
     
     req.io.emit('passenger_paid', { 
-      rideId: ride._id, 
+      rideId: ride._id.toString(), 
       riderName: req.params.riderName, 
-      ride 
+      ride: ride.toJSON()
     });
     
     res.status(200).json(ride);
@@ -438,7 +438,7 @@ router.patch('/start/:id', async (req, res) => {
       { status: 'started' },
       { new: true }
     );
-    req.io.emit('ride_started', updatedRide);
+    req.io.emit('ride_started', updatedRide.toJSON());
     res.status(200).json(updatedRide);
   } catch (err) { res.status(500).json({ error: err.message }); }
 });

@@ -159,7 +159,7 @@ class _LiveTrackingScreenState extends State<LiveTrackingScreen> {
     socket.on('passenger_boarded', (data) {
       if (data == null) return;
       final map = Map<String, dynamic>.from(data);
-      if (mounted && map['_id'] == widget.rideId) {
+      if (mounted && map['_id'].toString() == widget.rideId) {
         setState(() {
           rideData = map;
         });
@@ -168,12 +168,12 @@ class _LiveTrackingScreenState extends State<LiveTrackingScreen> {
     socket.on('passenger_dropped', (data) {
       if (data == null) return;
       final map = Map<String, dynamic>.from(data);
-      if (mounted && map['rideId'] == widget.rideId) {
+      if (mounted && map['rideId'].toString() == widget.rideId) {
         if (!widget.isDriver && map['riderName'] == widget.myName) {
           _triggerPaymentScreen(map['fare'] ?? 0);
         } else if (map['ride'] != null) {
           setState(() {
-            rideData = map['ride'];
+            rideData = Map<String, dynamic>.from(map['ride']);
           });
         } else {
           syncRideStatus();
@@ -183,10 +183,10 @@ class _LiveTrackingScreenState extends State<LiveTrackingScreen> {
     socket.on('driver_arrived', (data) {
       if (data == null) return;
       final map = Map<String, dynamic>.from(data);
-      if (mounted && map['rideId'] == widget.rideId) {
+      if (mounted && map['rideId'].toString() == widget.rideId) {
         if (map['ride'] != null) {
           setState(() {
-            rideData = map['ride'];
+            rideData = Map<String, dynamic>.from(map['ride']);
           });
         } else {
           syncRideStatus();
@@ -199,7 +199,7 @@ class _LiveTrackingScreenState extends State<LiveTrackingScreen> {
     socket.on('ride_started', (data) {
       if (data == null) return;
       final map = Map<String, dynamic>.from(data);
-      if (mounted && map['_id'] == widget.rideId) {
+      if (mounted && map['_id'].toString() == widget.rideId) {
         setState(() {
           isStarted = true;
           rideData = map;
@@ -209,12 +209,12 @@ class _LiveTrackingScreenState extends State<LiveTrackingScreen> {
     socket.on('passenger_kicked', (data) {
       if (data == null) return;
       final map = Map<String, dynamic>.from(data);
-      if (mounted && map['rideId'] == widget.rideId) {
+      if (mounted && map['rideId'].toString() == widget.rideId) {
         if (map['kickedUser'] == widget.myName) {
           _kickSelfOut();
         } else if (map['ride'] != null) {
           setState(() {
-            rideData = map['ride'];
+            rideData = Map<String, dynamic>.from(map['ride']);
           });
         } else {
           syncRideStatus();
@@ -224,7 +224,7 @@ class _LiveTrackingScreenState extends State<LiveTrackingScreen> {
     socket.on('driver_location_update', (data) {
       if (data == null) return;
       final map = Map<String, dynamic>.from(data);
-      if (mounted && !widget.isDriver && map['rideId'] == widget.rideId) {
+      if (mounted && !widget.isDriver && map['rideId'].toString() == widget.rideId) {
         setState(() => driverPosition = LatLng(map['lat'], map['lng']));
         try {
           _fitBounds();
@@ -236,7 +236,7 @@ class _LiveTrackingScreenState extends State<LiveTrackingScreen> {
       if (data == null) return;
       final map = Map<String, dynamic>.from(data);
       if (mounted && widget.isDriver) {
-        String id = map['rideId']?.toString() ?? map['_id']?.toString() ?? '';
+        String id = (map['rideId'] ?? map['_id'] ?? '').toString();
         if (id == widget.rideId) {
           _triggerCompletionScreen();
         }
