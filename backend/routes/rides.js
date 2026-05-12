@@ -58,7 +58,7 @@ router.get('/search', async (req, res) => {
     const reqSeats = parseInt(seats) || 1;
 
     const matchQuery = {
-      status: { $in: ['available', 'accepted', 'started'] }, // Can join even if started
+      status: { $in: ['available', 'accepted', 'started'] },
       $or: [{ expiresAt: { $gt: currentTime } }, { expiresAt: null }, { expiresAt: { $exists: false } }]
     };
     if (vehicle && vehicle !== 'Any') matchQuery.vehicleType = vehicle;
@@ -109,8 +109,8 @@ router.get('/search', async (req, res) => {
           if (tripDistance < 1.5) continue; // Minimum distance check
 
           // Preferences check
-          const isStartClose = startIndex < (ride.routePath.length * 0.1); // within first 10% of route
-          const isEndClose = endIndex > (ride.routePath.length * 0.9);   // within last 10% of route
+          const isStartClose = startIndex < (ride.routePath.length * 0.1);
+          const isEndClose = endIndex > (ride.routePath.length * 0.9);
           
           if (ride.routePreference === 'shared_start' && !isStartClose) continue;
           if (ride.routePreference === 'nonstop' && (!isStartClose || !isEndClose)) continue;
@@ -186,12 +186,21 @@ router.delete('/', adminOnly, async (req, res) => {
   } catch (err) { res.status(500).json({ error: err.message }); }
 });
 
+// ── Request a ride (with duplicate prevention) ─────────────────────────────
 router.patch('/request/:id', async (req, res) => {
   try {
     const { riderName, seats, computedFare, computedDistance, startIndex, endIndex, pickupLat, pickupLng, destLat, destLng, pickupLocation, destination } = req.body;
     
     const ride = await Ride.findById(req.params.id);
     if (!ride) return res.status(404).json({ error: "Ride not found" });
+
+    // Prevent duplicate requests
+    if (ride.requests.includes(riderName) || ride.passengers.includes(riderName)) {
+      return res.status(400).json({ error: "You have already requested or joined this ride." });
+    }
+    if (ride.declined.includes(riderName)) {
+      return res.status(400).json({ error: "You were already declined for this ride." });
+    }
 
     if (!checkCapacity(ride, startIndex, endIndex, seats)) {
       return res.status(400).json({ error: "Capacity exceeded for this segment" });
@@ -211,10 +220,20 @@ router.patch('/request/:id', async (req, res) => {
   } catch (err) { res.status(500).json({ error: err.message }); }
 });
 
+// ── Accept a rider (with auto-decline for nonstop/shared_start when full) ──
 router.patch('/accept/:id/:riderName', async (req, res) => {
   try {
     let ride = await Ride.findById(req.params.id);
     if (!ride) return res.status(404).json({ error: "Ride not found" });
+
+    // Prevent duplicate acceptance
+    if (ride.passengers.includes(req.params.riderName)) {
+      return res.status(400).json({ error: "Already accepted" });
+    }
+    // Must still be in requests
+    if (!ride.requests.includes(req.params.riderName)) {
+      return res.status(400).json({ error: "Request not found" });
+    }
 
     const riderDetail = ride.riderDetails?.get(req.params.riderName);
     if (!riderDetail) return res.status(400).json({ error: "Rider details not found" });
@@ -222,10 +241,25 @@ router.patch('/accept/:id/:riderName', async (req, res) => {
     ride.requests = ride.requests.filter(r => r !== req.params.riderName);
     ride.passengers.push(req.params.riderName);
 
-    // Don't modify availableSeats simply, as it's dynamic. We just change status if full.
-    // To check if full entirely, we could do a complex check, but let's just let it be 'accepted' or 'started' 
-    // unless the maximum possible seats across the entire route is reached (hard to define without a new request).
     if (ride.status === 'available') ride.status = 'accepted';
+
+    // For nonstop / shared_start: auto-decline remaining requests if car is now full
+    if (ride.routePreference === 'nonstop' || ride.routePreference === 'shared_start') {
+      let totalUsed = 0;
+      for (const pName of ride.passengers) {
+        const pd = ride.riderDetails?.get(pName);
+        totalUsed += pd?.seats || 1;
+      }
+      
+      if (totalUsed >= ride.totalSeats) {
+        const toDecline = [...ride.requests];
+        for (const rName of toDecline) {
+          ride.requests = ride.requests.filter(r => r !== rName);
+          ride.declined.push(rName);
+        }
+        ride.status = 'full';
+      }
+    }
 
     await ride.save();
     req.io.emit('ride_accepted', ride);
@@ -239,14 +273,16 @@ router.patch('/decline/:id/:riderName', async (req, res) => {
     if (!ride) return res.status(404).json({ error: "Ride not found" });
 
     ride.requests = ride.requests.filter(r => r !== req.params.riderName);
-    ride.declined.push(req.params.riderName);
+    if (!ride.declined.includes(req.params.riderName)) {
+      ride.declined.push(req.params.riderName);
+    }
     
     if (ride.requests.length === 0 && ride.passengers.length === 0 && ride.status !== 'started') {
       ride.status = 'available';
     }
     
     await ride.save();
-    req.io.emit('ride_cancelled', ride); // or a new event 'request_declined'
+    req.io.emit('ride_cancelled', ride);
     res.status(200).json(ride);
   } catch (err) { res.status(500).json({ error: err.message }); }
 });
@@ -258,6 +294,7 @@ router.patch('/kick/:id/:riderName', async (req, res) => {
 
     ride.passengers = ride.passengers.filter(p => p !== req.params.riderName);
     ride.boardedPassengers = ride.boardedPassengers.filter(p => p !== req.params.riderName);
+    ride.arrivedAt = ride.arrivedAt.filter(p => p !== req.params.riderName);
     ride.kicked.push(req.params.riderName);
 
     await ride.save();
@@ -266,17 +303,47 @@ router.patch('/kick/:id/:riderName', async (req, res) => {
   } catch (err) { res.status(500).json({ error: err.message }); }
 });
 
+// ── Driver arrived for a specific passenger ────────────────────────────────
+// For nonstop/shared_start: arriving for one passenger auto-arrives ALL
+// passengers since they share the same pickup.
 router.patch('/arrive/:id/:riderName', async (req, res) => {
   try {
     let ride = await Ride.findById(req.params.id);
     if (!ride) return res.status(404).json({ error: "Ride not found" });
 
-    if (!ride.arrivedAt) ride.arrivedAt = [];
-    if (!ride.arrivedAt.includes(req.params.riderName)) {
-      ride.arrivedAt.push(req.params.riderName);
+    // Validate ride is started
+    if (ride.status !== 'started') {
+      return res.status(400).json({ error: "First start the ride" });
     }
-    await ride.save();
+
+    if (!ride.arrivedAt) ride.arrivedAt = [];
+
+    // For flexible: check capacity before allowing arrive
+    if (ride.routePreference === 'flexible') {
+      const riderDetail = ride.riderDetails?.get(req.params.riderName);
+      const neededSeats = riderDetail?.seats || 1;
+      let currentlyOccupied = 0;
+      for (const pName of ride.boardedPassengers) {
+        currentlyOccupied += ride.riderDetails?.get(pName)?.seats || 1;
+      }
+      if (currentlyOccupied + neededSeats > ride.totalSeats) {
+        return res.status(400).json({ error: "Car capacity reached" });
+      }
+      if (!ride.arrivedAt.includes(req.params.riderName)) {
+        ride.arrivedAt.push(req.params.riderName);
+      }
+    } else if (ride.routePreference === 'nonstop' || ride.routePreference === 'shared_start') {
+      // Auto-arrive ALL waiting passengers (same pickup point)
+      for (const pName of ride.passengers) {
+        if (!ride.arrivedAt.includes(pName) && 
+            !ride.boardedPassengers.includes(pName) && 
+            !ride.droppedPassengers.includes(pName)) {
+          ride.arrivedAt.push(pName);
+        }
+      }
+    }
     
+    await ride.save();
     req.io.emit('driver_arrived', { rideId: ride._id, riderName: req.params.riderName, ride });
     res.status(200).json(ride);
   } catch (err) { res.status(500).json({ error: err.message }); }
@@ -288,7 +355,6 @@ router.patch('/board/:id/:riderName', async (req, res) => {
     if (!ride) return res.status(404).json({ error: "Ride not found" });
 
     // Ensure physical capacity isn't exceeded currently
-    // We sum seats of ALL currently boarded passengers
     let currentlyOccupied = 0;
     for (const pName of ride.boardedPassengers) {
       currentlyOccupied += ride.riderDetails?.get(pName)?.seats || 1;
@@ -383,8 +449,8 @@ router.patch('/end/:id', async (req, res) => {
     if (!ride) return res.status(404).json({ error: "Ride not found" });
 
     // The master "End Trip" button is only allowed if the car is completely empty
-    if (ride.boardedPassengers.length > 0) {
-      return res.status(400).json({ error: "Cannot end trip. Passengers are still boarded." });
+    if (ride.boardedPassengers.length > 0 || ride.passengers.length > 0) {
+      return res.status(400).json({ error: "Cannot end trip. Passengers are still active." });
     }
 
     ride.status = 'completed';
@@ -392,7 +458,7 @@ router.patch('/end/:id', async (req, res) => {
 
     req.io.emit('ride_ended', {
         rideId: ride._id,
-        passengers: ride.passengers,
+        passengers: ride.droppedPassengers,
         riderName: ride.riderName,
         boardedPassengers: ride.boardedPassengers
     });

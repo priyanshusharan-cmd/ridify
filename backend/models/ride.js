@@ -29,6 +29,8 @@ const RideSchema = new mongoose.Schema({
       pickupLng: Number,
       destLat: Number,
       destLng: Number,
+      pickupLocation: String,
+      destination: String,
       fare: Number,
       distance: Number,
       seats: Number,
