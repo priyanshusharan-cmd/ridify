@@ -42,7 +42,7 @@ class _LiveTrackingScreenState extends State<LiveTrackingScreen> {
     isAccepted = widget.isDriver || widget.isAlreadyAccepted;
     initSocket();
     syncRideStatus();
-    _pollingTimer = Timer.periodic(const Duration(seconds: 3), (_) => syncRideStatus());
+    _pollingTimer = Timer.periodic(const Duration(milliseconds: 1500), (_) => syncRideStatus());
     _routeTimer = Timer.periodic(const Duration(seconds: 30), (_) => _fetchRoute());
     _initLocationTracking();
     Future.delayed(const Duration(seconds: 5), () {
@@ -135,10 +135,19 @@ class _LiveTrackingScreenState extends State<LiveTrackingScreen> {
       if (response.statusCode == 200 && mounted) {
         final data = jsonDecode(response.body);
         if (!widget.isDriver && !(data['passengers'] ?? []).contains(widget.myName) && !(data['boardedPassengers'] ?? []).contains(widget.myName) && !(data['droppedPassengers'] ?? []).contains(widget.myName)) { _kickSelfOut(); return; }
+        // If rider was dropped, navigate to payment
+        if (!widget.isDriver && (data['droppedPassengers'] ?? []).contains(widget.myName)) {
+          int fare = 0;
+          final details = data['riderDetails'];
+          if (details != null && details[widget.myName] != null) fare = details[widget.myName]['fare'] ?? 0;
+          _triggerPaymentScreen(fare);
+          return;
+        }
         setState(() {
           bool isFirstLoad = rideData == null;
           rideData = data;
-          if (data['status'] == 'completed') { _triggerCompletionScreen(0); return; }
+          // Only driver sees completion on status=completed
+          if (data['status'] == 'completed' && widget.isDriver) { _triggerCompletionScreen(); return; }
           if (data['status'] == 'started' && !isStarted) isStarted = true;
           if (isFirstLoad) _fetchRoute();
         });
@@ -148,11 +157,18 @@ class _LiveTrackingScreenState extends State<LiveTrackingScreen> {
 
   void initSocket() {
     socket = io.io(kBaseUrl, <String, dynamic>{'transports': ['websocket'], 'autoConnect': true});
-    socket.on('passenger_boarded', (data) { if (mounted && data != null && data['_id'] == widget.rideId) syncRideStatus(); });
+    socket.on('passenger_boarded', (data) {
+      if (mounted && data != null && data['_id'] == widget.rideId) {
+        syncRideStatus();
+      }
+    });
     socket.on('passenger_dropped', (data) {
       if (mounted && data != null && data['rideId'] == widget.rideId) {
-        syncRideStatus();
-        if (!widget.isDriver && data['riderName'] == widget.myName) _triggerCompletionScreen(data['fare'] ?? 0);
+        if (!widget.isDriver && data['riderName'] == widget.myName) {
+          _triggerPaymentScreen(data['fare'] ?? 0);
+        } else {
+          syncRideStatus();
+        }
       }
     });
     socket.on('driver_arrived', (data) {
@@ -163,19 +179,62 @@ class _LiveTrackingScreenState extends State<LiveTrackingScreen> {
         }
       }
     });
-    socket.on('ride_started', (data) { if (mounted && data != null && data['_id'] == widget.rideId) setState(() { isStarted = true; rideData = data; }); });
-    socket.on('passenger_kicked', (data) { if (mounted && data != null && data['rideId'] == widget.rideId) { if (data['kickedUser'] == widget.myName) _kickSelfOut(); else syncRideStatus(); } });
-    socket.on('driver_location_update', (data) { if (mounted && !widget.isDriver && data != null && data['rideId'] == widget.rideId) { setState(() => driverPosition = LatLng(data['lat'], data['lng'])); try { _fitBounds(); } catch (_) {} } });
-    socket.on('ride_ended', (data) { if (mounted && data != null) { String id = data['rideId']?.toString() ?? data['_id']?.toString() ?? ''; if (id == widget.rideId) _triggerCompletionScreen(0); } });
+    socket.on('ride_started', (data) {
+      if (mounted && data != null && data['_id'] == widget.rideId) {
+        setState(() {
+          isStarted = true;
+          rideData = data;
+        });
+      }
+    });
+    socket.on('passenger_kicked', (data) {
+      if (mounted && data != null && data['rideId'] == widget.rideId) {
+        if (data['kickedUser'] == widget.myName) {
+          _kickSelfOut();
+        } else {
+          syncRideStatus();
+        }
+      }
+    });
+    socket.on('driver_location_update', (data) {
+      if (mounted && !widget.isDriver && data != null && data['rideId'] == widget.rideId) {
+        setState(() => driverPosition = LatLng(data['lat'], data['lng']));
+        try {
+          _fitBounds();
+        } catch (_) {}
+      }
+    });
+    // ride_ended: only driver sees the green completion screen
+    socket.on('ride_ended', (data) {
+      if (mounted && data != null && widget.isDriver) {
+        String id = data['rideId']?.toString() ?? data['_id']?.toString() ?? '';
+        if (id == widget.rideId) {
+          _triggerCompletionScreen();
+        }
+      }
+    });
   }
 
-  void _triggerCompletionScreen(int fareAmount) {
+  // Driver-only green completion screen
+  void _triggerCompletionScreen() {
     if (_isNavigatingToCompletion || !mounted) return;
     _isNavigatingToCompletion = true;
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (!mounted) return;
       Navigator.of(context).popUntil((route) => route.isFirst);
-      Navigator.of(context).push(MaterialPageRoute(builder: (_) => CompletionScreen(isDriver: widget.isDriver, rideId: widget.rideId, myName: widget.myName, fareAmount: fareAmount)));
+      Navigator.of(context).push(MaterialPageRoute(builder: (_) => CompletionScreen(isDriver: true, rideId: widget.rideId, myName: widget.myName, fareAmount: 0)));
+    });
+  }
+
+  // Rider payment screen after drop-off
+  void _triggerPaymentScreen(int fareAmount) {
+    if (_isNavigatingToCompletion || !mounted) return;
+    _isNavigatingToCompletion = true;
+    _pollingTimer?.cancel();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted) return;
+      Navigator.of(context).popUntil((route) => route.isFirst);
+      Navigator.of(context).push(MaterialPageRoute(builder: (_) => CompletionScreen(isDriver: false, rideId: widget.rideId, myName: widget.myName, fareAmount: fareAmount)));
     });
   }
 
@@ -187,7 +246,15 @@ class _LiveTrackingScreenState extends State<LiveTrackingScreen> {
     ));
   }
 
-  Future<void> driverArriveForPassenger(String name) async { try { await http.patch(Uri.parse('$kBaseUrl/api/rides/arrive/${widget.rideId}/$name')); } catch (e) { debugPrint(e.toString()); } }
+  Future<void> driverArriveForPassenger(String name) async {
+    try {
+      final response = await http.patch(Uri.parse('$kBaseUrl/api/rides/arrive/${widget.rideId}/$name'));
+      if (response.statusCode != 200 && mounted) {
+        final error = jsonDecode(response.body)['error'] ?? 'Failed';
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(error), backgroundColor: Colors.red));
+      }
+    } catch (e) { debugPrint(e.toString()); }
+  }
   Future<void> boardRide() async {
     if (widget.rideId.isEmpty) return;
     try {
@@ -215,8 +282,9 @@ class _LiveTrackingScreenState extends State<LiveTrackingScreen> {
   }
   Future<void> startRide() async { if (widget.rideId.isEmpty) return; try { await http.patch(Uri.parse('$kBaseUrl/api/rides/start/${widget.rideId}')); } catch (e) { debugPrint(e.toString()); } }
 
-  String _getNextStopLocation() {
-    if (rideData == null || !isStarted) return "Start ride to see stops";
+  // Returns {title, address} for the next stop header
+  Map<String, String> _getNextStopInfo() {
+    if (rideData == null || !isStarted) return {"title": "Start ride to see stops", "address": ""};
     List<Map<String, dynamic>> wps = [];
     for (var p in (rideData!['passengers'] ?? [])) {
       final d = rideData!['riderDetails']?[p];
@@ -225,14 +293,24 @@ class _LiveTrackingScreenState extends State<LiveTrackingScreen> {
         wps.add({"type": "dropoff", "passenger": p, "index": d['endIndex'] ?? 9999, "location": d['destination'] ?? "Drop-off"});
       }
     }
-    // Also include dropped passengers' dropoffs that are already done
+    for (var p in (rideData!['boardedPassengers'] ?? [])) {
+      if ((rideData!['passengers'] ?? []).contains(p)) continue; // already added
+      final d = rideData!['riderDetails']?[p];
+      if (d != null) {
+        wps.add({"type": "dropoff", "passenger": p, "index": d['endIndex'] ?? 9999, "location": d['destination'] ?? "Drop-off"});
+      }
+    }
     wps.sort((a, b) => (a['index'] as int).compareTo(b['index'] as int));
     for (var wp in wps) {
       String p = wp['passenger'];
-      if (wp['type'] == 'pickup' && !(rideData!['boardedPassengers'] ?? []).contains(p) && !(rideData!['droppedPassengers'] ?? []).contains(p)) return wp['location'];
-      if (wp['type'] == 'dropoff' && (rideData!['boardedPassengers'] ?? []).contains(p)) return wp['location'];
+      if (wp['type'] == 'pickup' && !(rideData!['boardedPassengers'] ?? []).contains(p) && !(rideData!['droppedPassengers'] ?? []).contains(p)) {
+        return {"title": "$p's Pickup", "address": wp['location']};
+      }
+      if (wp['type'] == 'dropoff' && (rideData!['boardedPassengers'] ?? []).contains(p)) {
+        return {"title": "$p's Drop", "address": wp['location']};
+      }
     }
-    return rideData?['destination'] ?? "Destination";
+    return {"title": rideData?['destination'] ?? "Destination", "address": ""};
   }
 
   @override
@@ -287,15 +365,19 @@ class _LiveTrackingScreenState extends State<LiveTrackingScreen> {
         ),
         // Locate button
         Positioned(top: 20, right: 20, child: GestureDetector(onTap: _fitBounds, child: Container(padding: const EdgeInsets.all(10), decoration: const BoxDecoration(color: Colors.white, shape: BoxShape.circle, boxShadow: [BoxShadow(color: Colors.black26, blurRadius: 6, offset: Offset(0, 3))]), child: const Icon(Icons.my_location, color: Colors.black, size: 20)))),
-        // Next Stop header
-        if (widget.isDriver && isStarted) Positioned(top: 20, left: 20, right: 80, child: Container(
-          padding: const EdgeInsets.all(14), decoration: BoxDecoration(color: panelBg, borderRadius: BorderRadius.circular(15), boxShadow: const [BoxShadow(color: Colors.black12, blurRadius: 6, offset: Offset(0, 3))], border: Border.all(color: isDark ? Colors.white24 : Colors.black12)),
-          child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-            Text("NEXT STOP", style: TextStyle(color: panelSub, fontSize: 11, fontWeight: FontWeight.bold, letterSpacing: 1)),
-            const SizedBox(height: 4),
-            Text(_getNextStopLocation(), style: TextStyle(color: panelText, fontSize: 14, fontWeight: FontWeight.bold), maxLines: 2, overflow: TextOverflow.ellipsis),
-          ]),
-        )),
+        // Next Stop header with dynamic passenger name and address
+        if (widget.isDriver && isStarted) Builder(builder: (ctx) {
+          final stopInfo = _getNextStopInfo();
+          return Positioned(top: 20, left: 20, right: 80, child: Container(
+            padding: const EdgeInsets.all(14), decoration: BoxDecoration(color: panelBg, borderRadius: BorderRadius.circular(15), boxShadow: const [BoxShadow(color: Colors.black12, blurRadius: 6, offset: Offset(0, 3))], border: Border.all(color: isDark ? Colors.white24 : Colors.black12)),
+            child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+              Text("NEXT STOP", style: TextStyle(color: panelSub, fontSize: 11, fontWeight: FontWeight.bold, letterSpacing: 1)),
+              const SizedBox(height: 4),
+              Text(stopInfo['title']!, style: TextStyle(color: panelText, fontSize: 14, fontWeight: FontWeight.bold), maxLines: 2, overflow: TextOverflow.ellipsis),
+              if (stopInfo['address']!.isNotEmpty) ...[const SizedBox(height: 2), Text(stopInfo['address']!, style: TextStyle(color: panelSub, fontSize: 11), maxLines: 1, overflow: TextOverflow.ellipsis)],
+            ]),
+          ));
+        }),
         // Bottom panel
         Align(alignment: Alignment.bottomCenter, child: Container(
           padding: const EdgeInsets.all(20),
@@ -313,13 +395,33 @@ class _LiveTrackingScreenState extends State<LiveTrackingScreen> {
                   Text(statusText, style: TextStyle(color: isStarted ? (isDark ? Colors.blue.shade300 : Colors.blue) : (isDark ? Colors.green.shade300 : Colors.green), fontWeight: FontWeight.bold, fontSize: 13)),
                 ]),
               ])),
-              // Rider: Board button
+              // Rider: Board button (grey until arrived, shows snackbar)
               if (!widget.isDriver && isAccepted && !iHaveBoarded && !iAmDropped)
-                ElevatedButton(style: ElevatedButton.styleFrom(backgroundColor: !iAmArrived ? Colors.grey : (isDark ? const Color(0xFF1B4332) : Colors.green)), onPressed: !iAmArrived ? null : boardRide, child: const Text("Board", style: TextStyle(color: Colors.white))),
-              // Driver: Start / End
+                ElevatedButton(
+                  style: ElevatedButton.styleFrom(backgroundColor: !iAmArrived ? Colors.grey : (isDark ? const Color(0xFF1B4332) : Colors.green)),
+                  onPressed: () {
+                    if (!iAmArrived) {
+                      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("Wait for the driver to arrive"), backgroundColor: Colors.orange));
+                    } else {
+                      boardRide();
+                    }
+                  },
+                  child: const Text("Board", style: TextStyle(color: Colors.white)),
+                ),
+              // Driver: Start / Arrive disabled until started / End disabled until empty
               if (widget.isDriver) ...[
                 if (!isStarted) ElevatedButton(style: ElevatedButton.styleFrom(backgroundColor: isDark ? const Color(0xFF1A3A5C) : Colors.blue), onPressed: startRide, child: const Text("Start", style: TextStyle(color: Colors.white)))
-                else ElevatedButton(style: ElevatedButton.styleFrom(backgroundColor: canEnd ? (isDark ? const Color(0xFF5C1A1A) : Colors.red) : Colors.grey), onPressed: canEnd ? endRide : null, child: const Text("End", style: TextStyle(color: Colors.white))),
+                else ElevatedButton(
+                  style: ElevatedButton.styleFrom(backgroundColor: canEnd ? (isDark ? const Color(0xFF5C1A1A) : Colors.red) : Colors.grey),
+                  onPressed: () {
+                    if (!canEnd) {
+                      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("There are passengers still in the car"), backgroundColor: Colors.red));
+                    } else {
+                      endRide();
+                    }
+                  },
+                  child: const Text("End", style: TextStyle(color: Colors.white)),
+                ),
               ],
             ]),
             // Capacity indicator
@@ -368,13 +470,27 @@ class _LiveTrackingScreenState extends State<LiveTrackingScreen> {
                         Text(addrText, style: TextStyle(color: panelSub, fontSize: 10), maxLines: 1, overflow: TextOverflow.ellipsis),
                       ],
                     ])),
-                    // Action buttons
-                    if (isBoarded)
-                      ElevatedButton(style: ElevatedButton.styleFrom(backgroundColor: Colors.redAccent, minimumSize: const Size(70, 32), padding: const EdgeInsets.symmetric(horizontal: 10)), onPressed: () => dropOffPassenger(p), child: const Text("Drop-off", style: TextStyle(color: Colors.white, fontSize: 11)))
-                    else ...[
-                      if (!isArrived) ElevatedButton(style: ElevatedButton.styleFrom(backgroundColor: canFit ? Colors.green : Colors.grey, minimumSize: const Size(70, 32), padding: const EdgeInsets.symmetric(horizontal: 10)), onPressed: canFit ? () => driverArriveForPassenger(p) : null, child: Text(canFit ? "Arrived" : "Full", style: const TextStyle(color: Colors.white, fontSize: 11))),
+                    // Action buttons - kick always visible
+                    if (isBoarded) ...[
+                      ElevatedButton(style: ElevatedButton.styleFrom(backgroundColor: Colors.redAccent, minimumSize: const Size(70, 32), padding: const EdgeInsets.symmetric(horizontal: 10)), onPressed: () => dropOffPassenger(p), child: const Text("Drop-off", style: TextStyle(color: Colors.white, fontSize: 11))),
                       const SizedBox(width: 6),
-                      GestureDetector(onTap: () => kickPassenger(p), child: Icon(Icons.person_remove, color: Colors.redAccent, size: 20)),
+                      GestureDetector(onTap: () => kickPassenger(p), child: const Icon(Icons.person_remove, color: Colors.redAccent, size: 20)),
+                    ] else ...[
+                      if (!isArrived) ElevatedButton(
+                        style: ElevatedButton.styleFrom(backgroundColor: (canFit && isStarted) ? Colors.green : Colors.grey, minimumSize: const Size(70, 32), padding: const EdgeInsets.symmetric(horizontal: 10)),
+                        onPressed: () {
+                          if (!isStarted) {
+                            ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("First start the ride"), backgroundColor: Colors.orange));
+                          } else if (!canFit) {
+                            ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("Car capacity reached"), backgroundColor: Colors.red));
+                          } else {
+                            driverArriveForPassenger(p);
+                          }
+                        },
+                        child: Text((canFit && isStarted) ? "Arrived" : (isStarted ? "Full" : "Arrived"), style: const TextStyle(color: Colors.white, fontSize: 11)),
+                      ),
+                      const SizedBox(width: 6),
+                      GestureDetector(onTap: () => kickPassenger(p), child: const Icon(Icons.person_remove, color: Colors.redAccent, size: 20)),
                     ],
                   ]),
                 );

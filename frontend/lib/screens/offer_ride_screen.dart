@@ -189,7 +189,6 @@ class _OfferRideScreenState extends State<OfferRideScreen> {
       child: GestureDetector(
         onTap: () => setState(() => routePreference = value),
         child: Container(
-          height: 110,
           margin: const EdgeInsets.symmetric(horizontal: 4),
           padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 8),
           decoration: BoxDecoration(
@@ -202,7 +201,7 @@ class _OfferRideScreenState extends State<OfferRideScreen> {
           ),
           child: Column(
             children: [
-              Icon(icon, color: isSelected ? Colors.white : Theme.of(context).iconTheme.color?.withOpacity(0.6), size: 28),
+              Icon(icon, color: isSelected ? Colors.white : Theme.of(context).iconTheme.color?.withValues(alpha: 0.6), size: 28),
               const SizedBox(height: 8),
               Text(
                 title,
@@ -335,7 +334,7 @@ class _OfferRideScreenState extends State<OfferRideScreen> {
                       ),
                       child: Column(
                         children: [
-                          Icon(icon, color: isSelected ? Colors.white : Theme.of(context).textTheme.bodyMedium?.color?.withOpacity(0.5)),
+                          Icon(icon, color: isSelected ? Colors.white : Theme.of(context).textTheme.bodyMedium?.color?.withValues(alpha: 0.5)),
                           const SizedBox(height: 5),
                           Text(
                             type,
@@ -367,12 +366,12 @@ class _OfferRideScreenState extends State<OfferRideScreen> {
                       ),
                       child: Row(
                         children: [
-                          Icon(Icons.calendar_today_outlined, size: 20, color: Theme.of(context).iconTheme.color?.withOpacity(0.6)),
+                          Icon(Icons.calendar_today_outlined, size: 20, color: Theme.of(context).iconTheme.color?.withValues(alpha: 0.6)),
                           const SizedBox(width: 10),
                           Text(
                             dateText,
                             style: TextStyle(
-                              color: _selectedDate == null ? Theme.of(context).textTheme.bodyMedium?.color?.withOpacity(0.5) : Theme.of(context).textTheme.bodyLarge?.color,
+                              color: _selectedDate == null ? Theme.of(context).textTheme.bodyMedium?.color?.withValues(alpha: 0.5) : Theme.of(context).textTheme.bodyLarge?.color,
                               fontWeight: _selectedDate == null ? FontWeight.normal : FontWeight.bold,
                             ),
                           ),
@@ -394,12 +393,12 @@ class _OfferRideScreenState extends State<OfferRideScreen> {
                       ),
                       child: Row(
                         children: [
-                          Icon(Icons.access_time, size: 20, color: Theme.of(context).iconTheme.color?.withOpacity(0.6)),
+                          Icon(Icons.access_time, size: 20, color: Theme.of(context).iconTheme.color?.withValues(alpha: 0.6)),
                           const SizedBox(width: 10),
                           Text(
                             timeText,
                             style: TextStyle(
-                              color: _selectedTime == null ? Theme.of(context).textTheme.bodyMedium?.color?.withOpacity(0.5) : Theme.of(context).textTheme.bodyLarge?.color,
+                              color: _selectedTime == null ? Theme.of(context).textTheme.bodyMedium?.color?.withValues(alpha: 0.5) : Theme.of(context).textTheme.bodyLarge?.color,
                               fontWeight: _selectedTime == null ? FontWeight.normal : FontWeight.bold,
                             ),
                           ),
@@ -464,7 +463,7 @@ class _OfferRideScreenState extends State<OfferRideScreen> {
                 prefixText: "₹ ",
                 prefixStyle: TextStyle(color: Theme.of(context).textTheme.bodyLarge?.color),
                 hintText: "Enter base price",
-                hintStyle: TextStyle(color: Theme.of(context).textTheme.bodyMedium?.color?.withOpacity(0.5)),
+                hintStyle: TextStyle(color: Theme.of(context).textTheme.bodyMedium?.color?.withValues(alpha: 0.5)),
                 filled: true,
                 fillColor: Theme.of(context).cardColor,
                 border: OutlineInputBorder(borderRadius: BorderRadius.circular(15), borderSide: BorderSide(color: Theme.of(context).dividerColor)),

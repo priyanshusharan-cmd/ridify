@@ -480,7 +480,7 @@ class _FindRideScreenState extends State<FindRideScreen> {
                         children: [
                           Icon(
                             icon,
-                            color: isSelected ? Colors.white : Theme.of(context).textTheme.bodyMedium?.color?.withOpacity(0.5),
+                            color: isSelected ? Colors.white : Theme.of(context).textTheme.bodyMedium?.color?.withValues(alpha: 0.5),
                           ),
                           const SizedBox(height: 5),
                           Text(
@@ -517,14 +517,14 @@ class _FindRideScreenState extends State<FindRideScreen> {
                           Icon(
                             Icons.calendar_today_outlined,
                             size: 20,
-                            color: Theme.of(context).iconTheme.color?.withOpacity(0.6),
+                            color: Theme.of(context).iconTheme.color?.withValues(alpha: 0.6),
                           ),
                           const SizedBox(width: 10),
                           Text(
                             dateText,
                             style: TextStyle(
                               color: _selectedDate == null
-                                  ? Theme.of(context).textTheme.bodyMedium?.color?.withOpacity(0.5)
+                                  ? Theme.of(context).textTheme.bodyMedium?.color?.withValues(alpha: 0.5)
                                   : Theme.of(context).textTheme.bodyLarge?.color,
                               fontWeight: _selectedDate == null
                                   ? FontWeight.normal
@@ -552,14 +552,14 @@ class _FindRideScreenState extends State<FindRideScreen> {
                           Icon(
                             Icons.access_time,
                             size: 20,
-                            color: Theme.of(context).iconTheme.color?.withOpacity(0.6),
+                            color: Theme.of(context).iconTheme.color?.withValues(alpha: 0.6),
                           ),
                           const SizedBox(width: 10),
                           Text(
                             timeText,
                             style: TextStyle(
                               color: _selectedTime == null
-                                  ? Theme.of(context).textTheme.bodyMedium?.color?.withOpacity(0.5)
+                                  ? Theme.of(context).textTheme.bodyMedium?.color?.withValues(alpha: 0.5)
                                   : Theme.of(context).textTheme.bodyLarge?.color,
                               fontWeight: _selectedTime == null
                                   ? FontWeight.normal

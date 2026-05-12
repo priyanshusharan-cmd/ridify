@@ -232,27 +232,23 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
     socket.on('ride_accepted', (_) => fetchRides());
     socket.on('ride_cancelled', (_) => fetchRides());
 
+    // ride_ended: only the DRIVER sees the green completion screen
+    // Riders are handled via passenger_dropped in live_tracking_screen
     socket.on('ride_ended', (data) {
       fetchRides();
       if (mounted && data != null) {
-        final List passengers = data['passengers'] is List
-            ? data['passengers']
-            : [];
-        final List boarded = data['boardedPassengers'] is List
-            ? data['boardedPassengers']
-            : [];
-
-        final bool wasMyRide =
-            data['riderName'] == widget.userName ||
-            passengers.contains(widget.userName) ||
-            boarded.contains(widget.userName);
-
-        if (wasMyRide) {
+        final bool iAmDriver = data['riderName'] == widget.userName;
+        if (iAmDriver) {
           WidgetsBinding.instance.addPostFrameCallback((_) {
             if (!mounted) return;
             Navigator.of(context).popUntil((route) => route.isFirst);
             Navigator.of(context).push(
-              MaterialPageRoute(builder: (_) => const CompletionScreen()),
+              MaterialPageRoute(builder: (_) => CompletionScreen(
+                isDriver: true,
+                rideId: data['rideId']?.toString() ?? '',
+                myName: widget.userName,
+                fareAmount: 0,
+              )),
             );
             setState(() => _currentIndex = 0);
           });

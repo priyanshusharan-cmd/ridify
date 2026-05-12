@@ -5,7 +5,7 @@ import '../screens/live_tracking_screen.dart';
 import '../screens/match_status_screen.dart';
 import '../core/utils.dart';
 
-class ActiveRidesTab extends StatelessWidget {
+class ActiveRidesTab extends StatefulWidget {
   final List<dynamic> rides;
   final String myName;
   final VoidCallback onRefresh;
@@ -19,12 +19,45 @@ class ActiveRidesTab extends StatelessWidget {
     required this.onGoHome,
   });
 
+  @override
+  State<ActiveRidesTab> createState() => _ActiveRidesTabState();
+}
+
+class _ActiveRidesTabState extends State<ActiveRidesTab> {
+  // Track which accept/decline buttons are currently processing to prevent duplicates
+  final Set<String> _processingAccepts = {};
+
   Future<void> _action(String url, BuildContext context) async {
     try {
       final res = await http.patch(Uri.parse(url));
-      if (res.statusCode == 200) onRefresh();
+      if (res.statusCode == 200) widget.onRefresh();
     } catch (e) {
       debugPrint("$e");
+    }
+  }
+
+  Future<void> _acceptRider(String rideId, String requester, BuildContext context) async {
+    final key = '${rideId}_$requester';
+    if (_processingAccepts.contains(key)) return; // Already processing
+
+    setState(() => _processingAccepts.add(key));
+
+    try {
+      final res = await http.patch(Uri.parse("$kBaseUrl/api/rides/accept/$rideId/$requester"));
+      if (res.statusCode == 200) {
+        widget.onRefresh();
+      } else {
+        if (context.mounted) {
+          final body = res.body;
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text(body), backgroundColor: Colors.red),
+          );
+        }
+      }
+    } catch (e) {
+      debugPrint("$e");
+    } finally {
+      if (mounted) setState(() => _processingAccepts.remove(key));
     }
   }
 
@@ -39,7 +72,7 @@ class ActiveRidesTab extends StatelessWidget {
             backgroundColor: Colors.red,
           ),
         );
-        onRefresh();
+        widget.onRefresh();
       }
     } catch (e) {
       debugPrint("$e");
@@ -98,25 +131,25 @@ class ActiveRidesTab extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final List<dynamic> activeRidesOnly = rides
+    final List<dynamic> activeRidesOnly = widget.rides
         .where((r) => r['status'] != 'cancelled' && r['status'] != 'completed')
         .toList();
 
     // Rider is the driver AND status is available, accepted, or full
     final List<dynamic> myOfferedRides = activeRidesOnly.where((r) {
-      return r['riderName'] == myName &&
+      return r['riderName'] == widget.myName &&
           (r['status'] == 'available' ||
               r['status'] == 'accepted' ||
               r['status'] == 'full');
     }).toList();
 
     final List<dynamic> myPendingRequests = activeRidesOnly
-        .where((r) => (r['requests'] as List?)?.contains(myName) ?? false)
+        .where((r) => (r['requests'] as List?)?.contains(widget.myName) ?? false)
         .toList();
 
     final List<dynamic> liveRides = activeRidesOnly.where((r) {
-      final bool isDriver = r['riderName'] == myName;
-      final bool isPassenger = (r['passengers'] as List?)?.contains(myName) ?? false;
+      final bool isDriver = r['riderName'] == widget.myName;
+      final bool isPassenger = (r['passengers'] as List?)?.contains(widget.myName) ?? false;
 
       if (isDriver) {
         return r['status'] == 'started';
@@ -304,13 +337,13 @@ class ActiveRidesTab extends StatelessWidget {
                                         isDriver: true,
                                         isAlreadyAccepted: true,
                                         rideId: r['_id'],
-                                        myName: myName,
+                                        myName: widget.myName,
                                         otherUserName: "Group",
                                       ),
                                     ),
                                   ).then((_) {
-                                    onRefresh();
-                                    onGoHome();
+                                    widget.onRefresh();
+                                    widget.onGoHome();
                                   }),
                                   child: const Text(
                                     "Open Map",
@@ -345,6 +378,9 @@ class ActiveRidesTab extends StatelessWidget {
                             final String destAddr = (riderDetail?['destination'] ?? '').toString();
                             String shortPickup = pickupAddr.length > 50 ? '${pickupAddr.substring(0, 50)}...' : pickupAddr;
                             String shortDest = destAddr.length > 50 ? '${destAddr.substring(0, 50)}...' : destAddr;
+
+                            final String acceptKey = '${r['_id']}_$requester';
+                            final bool isProcessing = _processingAccepts.contains(acceptKey);
                             
                             return Padding(
                               padding: const EdgeInsets.only(left: 16.0, right: 16.0, bottom: 16.0),
@@ -401,14 +437,20 @@ class ActiveRidesTab extends StatelessWidget {
                                       children: [
                                         Expanded(child: OutlinedButton(
                                           style: OutlinedButton.styleFrom(side: const BorderSide(color: Colors.redAccent), padding: const EdgeInsets.symmetric(vertical: 12), shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10))),
-                                          onPressed: () => _action("$kBaseUrl/api/rides/decline/${r['_id']}/$requester", context),
+                                          onPressed: isProcessing ? null : () => _action("$kBaseUrl/api/rides/decline/${r['_id']}/$requester", context),
                                           child: const Text("Decline", style: TextStyle(color: Colors.redAccent, fontWeight: FontWeight.bold)),
                                         )),
                                         const SizedBox(width: 12),
                                         Expanded(child: ElevatedButton(
-                                          style: ElevatedButton.styleFrom(backgroundColor: Colors.black, padding: const EdgeInsets.symmetric(vertical: 12), shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10))),
-                                          onPressed: () => _action("$kBaseUrl/api/rides/accept/${r['_id']}/$requester", context),
-                                          child: const Text("Accept", style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
+                                          style: ElevatedButton.styleFrom(
+                                            backgroundColor: isProcessing ? Colors.grey : Colors.black,
+                                            padding: const EdgeInsets.symmetric(vertical: 12),
+                                            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                                          ),
+                                          onPressed: isProcessing ? null : () => _acceptRider(r['_id'], requester, context),
+                                          child: isProcessing
+                                            ? const SizedBox(width: 18, height: 18, child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white))
+                                            : const Text("Accept", style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
                                         )),
                                       ],
                                     ),
@@ -444,7 +486,7 @@ class ActiveRidesTab extends StatelessWidget {
                       builder: (_) => MatchStatusScreen(
                         driverName: r['riderName'],
                         rideId: r['_id'],
-                        riderName: myName,
+                        riderName: widget.myName,
                       ),
                     ),
                   ),
@@ -494,7 +536,7 @@ class ActiveRidesTab extends StatelessWidget {
                               ),
                               TextButton(
                                 onPressed: () => _action(
-                                  "$kBaseUrl/api/rides/decline/${r['_id']}/$myName",
+                                  "$kBaseUrl/api/rides/decline/${r['_id']}/${widget.myName}",
                                   context,
                                 ),
                                 child: const Text(
@@ -568,7 +610,7 @@ class ActiveRidesTab extends StatelessWidget {
                                           overflow: TextOverflow.ellipsis,
                                         ),
                                         Text(
-                                          r['riderName'] == myName
+                                          r['riderName'] == widget.myName
                                               ? "You are Driving"
                                               : "Riding with ${r['riderName']}",
                                           style: const TextStyle(color: Colors.white70),
@@ -593,18 +635,18 @@ class ActiveRidesTab extends StatelessWidget {
                                     context,
                                     MaterialPageRoute(
                                       builder: (_) => LiveTrackingScreen(
-                                        isDriver: r['riderName'] == myName,
+                                        isDriver: r['riderName'] == widget.myName,
                                         isAlreadyAccepted: true,
                                         rideId: r['_id'],
-                                        myName: myName,
-                                        otherUserName: r['riderName'] == myName
+                                        myName: widget.myName,
+                                        otherUserName: r['riderName'] == widget.myName
                                             ? "Group"
                                             : r['riderName'],
                                       ),
                                     ),
                                   ).then((_) {
-                                    onRefresh();
-                                    onGoHome();
+                                    widget.onRefresh();
+                                    widget.onGoHome();
                                   }),
                               child: Text(
                                 "Open Map",
