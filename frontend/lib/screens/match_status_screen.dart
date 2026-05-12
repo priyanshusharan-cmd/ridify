@@ -49,8 +49,9 @@ class _MatchStatusScreenState extends State<MatchStatusScreen> {
     _on('ride_accepted', (data) {
       if (data == null) return;
       final map = Map<String, dynamic>.from(data);
-      if (mounted && map['_id'].toString() == widget.rideId) {
-        if ((map['passengers'] ?? []).contains(widget.riderName)) {
+      if (mounted && map['rideId'].toString() == widget.rideId) {
+        final ride = map['ride'] != null ? Map<String, dynamic>.from(map['ride']) : null;
+        if (ride != null && (ride['passengers'] ?? []).contains(widget.riderName)) {
           Navigator.pushReplacement(
             context,
             MaterialPageRoute(
@@ -70,7 +71,7 @@ class _MatchStatusScreenState extends State<MatchStatusScreen> {
     _on('ride_cancelled', (data) {
       if (data == null) return;
       final map = Map<String, dynamic>.from(data);
-      if (mounted && map['_id'].toString() == widget.rideId) {
+      if (mounted && map['rideId'].toString() == widget.rideId) {
         setState(() {
           isDeclined = true;
           declineMessage = "The driver cancelled this ride offer.";

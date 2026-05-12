@@ -238,13 +238,31 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
 
     // Direct state updates — no re-fetch needed
     socket.on('new_ride_request', (data) {
-      if (data != null) _upsertRide(Map<String, dynamic>.from(data));
+      if (data != null && data['ride'] != null) _upsertRide(Map<String, dynamic>.from(data['ride']));
     });
     socket.on('ride_accepted', (data) {
-      if (data != null) _upsertRide(Map<String, dynamic>.from(data));
+      if (data != null && data['ride'] != null) _upsertRide(Map<String, dynamic>.from(data['ride']));
     });
     socket.on('ride_cancelled', (data) {
-      if (data != null) _upsertRide(Map<String, dynamic>.from(data));
+      if (data != null && data['ride'] != null) _upsertRide(Map<String, dynamic>.from(data['ride']));
+    });
+    socket.on('driver_arrived', (data) {
+      if (data != null && data['ride'] != null) _upsertRide(Map<String, dynamic>.from(data['ride']));
+    });
+    socket.on('passenger_boarded', (data) {
+      if (data != null && data['ride'] != null) _upsertRide(Map<String, dynamic>.from(data['ride']));
+    });
+    socket.on('passenger_dropped', (data) {
+      if (data != null && data['ride'] != null) _upsertRide(Map<String, dynamic>.from(data['ride']));
+    });
+    socket.on('passenger_kicked', (data) {
+      if (data != null && data['ride'] != null) _upsertRide(Map<String, dynamic>.from(data['ride']));
+    });
+    socket.on('passenger_paid', (data) {
+      if (data != null && data['ride'] != null) _upsertRide(Map<String, dynamic>.from(data['ride']));
+    });
+    socket.on('ride_started', (data) {
+      if (data != null && data['ride'] != null) _upsertRide(Map<String, dynamic>.from(data['ride']));
     });
 
     // ride_ended: only the DRIVER sees the green completion screen

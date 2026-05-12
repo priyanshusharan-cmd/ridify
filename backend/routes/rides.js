@@ -181,7 +181,7 @@ router.post('/', async (req, res) => {
 router.delete('/:id', async (req, res) => {
   try {
     const updatedRide = await Ride.findByIdAndUpdate(req.params.id, { status: 'cancelled' }, { returnDocument: 'after' });
-    req.io.to(req.params.id).emit('ride_cancelled', updatedRide.toJSON());
+    req.io.to(req.params.id).emit('ride_cancelled', { rideId: req.params.id, ride: updatedRide.toJSON() });
     res.status(200).json({ success: true });
   } catch (err) { res.status(500).json({ error: err.message }); }
 });
@@ -227,7 +227,7 @@ router.patch('/request/:id', async (req, res) => {
 
     const rideId = ride._id.toString();
     req.joinUserToRide(riderName, rideId);
-    req.io.to(rideId).emit('new_ride_request', ride.toJSON());
+    req.io.to(rideId).emit('new_ride_request', { rideId, ride: ride.toJSON() });
 
     res.status(200).json({ success: true });
   } catch (err) { res.status(500).json({ error: err.message }); }
@@ -276,7 +276,7 @@ router.patch('/accept/:id/:riderName', async (req, res) => {
 
     await ride.save();
     const rideId = ride._id.toString();
-    req.io.to(rideId).emit('ride_accepted', ride.toJSON());
+    req.io.to(rideId).emit('ride_accepted', { rideId, ride: ride.toJSON() });
     res.status(200).json(ride);
   } catch (err) { res.status(500).json({ error: err.message }); }
 });
@@ -298,7 +298,7 @@ router.patch('/decline/:id/:riderName', async (req, res) => {
     
     await ride.save();
     const rideId = ride._id.toString();
-    req.io.to(rideId).emit('ride_cancelled', ride.toJSON());
+    req.io.to(rideId).emit('ride_cancelled', { rideId, ride: ride.toJSON() });
     res.status(200).json(ride);
   } catch (err) { res.status(500).json({ error: err.message }); }
 });
@@ -388,7 +388,7 @@ router.patch('/board/:id/:riderName', async (req, res) => {
 
     await ride.save();
     const rideId = ride._id.toString();
-    req.io.to(rideId).emit('passenger_boarded', ride.toJSON());
+    req.io.to(rideId).emit('passenger_boarded', { rideId, ride: ride.toJSON() });
     res.status(200).json(ride);
   } catch (err) { res.status(500).json({ error: err.message }); }
 });
@@ -453,7 +453,7 @@ router.patch('/start/:id', async (req, res) => {
       { new: true }
     );
     const rideId = updatedRide._id.toString();
-    req.io.to(rideId).emit('ride_started', updatedRide.toJSON());
+    req.io.to(rideId).emit('ride_started', { rideId, ride: updatedRide.toJSON() });
     res.status(200).json(updatedRide);
   } catch (err) { res.status(500).json({ error: err.message }); }
 });
@@ -474,6 +474,7 @@ router.patch('/end/:id', async (req, res) => {
     const rideId = ride._id.toString();
     req.io.to(rideId).emit('ride_ended', {
         rideId,
+        ride: ride.toJSON(),
         passengers: ride.droppedPassengers,
         riderName: ride.riderName,
         boardedPassengers: ride.boardedPassengers

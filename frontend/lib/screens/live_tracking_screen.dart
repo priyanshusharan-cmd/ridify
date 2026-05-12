@@ -177,10 +177,14 @@ class _LiveTrackingScreenState extends State<LiveTrackingScreen> {
     _on('passenger_boarded', (data) {
       if (data == null) return;
       final map = Map<String, dynamic>.from(data);
-      if (mounted && map['_id'].toString() == widget.rideId) {
-        setState(() {
-          rideData = map;
-        });
+      if (mounted && map['rideId'].toString() == widget.rideId) {
+        if (map['ride'] != null) {
+          setState(() {
+            rideData = Map<String, dynamic>.from(map['ride']);
+          });
+        } else {
+          syncRideStatus();
+        }
       }
     });
     _on('passenger_dropped', (data) {
@@ -217,10 +221,14 @@ class _LiveTrackingScreenState extends State<LiveTrackingScreen> {
     _on('ride_started', (data) {
       if (data == null) return;
       final map = Map<String, dynamic>.from(data);
-      if (mounted && map['_id'].toString() == widget.rideId) {
+      if (mounted && map['rideId'].toString() == widget.rideId) {
         setState(() {
           isStarted = true;
-          rideData = map;
+          if (map['ride'] != null) {
+            rideData = Map<String, dynamic>.from(map['ride']);
+          } else {
+            syncRideStatus();
+          }
         });
       }
     });
@@ -228,14 +236,14 @@ class _LiveTrackingScreenState extends State<LiveTrackingScreen> {
       if (data == null) return;
       final map = Map<String, dynamic>.from(data);
       if (mounted && map['rideId'].toString() == widget.rideId) {
-        if (map['kickedUser'] == widget.myName) {
-          _kickSelfOut();
-        } else if (map['ride'] != null) {
+        if (map['ride'] != null) {
           setState(() {
             rideData = Map<String, dynamic>.from(map['ride']);
           });
-        } else {
-          syncRideStatus();
+        }
+        if (map['kickedUser'] == widget.myName) {
+          Navigator.pop(context);
+          ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("You have been removed from the ride."), backgroundColor: Colors.red));
         }
       }
     });
@@ -249,6 +257,17 @@ class _LiveTrackingScreenState extends State<LiveTrackingScreen> {
         } catch (_) {}
       }
     });
+    _on('passenger_paid', (data) {
+      if (data == null) return;
+      final map = Map<String, dynamic>.from(data);
+      if (mounted && map['rideId'].toString() == widget.rideId) {
+        if (map['ride'] != null) {
+          setState(() {
+            rideData = Map<String, dynamic>.from(map['ride']);
+          });
+        }
+      }
+    });
     // ride_ended: only driver sees the green completion screen
     _on('ride_ended', (data) {
       if (data == null) return;
@@ -258,6 +277,14 @@ class _LiveTrackingScreenState extends State<LiveTrackingScreen> {
         if (id == widget.rideId) {
           _triggerCompletionScreen();
         }
+      }
+    });
+    _on('ride_cancelled', (data) {
+      if (data == null) return;
+      final map = Map<String, dynamic>.from(data);
+      if (mounted && map['rideId'].toString() == widget.rideId) {
+        Navigator.pop(context);
+        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("Ride cancelled"), backgroundColor: Colors.red));
       }
     });
   }
