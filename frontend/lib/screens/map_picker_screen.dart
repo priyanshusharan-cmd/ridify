@@ -1,0 +1,176 @@
+import 'package:flutter/material.dart';
+import 'package:flutter_map/flutter_map.dart';
+import 'package:latlong2/latlong.dart';
+import 'package:geolocator/geolocator.dart';
+import 'package:http/http.dart' as http;
+import 'dart:convert';
+import 'package:flutter_map_cancellable_tile_provider/flutter_map_cancellable_tile_provider.dart';
+
+class MapPickerScreen extends StatefulWidget {
+  final LatLng? initialPosition;
+  const MapPickerScreen({super.key, this.initialPosition});
+
+  @override
+  State<MapPickerScreen> createState() => _MapPickerScreenState();
+}
+
+class _MapPickerScreenState extends State<MapPickerScreen> {
+  final MapController _mapController = MapController();
+  late LatLng _centerPosition;
+  bool _isLoading = false;
+  bool _isLocating = true;
+
+  @override
+  void initState() {
+    super.initState();
+    if (widget.initialPosition != null) {
+      _centerPosition = widget.initialPosition!;
+      _isLocating = false;
+    } else {
+      _centerPosition = const LatLng(28.6139, 77.2090); // Default to New Delhi
+      _determinePosition();
+    }
+  }
+
+  Future<void> _determinePosition() async {
+    try {
+      LocationPermission permission = await Geolocator.checkPermission();
+      if (permission == LocationPermission.denied) {
+        permission = await Geolocator.requestPermission();
+      }
+      if (permission == LocationPermission.whileInUse || permission == LocationPermission.always) {
+        // Try to get last known position first as it's faster and less prone to "Position update is unavailable"
+        Position? position = await Geolocator.getLastKnownPosition();
+        
+        if (position != null) {
+          setState(() {
+            _centerPosition = LatLng(position.latitude, position.longitude);
+            _isLocating = false;
+          });
+          _mapController.move(_centerPosition, 15.0);
+        }
+        
+        // Attempt to get fresh position with a timeout
+        try {
+          Position freshPosition = await Geolocator.getCurrentPosition(
+            locationSettings: const LocationSettings(
+              accuracy: LocationAccuracy.high,
+              timeLimit: Duration(seconds: 5),
+            ),
+          );
+          setState(() {
+            _centerPosition = LatLng(freshPosition.latitude, freshPosition.longitude);
+            _isLocating = false;
+          });
+          _mapController.move(_centerPosition, 15.0);
+        } catch (e) {
+          debugPrint("Failed to get fresh position: $e");
+          // If we didn't even get last known position, stop loading
+          if (position == null) {
+            setState(() => _isLocating = false);
+          }
+        }
+      } else {
+        setState(() => _isLocating = false);
+      }
+    } catch (e) {
+      setState(() => _isLocating = false);
+      debugPrint("Error getting location: $e");
+    }
+  }
+
+  Future<void> _selectLocation() async {
+    setState(() => _isLoading = true);
+    try {
+      final lat = _centerPosition.latitude;
+      final lng = _centerPosition.longitude;
+      final url = Uri.parse('https://nominatim.openstreetmap.org/reverse?lat=$lat&lon=$lng&format=json');
+      final response = await http.get(url, headers: {'User-Agent': 'ridify_app/1.0'});
+      
+      if (response.statusCode == 200) {
+        final data = jsonDecode(response.body);
+        String displayName = data['display_name'] ?? 'Selected Location';
+        if (mounted) {
+          Navigator.pop(context, {
+            'name': displayName,
+            'lat': lat,
+            'lng': lng,
+          });
+        }
+      } else {
+        throw Exception("Failed to fetch address");
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text("Failed to get address for this location"), backgroundColor: Colors.red),
+        );
+      }
+    } finally {
+      if (mounted) setState(() => _isLoading = false);
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text("Choose Location"),
+        backgroundColor: Theme.of(context).appBarTheme.backgroundColor,
+        foregroundColor: Theme.of(context).appBarTheme.iconTheme?.color ?? Colors.white,
+      ),
+      body: Stack(
+        children: [
+          FlutterMap(
+            mapController: _mapController,
+            options: MapOptions(
+              initialCenter: _centerPosition,
+              initialZoom: 15.0,
+              onPositionChanged: (position, hasGesture) {
+                if (position.center != null) {
+                  setState(() {
+                    _centerPosition = position.center!;
+                  });
+                }
+              },
+            ),
+            children: [
+              TileLayer(
+                urlTemplate: "https://tile.openstreetmap.org/{z}/{x}/{y}.png",
+                userAgentPackageName: "com.ridify.app",
+                tileProvider: CancellableNetworkTileProvider(),
+              ),
+            ],
+          ),
+          const Center(
+            child: Padding(
+              padding: EdgeInsets.only(bottom: 40.0), // Offset slightly to point correctly
+              child: Icon(Icons.location_on, size: 50, color: Colors.red),
+            ),
+          ),
+          if (_isLocating)
+            Container(
+              color: Colors.black.withOpacity(0.3),
+              child: const Center(child: CircularProgressIndicator()),
+            ),
+          Positioned(
+            bottom: 30,
+            left: 20,
+            right: 20,
+            child: ElevatedButton(
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Theme.of(context).brightness == Brightness.dark ? const Color(0xFF2C2C2C) : Colors.black,
+                padding: const EdgeInsets.symmetric(vertical: 16),
+                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
+              ),
+              onPressed: _isLoading ? null : _selectLocation,
+              child: _isLoading
+                  ? const SizedBox(height: 20, width: 20, child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2))
+                  : const Text("Select this location", style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.white)),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}

@@ -9,6 +9,7 @@ class AddressSearchWidget extends StatefulWidget {
   final Color iconColor;
   final Function(String name, double lat, double lon) onSelected;
   final TextEditingController controller;
+  final VoidCallback? onMapTap;
 
   const AddressSearchWidget({
     super.key,
@@ -17,6 +18,7 @@ class AddressSearchWidget extends StatefulWidget {
     required this.iconColor,
     required this.onSelected,
     required this.controller,
+    this.onMapTap,
   });
 
   @override
@@ -182,7 +184,12 @@ class _AddressSearchWidgetState extends State<AddressSearchWidget> {
                     child: CircularProgressIndicator(strokeWidth: 2),
                   ),
                 )
-              : null,
+              : widget.onMapTap != null
+                  ? IconButton(
+                      icon: Icon(Icons.map_outlined, color: Theme.of(context).iconTheme.color?.withValues(alpha: 0.6)),
+                      onPressed: widget.onMapTap,
+                    )
+                  : null,
         ),
       ),
     );

@@ -2,9 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'package:geolocator/geolocator.dart';
+import 'package:latlong2/latlong.dart';
 
 import '../widgets/address_search_widget.dart';
 import '../core/constants.dart';
+import 'map_picker_screen.dart';
 
 class FindRideScreen extends StatefulWidget {
   final String userName;
@@ -380,9 +382,25 @@ class _FindRideScreenState extends State<FindRideScreen> {
                 children: [
                   AddressSearchWidget(
                     controller: pickupController,
-                    hintText: "Pickup Location",
+                    hintText: "Your Pickup Location",
                     prefixIcon: Icons.location_on_outlined,
                     iconColor: Colors.green,
+                    onMapTap: () async {
+                      final initial = (pickupLat != null && pickupLng != null)
+                          ? LatLng(pickupLat!, pickupLng!)
+                          : null;
+                      final result = await Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (context) => MapPickerScreen(initialPosition: initial)),
+                      );
+                      if (result != null && mounted) {
+                        setState(() {
+                          pickupController.text = result['name'];
+                          pickupLat = result['lat'];
+                          pickupLng = result['lng'];
+                        });
+                      }
+                    },
                     onSelected: (name, lat, lon) {
                       setState(() {
                          pickupLat = lat;
@@ -393,9 +411,27 @@ class _FindRideScreenState extends State<FindRideScreen> {
                   Divider(height: 1, color: Theme.of(context).dividerColor),
                   AddressSearchWidget(
                     controller: destinationController,
-                    hintText: "Destination",
+                    hintText: "Your Destination",
                     prefixIcon: Icons.flag_outlined,
                     iconColor: Colors.red,
+                    onMapTap: () async {
+                      final initial = (destLat != null && destLng != null)
+                          ? LatLng(destLat!, destLng!)
+                          : (pickupLat != null && pickupLng != null)
+                              ? LatLng(pickupLat!, pickupLng!)
+                              : null;
+                      final result = await Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (context) => MapPickerScreen(initialPosition: initial)),
+                      );
+                      if (result != null && mounted) {
+                        setState(() {
+                          destinationController.text = result['name'];
+                          destLat = result['lat'];
+                          destLng = result['lng'];
+                        });
+                      }
+                    },
                     onSelected: (name, lat, lon) {
                       setState(() {
                         destLat = lat;
@@ -409,7 +445,7 @@ class _FindRideScreenState extends State<FindRideScreen> {
             const SizedBox(height: 20),
 
             const Text(
-              "Walkable Radius (Match Distance)",
+              "Search Radius",
               style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 10),
@@ -437,8 +473,8 @@ class _FindRideScreenState extends State<FindRideScreen> {
             ),
             Center(
               child: Text(
-                "Searching within ${(walkableRadius / 1000).toStringAsFixed(1)} km of your stops",
-                style: const TextStyle(fontWeight: FontWeight.bold),
+                "Searching within ${(walkableRadius / 1000).toStringAsFixed(1)}Km of your radius",
+                style: const TextStyle(color: Colors.grey, fontWeight: FontWeight.bold),
               ),
             ),
             const SizedBox(height: 20),

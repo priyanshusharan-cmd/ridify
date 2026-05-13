@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
+import 'package:latlong2/latlong.dart';
 import '../widgets/address_search_widget.dart';
 import '../core/constants.dart';
+import 'map_picker_screen.dart';
 
 class OfferRideScreen extends StatefulWidget {
   final String userName;
@@ -188,40 +190,48 @@ class _OfferRideScreenState extends State<OfferRideScreen> {
     return Expanded(
       child: GestureDetector(
         onTap: () => setState(() => routePreference = value),
-        child: Container(
-          margin: const EdgeInsets.symmetric(horizontal: 4),
-          padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 8),
-          decoration: BoxDecoration(
-            color: isSelected ? (isDark ? const Color(0xFF2C2C2C) : Colors.black) : Theme.of(context).cardColor,
-            borderRadius: BorderRadius.circular(15),
-            border: Border.all(
-              color: isSelected ? Colors.white : Colors.transparent,
-              width: 2.0,
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 4),
+          child: AspectRatio(
+            aspectRatio: 1,
+            child: Container(
+              padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 2),
+              decoration: BoxDecoration(
+                color: isSelected ? (isDark ? const Color(0xFF2C2C2C) : Colors.black) : Theme.of(context).cardColor,
+                borderRadius: BorderRadius.circular(15),
+                border: Border.all(
+                  color: isSelected ? Colors.white : Colors.transparent,
+                  width: 2.0,
+                ),
+              ),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Icon(icon, color: isSelected ? Colors.white : Theme.of(context).iconTheme.color?.withValues(alpha: 0.6), size: 24),
+                  const SizedBox(height: 4),
+                  Text(
+                    title,
+                    textAlign: TextAlign.center,
+                    maxLines: 1,
+                    style: TextStyle(
+                      color: isSelected ? Colors.white : Theme.of(context).textTheme.bodyLarge?.color,
+                      fontWeight: FontWeight.bold,
+                      fontSize: 12,
+                    ),
+                  ),
+                  const SizedBox(height: 2),
+                  Text(
+                    description,
+                    textAlign: TextAlign.center,
+                    maxLines: 2,
+                    style: TextStyle(
+                      color: isSelected ? Colors.white70 : Theme.of(context).textTheme.bodySmall?.color,
+                      fontSize: 10,
+                    ),
+                  ),
+                ],
+              ),
             ),
-          ),
-          child: Column(
-            children: [
-              Icon(icon, color: isSelected ? Colors.white : Theme.of(context).iconTheme.color?.withValues(alpha: 0.6), size: 28),
-              const SizedBox(height: 8),
-              Text(
-                title,
-                textAlign: TextAlign.center,
-                style: TextStyle(
-                  color: isSelected ? Colors.white : Theme.of(context).textTheme.bodyLarge?.color,
-                  fontWeight: FontWeight.bold,
-                  fontSize: 13,
-                ),
-              ),
-              const SizedBox(height: 4),
-              Text(
-                description,
-                textAlign: TextAlign.center,
-                style: TextStyle(
-                  color: isSelected ? Colors.white70 : Theme.of(context).textTheme.bodySmall?.color,
-                  fontSize: 11,
-                ),
-              ),
-            ],
           ),
         ),
       ),
@@ -266,6 +276,23 @@ class _OfferRideScreenState extends State<OfferRideScreen> {
                     hintText: "Your Pickup Location",
                     prefixIcon: Icons.location_on_outlined,
                     iconColor: Colors.green,
+                    onMapTap: () async {
+                      final initial = (pickupLat != null && pickupLng != null)
+                          ? LatLng(pickupLat!, pickupLng!)
+                          : null;
+                      final result = await Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (context) => MapPickerScreen(initialPosition: initial)),
+                      );
+                      if (result != null && mounted) {
+                        setState(() {
+                          pickupController.text = result['name'];
+                          pickupLat = result['lat'];
+                          pickupLng = result['lng'];
+                        });
+                        fetchRoute();
+                      }
+                    },
                     onSelected: (name, lat, lon) {
                       setState(() {
                         pickupLat = lat;
@@ -280,6 +307,25 @@ class _OfferRideScreenState extends State<OfferRideScreen> {
                     hintText: "Your Destination",
                     prefixIcon: Icons.flag_outlined,
                     iconColor: Colors.red,
+                    onMapTap: () async {
+                      final initial = (destLat != null && destLng != null)
+                          ? LatLng(destLat!, destLng!)
+                          : (pickupLat != null && pickupLng != null)
+                              ? LatLng(pickupLat!, pickupLng!)
+                              : null;
+                      final result = await Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (context) => MapPickerScreen(initialPosition: initial)),
+                      );
+                      if (result != null && mounted) {
+                        setState(() {
+                          destinationController.text = result['name'];
+                          destLat = result['lat'];
+                          destLng = result['lng'];
+                        });
+                        fetchRoute();
+                      }
+                    },
                     onSelected: (name, lat, lon) {
                       setState(() {
                         destLat = lat;
