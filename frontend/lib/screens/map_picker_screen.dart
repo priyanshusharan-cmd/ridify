@@ -127,11 +127,9 @@ class _MapPickerScreenState extends State<MapPickerScreen> {
               initialCenter: _centerPosition,
               initialZoom: 15.0,
               onPositionChanged: (position, hasGesture) {
-                if (position.center != null) {
                   setState(() {
-                    _centerPosition = position.center!;
+                    _centerPosition = position.center;
                   });
-                }
               },
             ),
             children: [
