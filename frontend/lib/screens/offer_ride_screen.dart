@@ -453,7 +453,7 @@ class _OfferRideScreenState extends State<OfferRideScreen> {
             ),
 
             const SizedBox(height: 30),
-            const Text("Base Price (Full Route)", style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+            const Text("Price", style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
             const SizedBox(height: 15),
             TextField(
               controller: priceController,

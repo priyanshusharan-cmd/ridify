@@ -11,7 +11,7 @@ class SocketService {
 
   io.Socket? _socket;
   String? _userName;
-  final Set<String> _joinedRides = {};
+  final Map<String, int> _joinedRidesCount = {};
 
   /// The single shared socket. Created lazily on first access.
   io.Socket get socket {
@@ -35,7 +35,7 @@ class SocketService {
         s.emit('register_user', {'userName': _userName});
       }
       // Re-join all ride rooms on reconnect
-      for (final rideId in _joinedRides) {
+      for (final rideId in _joinedRidesCount.keys) {
         s.emit('join_ride', {'rideId': rideId});
       }
     });
@@ -55,22 +55,33 @@ class SocketService {
   /// Join a ride room for targeted events.
   void joinRide(String rideId) {
     if (rideId.isEmpty) return;
-    _joinedRides.add(rideId);
-    socket.emit('join_ride', {'rideId': rideId});
+    int count = _joinedRidesCount[rideId] ?? 0;
+    _joinedRidesCount[rideId] = count + 1;
+    if (count == 0) {
+      socket.emit('join_ride', {'rideId': rideId});
+    }
   }
 
   /// Leave a ride room.
   void leaveRide(String rideId) {
     if (rideId.isEmpty) return;
-    _joinedRides.remove(rideId);
-    socket.emit('leave_ride', {'rideId': rideId});
+    int count = _joinedRidesCount[rideId] ?? 0;
+    if (count > 0) {
+      count--;
+      if (count == 0) {
+        _joinedRidesCount.remove(rideId);
+        socket.emit('leave_ride', {'rideId': rideId});
+      } else {
+        _joinedRidesCount[rideId] = count;
+      }
+    }
   }
 
   /// Full cleanup (e.g., on logout).
   void dispose() {
     _socket?.dispose();
     _socket = null;
-    _joinedRides.clear();
+    _joinedRidesCount.clear();
     _userName = null;
   }
 }

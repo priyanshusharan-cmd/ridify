@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
-import 'dart:async';
+import 'dart:convert';
 import '../core/constants.dart';
 import '../core/socket_service.dart';
 
@@ -23,33 +23,36 @@ class CompletionScreen extends StatefulWidget {
 }
 
 class _CompletionScreenState extends State<CompletionScreen> {
-  int countdown = 5;
-  Timer? _timer;
   bool isPaid = false;
+  Map<String, dynamic>? rideData;
+  bool isLoading = true;
 
   @override
   void initState() {
     super.initState();
-    // Ensure we're in this ride's room for payment events
     if (widget.rideId.isNotEmpty) {
       SocketService().joinRide(widget.rideId);
-    }
-
-    if (widget.isDriver || widget.fareAmount == 0) {
-      // Driver green completion screen - auto countdown
-      _startTimer();
+      _fetchRideData();
+    } else {
+      setState(() => isLoading = false);
     }
   }
 
-  void _startTimer() {
-    _timer = Timer.periodic(const Duration(seconds: 1), (timer) {
-      if (countdown <= 1) {
-        timer.cancel();
-        if (mounted) Navigator.pop(context);
+  Future<void> _fetchRideData() async {
+    try {
+      final response = await http.get(Uri.parse('$kBaseUrl/api/rides/${widget.rideId}'));
+      if (response.statusCode == 200 && mounted) {
+        setState(() {
+          rideData = jsonDecode(response.body);
+          isLoading = false;
+        });
       } else {
-        if (mounted) setState(() => countdown--);
+        if (mounted) setState(() => isLoading = false);
       }
-    });
+    } catch (e) {
+      debugPrint("Error: $e");
+      if (mounted) setState(() => isLoading = false);
+    }
   }
 
   Future<void> markAsPaid() async {
@@ -58,166 +61,219 @@ class _CompletionScreenState extends State<CompletionScreen> {
       setState(() {
         isPaid = true;
       });
-      _startTimer();
+      if (mounted) Navigator.pop(context);
     } catch (e) {
       debugPrint("Error: $e");
     }
   }
 
   @override
-  void dispose() {
-    _timer?.cancel();
-    super.dispose();
-  }
-
-  @override
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
 
-    // Rider payment screen
-    if (!widget.isDriver && widget.fareAmount > 0 && !isPaid) {
+    // We don't use global completion anymore. If it's driver, just pop (failsafe)
+    if (widget.isDriver) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (mounted) Navigator.pop(context);
+      });
+      return const Scaffold();
+    }
+
+    if (isLoading) {
       return Scaffold(
-        backgroundColor: isDark ? const Color(0xFF1A1A2E) : const Color(0xFFF0F4FF),
-        body: SafeArea(
-          child: Center(
-            child: Padding(
-              padding: const EdgeInsets.all(30.0),
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Container(
-                    padding: const EdgeInsets.all(24),
-                    decoration: BoxDecoration(
-                      color: isDark ? const Color(0xFF16213E) : Colors.white,
-                      borderRadius: BorderRadius.circular(24),
-                      boxShadow: [
-                        BoxShadow(
-                          color: Colors.black.withValues(alpha: 0.1),
-                          blurRadius: 20,
-                          offset: const Offset(0, 10),
-                        ),
-                      ],
-                    ),
-                    child: Column(
-                      children: [
-                        Icon(
-                          Icons.location_on,
-                          color: isDark ? Colors.blue.shade300 : Colors.blue,
-                          size: 48,
-                        ),
-                        const SizedBox(height: 16),
-                        Text(
-                          "You have arrived!",
-                          style: TextStyle(
-                            color: isDark ? Colors.white : Colors.black87,
-                            fontSize: 24,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                        const SizedBox(height: 8),
-                        Text(
-                          "Your ride is complete",
-                          style: TextStyle(
-                            color: isDark ? Colors.white54 : Colors.grey,
-                            fontSize: 14,
-                          ),
-                        ),
-                        const SizedBox(height: 30),
-                        Container(
-                          width: double.infinity,
-                          padding: const EdgeInsets.symmetric(vertical: 20),
-                          decoration: BoxDecoration(
-                            color: isDark ? const Color(0xFF1B4332) : Colors.green.shade50,
-                            borderRadius: BorderRadius.circular(16),
-                            border: Border.all(color: isDark ? Colors.green.shade800 : Colors.green.shade200),
-                          ),
-                          child: Column(
-                            children: [
-                              Text(
-                                "Amount to Pay",
-                                style: TextStyle(
-                                  color: isDark ? Colors.green.shade300 : Colors.green.shade700,
-                                  fontSize: 14,
-                                  fontWeight: FontWeight.w600,
-                                ),
-                              ),
-                              const SizedBox(height: 8),
-                              Text(
-                                "₹${widget.fareAmount}",
-                                style: TextStyle(
-                                  color: isDark ? Colors.green.shade200 : Colors.green.shade800,
-                                  fontSize: 40,
-                                  fontWeight: FontWeight.bold,
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                        const SizedBox(height: 24),
-                        Text(
-                          "Please pay the driver the amount shown above.",
-                          textAlign: TextAlign.center,
-                          style: TextStyle(
-                            color: isDark ? Colors.white54 : Colors.grey,
-                            fontSize: 13,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                  const SizedBox(height: 30),
-                  SizedBox(
-                    width: double.infinity,
-                    height: 56,
-                    child: ElevatedButton(
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: isDark ? const Color(0xFF1B4332) : Colors.green,
-                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-                        elevation: 4,
-                      ),
-                      onPressed: markAsPaid,
-                      child: const Text(
-                        "I have Paid",
-                        style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.white),
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          ),
-        ),
+        backgroundColor: Theme.of(context).scaffoldBackgroundColor,
+        body: const Center(child: CircularProgressIndicator()),
       );
     }
 
-    // Green completion screen (driver or post-payment)
+    String driverName = rideData?['riderName'] ?? "Driver";
+    String date = rideData?['departureTime'] ?? "Today";
+    String pickup = rideData?['riderDetails']?[widget.myName]?['pickupLocation'] ?? rideData?['pickupLocation'] ?? "Pickup Location";
+    String dest = rideData?['riderDetails']?[widget.myName]?['destination'] ?? rideData?['destination'] ?? "Destination";
+
     return Scaffold(
-      backgroundColor: isDark ? const Color(0xFF1B4332) : Colors.green,
-      body: Center(
-        child: Padding(
-          padding: const EdgeInsets.all(20.0),
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
+      body: SafeArea(
+        child: SingleChildScrollView(
+          padding: const EdgeInsets.all(24.0),
           child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-              const Icon(
-                Icons.check_circle_outline,
-                color: Colors.white,
-                size: 100,
+              const SizedBox(height: 40),
+              // Success Icon
+              Container(
+                width: 100,
+                height: 100,
+                decoration: const BoxDecoration(
+                  color: Colors.green,
+                  shape: BoxShape.circle,
+                ),
+                child: const Icon(
+                  Icons.check,
+                  color: Colors.white,
+                  size: 60,
+                ),
               ),
-              const SizedBox(height: 20),
-              const Text(
+              const SizedBox(height: 24),
+              Text(
                 "Ride Completed!",
                 style: TextStyle(
-                  color: Colors.white,
-                  fontSize: 32,
+                  fontSize: 28,
                   fontWeight: FontWeight.bold,
+                  color: Theme.of(context).textTheme.bodyLarge?.color,
                 ),
-                textAlign: TextAlign.center,
               ),
-              const SizedBox(height: 10),
+              const SizedBox(height: 8),
               Text(
-                "Returning to home in $countdown...",
-                style: const TextStyle(color: Colors.white70, fontSize: 18),
+                "Thank you for riding with Ridify.",
+                style: TextStyle(
+                  fontSize: 16,
+                  color: isDark ? Colors.white54 : Colors.grey[600],
+                ),
+              ),
+              const SizedBox(height: 40),
+              // Trip Summary Card
+              Container(
+                width: double.infinity,
+                padding: const EdgeInsets.all(24),
+                decoration: BoxDecoration(
+                  color: isDark ? const Color(0xFF1E1E1E) : Colors.white,
+                  borderRadius: BorderRadius.circular(24),
+                  border: Border.all(color: isDark ? Colors.white10 : Colors.black12),
+                  boxShadow: [
+                    if (!isDark)
+                      BoxShadow(
+                        color: Colors.black.withValues(alpha: 0.05),
+                        blurRadius: 20,
+                        offset: const Offset(0, 10),
+                      ),
+                  ],
+                ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      "Trip Summary",
+                      style: TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
+                        color: Theme.of(context).textTheme.bodyLarge?.color,
+                      ),
+                    ),
+                    const SizedBox(height: 24),
+                    // Timeline
+                    Row(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        const Icon(Icons.location_on, color: Colors.green, size: 20),
+                        const SizedBox(width: 12),
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text("From", style: TextStyle(color: isDark ? Colors.white54 : Colors.grey[600], fontSize: 12)),
+                              const SizedBox(height: 2),
+                              Text(pickup, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 14)),
+                            ],
+                          ),
+                        ),
+                      ],
+                    ),
+                    Row(
+                      children: [
+                        SizedBox(
+                          width: 20,
+                          child: Center(
+                            child: Container(
+                              height: 24,
+                              width: 2,
+                              color: isDark ? Colors.white24 : Colors.black12,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                    Row(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        const Icon(Icons.location_on, color: Colors.red, size: 20),
+                        const SizedBox(width: 12),
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text("To", style: TextStyle(color: isDark ? Colors.white54 : Colors.grey[600], fontSize: 12)),
+                              const SizedBox(height: 2),
+                              Text(dest, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 14)),
+                            ],
+                          ),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 24),
+                    Divider(color: isDark ? Colors.white24 : Colors.black12),
+                    const SizedBox(height: 16),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text("Date & Time", style: TextStyle(color: isDark ? Colors.white54 : Colors.grey[600])),
+                        Text(date, style: const TextStyle(fontWeight: FontWeight.bold)),
+                      ],
+                    ),
+                    const SizedBox(height: 16),
+                    Divider(color: isDark ? Colors.white24 : Colors.black12),
+                    const SizedBox(height: 16),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text("Paid To", style: TextStyle(color: isDark ? Colors.white54 : Colors.grey[600])),
+                        Row(
+                          children: [
+                            CircleAvatar(
+                              radius: 12,
+                              backgroundColor: isDark ? const Color(0xFF2C2C2C) : Colors.black,
+                              child: Text(
+                                driverName.substring(0, 1).toUpperCase(),
+                                style: const TextStyle(color: Colors.white, fontSize: 12, fontWeight: FontWeight.bold),
+                              ),
+                            ),
+                            const SizedBox(width: 8),
+                            Text(driverName, style: const TextStyle(fontWeight: FontWeight.bold)),
+                          ],
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 16),
+                    Divider(color: isDark ? Colors.white24 : Colors.black12),
+                    const SizedBox(height: 16),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        const Text("Amount", style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
+                        Text(
+                          "₹${widget.fareAmount}",
+                          style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 18, color: Colors.green),
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
+              ),
+              const SizedBox(height: 40),
+              SizedBox(
+                width: double.infinity,
+                height: 56,
+                child: ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Theme.of(context).brightness == Brightness.dark ? const Color(0xFF2C2C2C) : Colors.black,
+                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+                  ),
+                  onPressed: markAsPaid,
+                  child: const Text(
+                    "Back to Home",
+                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.white),
+                  ),
+                ),
               ),
             ],
           ),

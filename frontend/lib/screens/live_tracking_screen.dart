@@ -209,10 +209,15 @@ class _LiveTrackingScreenState extends State<LiveTrackingScreen> {
         if (map['ride'] != null) {
           setState(() {
             rideData = Map<String, dynamic>.from(map['ride']);
+            // Proactively mark as arrived for instantaneous UI update
+            if (map['riderName'] == widget.myName) {
+              List arrived = List.from(rideData!['arrivedAt'] ?? []);
+              if (!arrived.contains(widget.myName)) arrived.add(widget.myName);
+              rideData!['arrivedAt'] = arrived;
+            }
           });
-        } else {
-          syncRideStatus();
         }
+        syncRideStatus(); // Robust fetch to guarantee state is perfectly synced
         if (!widget.isDriver && (map['riderName'] == widget.myName || (rideData?['arrivedAt'] ?? []).contains(widget.myName))) {
           ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("Driver has arrived! Please board."), backgroundColor: Colors.green));
         }
@@ -296,7 +301,6 @@ class _LiveTrackingScreenState extends State<LiveTrackingScreen> {
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (!mounted) return;
       Navigator.of(context).popUntil((route) => route.isFirst);
-      Navigator.of(context).push(MaterialPageRoute(builder: (_) => CompletionScreen(isDriver: true, rideId: widget.rideId, myName: widget.myName, fareAmount: 0)));
     });
   }
 

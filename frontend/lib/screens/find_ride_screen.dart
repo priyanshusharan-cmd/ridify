@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'package:geolocator/geolocator.dart';
-import 'match_status_screen.dart';
+
 import '../widgets/address_search_widget.dart';
 import '../core/constants.dart';
 
@@ -200,15 +200,14 @@ class _FindRideScreenState extends State<FindRideScreen> {
       );
 
       if (response.statusCode == 200 && mounted) {
-        Navigator.pop(context);
-        Navigator.pushReplacement(
-          context,
-          MaterialPageRoute(
-            builder: (_) => MatchStatusScreen(
-              driverName: driverName,
-              rideId: ride['_id'],
-              riderName: widget.userName,
-            ),
+        Navigator.pop(context); // close bottom sheet
+        Navigator.pop(context); // close find ride screen, back to home
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: const Text("Ride Requested!", style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
+            backgroundColor: Colors.amber.shade800,
+            behavior: SnackBarBehavior.floating,
+            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
           ),
         );
       } else if (mounted) {

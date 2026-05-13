@@ -8,7 +8,6 @@ import 'offer_ride_screen.dart';
 import 'profile_screen.dart';
 import 'ride_history_screen.dart';
 import '../widgets/active_rides_tab.dart';
-import 'completion_screen.dart';
 import '../core/constants.dart';
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -275,14 +274,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
           WidgetsBinding.instance.addPostFrameCallback((_) {
             if (!mounted) return;
             Navigator.of(context).popUntil((route) => route.isFirst);
-            Navigator.of(context).push(
-              MaterialPageRoute(builder: (_) => CompletionScreen(
-                isDriver: true,
-                rideId: data['rideId']?.toString() ?? '',
-                myName: widget.userName,
-                fareAmount: 0,
-              )),
-            );
+            _triggerVictoryLap();
             setState(() => _currentIndex = 0);
           });
         }
@@ -534,21 +526,28 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
 
     for (final ride in allRides) {
       if (ride['status'] == 'completed') {
-        final double fare = double.tryParse(ride['fare'].toString()) ?? 0.0;
-        final List boarded = ride['boardedPassengers'] as List? ?? [];
+        final List dropped = ride['droppedPassengers'] as List? ?? [];
+        final Map? riderDetails = ride['riderDetails'] as Map?;
+        final double baseFare = double.tryParse(ride['fare'].toString()) ?? 0.0;
 
         if (ride['riderName'] == widget.userName) {
-          int totalAllocatedSeats = 0;
-          for (final p in boarded) {
-            final Map? allocations = ride['seatAllocations'] as Map?;
-            totalAllocatedSeats += (allocations?[p] as num?)?.toInt() ?? 1;
+          for (final p in dropped) {
+            if (riderDetails != null && riderDetails[p] != null) {
+              totalEarnings += (riderDetails[p]['fare'] as num?)?.toDouble() ?? 0.0;
+            } else {
+              final Map? allocations = ride['seatAllocations'] as Map?;
+              final int seats = (allocations?[p] as num?)?.toInt() ?? 1;
+              totalEarnings += baseFare * seats;
+            }
           }
-          totalEarnings += fare * totalAllocatedSeats;
-        } else if (boarded.contains(widget.userName)) {
-          final Map? allocations = ride['seatAllocations'] as Map?;
-          final int mySeats =
-              (allocations?[widget.userName] as num?)?.toInt() ?? 1;
-          totalSpending += fare * mySeats;
+        } else if (dropped.contains(widget.userName)) {
+          if (riderDetails != null && riderDetails[widget.userName] != null) {
+            totalSpending += (riderDetails[widget.userName]['fare'] as num?)?.toDouble() ?? 0.0;
+          } else {
+            final Map? allocations = ride['seatAllocations'] as Map?;
+            final int mySeats = (allocations?[widget.userName] as num?)?.toInt() ?? 1;
+            totalSpending += baseFare * mySeats;
+          }
         }
       }
     }
