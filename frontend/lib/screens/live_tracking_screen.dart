@@ -1,4 +1,4 @@
-import 'dart:io' show Platform;
+import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/material.dart';
 import 'package:socket_io_client/socket_io_client.dart' as io;
 import '../core/socket_service.dart';
@@ -464,33 +464,13 @@ class _LiveTrackingScreenState extends State<LiveTrackingScreen> {
       return;
     }
 
-    final String label = Uri.encodeComponent(address.isNotEmpty ? address : 'Next Stop');
-
-    Uri? mapUrl;
-    if (Platform.isIOS) {
-      // Try Google Maps first, fallback to Apple Maps
-      final gMaps = Uri.parse('comgooglemaps://?daddr=$lat,$lng&directionsmode=driving');
-      if (await canLaunchUrl(gMaps)) {
-        mapUrl = gMaps;
-      } else {
-        mapUrl = Uri.parse('https://maps.apple.com/?daddr=$lat,$lng&dirflg=d&t=m');
-      }
-    } else {
-      // Android: geo intent for chooser, then fallback to Google Maps URL
-      final geoUri = Uri.parse('geo:$lat,$lng?q=$lat,$lng($label)');
-      if (await canLaunchUrl(geoUri)) {
-        mapUrl = geoUri;
-      } else {
-        mapUrl = Uri.parse('https://www.google.com/maps/dir/?api=1&destination=$lat,$lng');
-      }
-    }
-
-    if (mapUrl != null && await canLaunchUrl(mapUrl)) {
-      await launchUrl(mapUrl, mode: LaunchMode.externalApplication);
-    } else {
-      // Ultimate fallback
-      final webUrl = Uri.parse('https://www.google.com/maps/dir/?api=1&destination=$lat,$lng');
+    // On web or any platform: open Google Maps directions URL (works everywhere)
+    final webUrl = Uri.parse('https://www.google.com/maps/dir/?api=1&destination=$lat,$lng');
+    if (await canLaunchUrl(webUrl)) {
       await launchUrl(webUrl, mode: LaunchMode.externalApplication);
+    } else {
+      // Absolute fallback — try without canLaunchUrl check
+      await launchUrl(webUrl);
     }
   }
 
@@ -555,7 +535,7 @@ class _LiveTrackingScreenState extends State<LiveTrackingScreen> {
           GestureDetector(onTap: _fitBounds, child: Container(padding: const EdgeInsets.all(10), decoration: const BoxDecoration(color: Colors.white, shape: BoxShape.circle, boxShadow: [BoxShadow(color: Colors.black26, blurRadius: 6, offset: Offset(0, 3))]), child: const Icon(Icons.my_location, color: Colors.black, size: 20))),
           const SizedBox(height: 12),
           // Compass button – rotates map to face north
-          GestureDetector(
+          if (driverPosition != null) GestureDetector(
             onTap: () {
               try {
                 mapController.rotate(0);
@@ -571,7 +551,8 @@ class _LiveTrackingScreenState extends State<LiveTrackingScreen> {
               child: StreamBuilder<MapEvent>(
                 stream: mapController.mapEventStream,
                 builder: (context, snapshot) {
-                  final rotation = mapController.camera.rotation;
+                  double rotation = 0;
+                  try { rotation = mapController.camera.rotation; } catch (_) {}
                   return Transform.rotate(
                     angle: -rotation * (math.pi / 180),
                     child: Icon(
