@@ -223,11 +223,9 @@ class _FindRideScreenState extends State<FindRideScreen> {
         Navigator.pop(context); // close bottom sheet
         Navigator.pop(context); // close find ride screen, back to home
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: const Text("Ride Requested!", style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
-            backgroundColor: Colors.amber.shade800,
-            behavior: SnackBarBehavior.floating,
-            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+          const SnackBar(
+            content: Text("Ride Requested!"),
+            backgroundColor: Colors.orange,
           ),
         );
       } else if (mounted) {

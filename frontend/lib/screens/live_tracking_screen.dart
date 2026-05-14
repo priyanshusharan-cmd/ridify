@@ -250,8 +250,7 @@ class _LiveTrackingScreenState extends State<LiveTrackingScreen> {
           });
         }
         if (map['kickedUser'] == widget.myName) {
-          Navigator.pop(context);
-          ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("You have been removed from the ride."), backgroundColor: Colors.red));
+          _kickSelfOut();
         }
       }
     });
@@ -363,6 +362,31 @@ class _LiveTrackingScreenState extends State<LiveTrackingScreen> {
       }
     } catch (e) { debugPrint(e.toString()); syncRideStatus(); }
   }
+
+  void _confirmKickPassenger(String name) {
+    showDialog(
+      context: context,
+      builder: (_) => AlertDialog(
+        title: const Text("Kick Passenger"),
+        content: Text("Are you sure you want to kick out $name?"),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text("Cancel", style: TextStyle(color: Colors.black)),
+          ),
+          ElevatedButton(
+            style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
+            onPressed: () {
+              Navigator.pop(context);
+              kickPassenger(name);
+            },
+            child: const Text("Confirm", style: TextStyle(color: Colors.white)),
+          ),
+        ],
+      ),
+    );
+  }
+
   Future<void> kickPassenger(String name) async { 
     // Optimistic UI update
     setState(() {
@@ -703,7 +727,7 @@ class _LiveTrackingScreenState extends State<LiveTrackingScreen> {
                     if (isBoarded) ...[
                       ElevatedButton(style: ElevatedButton.styleFrom(backgroundColor: Colors.redAccent, minimumSize: const Size(70, 32), padding: const EdgeInsets.symmetric(horizontal: 10)), onPressed: () => dropOffPassenger(p), child: const Text("Drop-off", style: TextStyle(color: Colors.white, fontSize: 11))),
                       const SizedBox(width: 6),
-                      GestureDetector(onTap: () => kickPassenger(p), child: const Icon(Icons.person_remove, color: Colors.redAccent, size: 20)),
+                      GestureDetector(onTap: () => _confirmKickPassenger(p), child: const Icon(Icons.person_remove, color: Colors.redAccent, size: 20)),
                     ] else ...[
                       if (!isArrived) ElevatedButton(
                         style: ElevatedButton.styleFrom(backgroundColor: (canFit && isStarted) ? Colors.green : Colors.grey, minimumSize: const Size(70, 32), padding: const EdgeInsets.symmetric(horizontal: 10)),
@@ -719,7 +743,7 @@ class _LiveTrackingScreenState extends State<LiveTrackingScreen> {
                         child: Text((canFit && isStarted) ? "Arrived" : (isStarted ? "Full" : "Arrived"), style: const TextStyle(color: Colors.white, fontSize: 11)),
                       ),
                       const SizedBox(width: 6),
-                      GestureDetector(onTap: () => kickPassenger(p), child: const Icon(Icons.person_remove, color: Colors.redAccent, size: 20)),
+                      GestureDetector(onTap: () => _confirmKickPassenger(p), child: const Icon(Icons.person_remove, color: Colors.redAccent, size: 20)),
                     ],
                   ]),
                 );
