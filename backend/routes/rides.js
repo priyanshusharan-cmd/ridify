@@ -27,13 +27,6 @@ function checkCapacity(ride, newStartIndex, newEndIndex, requestedSeats) {
       changes.push({ index: p.endIndex, change: -p.seats });
     }
   }
-  for (const rName of ride.requests) {
-    const r = ride.riderDetails?.get(rName);
-    if (r) {
-      changes.push({ index: r.startIndex, change: r.seats });
-      changes.push({ index: r.endIndex, change: -r.seats });
-    }
-  }
 
   changes.push({ index: newStartIndex, change: requestedSeats });
   changes.push({ index: newEndIndex, change: -requestedSeats });
@@ -257,7 +250,25 @@ router.patch('/accept/:id/:riderName', async (req, res) => {
 
     if (ride.status === 'available') ride.status = 'accepted';
 
-    // For nonstop / shared_start: auto-decline remaining requests if car is now full
+    // Auto-decline any remaining requests that no longer fit the capacity
+    const toDecline = [];
+    const remainingRequests = [...ride.requests];
+    for (const rName of remainingRequests) {
+      const pd = ride.riderDetails?.get(rName);
+      if (pd) {
+        if (!checkCapacity(ride, pd.startIndex, pd.endIndex, pd.seats)) {
+          toDecline.push(rName);
+        }
+      }
+    }
+
+    for (const rName of toDecline) {
+      ride.requests = ride.requests.filter(r => r !== rName);
+      ride.declined.push(rName);
+      req.emitToUser(rName, 'ride_cancelled', { rideId: ride._id.toString(), ride: ride.toJSON() });
+    }
+
+    // For nonstop / shared_start: update status if car is completely full
     if (ride.routePreference === 'nonstop' || ride.routePreference === 'shared_start') {
       let totalUsed = 0;
       for (const pName of ride.passengers) {
@@ -266,11 +277,6 @@ router.patch('/accept/:id/:riderName', async (req, res) => {
       }
       
       if (totalUsed >= ride.totalSeats) {
-        const toDecline = [...ride.requests];
-        for (const rName of toDecline) {
-          ride.requests = ride.requests.filter(r => r !== rName);
-          ride.declined.push(rName);
-        }
         ride.status = 'full';
       }
     }
@@ -299,7 +305,8 @@ router.patch('/decline/:id/:riderName', async (req, res) => {
     
     await ride.save();
     const rideId = ride._id.toString();
-    req.io.to(rideId).emit('ride_cancelled', { rideId, ride: ride.toJSON() });
+    req.io.to(rideId).emit('ride_accepted', { rideId, ride: ride.toJSON() });
+    req.emitToUser(req.params.riderName, 'ride_cancelled', { rideId, ride: ride.toJSON() });
     res.status(200).json(ride);
   } catch (err) { res.status(500).json({ error: err.message }); }
 });
