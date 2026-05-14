@@ -17,11 +17,32 @@ function adminOnly(req, res, next) {
   next();
 }
 
-function checkCapacity(ride, newStartIndex, newEndIndex, requestedSeats) {
+/**
+ * Get rider detail from riderDetails — works with both Mongoose Maps
+ * (from .findById()) and plain objects (from .lean()).
+ */
+function getRiderDetail(ride, name) {
+  if (!ride.riderDetails) return null;
+  if (typeof ride.riderDetails.get === 'function') {
+    return ride.riderDetails.get(name) || null;
+  }
+  return ride.riderDetails[name] || null;
+}
+
+/**
+ * Core sweep-line capacity check.
+ * @param {Array<string>} existingNames - names whose allocations count as occupied
+ * @param {Object} ride - ride document (lean or Mongoose)
+ * @param {number} newStartIndex
+ * @param {number} newEndIndex
+ * @param {number} requestedSeats
+ * @returns {boolean} true if the new allocation fits
+ */
+function _checkCapacityWith(existingNames, ride, newStartIndex, newEndIndex, requestedSeats) {
   const changes = [];
-  
-  for (const pName of ride.passengers) {
-    const p = ride.riderDetails?.get(pName);
+
+  for (const pName of existingNames) {
+    const p = getRiderDetail(ride, pName);
     if (p) {
       changes.push({ index: p.startIndex, change: p.seats });
       changes.push({ index: p.endIndex, change: -p.seats });
@@ -33,14 +54,40 @@ function checkCapacity(ride, newStartIndex, newEndIndex, requestedSeats) {
 
   changes.sort((a, b) => a.index - b.index);
 
-  let currentSeats = 0;
-  let maxSeats = 0;
+  let current = 0;
+  let peak = 0;
   for (const c of changes) {
-    currentSeats += c.change;
-    if (currentSeats > maxSeats) maxSeats = currentSeats;
+    current += c.change;
+    if (current > peak) peak = current;
   }
 
-  return maxSeats <= ride.totalSeats;
+  return peak <= ride.totalSeats;
+}
+
+/**
+ * For SEARCH results: only count accepted passengers.
+ * Rides stay visible until the driver actually accepts enough passengers
+ * to fill the segment.
+ */
+function checkCapacityForSearch(ride, newStartIndex, newEndIndex, requestedSeats) {
+  return _checkCapacityWith(ride.passengers || [], ride, newStartIndex, newEndIndex, requestedSeats);
+}
+
+/**
+ * For REQUESTS: count both accepted passengers AND pending requests
+ * to prevent overbooking the same segment.
+ */
+function checkCapacityForRequest(ride, newStartIndex, newEndIndex, requestedSeats) {
+  const occupied = [...(ride.passengers || []), ...(ride.requests || [])];
+  return _checkCapacityWith(occupied, ride, newStartIndex, newEndIndex, requestedSeats);
+}
+
+/**
+ * Legacy wrapper — used by accept endpoint to re-check remaining requests.
+ * Counts only accepted passengers (the just-accepted one is already in passengers).
+ */
+function checkCapacity(ride, newStartIndex, newEndIndex, requestedSeats) {
+  return _checkCapacityWith(ride.passengers || [], ride, newStartIndex, newEndIndex, requestedSeats);
 }
 
 // ── Search rides ─────────────────────────────────────────────────────────────
@@ -51,8 +98,9 @@ router.get('/search', async (req, res) => {
     const searchRadius = parseInt(radius) || 2000;
     const reqSeats = parseInt(seats) || 1;
 
+    const userName = req.query.userName;
     const matchQuery = {
-      status: { $in: ['available', 'accepted', 'started'] },
+      status: { $in: ['available', 'accepted'] },
       $or: [{ expiresAt: { $gt: currentTime } }, { expiresAt: null }, { expiresAt: { $exists: false } }]
     };
     if (vehicle && vehicle !== 'Any') matchQuery.vehicleType = vehicle;
@@ -103,6 +151,14 @@ router.get('/search', async (req, res) => {
         const effectiveRadius = searchRadius + pointSpacing;
 
         if (minPickupDist <= effectiveRadius && minDestDist <= effectiveRadius && startIndex < endIndex) {
+          // Skip rides where the searching user has already been declined, kicked, or is already a passenger/requester
+          if (userName) {
+            if ((ride.declined || []).includes(userName)) continue;
+            if ((ride.kicked || []).includes(userName)) continue;
+            if ((ride.passengers || []).includes(userName)) continue;
+            if ((ride.requests || []).includes(userName)) continue;
+          }
+
           let tripDistance = 0;
           const distStep = Math.max(1, Math.floor((endIndex - startIndex) / sampleCount));
           for (let i = startIndex; i < endIndex; i += distStep) {
@@ -123,7 +179,9 @@ router.get('/search', async (req, res) => {
           if (ride.routePreference === 'shared_start' && !isStartClose) continue;
           if (ride.routePreference === 'nonstop' && (!isStartClose || !isEndClose)) continue;
 
-          if (checkCapacity(ride, startIndex, endIndex, reqSeats)) {
+          // For search: only count ACCEPTED passengers, not pending requests.
+          // Ride stays visible until driver accepts enough to fill the segment.
+          if (checkCapacityForSearch(ride, startIndex, endIndex, reqSeats)) {
             let percentage = tripDistance / (ride.totalDistance || tripDistance || 1);
             if (percentage > 1) percentage = 1;
             const computedFare = Math.round(ride.fare * percentage);
@@ -229,8 +287,15 @@ router.patch('/request/:id', async (req, res) => {
     if (ride.declined.includes(riderName)) {
       return res.status(400).json({ error: "You were already declined for this ride." });
     }
+    if (ride.kicked.includes(riderName)) {
+      return res.status(400).json({ error: "You were removed from this ride." });
+    }
+    if (ride.status === 'started') {
+      return res.status(400).json({ error: "This ride has already started." });
+    }
 
-    if (!checkCapacity(ride, startIndex, endIndex, seats)) {
+    // For requests: count passengers + existing requests to prevent overbooking
+    if (!checkCapacityForRequest(ride, startIndex, endIndex, seats)) {
       return res.status(400).json({ error: "Capacity exceeded for this segment" });
     }
 
@@ -267,7 +332,7 @@ router.patch('/accept/:id/:riderName', async (req, res) => {
       return res.status(400).json({ error: "Request not found" });
     }
 
-    const riderDetail = ride.riderDetails?.get(req.params.riderName);
+    const riderDetail = getRiderDetail(ride, req.params.riderName);
     if (!riderDetail) return res.status(400).json({ error: "Rider details not found" });
 
     ride.requests = ride.requests.filter(r => r !== req.params.riderName);
@@ -279,7 +344,7 @@ router.patch('/accept/:id/:riderName', async (req, res) => {
     const toDecline = [];
     const remainingRequests = [...ride.requests];
     for (const rName of remainingRequests) {
-      const pd = ride.riderDetails?.get(rName);
+      const pd = getRiderDetail(ride, rName);
       if (pd) {
         if (!checkCapacity(ride, pd.startIndex, pd.endIndex, pd.seats)) {
           toDecline.push(rName);
@@ -297,7 +362,7 @@ router.patch('/accept/:id/:riderName', async (req, res) => {
     if (ride.routePreference === 'nonstop' || ride.routePreference === 'shared_start') {
       let totalUsed = 0;
       for (const pName of ride.passengers) {
-        const pd = ride.riderDetails?.get(pName);
+        const pd = getRiderDetail(ride, pName);
         totalUsed += pd?.seats || 1;
       }
       
@@ -347,6 +412,13 @@ router.patch('/kick/:id/:riderName', async (req, res) => {
     ride.arrivedAt = ride.arrivedAt.filter(p => p !== req.params.riderName);
     ride.kicked.push(req.params.riderName);
 
+    // If kicking freed capacity, revert 'full' → 'accepted'
+    if (ride.status === 'full' && ride.passengers.length > 0) {
+      ride.status = 'accepted';
+    } else if (ride.status === 'full' && ride.passengers.length === 0) {
+      ride.status = 'available';
+    }
+
     await ride.save();
     const rideId = ride._id.toString();
     const payload = { rideId, kickedUser: req.params.riderName, ride: ride.toJSON() };
@@ -370,11 +442,11 @@ router.patch('/arrive/:id/:riderName', async (req, res) => {
     if (!ride.arrivedAt) ride.arrivedAt = [];
 
     if (ride.routePreference === 'flexible') {
-      const riderDetail = ride.riderDetails?.get(req.params.riderName);
+      const riderDetail = getRiderDetail(ride, req.params.riderName);
       const neededSeats = riderDetail?.seats || 1;
       let currentlyOccupied = 0;
       for (const pName of ride.boardedPassengers) {
-        currentlyOccupied += ride.riderDetails?.get(pName)?.seats || 1;
+        currentlyOccupied += getRiderDetail(ride, pName)?.seats || 1;
       }
       if (currentlyOccupied + neededSeats > ride.totalSeats) {
         return res.status(400).json({ error: "Car capacity reached" });
@@ -407,9 +479,9 @@ router.patch('/board/:id/:riderName', async (req, res) => {
 
     let currentlyOccupied = 0;
     for (const pName of ride.boardedPassengers) {
-      currentlyOccupied += ride.riderDetails?.get(pName)?.seats || 1;
+      currentlyOccupied += getRiderDetail(ride, pName)?.seats || 1;
     }
-    const toBoard = ride.riderDetails?.get(req.params.riderName)?.seats || 1;
+    const toBoard = getRiderDetail(ride, req.params.riderName)?.seats || 1;
 
     if (currentlyOccupied + toBoard > ride.totalSeats) {
        return res.status(400).json({ error: "Physical car is full!" });
@@ -445,7 +517,7 @@ router.patch('/dropoff/:id/:riderName', async (req, res) => {
     const payload = { 
       rideId, 
       riderName: req.params.riderName, 
-      fare: ride.riderDetails?.get(req.params.riderName)?.fare,
+      fare: getRiderDetail(ride, req.params.riderName)?.fare,
       ride: ride.toJSON()
     };
     req.io.to(rideId).emit('passenger_dropped', payload);
@@ -459,7 +531,7 @@ router.patch('/pay/:id/:riderName', async (req, res) => {
     let ride = await Ride.findById(req.params.id);
     if (!ride) return res.status(404).json({ error: "Ride not found" });
 
-    const detail = ride.riderDetails?.get(req.params.riderName);
+    const detail = getRiderDetail(ride, req.params.riderName);
     if (detail) {
       detail.paid = true;
       ride.riderDetails.set(req.params.riderName, detail);

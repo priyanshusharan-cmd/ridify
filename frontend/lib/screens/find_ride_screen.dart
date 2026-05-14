@@ -146,7 +146,7 @@ class _FindRideScreenState extends State<FindRideScreen> {
       String dateStr = "${dateToSearch.day}/${dateToSearch.month}/${dateToSearch.year}";
 
       final Uri searchUri = Uri.parse(
-        "$serverUrl?pickup=${Uri.encodeComponent(pickupController.text)}&destination=${Uri.encodeComponent(destinationController.text)}&seats=$selectedSeats&vehicle=$selectedVehicle&date=$dateStr&lat=$pickupLat&lng=$pickupLng&destLat=$destLat&destLng=$destLng&radius=${walkableRadius.toInt()}",
+        "$serverUrl?pickup=${Uri.encodeComponent(pickupController.text)}&destination=${Uri.encodeComponent(destinationController.text)}&seats=$selectedSeats&vehicle=$selectedVehicle&date=$dateStr&lat=$pickupLat&lng=$pickupLng&destLat=$destLat&destLng=$destLng&radius=${walkableRadius.toInt()}&userName=${Uri.encodeComponent(widget.userName)}",
       );
 
       final response = await http.get(searchUri).timeout(const Duration(seconds: 15));
