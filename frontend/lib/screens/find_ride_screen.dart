@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+import 'dart:async';
 import 'dart:convert';
 import 'package:geolocator/geolocator.dart';
 import 'package:latlong2/latlong.dart';
@@ -148,7 +149,7 @@ class _FindRideScreenState extends State<FindRideScreen> {
         "$serverUrl?pickup=${Uri.encodeComponent(pickupController.text)}&destination=${Uri.encodeComponent(destinationController.text)}&seats=$selectedSeats&vehicle=$selectedVehicle&date=$dateStr&lat=$pickupLat&lng=$pickupLng&destLat=$destLat&destLng=$destLng&radius=${walkableRadius.toInt()}",
       );
 
-      final response = await http.get(searchUri);
+      final response = await http.get(searchUri).timeout(const Duration(seconds: 15));
 
       if (response.statusCode == 200) {
         List<dynamic> allRides = jsonDecode(response.body);
@@ -169,8 +170,25 @@ class _FindRideScreenState extends State<FindRideScreen> {
           }
         }
       }
+    } on TimeoutException {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text("Search timed out. Please try again."),
+            backgroundColor: Colors.red,
+          ),
+        );
+      }
     } catch (e) {
       debugPrint("❌ Network Error: $e");
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text("Network error. Check your connection."),
+            backgroundColor: Colors.red,
+          ),
+        );
+      }
     } finally {
       if (mounted) setState(() => isSearching = false);
     }
@@ -199,7 +217,7 @@ class _FindRideScreenState extends State<FindRideScreen> {
           "pickupLocation": pickupController.text,
           "destination": destinationController.text
         }),
-      );
+      ).timeout(const Duration(seconds: 15));
 
       if (response.statusCode == 200 && mounted) {
         Navigator.pop(context); // close bottom sheet
@@ -218,8 +236,25 @@ class _FindRideScreenState extends State<FindRideScreen> {
           SnackBar(content: Text(err), backgroundColor: Colors.red),
         );
       }
+    } on TimeoutException {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text("Request timed out. Please try again."),
+            backgroundColor: Colors.red,
+          ),
+        );
+      }
     } catch (e) {
       debugPrint("❌ Request Error: $e");
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text("Could not send request. Check your connection."),
+            backgroundColor: Colors.red,
+          ),
+        );
+      }
     } finally {
       _isSendingRequest = false;
     }

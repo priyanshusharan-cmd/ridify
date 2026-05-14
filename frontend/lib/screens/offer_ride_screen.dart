@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+import 'dart:async';
 import 'dart:convert';
 import 'package:latlong2/latlong.dart';
 import '../widgets/address_search_widget.dart';
@@ -50,27 +51,84 @@ class _OfferRideScreenState extends State<OfferRideScreen> {
     });
   }
 
+  /// Maximum number of route points to store. Keeps payloads small for
+  /// free-tier MongoDB / Render while still being dense enough for
+  /// in-city matching (~50 m between points at 25 km, ~4 km between
+  /// points at 2 000 km — both totally fine for the search algorithm).
+  static const int _maxRoutePoints = 500;
+
+  /// Downsample [points] to at most [maxPoints] entries, always keeping
+  /// the first and last element so the route start/end are exact.
+  List<Map<String, dynamic>> _downsample(
+      List<Map<String, dynamic>> points, int maxPoints) {
+    if (points.length <= maxPoints) return points;
+    final result = <Map<String, dynamic>>[];
+    final double step = (points.length - 1) / (maxPoints - 1);
+    for (int i = 0; i < maxPoints - 1; i++) {
+      result.add(points[(i * step).round()]);
+    }
+    result.add(points.last); // guarantee the endpoint
+    return result;
+  }
+
   Future<void> fetchRoute() async {
     if (pickupLat == null || destLat == null) return;
     try {
       final distance = const Distance();
-      final straightLineDistance = distance.as(LengthUnit.Kilometer, LatLng(pickupLat!, pickupLng!), LatLng(destLat!, destLng!));
+      final straightLineDistance = distance.as(
+          LengthUnit.Kilometer,
+          LatLng(pickupLat!, pickupLng!),
+          LatLng(destLat!, destLng!));
+      // Short trips get a detailed route; long trips get a simplified one
+      // so the OSRM response stays small.
       final overview = straightLineDistance > 50 ? 'simplified' : 'full';
-      final url = "https://router.project-osrm.org/route/v1/driving/$pickupLng,$pickupLat;$destLng,$destLat?geometries=geojson&overview=$overview";
-      final response = await http.get(Uri.parse(url));
+      final url =
+          "https://router.project-osrm.org/route/v1/driving/"
+          "$pickupLng,$pickupLat;$destLng,$destLat"
+          "?geometries=geojson&overview=$overview";
+      final response = await http
+          .get(Uri.parse(url))
+          .timeout(const Duration(seconds: 15));
       if (response.statusCode == 200) {
         final data = json.decode(response.body);
         if (data['routes'] != null && data['routes'].isNotEmpty) {
           final route = data['routes'][0];
           setState(() {
             totalDistance = route['distance'] / 1000.0; // in km
-            final coordinates = route['geometry']['coordinates'];
-            routePath = (coordinates as List).map<Map<String, dynamic>>((c) => {"lng": c[0], "lat": c[1]}).toList();
+            final coordinates = route['geometry']['coordinates'] as List;
+            final raw = coordinates
+                .map<Map<String, dynamic>>(
+                    (c) => {"lng": c[0], "lat": c[1]})
+                .toList();
+            // Downsample to keep the payload well within MongoDB / Render
+            // limits regardless of trip length.
+            routePath = _downsample(raw, _maxRoutePoints);
           });
+        }
+      } else {
+        debugPrint("OSRM returned status ${response.statusCode}");
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text("Could not fetch route. Try again."),
+              backgroundColor: Colors.orange,
+            ),
+          );
         }
       }
     } catch (e) {
       debugPrint("Failed to fetch route: $e");
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(
+                e.toString().contains('TimeoutException')
+                    ? "Route fetch timed out. Please try again."
+                    : "Could not fetch route. Check your connection."),
+            backgroundColor: Colors.orange,
+          ),
+        );
+      }
     }
   }
 
@@ -139,6 +197,16 @@ class _OfferRideScreenState extends State<OfferRideScreen> {
       return;
     }
 
+    if (routePath.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text("Route not loaded yet. Please wait or re-select locations."),
+          backgroundColor: Colors.orange,
+        ),
+      );
+      return;
+    }
+
     setState(() => isPosting = true);
 
     DateTime dateToUse = _selectedDate ?? DateTime.now();
@@ -172,7 +240,7 @@ class _OfferRideScreenState extends State<OfferRideScreen> {
           "totalDistance": totalDistance,
           "routePreference": routePreference
         }),
-      );
+      ).timeout(const Duration(seconds: 20));
 
       if (response.statusCode == 201 && mounted) {
         Navigator.pop(context, 'ride_posted');
@@ -189,11 +257,24 @@ class _OfferRideScreenState extends State<OfferRideScreen> {
           SnackBar(content: Text(errorMsg), backgroundColor: Colors.red),
         );
       }
+    } on TimeoutException {
+      debugPrint("Offer ride timed out");
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text("Server took too long. Please try again."),
+            backgroundColor: Colors.red,
+          ),
+        );
+      }
     } catch (e) {
       debugPrint("Error: $e");
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text("Failed to connect: $e"), backgroundColor: Colors.red),
+          const SnackBar(
+            content: Text("Failed to connect. Check your internet."),
+            backgroundColor: Colors.red,
+          ),
         );
       }
     } finally {

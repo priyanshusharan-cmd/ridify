@@ -73,7 +73,11 @@ router.get('/search', async (req, res) => {
         let minDestDist = Infinity;
         let endIndex = -1;
 
-        for (let i = 0; i < ride.routePath.length; i += 20) {
+        // Adaptive step: always sample ~100 points regardless of route length
+        const sampleCount = 100;
+        const step = Math.max(1, Math.floor(ride.routePath.length / sampleCount));
+
+        for (let i = 0; i < ride.routePath.length; i += step) {
           const pt = ride.routePath[i];
           const ptPoint = turf.point([pt.lng, pt.lat]);
           
@@ -89,11 +93,20 @@ router.get('/search', async (req, res) => {
             endIndex = i;
           }
         }
+        // For downsampled routes the nearest sample point can be up to
+        // pointSpacing/2 away from the actual closest point on the route.
+        // Inflate the effective radius by the point spacing so we never
+        // miss a valid match just because the route was simplified.
+        const pointSpacing = ride.routePath.length > 1
+          ? ((ride.totalDistance || 0) * 1000) / ride.routePath.length  // meters between points
+          : 0;
+        const effectiveRadius = searchRadius + pointSpacing;
 
-        if (minPickupDist <= searchRadius && minDestDist <= searchRadius && startIndex < endIndex) {
+        if (minPickupDist <= effectiveRadius && minDestDist <= effectiveRadius && startIndex < endIndex) {
           let tripDistance = 0;
-          for (let i = startIndex; i < endIndex; i += 20) {
-            const nextIdx = Math.min(i + 20, endIndex);
+          const distStep = Math.max(1, Math.floor((endIndex - startIndex) / sampleCount));
+          for (let i = startIndex; i < endIndex; i += distStep) {
+            const nextIdx = Math.min(i + distStep, endIndex);
             tripDistance += turf.distance(
               turf.point([ride.routePath[i].lng, ride.routePath[i].lat]),
               turf.point([ride.routePath[nextIdx].lng, ride.routePath[nextIdx].lat]),
@@ -141,7 +154,7 @@ router.get('/', async (req, res) => {
         { expiresAt: { $exists: false } },
         { status: { $in: ['accepted', 'full', 'started', 'completed', 'cancelled'] } }
       ]
-    }).lean();
+    }, { routePath: 0, chatMessages: 0 }).lean();
     res.status(200).json(validRides);
   } catch (err) { res.status(500).json({ error: err.message }); }
 });
@@ -151,6 +164,7 @@ router.get('/:id', async (req, res) => {
 });
 
 // ── Create ride — join driver into room ──────────────────────────────────────
+const MAX_ROUTE_POINTS = 500;
 router.post('/', async (req, res) => {
   try {
     const data = req.body;
@@ -159,6 +173,17 @@ router.post('/', async (req, res) => {
         type: 'Point',
         coordinates: [data.pickupLng, data.pickupLat]
       };
+    }
+    // Server-side safety: cap route points to keep documents small
+    if (data.routePath && data.routePath.length > MAX_ROUTE_POINTS) {
+      const raw = data.routePath;
+      const sampled = [];
+      const step = (raw.length - 1) / (MAX_ROUTE_POINTS - 1);
+      for (let i = 0; i < MAX_ROUTE_POINTS - 1; i++) {
+        sampled.push(raw[Math.round(i * step)]);
+      }
+      sampled.push(raw[raw.length - 1]);
+      data.routePath = sampled;
     }
     const newRide = new Ride(data);
     await newRide.save();

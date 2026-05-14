@@ -1,14 +1,17 @@
+import 'dart:io' show Platform;
 import 'package:flutter/material.dart';
 import 'package:socket_io_client/socket_io_client.dart' as io;
 import '../core/socket_service.dart';
 import 'package:http/http.dart' as http;
 import 'dart:async';
 import 'dart:convert';
+import 'dart:math' as math;
 import 'chat_screen.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:flutter_map_cancellable_tile_provider/flutter_map_cancellable_tile_provider.dart';
 import 'package:latlong2/latlong.dart';
 import 'package:geolocator/geolocator.dart';
+import 'package:url_launcher/url_launcher.dart';
 import '../core/constants.dart';
 import 'completion_screen.dart';
 
@@ -105,8 +108,8 @@ class _LiveTrackingScreenState extends State<LiveTrackingScreen> {
     if (rideData == null || driverPosition == null) return;
     if (rideData!['destLat'] == null || rideData!['destLng'] == null) return;
     try {
-      final url = Uri.parse('http://router.project-osrm.org/route/v1/driving/${driverPosition!.longitude},${driverPosition!.latitude};${rideData!['destLng']},${rideData!['destLat']}?geometries=geojson');
-      final response = await http.get(url);
+      final url = Uri.parse('http://router.project-osrm.org/route/v1/driving/${driverPosition!.longitude},${driverPosition!.latitude};${rideData!['destLng']},${rideData!['destLat']}?geometries=geojson&overview=simplified');
+      final response = await http.get(url).timeout(const Duration(seconds: 10));
       if (response.statusCode == 200) {
         final data = jsonDecode(response.body);
         if (data['routes'] != null && data['routes'].isNotEmpty) {
@@ -414,35 +417,81 @@ class _LiveTrackingScreenState extends State<LiveTrackingScreen> {
     try { await http.patch(Uri.parse('$kBaseUrl/api/rides/start/${widget.rideId}')); } catch (e) { debugPrint(e.toString()); syncRideStatus(); } 
   }
 
-  // Returns {title, address} for the next stop header
-  Map<String, String> _getNextStopInfo() {
-    if (rideData == null || !isStarted) return {"title": "Start ride to see stops", "address": ""};
+  // Returns {title, address, lat, lng} for the next stop header
+  Map<String, dynamic> _getNextStopInfo() {
+    if (rideData == null || !isStarted) return {"title": "Start ride to see stops", "address": "", "lat": null, "lng": null};
     List<Map<String, dynamic>> wps = [];
     for (var p in (rideData!['passengers'] ?? [])) {
       final d = rideData!['riderDetails']?[p];
       if (d != null) {
-        wps.add({"type": "pickup", "passenger": p, "index": d['startIndex'] ?? 0, "location": d['pickupLocation'] ?? "Pickup"});
-        wps.add({"type": "dropoff", "passenger": p, "index": d['endIndex'] ?? 9999, "location": d['destination'] ?? "Drop-off"});
+        wps.add({"type": "pickup", "passenger": p, "index": d['startIndex'] ?? 0, "location": d['pickupLocation'] ?? "Pickup", "lat": d['pickupLat'], "lng": d['pickupLng']});
+        wps.add({"type": "dropoff", "passenger": p, "index": d['endIndex'] ?? 9999, "location": d['destination'] ?? "Drop-off", "lat": d['destLat'], "lng": d['destLng']});
       }
     }
     for (var p in (rideData!['boardedPassengers'] ?? [])) {
       if ((rideData!['passengers'] ?? []).contains(p)) continue; // already added
       final d = rideData!['riderDetails']?[p];
       if (d != null) {
-        wps.add({"type": "dropoff", "passenger": p, "index": d['endIndex'] ?? 9999, "location": d['destination'] ?? "Drop-off"});
+        wps.add({"type": "dropoff", "passenger": p, "index": d['endIndex'] ?? 9999, "location": d['destination'] ?? "Drop-off", "lat": d['destLat'], "lng": d['destLng']});
       }
     }
     wps.sort((a, b) => (a['index'] as int).compareTo(b['index'] as int));
     for (var wp in wps) {
       String p = wp['passenger'];
       if (wp['type'] == 'pickup' && !(rideData!['boardedPassengers'] ?? []).contains(p) && !(rideData!['droppedPassengers'] ?? []).contains(p)) {
-        return {"title": "$p's Pickup", "address": wp['location']};
+        return {"title": "$p's Pickup", "address": wp['location'], "lat": wp['lat'], "lng": wp['lng']};
       }
       if (wp['type'] == 'dropoff' && (rideData!['boardedPassengers'] ?? []).contains(p)) {
-        return {"title": "$p's Drop", "address": wp['location']};
+        return {"title": "$p's Drop", "address": wp['location'], "lat": wp['lat'], "lng": wp['lng']};
       }
     }
-    return {"title": rideData?['destination'] ?? "Destination", "address": ""};
+    return {"title": rideData?['destination'] ?? "Destination", "address": "", "lat": rideData?['destLat'], "lng": rideData?['destLng']};
+  }
+
+  /// Opens the next stop location in an external map app (Google Maps / Apple Maps).
+  Future<void> _openInMaps(double? lat, double? lng, String address) async {
+    if (lat == null || lng == null) {
+      // Fallback: use address string for search
+      if (address.isEmpty) {
+        if (mounted) ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("No location data available"), backgroundColor: Colors.orange));
+        return;
+      }
+      final encoded = Uri.encodeComponent(address);
+      final Uri fallbackUrl = Uri.parse('https://www.google.com/maps/search/?api=1&query=$encoded');
+      if (await canLaunchUrl(fallbackUrl)) {
+        await launchUrl(fallbackUrl, mode: LaunchMode.externalApplication);
+      }
+      return;
+    }
+
+    final String label = Uri.encodeComponent(address.isNotEmpty ? address : 'Next Stop');
+
+    Uri? mapUrl;
+    if (Platform.isIOS) {
+      // Try Google Maps first, fallback to Apple Maps
+      final gMaps = Uri.parse('comgooglemaps://?daddr=$lat,$lng&directionsmode=driving');
+      if (await canLaunchUrl(gMaps)) {
+        mapUrl = gMaps;
+      } else {
+        mapUrl = Uri.parse('https://maps.apple.com/?daddr=$lat,$lng&dirflg=d&t=m');
+      }
+    } else {
+      // Android: geo intent for chooser, then fallback to Google Maps URL
+      final geoUri = Uri.parse('geo:$lat,$lng?q=$lat,$lng($label)');
+      if (await canLaunchUrl(geoUri)) {
+        mapUrl = geoUri;
+      } else {
+        mapUrl = Uri.parse('https://www.google.com/maps/dir/?api=1&destination=$lat,$lng');
+      }
+    }
+
+    if (mapUrl != null && await canLaunchUrl(mapUrl)) {
+      await launchUrl(mapUrl, mode: LaunchMode.externalApplication);
+    } else {
+      // Ultimate fallback
+      final webUrl = Uri.parse('https://www.google.com/maps/dir/?api=1&destination=$lat,$lng');
+      await launchUrl(webUrl, mode: LaunchMode.externalApplication);
+    }
   }
 
   @override
@@ -502,18 +551,79 @@ class _LiveTrackingScreenState extends State<LiveTrackingScreen> {
           ),
         ),
         // Locate button
-        Positioned(top: 20, right: 20, child: GestureDetector(onTap: _fitBounds, child: Container(padding: const EdgeInsets.all(10), decoration: const BoxDecoration(color: Colors.white, shape: BoxShape.circle, boxShadow: [BoxShadow(color: Colors.black26, blurRadius: 6, offset: Offset(0, 3))]), child: const Icon(Icons.my_location, color: Colors.black, size: 20)))),
+        Positioned(top: 20, right: 20, child: Column(mainAxisSize: MainAxisSize.min, children: [
+          GestureDetector(onTap: _fitBounds, child: Container(padding: const EdgeInsets.all(10), decoration: const BoxDecoration(color: Colors.white, shape: BoxShape.circle, boxShadow: [BoxShadow(color: Colors.black26, blurRadius: 6, offset: Offset(0, 3))]), child: const Icon(Icons.my_location, color: Colors.black, size: 20))),
+          const SizedBox(height: 12),
+          // Compass button – rotates map to face north
+          GestureDetector(
+            onTap: () {
+              try {
+                mapController.rotate(0);
+              } catch (_) {}
+            },
+            child: Container(
+              padding: const EdgeInsets.all(10),
+              decoration: const BoxDecoration(
+                color: Colors.white,
+                shape: BoxShape.circle,
+                boxShadow: [BoxShadow(color: Colors.black26, blurRadius: 6, offset: Offset(0, 3))],
+              ),
+              child: StreamBuilder<MapEvent>(
+                stream: mapController.mapEventStream,
+                builder: (context, snapshot) {
+                  final rotation = mapController.camera.rotation;
+                  return Transform.rotate(
+                    angle: -rotation * (math.pi / 180),
+                    child: Icon(
+                      Icons.explore,
+                      color: rotation.abs() > 1 ? Colors.red : Colors.black,
+                      size: 20,
+                    ),
+                  );
+                },
+              ),
+            ),
+          ),
+        ])),
         // Next Stop header with dynamic passenger name and address
         if (widget.isDriver && isStarted) Builder(builder: (ctx) {
           final stopInfo = _getNextStopInfo();
-          return Positioned(top: 20, left: 20, right: 80, child: Container(
-            padding: const EdgeInsets.all(14), decoration: BoxDecoration(color: panelBg, borderRadius: BorderRadius.circular(15), boxShadow: const [BoxShadow(color: Colors.black12, blurRadius: 6, offset: Offset(0, 3))], border: Border.all(color: isDark ? Colors.white24 : Colors.black12)),
-            child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-              Text("NEXT STOP", style: TextStyle(color: panelSub, fontSize: 11, fontWeight: FontWeight.bold, letterSpacing: 1)),
-              const SizedBox(height: 4),
-              Text(stopInfo['title']!, style: TextStyle(color: panelText, fontSize: 14, fontWeight: FontWeight.bold), maxLines: 2, overflow: TextOverflow.ellipsis),
-              if (stopInfo['address']!.isNotEmpty) ...[const SizedBox(height: 2), Text(stopInfo['address']!, style: TextStyle(color: panelSub, fontSize: 11), maxLines: 1, overflow: TextOverflow.ellipsis)],
-            ]),
+          return Positioned(top: 20, left: 20, right: 80, child: GestureDetector(
+            onTap: () => _openInMaps(
+              (stopInfo['lat'] as num?)?.toDouble(),
+              (stopInfo['lng'] as num?)?.toDouble(),
+              (stopInfo['address'] as String?) ?? '',
+            ),
+            child: Container(
+              padding: const EdgeInsets.all(14),
+              decoration: BoxDecoration(
+                color: panelBg,
+                borderRadius: BorderRadius.circular(15),
+                boxShadow: const [BoxShadow(color: Colors.black12, blurRadius: 6, offset: Offset(0, 3))],
+                border: Border.all(color: isDark ? Colors.white24 : Colors.black12),
+              ),
+              child: Row(children: [
+                Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+                  Row(children: [
+                    Text("NEXT STOP", style: TextStyle(color: panelSub, fontSize: 11, fontWeight: FontWeight.bold, letterSpacing: 1)),
+                    const SizedBox(width: 6),
+                    Icon(Icons.open_in_new, size: 12, color: panelSub),
+                  ]),
+                  const SizedBox(height: 4),
+                  Text(stopInfo['title'] as String, style: TextStyle(color: panelText, fontSize: 14, fontWeight: FontWeight.bold), maxLines: 2, overflow: TextOverflow.ellipsis),
+                  if ((stopInfo['address'] as String).isNotEmpty) ...[const SizedBox(height: 2), Text(stopInfo['address'] as String, style: TextStyle(color: panelSub, fontSize: 11), maxLines: 1, overflow: TextOverflow.ellipsis)],
+                ])),
+                const SizedBox(width: 8),
+                Container(
+                  padding: const EdgeInsets.all(8),
+                  decoration: BoxDecoration(
+                    color: isDark ? Colors.blue.shade900.withValues(alpha: 0.4) : Colors.blue.shade50,
+                    shape: BoxShape.circle,
+                  ),
+                  child: Icon(Icons.navigation_rounded, color: isDark ? Colors.blue.shade300 : Colors.blue, size: 20),
+                ),
+              ]),
+            ),
           ));
         }),
         // Bottom panel
