@@ -65,7 +65,7 @@ router.get('/search', async (req, res) => {
     if (vehicle && vehicle !== 'Any') matchQuery.vehicleType = vehicle;
     if (date) matchQuery.departureTime = { $regex: new RegExp(`^${date}`, 'i') };
 
-    const activeRides = await Ride.find(matchQuery);
+    const activeRides = await Ride.find(matchQuery).lean();
     const results = [];
 
     if (lat && lng && destLat && destLng) {
@@ -80,7 +80,7 @@ router.get('/search', async (req, res) => {
         let minDestDist = Infinity;
         let endIndex = -1;
 
-        for (let i = 0; i < ride.routePath.length; i++) {
+        for (let i = 0; i < ride.routePath.length; i += 20) {
           const pt = ride.routePath[i];
           const ptPoint = turf.point([pt.lng, pt.lat]);
           
@@ -99,10 +99,11 @@ router.get('/search', async (req, res) => {
 
         if (minPickupDist <= searchRadius && minDestDist <= searchRadius && startIndex < endIndex) {
           let tripDistance = 0;
-          for (let i = startIndex; i < endIndex; i++) {
+          for (let i = startIndex; i < endIndex; i += 20) {
+            const nextIdx = Math.min(i + 20, endIndex);
             tripDistance += turf.distance(
               turf.point([ride.routePath[i].lng, ride.routePath[i].lat]),
-              turf.point([ride.routePath[i+1].lng, ride.routePath[i+1].lat]),
+              turf.point([ride.routePath[nextIdx].lng, ride.routePath[nextIdx].lat]),
               { units: 'kilometers' }
             );
           }
@@ -121,7 +122,7 @@ router.get('/search', async (req, res) => {
             if (percentage > 1) percentage = 1;
             const computedFare = Math.round(ride.fare * percentage);
 
-            const rideObj = ride.toObject();
+            const rideObj = { ...ride };
             rideObj.computedFare = computedFare;
             rideObj.computedDistance = tripDistance;
             rideObj.startIndex = startIndex;
@@ -147,7 +148,7 @@ router.get('/', async (req, res) => {
         { expiresAt: { $exists: false } },
         { status: { $in: ['accepted', 'full', 'started', 'completed', 'cancelled'] } }
       ]
-    });
+    }).lean();
     res.status(200).json(validRides);
   } catch (err) { res.status(500).json({ error: err.message }); }
 });

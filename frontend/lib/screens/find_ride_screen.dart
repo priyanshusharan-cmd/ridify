@@ -22,7 +22,7 @@ class _FindRideScreenState extends State<FindRideScreen> {
 
   String selectedVehicle = 'Any';
   int selectedSeats = 1;
-  double walkableRadius = 2000; // Default 2km
+  double walkableRadius = 1000; // Default 1km
   bool isSearching = false;
 
   DateTime? _selectedDate;
@@ -451,13 +451,13 @@ class _FindRideScreenState extends State<FindRideScreen> {
             const SizedBox(height: 10),
             Row(
               children: [
-                const Text("500m", style: TextStyle(color: Colors.grey)),
+                const Text("100m", style: TextStyle(color: Colors.grey)),
                 Expanded(
                   child: Slider(
                     value: walkableRadius,
-                    min: 500,
-                    max: 5000,
-                    divisions: 9,
+                    min: 100,
+                    max: 2000,
+                    divisions: 19,
                     activeColor: Theme.of(context).brightness == Brightness.dark ? Colors.white : Colors.black,
                     inactiveColor: Theme.of(context).dividerColor,
                     label: "${(walkableRadius / 1000).toStringAsFixed(1)} km",
@@ -468,13 +468,25 @@ class _FindRideScreenState extends State<FindRideScreen> {
                     },
                   ),
                 ),
-                const Text("5km", style: TextStyle(color: Colors.grey)),
+                const Text("2km", style: TextStyle(color: Colors.grey)),
               ],
             ),
             Center(
-              child: Text(
-                "Searching within ${(walkableRadius / 1000).toStringAsFixed(1)}Km of your radius",
-                style: const TextStyle(color: Colors.grey, fontWeight: FontWeight.bold),
+              child: RichText(
+                text: TextSpan(
+                  style: const TextStyle(color: Colors.grey),
+                  children: [
+                    const TextSpan(text: "Searching within "),
+                    TextSpan(
+                      text: "${(walkableRadius / 1000).toStringAsFixed(1)}Km",
+                      style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                        color: Theme.of(context).brightness == Brightness.dark ? Colors.white : Colors.black,
+                      ),
+                    ),
+                    const TextSpan(text: " of your radius"),
+                  ],
+                ),
               ),
             ),
             const SizedBox(height: 20),
@@ -535,6 +547,11 @@ class _FindRideScreenState extends State<FindRideScreen> {
             ),
             const SizedBox(height: 20),
 
+            const Text(
+              "Schedule",
+              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+            ),
+            const SizedBox(height: 10),
             Row(
               children: [
                 Expanded(

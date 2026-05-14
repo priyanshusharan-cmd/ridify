@@ -53,7 +53,10 @@ class _OfferRideScreenState extends State<OfferRideScreen> {
   Future<void> fetchRoute() async {
     if (pickupLat == null || destLat == null) return;
     try {
-      final url = "https://router.project-osrm.org/route/v1/driving/$pickupLng,$pickupLat;$destLng,$destLat?geometries=geojson&overview=full";
+      final distance = const Distance();
+      final straightLineDistance = distance.as(LengthUnit.Kilometer, LatLng(pickupLat!, pickupLng!), LatLng(destLat!, destLng!));
+      final overview = straightLineDistance > 50 ? 'simplified' : 'full';
+      final url = "https://router.project-osrm.org/route/v1/driving/$pickupLng,$pickupLat;$destLng,$destLat?geometries=geojson&overview=$overview";
       final response = await http.get(Uri.parse(url));
       if (response.statusCode == 200) {
         final data = json.decode(response.body);
@@ -176,9 +179,23 @@ class _OfferRideScreenState extends State<OfferRideScreen> {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(content: Text("Ride offered successfully!"), backgroundColor: Colors.green),
         );
+      } else if (mounted) {
+        String errorMsg = "Server rejected the ride.";
+        try {
+          final errData = jsonDecode(response.body);
+          if (errData['error'] != null) errorMsg = errData['error'];
+        } catch (_) {}
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(errorMsg), backgroundColor: Colors.red),
+        );
       }
     } catch (e) {
       debugPrint("Error: $e");
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text("Failed to connect: $e"), backgroundColor: Colors.red),
+        );
+      }
     } finally {
       if (mounted) setState(() => isPosting = false);
     }
@@ -398,6 +415,11 @@ class _OfferRideScreenState extends State<OfferRideScreen> {
             ),
             const SizedBox(height: 20),
 
+            const Text(
+              "Schedule",
+              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+            ),
+            const SizedBox(height: 10),
             Row(
               children: [
                 Expanded(
