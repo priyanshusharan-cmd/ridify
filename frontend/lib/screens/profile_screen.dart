@@ -221,16 +221,12 @@ class _ProfileScreenState extends State<ProfileScreen> {
     return Scaffold(
       backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       body: SafeArea(
-        child: SingleChildScrollView(
-          padding: const EdgeInsets.only(
-            left: 24,
-            right: 24,
-            top: 24,
-            bottom: 100,
-          ),
-          child: Column(
-            children: [
-              Row(
+        child: Column(
+          children: [
+            // ── FIXED HEADER — does NOT scroll ──────────────────────
+            Padding(
+              padding: const EdgeInsets.only(left: 24, right: 24, top: 24, bottom: 8),
+              child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Text(
@@ -267,126 +263,141 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   ),
                 ],
               ),
-              const SizedBox(height: 20),
-              CircleAvatar(
-                radius: 45,
-                backgroundColor: isDark ? Colors.white : Colors.black,
-                child: Text(
-                  getInitials(fullName),
-                  style: TextStyle(
-                    color: isDark ? Colors.black : Colors.white,
-                    fontSize: 28,
-                    fontWeight: FontWeight.bold,
-                  ),
+            ),
+
+            // ── SCROLLABLE CONTENT ──────────────────────────────────
+            Expanded(
+              child: SingleChildScrollView(
+                padding: const EdgeInsets.only(
+                  left: 24,
+                  right: 24,
+                  top: 12,
+                  bottom: 100,
                 ),
-              ),
-              const SizedBox(height: 15),
-              Text(
-                fullName,
-                style: TextStyle(
-                  fontSize: 22,
-                  fontWeight: FontWeight.bold,
-                  color: Theme.of(context).textTheme.bodyLarge?.color,
-                ),
-              ),
-              const SizedBox(height: 40),
-
-              _editableTile(
-                Icons.person_outline,
-                "Name",
-                fullName,
-                (val) => setState(() => fullName = val),
-              ),
-              _editableTile(
-                Icons.cake_outlined,
-                "Age",
-                age,
-                (val) => setState(() => age = val),
-              ),
-              _editableTile(
-                Icons.email_outlined,
-                "Email",
-                email,
-                (val) => setState(() => email = val),
-              ),
-
-              const SizedBox(height: 40),
-
-              // ── LOGOUT ──────────────────────────────────────────────
-              SizedBox(
-                width: double.infinity,
-                height: 55,
-                child: OutlinedButton.icon(
-                  style: OutlinedButton.styleFrom(
-                    side: const BorderSide(color: Colors.red),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(15),
-                    ),
-                  ),
-                  onPressed: _logout,
-                  icon: const Icon(Icons.logout, color: Colors.red),
-                  label: const Text(
-                    "Logout",
-                    style: TextStyle(
-                      color: Colors.red,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                ),
-              ),
-              const SizedBox(height: 15),
-
-              // ── DELETE OWN ACCOUNT ────────────────────────────────
-              SizedBox(
-                width: double.infinity,
-                height: 55,
-                child: ElevatedButton.icon(
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.red,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(15),
-                    ),
-                  ),
-                  onPressed: _showDeleteConfirmationDialog,
-                  icon: const Icon(Icons.delete_forever, color: Colors.white),
-                  label: const Text(
-                    "Delete Account",
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                ),
-              ),
-
-              // ── ADMIN-ONLY: WIPE ALL USERS ────────────────────────
-              if (isAdmin) ...[
-                const SizedBox(height: 15),
-                SizedBox(
-                  width: double.infinity,
-                  height: 55,
-                  child: OutlinedButton.icon(
-                    style: OutlinedButton.styleFrom(
-                      side: const BorderSide(color: Colors.deepOrange),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(15),
+                child: Column(
+                  children: [
+                    CircleAvatar(
+                      radius: 45,
+                      backgroundColor: isDark ? Colors.white : Colors.black,
+                      child: Text(
+                        getInitials(fullName),
+                        style: TextStyle(
+                          color: isDark ? Colors.black : Colors.white,
+                          fontSize: 28,
+                          fontWeight: FontWeight.bold,
+                        ),
                       ),
                     ),
-                    onPressed: _adminWipeAllUsers,
-                    icon: const Icon(Icons.delete_sweep,
-                        color: Colors.deepOrange),
-                    label: const Text(
-                      "Admin: Wipe All Users",
+                    const SizedBox(height: 15),
+                    Text(
+                      fullName,
                       style: TextStyle(
-                        color: Colors.deepOrange,
+                        fontSize: 22,
                         fontWeight: FontWeight.bold,
+                        color: Theme.of(context).textTheme.bodyLarge?.color,
                       ),
                     ),
-                  ),
+                    const SizedBox(height: 40),
+
+                    _editableTile(
+                      Icons.person_outline,
+                      "Name",
+                      fullName,
+                      (val) => setState(() => fullName = val),
+                    ),
+                    _editableTile(
+                      Icons.cake_outlined,
+                      "Age",
+                      age,
+                      (val) => setState(() => age = val),
+                    ),
+                    _editableTile(
+                      Icons.email_outlined,
+                      "Email",
+                      email,
+                      (val) => setState(() => email = val),
+                    ),
+
+                    const SizedBox(height: 40),
+
+                    // ── LOGOUT ──────────────────────────────────────────────
+                    SizedBox(
+                      width: double.infinity,
+                      height: 55,
+                      child: OutlinedButton.icon(
+                        style: OutlinedButton.styleFrom(
+                          side: const BorderSide(color: Colors.red),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(15),
+                          ),
+                        ),
+                        onPressed: _logout,
+                        icon: const Icon(Icons.logout, color: Colors.red),
+                        label: const Text(
+                          "Logout",
+                          style: TextStyle(
+                            color: Colors.red,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ),
+                    ),
+                    const SizedBox(height: 15),
+
+                    // ── DELETE OWN ACCOUNT ────────────────────────────────
+                    SizedBox(
+                      width: double.infinity,
+                      height: 55,
+                      child: ElevatedButton.icon(
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: Colors.red,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(15),
+                          ),
+                        ),
+                        onPressed: _showDeleteConfirmationDialog,
+                        icon: const Icon(Icons.delete_forever, color: Colors.white),
+                        label: const Text(
+                          "Delete Account",
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ),
+                    ),
+
+                    // ── ADMIN-ONLY: WIPE ALL USERS ────────────────────────
+                    if (isAdmin) ...[
+                      const SizedBox(height: 15),
+                      SizedBox(
+                        width: double.infinity,
+                        height: 55,
+                        child: OutlinedButton.icon(
+                          style: OutlinedButton.styleFrom(
+                            side: const BorderSide(color: Colors.deepOrange),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(15),
+                            ),
+                          ),
+                          onPressed: _adminWipeAllUsers,
+                          icon: const Icon(Icons.delete_sweep,
+                              color: Colors.deepOrange),
+                          label: const Text(
+                            "Admin: Wipe All Users",
+                            style: TextStyle(
+                              color: Colors.deepOrange,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                        ),
+                      ),
+                    ],
+                  ],
                 ),
-              ],
-            ],
-          ),
+              ),
+            ),
+          ],
         ),
       ),
     );

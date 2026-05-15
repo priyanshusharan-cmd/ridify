@@ -39,9 +39,14 @@ function getRiderDetail(ride, name) {
  * @returns {boolean} true if the new allocation fits
  */
 function _checkCapacityWith(existingNames, ride, newStartIndex, newEndIndex, requestedSeats) {
+  // Exclude kicked and dropped passengers — they no longer occupy seats
+  const kickedSet = new Set(ride.kicked || []);
+  const droppedSet = new Set(ride.droppedPassengers || []);
+
   const changes = [];
 
   for (const pName of existingNames) {
+    if (kickedSet.has(pName) || droppedSet.has(pName)) continue;
     const p = getRiderDetail(ride, pName);
     if (p) {
       changes.push({ index: p.startIndex, change: p.seats });
@@ -52,7 +57,11 @@ function _checkCapacityWith(existingNames, ride, newStartIndex, newEndIndex, req
   changes.push({ index: newStartIndex, change: requestedSeats });
   changes.push({ index: newEndIndex, change: -requestedSeats });
 
-  changes.sort((a, b) => a.index - b.index);
+  // Sort by index first; at the same index, process drop-offs (negative)
+  // BEFORE pickups (positive).  This way, if passenger A drops off at the
+  // same point where passenger B boards, the seat is freed first and B can
+  // use it without exceeding capacity.
+  changes.sort((a, b) => a.index - b.index || a.change - b.change);
 
   let current = 0;
   let peak = 0;
@@ -358,15 +367,85 @@ router.patch('/accept/:id/:riderName', async (req, res) => {
       req.emitToUser(rName, 'ride_cancelled', { rideId: ride._id.toString(), ride: ride.toJSON() });
     }
 
-    // For nonstop / shared_start: update status if car is completely full
+    // Check if the ride is completely full across ALL segments.
+    // For nonstop / shared_start: simple seat sum is enough.
+    // For flexible: we must check if even 1 extra seat fits ANYWHERE.
     if (ride.routePreference === 'nonstop' || ride.routePreference === 'shared_start') {
       let totalUsed = 0;
       for (const pName of ride.passengers) {
         const pd = getRiderDetail(ride, pName);
         totalUsed += pd?.seats || 1;
       }
-      
       if (totalUsed >= ride.totalSeats) {
+        ride.status = 'full';
+      }
+    } else {
+      // Flexible: the ride is "full" only if EVERY segment along the route
+      // is at totalSeats capacity.  Build the sweep-line of accepted
+      // passengers and check that the minimum occupancy never drops below
+      // totalSeats.  If any segment has room, new passengers could still
+      // board there.
+      const kickedSet = new Set(ride.kicked || []);
+      const droppedSet = new Set(ride.droppedPassengers || []);
+      const segChanges = [];
+      for (const pName of ride.passengers) {
+        if (kickedSet.has(pName) || droppedSet.has(pName)) continue;
+        const p = getRiderDetail(ride, pName);
+        if (p) {
+          segChanges.push({ index: p.startIndex, change: p.seats });
+          segChanges.push({ index: p.endIndex, change: -p.seats });
+        }
+      }
+      segChanges.sort((a, b) => a.index - b.index || a.change - b.change);
+
+      let cur = 0;
+      let minOccupancy = 0;  // minimum occupancy seen across all segments
+      let maxOccupancy = 0;
+      for (const c of segChanges) {
+        cur += c.change;
+        if (cur > maxOccupancy) maxOccupancy = cur;
+        if (cur < minOccupancy) minOccupancy = cur;
+      }
+      // The ride is full only when PEAK occupancy is at capacity AND there is
+      // no segment where occupancy dips.  Simpler: ride is full if peak == totalSeats
+      // and min occupancy (in any active region) also == totalSeats.  But the
+      // easiest correct check: is there room for 1 seat on at least some segment?
+      // We know the ride is full if maxOccupancy >= totalSeats — because the
+      // sweep only adds occupied segments, and if the peak is at totalSeats it
+      // means somewhere is full.  But another segment might not be.  The only
+      // time it's truly "full everywhere" is when no [start..end] interval
+      // can fit 1 seat.  The simplest correct approach: try every passenger's
+      // segment boundary as a test interval.
+      // Actually: if maxOccupancy >= totalSeats it doesn't mean all segments
+      // are full.  We should NOT mark as full unless it is truly impossible for
+      // any sub-segment to accommodate even 1 seat.  The conservative safe
+      // approach: mark full only when all segments are at capacity.
+      // For simplicity and correctness, just leave as 'accepted' for flexible
+      // — the search already handles per-segment capacity properly.
+      // We mark full only when EVERY point along the route is at full capacity.
+      // This is true when the minimum point-occupancy across the entire active
+      // range equals totalSeats.
+      // Build occupancy at every event boundary:
+      let isFull = false;
+      if (ride.passengers.length > 0 && segChanges.length > 0) {
+        // Track occupancy at every transition.  The ride is "full" only if
+        // occupancy >= totalSeats at EVERY point between the first start and last end.
+        let occ = 0;
+        let allFull = true;
+        for (let i = 0; i < segChanges.length; i++) {
+          occ += segChanges[i].change;
+          // Check between this event and the next one (or end)
+          if (i < segChanges.length - 1 && segChanges[i + 1].index > segChanges[i].index) {
+            // There's a span between this index and the next — check if full
+            if (occ < ride.totalSeats) {
+              allFull = false;
+              break;
+            }
+          }
+        }
+        isFull = allFull && maxOccupancy >= ride.totalSeats;
+      }
+      if (isFull) {
         ride.status = 'full';
       }
     }
