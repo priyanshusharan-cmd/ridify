@@ -83,11 +83,19 @@ function checkCapacityForSearch(ride, newStartIndex, newEndIndex, requestedSeats
 }
 
 /**
- * For REQUESTS: count both accepted passengers AND pending requests
- * to prevent overbooking the same segment.
+ * For REQUESTS: check capacity differently based on route preference.
+ * The user requested to only apply the fix (ignoring pending requests) to 'shared_start'.
+ * For 'flexible' and others, keep the old behavior of counting pending requests.
  */
 function checkCapacityForRequest(ride, newStartIndex, newEndIndex, requestedSeats) {
-  const occupied = [...(ride.passengers || []), ...(ride.requests || [])];
+  let occupied;
+  if (ride.routePreference === 'shared_start') {
+    // Only count accepted passengers so multiple requests can be made
+    occupied = ride.passengers || [];
+  } else {
+    // Legacy behavior for flexible/nonstop: count both to prevent overbooking requests
+    occupied = [...(ride.passengers || []), ...(ride.requests || [])];
+  }
   return _checkCapacityWith(occupied, ride, newStartIndex, newEndIndex, requestedSeats);
 }
 
@@ -299,8 +307,8 @@ router.patch('/request/:id', async (req, res) => {
     if (ride.kicked.includes(riderName)) {
       return res.status(400).json({ error: "You were removed from this ride." });
     }
-    if (ride.status === 'started') {
-      return res.status(400).json({ error: "This ride has already started." });
+    if (['started', 'completed', 'cancelled'].includes(ride.status)) {
+      return res.status(400).json({ error: `This ride is already ${ride.status}.` });
     }
 
     // For requests: count passengers + existing requests to prevent overbooking
@@ -491,11 +499,11 @@ router.patch('/kick/:id/:riderName', async (req, res) => {
     ride.arrivedAt = ride.arrivedAt.filter(p => p !== req.params.riderName);
     ride.kicked.push(req.params.riderName);
 
-    // If kicking freed capacity, revert 'full' → 'accepted'
-    if (ride.status === 'full' && ride.passengers.length > 0) {
-      ride.status = 'accepted';
-    } else if (ride.status === 'full' && ride.passengers.length === 0) {
+    // If kicking freed capacity, update status appropriately
+    if (ride.passengers.length === 0) {
       ride.status = 'available';
+    } else if (ride.status === 'full') {
+      ride.status = 'accepted';
     }
 
     await ride.save();
