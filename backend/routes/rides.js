@@ -490,6 +490,8 @@ router.patch('/board/:id/:riderName', async (req, res) => {
     if (!ride.boardedPassengers.includes(req.params.riderName)) {
       ride.boardedPassengers.push(req.params.riderName);
     }
+    // Remove from arrivedAt — they've progressed past the "arrived" stage
+    ride.arrivedAt = ride.arrivedAt.filter(p => p !== req.params.riderName);
 
     await ride.save();
     const rideId = ride._id.toString();

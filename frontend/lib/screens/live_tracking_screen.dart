@@ -220,7 +220,11 @@ class _LiveTrackingScreenState extends State<LiveTrackingScreen> {
           });
         }
         syncRideStatus(); // Robust fetch to guarantee state is perfectly synced
-        if (!widget.isDriver && (map['riderName'] == widget.myName || (rideData?['arrivedAt'] ?? []).contains(widget.myName))) {
+        // Only show the banner if this event is specifically for this passenger
+        // AND they haven't already boarded (prevents stale re-notifications)
+        if (!widget.isDriver &&
+            map['riderName'] == widget.myName &&
+            !(rideData?['boardedPassengers'] ?? []).contains(widget.myName)) {
           ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("Driver has arrived! Please board."), backgroundColor: Colors.green));
         }
       }
