@@ -5,6 +5,8 @@ import 'package:geolocator/geolocator.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'package:flutter_map_cancellable_tile_provider/flutter_map_cancellable_tile_provider.dart';
+import 'dart:math' as math;
+import '../widgets/address_search_widget.dart';
 
 class MapPickerScreen extends StatefulWidget {
   final LatLng? initialPosition;
@@ -17,6 +19,7 @@ class MapPickerScreen extends StatefulWidget {
 class _MapPickerScreenState extends State<MapPickerScreen> {
   final MapController _mapController = MapController();
   late LatLng _centerPosition;
+  final TextEditingController _searchController = TextEditingController();
   bool _isLoading = false;
   bool _isLocating = true;
 
@@ -112,6 +115,12 @@ class _MapPickerScreenState extends State<MapPickerScreen> {
   }
 
   @override
+  void dispose() {
+    _searchController.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
@@ -165,6 +174,72 @@ class _MapPickerScreenState extends State<MapPickerScreen> {
               child: _isLoading
                   ? const SizedBox(height: 20, width: 20, child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2))
                   : const Text("Select this location", style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.white)),
+            ),
+          ),
+          Positioned(
+            top: 20, left: 20, right: 20,
+            child: Container(
+              decoration: BoxDecoration(
+                color: Theme.of(context).cardColor,
+                borderRadius: BorderRadius.circular(15),
+                boxShadow: const [BoxShadow(color: Colors.black12, blurRadius: 6, offset: Offset(0, 3))],
+              ),
+              child: AddressSearchWidget(
+                controller: _searchController,
+                hintText: "Search places...",
+                prefixIcon: Icons.search,
+                iconColor: Colors.grey,
+                onSelected: (name, lat, lon) {
+                  setState(() {
+                    _centerPosition = LatLng(lat, lon);
+                  });
+                  _mapController.move(_centerPosition, 15.0);
+                },
+              ),
+            ),
+          ),
+          Positioned(
+            bottom: 100, right: 20,
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                GestureDetector(
+                  onTap: () {
+                    setState(() => _isLocating = true);
+                    _determinePosition();
+                  },
+                  child: Container(
+                    width: 40, height: 40,
+                    decoration: const BoxDecoration(color: Colors.white, shape: BoxShape.circle, boxShadow: [BoxShadow(color: Colors.black26, blurRadius: 6, offset: Offset(0, 3))]),
+                    child: const Icon(Icons.my_location, color: Colors.black, size: 20),
+                  ),
+                ),
+                const SizedBox(height: 12),
+                GestureDetector(
+                  onTap: () {
+                    try { _mapController.rotate(0); } catch (_) {}
+                  },
+                  child: Container(
+                    width: 40, height: 40,
+                    decoration: const BoxDecoration(color: Colors.white, shape: BoxShape.circle, boxShadow: [BoxShadow(color: Colors.black26, blurRadius: 6, offset: Offset(0, 3))]),
+                    child: StreamBuilder<MapEvent>(
+                      stream: _mapController.mapEventStream,
+                      builder: (context, snapshot) {
+                        double rotation = 0;
+                        try { rotation = _mapController.camera.rotation; } catch (_) {}
+                        return Transform.rotate(
+                          angle: (-rotation - 45) * (math.pi / 180),
+                          child: Icon(
+                            Icons.explore,
+                            color: rotation.abs() > 1 ? Colors.red : Colors.black,
+                            size: 20,
+                          ),
+                        );
+                      },
+                    ),
+                  ),
+                ),
+              ],
             ),
           ),
         ],

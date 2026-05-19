@@ -12,7 +12,7 @@ import 'package:latlong2/latlong.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:url_launcher/url_launcher.dart';
 import '../core/constants.dart';
-import 'completion_screen.dart';
+import 'rider_completing_screen.dart';
 
 class LiveTrackingScreen extends StatefulWidget {
   final bool isDriver;
@@ -282,10 +282,22 @@ class _LiveTrackingScreenState extends State<LiveTrackingScreen> {
     _on('ride_ended', (data) {
       if (data == null) return;
       final map = Map<String, dynamic>.from(data);
-      if (mounted && widget.isDriver) {
+      if (mounted) {
         String id = (map['rideId'] ?? map['_id'] ?? '').toString();
         if (id == widget.rideId) {
-          _triggerCompletionScreen();
+          if (widget.isDriver) {
+            _triggerCompletionScreen();
+          } else {
+            int fare = 0;
+            final rideMap = map['ride'] as Map<String, dynamic>?;
+            if (rideMap != null) {
+              final details = rideMap['riderDetails'];
+              if (details != null && details[widget.myName] != null) {
+                fare = (details[widget.myName]['fare'] as num?)?.toInt() ?? 0;
+              }
+            }
+            _triggerPaymentScreen(fare);
+          }
         }
       }
     });
@@ -317,7 +329,7 @@ class _LiveTrackingScreenState extends State<LiveTrackingScreen> {
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (!mounted) return;
       Navigator.of(context).popUntil((route) => route.isFirst);
-      Navigator.of(context).push(MaterialPageRoute(builder: (_) => CompletionScreen(isDriver: false, rideId: widget.rideId, myName: widget.myName, fareAmount: fareAmount)));
+      Navigator.of(context).push(MaterialPageRoute(builder: (_) => RiderCompletingScreen(isDriver: false, rideId: widget.rideId, myName: widget.myName, fareAmount: fareAmount)));
     });
   }
 
@@ -425,9 +437,49 @@ class _LiveTrackingScreenState extends State<LiveTrackingScreen> {
 
   Future<void> endRide() async {
     if (widget.rideId.isEmpty) return;
-    List bp = rideData?['boardedPassengers'] ?? [];
-    List ps = rideData?['passengers'] ?? [];
-    if (bp.isNotEmpty || ps.isNotEmpty) { if (mounted) ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("Cannot end trip. Passengers still active."), backgroundColor: Colors.red)); return; }
+    List activePassengers = ((rideData?['passengers'] ?? []) as List).where((p) => !(rideData?['droppedPassengers'] ?? []).contains(p)).toList();
+    List boardedPassengers = rideData?['boardedPassengers'] ?? [];
+    bool canEnd = false;
+    String pref = rideData?['routePreference'] ?? 'flexible';
+    if (pref == 'nonstop' || pref == 'shared_start') {
+      List unboarded = activePassengers.where((p) => !boardedPassengers.contains(p)).toList();
+      canEnd = unboarded.isEmpty;
+    } else {
+      canEnd = activePassengers.isEmpty && boardedPassengers.isEmpty;
+    }
+    
+    if (!canEnd) { 
+      if (mounted) ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("Cannot end trip. Passengers still active."), backgroundColor: Colors.red)); 
+      return; 
+    }
+
+    if (boardedPassengers.isNotEmpty) {
+      int totalFare = 0;
+      List<String> details = [];
+      for (var p in boardedPassengers) {
+        String name = p.toString();
+        int fare = (rideData?['riderDetails']?[name]?['fare'] as num?)?.toInt() ?? 0;
+        totalFare += fare;
+        details.add("$name: ₹$fare");
+      }
+      
+      bool? confirm = await showDialog<bool>(
+        context: context, 
+        builder: (_) => AlertDialog(
+          title: const Text("End Ride & Collect Fare"), 
+          content: Text("Collect a total of ₹$totalFare.\n\n${details.join('\n')}"),
+          actions: [
+            TextButton(onPressed: () => Navigator.pop(context, false), child: const Text("Cancel")),
+            TextButton(
+              onPressed: () => Navigator.pop(context, true), 
+              child: const Text("Confirm", style: TextStyle(color: Colors.green))
+            )
+          ],
+        )
+      );
+      if (confirm != true) return;
+    }
+
     // Optimistic UI update
     setState(() {
       if (rideData != null) rideData!['status'] = 'completed';
@@ -575,7 +627,14 @@ class _LiveTrackingScreenState extends State<LiveTrackingScreen> {
         ),
         // Locate button
         Positioned(top: 20, right: 20, child: Column(mainAxisSize: MainAxisSize.min, children: [
-          GestureDetector(onTap: _fitBounds, child: Container(padding: const EdgeInsets.all(10), decoration: const BoxDecoration(color: Colors.white, shape: BoxShape.circle, boxShadow: [BoxShadow(color: Colors.black26, blurRadius: 6, offset: Offset(0, 3))]), child: const Icon(Icons.my_location, color: Colors.black, size: 20))),
+          GestureDetector(
+            onTap: _fitBounds, 
+            child: Container(
+              width: 40, height: 40,
+              decoration: const BoxDecoration(color: Colors.white, shape: BoxShape.circle, boxShadow: [BoxShadow(color: Colors.black26, blurRadius: 6, offset: Offset(0, 3))]), 
+              child: const Icon(Icons.my_location, color: Colors.black, size: 20),
+            )
+          ),
           const SizedBox(height: 12),
           // Compass button – rotates map to face north
           if (driverPosition != null) GestureDetector(
@@ -585,7 +644,7 @@ class _LiveTrackingScreenState extends State<LiveTrackingScreen> {
               } catch (_) {}
             },
             child: Container(
-              padding: const EdgeInsets.all(10),
+              width: 40, height: 40,
               decoration: const BoxDecoration(
                 color: Colors.white,
                 shape: BoxShape.circle,
@@ -596,8 +655,9 @@ class _LiveTrackingScreenState extends State<LiveTrackingScreen> {
                 builder: (context, snapshot) {
                   double rotation = 0;
                   try { rotation = mapController.camera.rotation; } catch (_) {}
+                  // Icons.explore points top-right (45 degrees). We subtract 45 degrees so it points UP when rotation is 0.
                   return Transform.rotate(
-                    angle: -rotation * (math.pi / 180),
+                    angle: (-rotation - 45) * (math.pi / 180),
                     child: Icon(
                       Icons.explore,
                       color: rotation.abs() > 1 ? Colors.red : Colors.black,

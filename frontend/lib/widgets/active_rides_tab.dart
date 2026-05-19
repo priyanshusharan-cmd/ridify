@@ -236,7 +236,7 @@ class _ActiveRidesTabState extends State<ActiveRidesTab> {
                                   style: const TextStyle(color: Colors.green, fontWeight: FontWeight.bold, fontSize: 13),
                                 ),
                               )
-                          else
+                          else if (r['status'] != 'started')
                             Material(
                               color: isDark ? Colors.grey[800] : Colors.grey[200],
                               borderRadius: BorderRadius.circular(20),

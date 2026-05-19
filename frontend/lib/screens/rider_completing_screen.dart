@@ -4,13 +4,13 @@ import 'dart:convert';
 import '../core/constants.dart';
 import '../core/socket_service.dart';
 
-class CompletionScreen extends StatefulWidget {
+class RiderCompletingScreen extends StatefulWidget {
   final bool isDriver;
   final String rideId;
   final String myName;
   final int fareAmount;
 
-  const CompletionScreen({
+  const RiderCompletingScreen({
     super.key,
     this.isDriver = false,
     this.rideId = "",
@@ -19,10 +19,10 @@ class CompletionScreen extends StatefulWidget {
   });
 
   @override
-  State<CompletionScreen> createState() => _CompletionScreenState();
+  State<RiderCompletingScreen> createState() => _RiderCompletingScreenState();
 }
 
-class _CompletionScreenState extends State<CompletionScreen> {
+class _RiderCompletingScreenState extends State<RiderCompletingScreen> {
   bool isPaid = false;
   Map<String, dynamic>? rideData;
   bool isLoading = true;

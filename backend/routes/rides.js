@@ -646,6 +646,13 @@ router.patch('/start/:id', async (req, res) => {
 
     ride.status = 'started';
 
+    if (ride.requests && ride.requests.length > 0) {
+      for (const requester of ride.requests) {
+        req.io.to(ride._id.toString()).emit('request_declined', { rideId: ride._id.toString(), requester, ride: ride.toJSON() });
+      }
+      ride.requests = [];
+    }
+
     if (ride.routePreference === 'nonstop' || ride.routePreference === 'shared_start') {
       if (!ride.arrivedAt) ride.arrivedAt = [];
       for (const pName of ride.passengers) {
