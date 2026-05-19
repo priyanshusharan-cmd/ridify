@@ -447,6 +447,12 @@ class _LiveTrackingScreenState extends State<LiveTrackingScreen> {
   // Returns {title, address, lat, lng} for the next stop header
   Map<String, dynamic> _getNextStopInfo() {
     if (rideData == null || !isStarted) return {"title": "Start ride to see stops", "address": "", "lat": null, "lng": null};
+    
+    String? pref = rideData?['routePreference'];
+    if (pref == 'nonstop') {
+      return {"title": "Final Destination", "address": rideData?['destination'] ?? "", "lat": rideData?['destLat'], "lng": rideData?['destLng']};
+    }
+
     List<Map<String, dynamic>> wps = [];
     for (var p in (rideData!['passengers'] ?? [])) {
       final d = rideData!['riderDetails']?[p];
@@ -463,16 +469,18 @@ class _LiveTrackingScreenState extends State<LiveTrackingScreen> {
       }
     }
     wps.sort((a, b) => (a['index'] as int).compareTo(b['index'] as int));
+    
     for (var wp in wps) {
       String p = wp['passenger'];
-      if (wp['type'] == 'pickup' && !(rideData!['boardedPassengers'] ?? []).contains(p) && !(rideData!['droppedPassengers'] ?? []).contains(p)) {
+      if (wp['type'] == 'pickup' && pref != 'shared_start' && !(rideData!['boardedPassengers'] ?? []).contains(p) && !(rideData!['droppedPassengers'] ?? []).contains(p)) {
         return {"title": "$p's Pickup", "address": wp['location'], "lat": wp['lat'], "lng": wp['lng']};
       }
       if (wp['type'] == 'dropoff' && (rideData!['boardedPassengers'] ?? []).contains(p)) {
         return {"title": "$p's Drop", "address": wp['location'], "lat": wp['lat'], "lng": wp['lng']};
       }
     }
-    return {"title": rideData?['destination'] ?? "Destination", "address": "", "lat": rideData?['destLat'], "lng": rideData?['destLng']};
+    
+    return {"title": "Final Destination", "address": rideData?['destination'] ?? "", "lat": rideData?['destLat'], "lng": rideData?['destLng']};
   }
 
   /// Opens the next stop location in an external map app (Google Maps / Apple Maps).
@@ -728,24 +736,28 @@ class _LiveTrackingScreenState extends State<LiveTrackingScreen> {
                     ])),
                     // Action buttons - kick always visible
                     if (isBoarded) ...[
-                      ElevatedButton(style: ElevatedButton.styleFrom(backgroundColor: Colors.redAccent, minimumSize: const Size(70, 32), padding: const EdgeInsets.symmetric(horizontal: 10)), onPressed: () => dropOffPassenger(p), child: const Text("Drop-off", style: TextStyle(color: Colors.white, fontSize: 11))),
-                      const SizedBox(width: 6),
+                      if (rideData?['routePreference'] != 'nonstop') ...[
+                        ElevatedButton(style: ElevatedButton.styleFrom(backgroundColor: Colors.redAccent, minimumSize: const Size(70, 32), padding: const EdgeInsets.symmetric(horizontal: 10)), onPressed: () => dropOffPassenger(p), child: const Text("Drop-off", style: TextStyle(color: Colors.white, fontSize: 11))),
+                        const SizedBox(width: 6),
+                      ],
                       GestureDetector(onTap: () => _confirmKickPassenger(p), child: const Icon(Icons.person_remove, color: Colors.redAccent, size: 20)),
                     ] else ...[
-                      if (!isArrived) ElevatedButton(
-                        style: ElevatedButton.styleFrom(backgroundColor: (canFit && isStarted) ? Colors.green : Colors.grey, minimumSize: const Size(70, 32), padding: const EdgeInsets.symmetric(horizontal: 10)),
-                        onPressed: () {
-                          if (!isStarted) {
-                            ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("First start the ride"), backgroundColor: Colors.orange));
-                          } else if (!canFit) {
-                            ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("Car capacity reached"), backgroundColor: Colors.red));
-                          } else {
-                            driverArriveForPassenger(p);
-                          }
-                        },
-                        child: Text((canFit && isStarted) ? "Arrived" : (isStarted ? "Full" : "Arrived"), style: const TextStyle(color: Colors.white, fontSize: 11)),
-                      ),
-                      const SizedBox(width: 6),
+                      if (!isArrived && rideData?['routePreference'] != 'nonstop' && rideData?['routePreference'] != 'shared_start') ...[
+                        ElevatedButton(
+                          style: ElevatedButton.styleFrom(backgroundColor: (canFit && isStarted) ? Colors.green : Colors.grey, minimumSize: const Size(70, 32), padding: const EdgeInsets.symmetric(horizontal: 10)),
+                          onPressed: () {
+                            if (!isStarted) {
+                              ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("First start the ride"), backgroundColor: Colors.orange));
+                            } else if (!canFit) {
+                              ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("Car capacity reached"), backgroundColor: Colors.red));
+                            } else {
+                              driverArriveForPassenger(p);
+                            }
+                          },
+                          child: Text((canFit && isStarted) ? "Arrived" : (isStarted ? "Full" : "Arrived"), style: const TextStyle(color: Colors.white, fontSize: 11)),
+                        ),
+                        const SizedBox(width: 6),
+                      ],
                       GestureDetector(onTap: () => _confirmKickPassenger(p), child: const Icon(Icons.person_remove, color: Colors.redAccent, size: 20)),
                     ],
                   ]),

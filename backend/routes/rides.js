@@ -641,14 +641,27 @@ router.patch('/pay/:id/:riderName', async (req, res) => {
 // ── Start ride — scoped emit ─────────────────────────────────────────────────
 router.patch('/start/:id', async (req, res) => {
   try {
-    const updatedRide = await Ride.findByIdAndUpdate(
-      req.params.id,
-      { status: 'started' },
-      { new: true }
-    );
-    const rideId = updatedRide._id.toString();
-    req.io.to(rideId).emit('ride_started', { rideId, ride: updatedRide.toJSON() });
-    res.status(200).json(updatedRide);
+    let ride = await Ride.findById(req.params.id);
+    if (!ride) return res.status(404).json({ error: "Ride not found" });
+
+    ride.status = 'started';
+
+    if (ride.routePreference === 'nonstop' || ride.routePreference === 'shared_start') {
+      if (!ride.arrivedAt) ride.arrivedAt = [];
+      for (const pName of ride.passengers) {
+        if (!ride.arrivedAt.includes(pName) && 
+            !ride.boardedPassengers.includes(pName) && 
+            !ride.droppedPassengers.includes(pName)) {
+          ride.arrivedAt.push(pName);
+        }
+      }
+    }
+
+    await ride.save();
+
+    const rideId = ride._id.toString();
+    req.io.to(rideId).emit('ride_started', { rideId, ride: ride.toJSON() });
+    res.status(200).json(ride);
   } catch (err) { res.status(500).json({ error: err.message }); }
 });
 
@@ -658,8 +671,21 @@ router.patch('/end/:id', async (req, res) => {
     let ride = await Ride.findById(req.params.id);
     if (!ride) return res.status(404).json({ error: "Ride not found" });
 
-    if (ride.boardedPassengers.length > 0 || ride.passengers.length > 0) {
-      return res.status(400).json({ error: "Cannot end trip. Passengers are still active." });
+    if (ride.routePreference === 'nonstop') {
+      // Auto-dropoff all active passengers
+      const activeP = [...new Set([...ride.passengers, ...ride.boardedPassengers])];
+      for (const pName of activeP) {
+        if (!ride.droppedPassengers) ride.droppedPassengers = [];
+        if (!ride.droppedPassengers.includes(pName)) {
+          ride.droppedPassengers.push(pName);
+        }
+      }
+      ride.boardedPassengers = [];
+      ride.passengers = [];
+    } else {
+      if (ride.boardedPassengers.length > 0 || ride.passengers.length > 0) {
+        return res.status(400).json({ error: "Cannot end trip. Passengers are still active." });
+      }
     }
 
     ride.status = 'completed';
