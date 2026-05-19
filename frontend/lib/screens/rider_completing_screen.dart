@@ -165,7 +165,17 @@ class _RiderCompletingScreenState extends State<RiderCompletingScreen> {
                     Row(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        const Icon(Icons.location_on, color: Colors.green, size: 20),
+                        Column(
+                          children: [
+                            const Icon(Icons.location_on, color: Colors.green, size: 20),
+                            Container(
+                              height: 32,
+                              width: 2,
+                              color: isDark ? Colors.white24 : Colors.black12,
+                            ),
+                            const Icon(Icons.location_on, color: Colors.red, size: 20),
+                          ],
+                        ),
                         const SizedBox(width: 12),
                         Expanded(
                           child: Column(
@@ -174,34 +184,7 @@ class _RiderCompletingScreenState extends State<RiderCompletingScreen> {
                               Text("From", style: TextStyle(color: isDark ? Colors.white54 : Colors.grey[600], fontSize: 12)),
                               const SizedBox(height: 2),
                               Text(pickup, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 14)),
-                            ],
-                          ),
-                        ),
-                      ],
-                    ),
-                    Row(
-                      children: [
-                        SizedBox(
-                          width: 20,
-                          child: Center(
-                            child: Container(
-                              height: 24,
-                              width: 2,
-                              color: isDark ? Colors.white24 : Colors.black12,
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-                    Row(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        const Icon(Icons.location_on, color: Colors.red, size: 20),
-                        const SizedBox(width: 12),
-                        Expanded(
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
+                              const SizedBox(height: 24),
                               Text("To", style: TextStyle(color: isDark ? Colors.white54 : Colors.grey[600], fontSize: 12)),
                               const SizedBox(height: 2),
                               Text(dest, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 14)),

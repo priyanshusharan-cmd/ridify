@@ -175,7 +175,7 @@ class _ActiveRidesTabState extends State<ActiveRidesTab> {
     );
   }
 
-  Widget _buildRideCard(Map<String, dynamic> r, {bool isDetail = false, VoidCallback? onTap}) {
+  Widget _buildRideCard(Map<String, dynamic> r, {bool isDetail = false, bool isOngoing = false, VoidCallback? onTap}) {
     final List requests = r['requests'] as List? ?? [];
     final int reqCount = requests.length;
     final List passengers = r['passengers'] as List? ?? [];
@@ -236,7 +236,7 @@ class _ActiveRidesTabState extends State<ActiveRidesTab> {
                                   style: const TextStyle(color: Colors.green, fontWeight: FontWeight.bold, fontSize: 13),
                                 ),
                               )
-                          else if (r['status'] != 'started')
+                          else if (!isOngoing)
                             Material(
                               color: isDark ? Colors.grey[800] : Colors.grey[200],
                               borderRadius: BorderRadius.circular(20),
@@ -602,7 +602,7 @@ class _ActiveRidesTabState extends State<ActiveRidesTab> {
               ),
               const SizedBox(height: 16),
               ...liveRides.map(
-                (r) => _buildRideCard(r as Map<String, dynamic>, onTap: () => _openMap(r))
+                (r) => _buildRideCard(r as Map<String, dynamic>, isOngoing: true, onTap: () => _openMap(r))
               ),
             ],
           ],
