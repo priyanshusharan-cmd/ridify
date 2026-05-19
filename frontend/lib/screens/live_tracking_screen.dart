@@ -599,7 +599,7 @@ class _LiveTrackingScreenState extends State<LiveTrackingScreen> {
     List boardedPassengers = rideData?['boardedPassengers'] ?? [];
     bool canEnd = false;
     String pref = rideData?['routePreference'] ?? 'flexible';
-    if (pref == 'nonstop' || pref == 'shared_start') {
+    if (pref == 'nonstop') {
       List unboarded = activePassengers.where((p) => !boardedPassengers.contains(p)).toList();
       canEnd = unboarded.isEmpty;
     } else {
