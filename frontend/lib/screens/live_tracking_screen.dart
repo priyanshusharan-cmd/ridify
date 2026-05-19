@@ -544,7 +544,15 @@ class _LiveTrackingScreenState extends State<LiveTrackingScreen> {
 
     // Only count passengers who haven't been dropped
     List activePassengers = ((rideData?['passengers'] ?? []) as List).where((p) => !(rideData?['droppedPassengers'] ?? []).contains(p)).toList();
-    bool canEnd = activePassengers.isEmpty && (rideData?['boardedPassengers'] ?? []).isEmpty;
+    List boardedPassengers = rideData?['boardedPassengers'] ?? [];
+    bool canEnd = false;
+    String pref = rideData?['routePreference'] ?? 'flexible';
+    if (pref == 'nonstop' || pref == 'shared_start') {
+      List unboarded = activePassengers.where((p) => !boardedPassengers.contains(p)).toList();
+      canEnd = unboarded.isEmpty;
+    } else {
+      canEnd = activePassengers.isEmpty && boardedPassengers.isEmpty;
+    }
 
     return Scaffold(
       appBar: AppBar(backgroundColor: Colors.black, title: const Text("Live Ride Map", style: TextStyle(color: Colors.white)), iconTheme: const IconThemeData(color: Colors.white)),

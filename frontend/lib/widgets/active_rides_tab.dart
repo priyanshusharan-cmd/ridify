@@ -208,9 +208,9 @@ class _ActiveRidesTabState extends State<ActiveRidesTab> {
                           Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              Text("${r['availableSeats']} Seats Left", style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18, color: isDark ? Colors.white : Colors.black)),
+                              Text("${r['availableSeats']} Seats", style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18, color: isDark ? Colors.white : Colors.black)),
                               const SizedBox(height: 4),
-                              Text("${r['departureTime']}", style: TextStyle(color: Colors.grey, fontSize: 13, fontWeight: FontWeight.w600)),
+                              Text("${r['departureTime'].toString().replaceAll(' at ', ' • ')}", style: TextStyle(color: Colors.grey, fontSize: 13, fontWeight: FontWeight.w600)),
                             ],
                           ),
                         ],
@@ -244,14 +244,8 @@ class _ActiveRidesTabState extends State<ActiveRidesTab> {
                                 onTap: () => _openMap(r),
                                 borderRadius: BorderRadius.circular(20),
                                 child: Container(
-                                  padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
-                                  child: Row(
-                                    children: [
-                                      Icon(Icons.map, size: 16, color: isDark ? Colors.white : Colors.black),
-                                      const SizedBox(width: 6),
-                                      Text("Open Map", style: TextStyle(fontWeight: FontWeight.bold, fontSize: 13, color: isDark ? Colors.white : Colors.black)),
-                                    ],
-                                  ),
+                                  padding: const EdgeInsets.all(12),
+                                  child: Icon(Icons.map, size: 22, color: isDark ? Colors.white : Colors.black),
                                 ),
                               ),
                             ),

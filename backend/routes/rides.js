@@ -671,7 +671,7 @@ router.patch('/end/:id', async (req, res) => {
     let ride = await Ride.findById(req.params.id);
     if (!ride) return res.status(404).json({ error: "Ride not found" });
 
-    if (ride.routePreference === 'nonstop') {
+    if (ride.routePreference === 'nonstop' || ride.routePreference === 'shared_start') {
       // Auto-dropoff all active passengers
       const activeP = [...new Set([...ride.passengers, ...ride.boardedPassengers])];
       for (const pName of activeP) {

@@ -29,7 +29,7 @@ class _OfferRideScreenState extends State<OfferRideScreen> {
   int selectedSeats = 1;
   bool isPosting = false;
 
-  String routePreference = 'flexible';
+  String routePreference = 'nonstop';
   List<Map<String, dynamic>> routePath = [];
   double totalDistance = 0.0;
 
@@ -444,9 +444,9 @@ class _OfferRideScreenState extends State<OfferRideScreen> {
             Row(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                _buildPreferenceCard("Flexible", "Pickup & drop anywhere", "flexible", Icons.route_outlined),
-                _buildPreferenceCard("Shared Start", "Same pickup, flexible drop", "shared_start", Icons.call_split),
                 _buildPreferenceCard("Nonstop", "Exact pickup and drop only", "nonstop", Icons.straight),
+                _buildPreferenceCard("Shared Start", "Same pickup, flexible drop", "shared_start", Icons.call_split),
+                _buildPreferenceCard("Flexible", "Pickup & drop anywhere", "flexible", Icons.route_outlined),
               ],
             ),
             const SizedBox(height: 20),
