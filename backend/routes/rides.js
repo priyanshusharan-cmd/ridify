@@ -88,15 +88,8 @@ function checkCapacityForSearch(ride, newStartIndex, newEndIndex, requestedSeats
  * For 'flexible' and others, keep the old behavior of counting pending requests.
  */
 function checkCapacityForRequest(ride, newStartIndex, newEndIndex, requestedSeats) {
-  let occupied;
-  if (ride.routePreference === 'shared_start') {
-    // Only count accepted passengers so multiple requests can be made
-    occupied = ride.passengers || [];
-  } else {
-    // Legacy behavior for flexible/nonstop: count both to prevent overbooking requests
-    occupied = [...(ride.passengers || []), ...(ride.requests || [])];
-  }
-  return _checkCapacityWith(occupied, ride, newStartIndex, newEndIndex, requestedSeats);
+  // Only count accepted passengers so multiple requests can be made, regardless of route preference
+  return _checkCapacityWith(ride.passengers || [], ride, newStartIndex, newEndIndex, requestedSeats);
 }
 
 /**
@@ -499,11 +492,13 @@ router.patch('/kick/:id/:riderName', async (req, res) => {
     ride.arrivedAt = ride.arrivedAt.filter(p => p !== req.params.riderName);
     ride.kicked.push(req.params.riderName);
 
-    // If kicking freed capacity, update status appropriately
-    if (ride.passengers.length === 0) {
-      ride.status = 'available';
-    } else if (ride.status === 'full') {
-      ride.status = 'accepted';
+    // If kicking freed capacity, update status appropriately, but only if the ride hasn't started or completed
+    if (ride.status !== 'started' && ride.status !== 'completed' && ride.status !== 'cancelled') {
+      if (ride.passengers.length === 0) {
+        ride.status = 'available';
+      } else if (ride.status === 'full') {
+        ride.status = 'accepted';
+      }
     }
 
     await ride.save();
@@ -647,8 +642,13 @@ router.patch('/start/:id', async (req, res) => {
     ride.status = 'started';
 
     if (ride.requests && ride.requests.length > 0) {
-      for (const requester of ride.requests) {
-        req.io.to(ride._id.toString()).emit('request_declined', { rideId: ride._id.toString(), requester, ride: ride.toJSON() });
+      const pendingReqs = [...ride.requests];
+      for (const requester of pendingReqs) {
+        if (!ride.declined) ride.declined = [];
+        if (!ride.declined.includes(requester)) {
+          ride.declined.push(requester);
+        }
+        req.emitToUser(requester, 'ride_cancelled', { rideId: ride._id.toString(), ride: ride.toJSON() });
       }
       ride.requests = [];
     }
