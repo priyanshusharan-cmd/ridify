@@ -213,9 +213,15 @@ class _RideHistoryScreenState extends State<RideHistoryScreen> {
 
     // Passengers count
     Set<String> allInRide = {};
-    for (var p in (ride['boardedPassengers'] ?? [])) allInRide.add(p.toString());
-    for (var p in (ride['droppedPassengers'] ?? [])) allInRide.add(p.toString());
-    for (var p in (ride['passengers'] ?? [])) allInRide.add(p.toString());
+    for (var p in (ride['boardedPassengers'] ?? [])) {
+      allInRide.add(p.toString());
+    }
+    for (var p in (ride['droppedPassengers'] ?? [])) {
+      allInRide.add(p.toString());
+    }
+    for (var p in (ride['passengers'] ?? [])) {
+      allInRide.add(p.toString());
+    }
     int paxCount = allInRide.length;
     if (paxCount == 0 && (ride['requests'] != null && ride['requests'].isNotEmpty)) paxCount = 1;
 
@@ -266,26 +272,28 @@ class _RideHistoryScreenState extends State<RideHistoryScreen> {
               // Locations
               Expanded(
                 flex: 3,
-                child: Row(
+                child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Column(
+                    Row(
+                      crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         const Icon(Icons.location_on, color: Color(0xFF4ADE80), size: 16),
-                        Container(height: 24, width: 2, color: isDark ? Colors.white24 : Colors.black12),
-                        const Icon(Icons.location_on, color: Colors.redAccent, size: 16),
+                        const SizedBox(width: 8),
+                        Expanded(child: Text(pickup, style: TextStyle(fontWeight: FontWeight.w600, fontSize: 13, color: isDark ? Colors.white : Colors.black), maxLines: 1, overflow: TextOverflow.ellipsis)),
                       ],
                     ),
-                    const SizedBox(width: 12),
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(pickup, style: TextStyle(fontWeight: FontWeight.w600, fontSize: 13, color: isDark ? Colors.white : Colors.black), maxLines: 1, overflow: TextOverflow.ellipsis),
-                          const SizedBox(height: 18),
-                          Text(dest, style: TextStyle(fontWeight: FontWeight.w600, fontSize: 13, color: isDark ? Colors.white : Colors.black), maxLines: 1, overflow: TextOverflow.ellipsis),
-                        ],
-                      ),
+                    Padding(
+                      padding: const EdgeInsets.only(left: 7),
+                      child: Container(height: 12, width: 2, color: isDark ? Colors.white24 : Colors.black12),
+                    ),
+                    Row(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        const Icon(Icons.location_on, color: Colors.redAccent, size: 16),
+                        const SizedBox(width: 8),
+                        Expanded(child: Text(dest, style: TextStyle(fontWeight: FontWeight.w600, fontSize: 13, color: isDark ? Colors.white : Colors.black), maxLines: 1, overflow: TextOverflow.ellipsis)),
+                      ],
                     ),
                   ],
                 ),
@@ -321,7 +329,7 @@ class _RideHistoryScreenState extends State<RideHistoryScreen> {
           
           const Padding(
             padding: EdgeInsets.symmetric(vertical: 16),
-            child: Divider(height: 1, color: Colors.white10),
+            child: Divider(height: 1),
           ),
           
           // Stats Row
@@ -484,7 +492,7 @@ class _RideHistoryScreenState extends State<RideHistoryScreen> {
                     Text(name, style: TextStyle(fontSize: 15, color: isDark ? Colors.white70 : Colors.black87)),
                   ],
                 ),
-              )).toList(),
+              )),
               const SizedBox(height: 20),
             ],
           ),

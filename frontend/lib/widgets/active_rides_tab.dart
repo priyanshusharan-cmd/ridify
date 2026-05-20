@@ -213,7 +213,7 @@ class _ActiveRidesTabState extends State<ActiveRidesTab> {
                             children: [
                               Text("${r['availableSeats']} Seats", style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18, color: isDark ? Colors.white : Colors.black)),
                               const SizedBox(height: 4),
-                              Text("${r['departureTime'].toString().replaceAll(' at ', ' • ')}", style: TextStyle(color: Colors.grey, fontSize: 13, fontWeight: FontWeight.w600)),
+                              Text(r['departureTime'].toString().replaceAll(' at ', ' • '), style: const TextStyle(color: Colors.grey, fontSize: 13, fontWeight: FontWeight.w600)),
                             ],
                           ),
                         ],
@@ -310,7 +310,7 @@ class _ActiveRidesTabState extends State<ActiveRidesTab> {
           alignment: Alignment.topCenter,
           children: <Widget>[
             ...previousChildren,
-            if (currentChild != null) currentChild,
+            ?currentChild,
           ],
         );
       },

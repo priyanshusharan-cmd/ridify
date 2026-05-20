@@ -216,17 +216,11 @@ class _RiderCompletingScreenState extends State<RiderCompletingScreen> {
                     ),
                     const SizedBox(height: 24),
                     
-                    // Timeline
+                    // Timeline - From
                     Row(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Column(
-                          children: [
-                            const Icon(Icons.location_on, color: Color(0xFF4ADE80), size: 20),
-                            Container(height: 30, width: 2, color: isDark ? Colors.white24 : Colors.black12),
-                            const Icon(Icons.location_on, color: Colors.redAccent, size: 20),
-                          ],
-                        ),
+                        const Icon(Icons.location_on, color: Color(0xFF4ADE80), size: 20),
                         const SizedBox(width: 12),
                         Expanded(
                           child: Column(
@@ -235,7 +229,26 @@ class _RiderCompletingScreenState extends State<RiderCompletingScreen> {
                               Text("From", style: TextStyle(color: isDark ? Colors.white54 : Colors.grey[600], fontSize: 12)),
                               const SizedBox(height: 2),
                               Text(pickup, style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14, color: isDark ? Colors.white : Colors.black), maxLines: 2, overflow: TextOverflow.ellipsis),
-                              const SizedBox(height: 18),
+                            ],
+                          ),
+                        ),
+                      ],
+                    ),
+                    // Connecting line
+                    Padding(
+                      padding: const EdgeInsets.only(left: 9),
+                      child: Container(height: 20, width: 2, color: isDark ? Colors.white24 : Colors.black12),
+                    ),
+                    // Timeline - To
+                    Row(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        const Icon(Icons.location_on, color: Colors.redAccent, size: 20),
+                        const SizedBox(width: 12),
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
                               Text("To", style: TextStyle(color: isDark ? Colors.white54 : Colors.grey[600], fontSize: 12)),
                               const SizedBox(height: 2),
                               Text(dest, style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14, color: isDark ? Colors.white : Colors.black), maxLines: 2, overflow: TextOverflow.ellipsis),
@@ -245,9 +258,9 @@ class _RiderCompletingScreenState extends State<RiderCompletingScreen> {
                       ],
                     ),
                     
-                    const Padding(
-                      padding: EdgeInsets.symmetric(vertical: 20),
-                      child: Divider(height: 1, color: Colors.white10),
+                    Padding(
+                      padding: const EdgeInsets.symmetric(vertical: 20),
+                      child: Divider(height: 1, color: isDark ? Colors.white10 : Colors.black12),
                     ),
                     
                     // Stats Grid
@@ -392,22 +405,6 @@ class _RiderCompletingScreenState extends State<RiderCompletingScreen> {
         const SizedBox(height: 8),
         Text(value, style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16, color: valueColor ?? (isDark ? Colors.white : Colors.black))),
       ],
-    );
-  }
-
-  Widget _buildStatRow(IconData icon, String title, String value, bool isDark, {Color? valueColor}) {
-    return Padding(
-      padding: const EdgeInsets.only(bottom: 14.0),
-      child: Row(
-        children: [
-          Icon(icon, size: 16, color: const Color(0xFF4ADE80)),
-          const SizedBox(width: 12),
-          Expanded(
-            child: Text(title, style: TextStyle(color: isDark ? Colors.white60 : Colors.grey[600], fontSize: 13)),
-          ),
-          Text(value, style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14, color: valueColor ?? (isDark ? Colors.white : Colors.black))),
-        ],
-      ),
     );
   }
 }
