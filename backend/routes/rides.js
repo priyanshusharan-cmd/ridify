@@ -14,6 +14,12 @@ function adminOnly(req, res, next) {
   if (!callerEmail || !adminEmails.includes(callerEmail)) {
     return res.status(403).json({ error: 'Forbidden: Admin access required.' });
   }
+  if (process.env.ADMIN_SECRET) {
+    const callerSecret = req.headers['x-admin-secret'];
+    if (callerSecret !== process.env.ADMIN_SECRET) {
+      return res.status(403).json({ error: 'Forbidden: Invalid Admin Secret.' });
+    }
+  }
   next();
 }
 
@@ -154,8 +160,17 @@ router.get('/search', async (req, res) => {
     const results = [];
 
     if (lat && lng && destLat && destLng) {
-      const pickupPoint = turf.point([parseFloat(lng), parseFloat(lat)]);
-      const destPoint = turf.point([parseFloat(destLng), parseFloat(destLat)]);
+      const parsedLat = parseFloat(lat);
+      const parsedLng = parseFloat(lng);
+      const parsedDestLat = parseFloat(destLat);
+      const parsedDestLng = parseFloat(destLng);
+
+      if (isNaN(parsedLat) || isNaN(parsedLng) || isNaN(parsedDestLat) || isNaN(parsedDestLng)) {
+        return res.status(400).json({ error: "Invalid coordinates provided." });
+      }
+
+      const pickupPoint = turf.point([parsedLng, parsedLat]);
+      const destPoint = turf.point([parsedDestLng, parsedDestLat]);
 
       for (const ride of activeRides) {
         if (targetEpoch) {
@@ -279,6 +294,12 @@ const MAX_ROUTE_POINTS = 500;
 router.post('/', async (req, res) => {
   try {
     const data = req.body;
+    if (data.totalSeats != null && (isNaN(parseInt(data.totalSeats)) || parseInt(data.totalSeats) <= 0)) {
+      return res.status(400).json({ error: "Total seats must be a positive integer." });
+    }
+    if (data.fare != null && (isNaN(parseFloat(data.fare)) || parseFloat(data.fare) < 0)) {
+      return res.status(400).json({ error: "Fare must be a non-negative number." });
+    }
     if (data.pickupLng != null && data.pickupLat != null) {
       data.pickupCoords = {
         type: 'Point',
@@ -310,8 +331,26 @@ router.post('/', async (req, res) => {
 // ── Cancel ride — scoped to room ─────────────────────────────────────────────
 router.delete('/:id', async (req, res) => {
   try {
-    const updatedRide = await Ride.findByIdAndUpdate(req.params.id, { status: 'cancelled' }, { returnDocument: 'after' });
-    req.io.to(req.params.id).emit('ride_cancelled', { rideId: req.params.id, ride: updatedRide.toJSON() });
+    const ride = await Ride.findById(req.params.id);
+    if (!ride) return res.status(404).json({ error: "Ride not found" });
+    if (['completed', 'cancelled'].includes(ride.status)) {
+      return res.status(400).json({ error: `Ride is already ${ride.status}.` });
+    }
+
+    // Auto-decline all pending requests before cancelling
+    if (ride.requests && ride.requests.length > 0) {
+      for (const requester of ride.requests) {
+        if (!ride.declined.includes(requester)) {
+          ride.declined.push(requester);
+        }
+        req.emitToUser(requester, 'ride_cancelled', { rideId: req.params.id, ride: ride.toJSON() });
+      }
+      ride.requests = [];
+    }
+
+    ride.status = 'cancelled';
+    await ride.save();
+    req.io.to(req.params.id).emit('ride_cancelled', { rideId: req.params.id, ride: ride.toJSON() });
     res.status(200).json({ success: true });
   } catch (err) { res.status(500).json({ error: err.message }); }
 });
@@ -329,9 +368,32 @@ router.delete('/', adminOnly, async (req, res) => {
 router.patch('/request/:id', async (req, res) => {
   try {
     const { riderName, seats, computedFare, computedDistance, startIndex, endIndex, pickupLat, pickupLng, destLat, destLng, pickupLocation, destination } = req.body;
+
+    if (!riderName || !riderName.trim()) {
+      return res.status(400).json({ error: "Rider name is required." });
+    }
     
+    const seatCount = parseInt(seats);
+    if (isNaN(seatCount) || seatCount <= 0) {
+      return res.status(400).json({ error: "Seats must be a positive integer." });
+    }
+
+    if (startIndex == null || endIndex == null || startIndex >= endIndex) {
+      return res.status(400).json({ error: "Invalid pickup/destination segment indices." });
+    }
+
     const ride = await Ride.findById(req.params.id);
     if (!ride) return res.status(404).json({ error: "Ride not found" });
+
+    // Prevent driver from requesting their own ride
+    if (ride.riderName === riderName) {
+      return res.status(400).json({ error: "You cannot request your own ride." });
+    }
+
+    // Prevent requesting an expired ride
+    if (ride.expiresAt && ride.expiresAt < Date.now()) {
+      return res.status(400).json({ error: "This ride has expired." });
+    }
 
     // Prevent duplicate requests
     if (ride.requests.includes(riderName) || ride.passengers.includes(riderName)) {
@@ -387,6 +449,11 @@ router.patch('/accept/:id/:riderName', async (req, res) => {
 
     const riderDetail = getRiderDetail(ride, req.params.riderName);
     if (!riderDetail) return res.status(400).json({ error: "Rider details not found" });
+
+    // Enforce capacity check at the moment of acceptance
+    if (!checkCapacity(ride, riderDetail.startIndex, riderDetail.endIndex, riderDetail.seats)) {
+      return res.status(400).json({ error: "Cannot accept. Capacity exceeded for this segment." });
+    }
 
     ride.requests = ride.requests.filter(r => r !== req.params.riderName);
     ride.passengers.push(req.params.riderName);
@@ -507,6 +574,13 @@ router.patch('/decline/:id/:riderName', async (req, res) => {
     let ride = await Ride.findById(req.params.id);
     if (!ride) return res.status(404).json({ error: "Ride not found" });
 
+    if (ride.declined.includes(req.params.riderName)) {
+      return res.status(400).json({ error: "User has already been declined." });
+    }
+    if (!ride.requests.includes(req.params.riderName)) {
+      return res.status(400).json({ error: "User is not in the pending requests." });
+    }
+
     ride.requests = ride.requests.filter(r => r !== req.params.riderName);
     if (!ride.declined.includes(req.params.riderName)) {
       ride.declined.push(req.params.riderName);
@@ -530,7 +604,22 @@ router.patch('/kick/:id/:riderName', async (req, res) => {
     let ride = await Ride.findById(req.params.id);
     if (!ride) return res.status(404).json({ error: "Ride not found" });
 
+    // Cannot kick yourself (the driver)
+    if (ride.riderName === req.params.riderName) {
+      return res.status(400).json({ error: "Driver cannot kick themselves." });
+    }
+    // Must be a passenger or requester to be kicked
+    const isPassenger = ride.passengers.includes(req.params.riderName);
+    const isRequester = ride.requests.includes(req.params.riderName);
+    if (!isPassenger && !isRequester) {
+      return res.status(400).json({ error: "User is not a passenger or requester on this ride." });
+    }
+    if (ride.kicked.includes(req.params.riderName)) {
+      return res.status(400).json({ error: "User has already been kicked." });
+    }
+
     ride.passengers = ride.passengers.filter(p => p !== req.params.riderName);
+    ride.requests = ride.requests.filter(p => p !== req.params.riderName);
     ride.boardedPassengers = ride.boardedPassengers.filter(p => p !== req.params.riderName);
     ride.arrivedAt = ride.arrivedAt.filter(p => p !== req.params.riderName);
     ride.kicked.push(req.params.riderName);
@@ -567,6 +656,13 @@ router.patch('/arrive/:id/:riderName', async (req, res) => {
     if (!ride.arrivedAt) ride.arrivedAt = [];
 
     if (ride.routePreference === 'flexible') {
+      // Must be an accepted passenger to be marked as arrived
+      if (!ride.passengers.includes(req.params.riderName)) {
+        return res.status(400).json({ error: "User is not an accepted passenger on this ride." });
+      }
+      if (ride.droppedPassengers && ride.droppedPassengers.includes(req.params.riderName)) {
+        return res.status(400).json({ error: "Passenger has already been dropped off." });
+      }
       const riderDetail = getRiderDetail(ride, req.params.riderName);
       const neededSeats = riderDetail?.seats || 1;
       let currentlyOccupied = 0;
@@ -602,6 +698,13 @@ router.patch('/board/:id/:riderName', async (req, res) => {
     let ride = await Ride.findById(req.params.id);
     if (!ride) return res.status(404).json({ error: "Ride not found" });
 
+    if (!ride.passengers.includes(req.params.riderName)) {
+      return res.status(400).json({ error: "Passenger must be accepted before boarding." });
+    }
+    if (ride.kicked.includes(req.params.riderName) || ride.declined.includes(req.params.riderName)) {
+      return res.status(400).json({ error: "User is kicked or declined from this ride." });
+    }
+
     let currentlyOccupied = 0;
     for (const pName of ride.boardedPassengers) {
       currentlyOccupied += getRiderDetail(ride, pName)?.seats || 1;
@@ -631,6 +734,16 @@ router.patch('/dropoff/:id/:riderName', async (req, res) => {
     let ride = await Ride.findById(req.params.id);
     if (!ride) return res.status(404).json({ error: "Ride not found" });
 
+    if (ride.status !== 'started') {
+      return res.status(400).json({ error: "Ride must be started before dropping off passengers." });
+    }
+    if (!ride.boardedPassengers.includes(req.params.riderName)) {
+      return res.status(400).json({ error: "Passenger is not currently boarded." });
+    }
+    if (ride.droppedPassengers && ride.droppedPassengers.includes(req.params.riderName)) {
+      return res.status(400).json({ error: "Passenger has already been dropped off." });
+    }
+
     ride.boardedPassengers = ride.boardedPassengers.filter(p => p !== req.params.riderName);
     ride.passengers = ride.passengers.filter(p => p !== req.params.riderName);
     
@@ -659,10 +772,15 @@ router.patch('/pay/:id/:riderName', async (req, res) => {
     if (!ride) return res.status(404).json({ error: "Ride not found" });
 
     const detail = getRiderDetail(ride, req.params.riderName);
-    if (detail) {
-      detail.paid = true;
-      ride.riderDetails.set(req.params.riderName, detail);
+    if (!detail) {
+      return res.status(400).json({ error: "Rider details not found for this passenger." });
     }
+    if (detail.paid) {
+      return res.status(400).json({ error: "Passenger has already paid." });
+    }
+
+    detail.paid = true;
+    ride.riderDetails.set(req.params.riderName, detail);
     
     if (!ride.paidPassengers) ride.paidPassengers = [];
     if (!ride.paidPassengers.includes(req.params.riderName)) {
@@ -681,6 +799,10 @@ router.patch('/start/:id', async (req, res) => {
   try {
     let ride = await Ride.findById(req.params.id);
     if (!ride) return res.status(404).json({ error: "Ride not found" });
+
+    if (['started', 'completed', 'cancelled'].includes(ride.status)) {
+      return res.status(400).json({ error: `Cannot start a ride that is already ${ride.status}.` });
+    }
 
     ride.status = 'started';
 
@@ -721,8 +843,14 @@ router.patch('/end/:id', async (req, res) => {
     let ride = await Ride.findById(req.params.id);
     if (!ride) return res.status(404).json({ error: "Ride not found" });
 
-    if (ride.routePreference === 'nonstop') {
-      // Auto-dropoff all active passengers
+    if (ride.status !== 'started') {
+      return res.status(400).json({ error: "Cannot end a ride that has not started." });
+    }
+
+    const forceEnd = req.query.force === 'true';
+
+    if (ride.routePreference === 'nonstop' || ride.routePreference === 'shared_start') {
+      // Auto-dropoff all active passengers for nonstop and shared_start
       const activeP = [...new Set([...ride.passengers, ...ride.boardedPassengers])];
       for (const pName of activeP) {
         if (!ride.droppedPassengers) ride.droppedPassengers = [];
@@ -733,8 +861,21 @@ router.patch('/end/:id', async (req, res) => {
       ride.boardedPassengers = [];
       ride.passengers = [];
     } else {
+      // Flexible: allow force-end to auto-drop all remaining passengers
       if (ride.boardedPassengers.length > 0 || ride.passengers.length > 0) {
-        return res.status(400).json({ error: "Cannot end trip. Passengers are still active." });
+        if (!forceEnd) {
+          return res.status(400).json({ error: "Cannot end trip. Passengers are still active. Use force=true to auto-drop all." });
+        }
+        // Force end: auto-dropoff all remaining passengers
+        const activeP = [...new Set([...ride.passengers, ...ride.boardedPassengers])];
+        for (const pName of activeP) {
+          if (!ride.droppedPassengers) ride.droppedPassengers = [];
+          if (!ride.droppedPassengers.includes(pName)) {
+            ride.droppedPassengers.push(pName);
+          }
+        }
+        ride.boardedPassengers = [];
+        ride.passengers = [];
       }
     }
 
@@ -757,7 +898,16 @@ router.patch('/end/:id', async (req, res) => {
 router.post('/:id/chat', async (req, res) => {
   try {
     const { sender, text, timestamp } = req.body;
-    await Ride.findByIdAndUpdate(req.params.id, { $push: { chatMessages: { sender, text, timestamp } } });
+    if (!sender || !sender.trim() || !text || !text.trim()) {
+      return res.status(400).json({ error: "Sender and text are required." });
+    }
+    const ride = await Ride.findById(req.params.id);
+    if (!ride) return res.status(404).json({ error: "Ride not found" });
+    if (['completed', 'cancelled'].includes(ride.status)) {
+      return res.status(400).json({ error: `Cannot chat on a ${ride.status} ride.` });
+    }
+    ride.chatMessages.push({ sender, text, timestamp });
+    await ride.save();
     req.io.to(req.params.id).emit('receive_message', { rideId: req.params.id, sender, text, timestamp });
     res.status(200).json({ success: true });
   } catch (err) { res.status(500).json({ error: err.message }); }

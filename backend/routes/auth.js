@@ -19,6 +19,12 @@ function adminOnly(req, res, next) {
   if (!callerEmail || !adminEmails.includes(callerEmail)) {
     return res.status(403).json({ error: 'Forbidden: Admin access required.' });
   }
+  if (process.env.ADMIN_SECRET) {
+    const callerSecret = req.headers['x-admin-secret'];
+    if (callerSecret !== process.env.ADMIN_SECRET) {
+      return res.status(403).json({ error: 'Forbidden: Invalid Admin Secret.' });
+    }
+  }
   next();
 }
 
@@ -31,6 +37,11 @@ router.post('/register', async (req, res) => {
     const existingUser = await User.findOne({ email });
     if (existingUser) {
       return res.status(400).json({ error: 'An account with this email already exists.' });
+    }
+    const escapedName = name.trim().replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+    const existingName = await User.findOne({ name: { $regex: new RegExp(`^${escapedName}$`, 'i') } });
+    if (existingName) {
+      return res.status(400).json({ error: 'An account with this name already exists.' });
     }
     if (!isValidEmail(email)) {
       return res.status(400).json({ error: 'Please enter a valid email address.' });
@@ -85,16 +96,59 @@ router.post('/login', async (req, res) => {
 router.delete('/user/:email', async (req, res) => {
   try {
     const user = await User.findOne({ email: req.params.email });
-    if (user) {
-      await Ride.updateMany({ riderName: user.name }, { status: 'cancelled' });
-      await Ride.updateMany(
-        { passengers: user.name },
-        { $pull: { passengers: user.name, requests: user.name, boardedPassengers: user.name }, $inc: { availableSeats: 1 } }
-      );
-      await User.findOneAndDelete({ email: req.params.email });
-      // Notify all clients to refresh (user deletion affects multiple rides)
-      req.io.emit('database_wiped');
+    if (!user) {
+      return res.status(404).json({ error: 'User not found.' });
     }
+
+    const userName = user.name;
+
+    // 1. Cancel all rides this user is hosting and notify rooms
+    const hostedRides = await Ride.find({ riderName: userName, status: { $nin: ['completed', 'cancelled'] } });
+    for (const ride of hostedRides) {
+      ride.status = 'cancelled';
+      await ride.save();
+      const rideId = ride._id.toString();
+      req.io.to(rideId).emit('ride_cancelled', { rideId, ride: ride.toJSON() });
+    }
+
+    // 2. Remove user from all ride arrays they appear in
+    const affectedRides = await Ride.find({
+      $or: [
+        { passengers: userName },
+        { requests: userName },
+        { boardedPassengers: userName },
+        { arrivedAt: userName },
+      ]
+    });
+
+    for (const ride of affectedRides) {
+      ride.passengers = ride.passengers.filter(p => p !== userName);
+      ride.requests = ride.requests.filter(p => p !== userName);
+      ride.boardedPassengers = ride.boardedPassengers.filter(p => p !== userName);
+      ride.arrivedAt = (ride.arrivedAt || []).filter(p => p !== userName);
+
+      // Remove from riderDetails Map
+      if (ride.riderDetails && typeof ride.riderDetails.delete === 'function') {
+        ride.riderDetails.delete(userName);
+      }
+
+      // Update status if capacity was freed
+      if (ride.status !== 'started' && ride.status !== 'completed' && ride.status !== 'cancelled') {
+        if (ride.passengers.length === 0 && ride.requests.length === 0) {
+          ride.status = 'available';
+        } else if (ride.status === 'full') {
+          ride.status = 'accepted';
+        }
+      }
+
+      await ride.save();
+      const rideId = ride._id.toString();
+      req.io.to(rideId).emit('ride_accepted', { rideId, ride: ride.toJSON() });
+    }
+
+    // 3. Delete the user
+    await User.findOneAndDelete({ email: req.params.email });
+
     res.status(200).json({ success: true });
   } catch (err) { res.status(500).json({ error: err.message }); }
 });

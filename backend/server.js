@@ -111,6 +111,7 @@ io.on('connection', (socket) => {
 
   // ── Explicit room management ───────────────────────────────────────
   socket.on('join_ride', (data) => {
+    if (!socket.userName) return; // Must register first
     if (data?.rideId) {
       socket.join(data.rideId);
     }
@@ -124,6 +125,7 @@ io.on('connection', (socket) => {
 
   // ── Driver location — scoped to ride room ──────────────────────────
   socket.on('driver_location_update', (data) => {
+    if (!socket.userName) return; // Must register first
     if (data?.rideId) {
       // Broadcast to everyone in the room EXCEPT the sender
       socket.to(data.rideId).emit('driver_location_update', data);
