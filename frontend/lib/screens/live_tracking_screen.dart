@@ -13,6 +13,7 @@ import 'package:geolocator/geolocator.dart';
 import 'package:url_launcher/url_launcher.dart';
 import '../core/constants.dart';
 import 'rider_completing_screen.dart';
+import 'driver_completing_screen.dart';
 
 class LiveTrackingScreen extends StatefulWidget {
   final bool isDriver;
@@ -331,6 +332,7 @@ class _LiveTrackingScreenState extends State<LiveTrackingScreen> {
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (!mounted) return;
       Navigator.of(context).popUntil((route) => route.isFirst);
+      Navigator.of(context).push(MaterialPageRoute(builder: (_) => DriverCompletingScreen(rideId: widget.rideId)));
     });
   }
 
