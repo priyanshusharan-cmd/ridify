@@ -102,7 +102,8 @@ class _RiderCompletingScreenState extends State<RiderCompletingScreen> {
       distance = "0.0 km";
       duration = "0 mins";
     } else {
-      String d = (rideData?['riderDetails']?[widget.myEmail]?['computedDistance'] ?? "0.0").toString();
+      String d = (rideData?['riderDetails']?[widget.myEmail.replaceAll('.', '_dot_')]?['distance'] ?? 
+                 rideData?['riderDetails']?[widget.myEmail]?['distance'] ?? "0.0").toString();
       distance = d.contains("km") ? d : "$d km";
       
       String? boardedAt = rideData?['riderDetails']?[widget.myEmail]?['boardedAt'];

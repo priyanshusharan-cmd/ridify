@@ -194,8 +194,8 @@ class _RideHistoryScreenState extends State<RideHistoryScreen> {
           } catch (_) {}
         }
       } else {
-        String d = (ride['riderDetails']?[uemail.replaceAll('.', '_dot_')]?['computedDistance'] ?? 
-                   ride['riderDetails']?[uemail]?['computedDistance'] ?? "0.0").toString();
+        String d = (ride['riderDetails']?[uemail.replaceAll('.', '_dot_')]?['distance'] ?? 
+                   ride['riderDetails']?[uemail]?['distance'] ?? "0.0").toString();
         distance = d.contains("km") ? d : "$d km";
 
         String? boardedAt = ride['riderDetails']?[uemail.replaceAll('.', '_dot_')]?['boardedAt'] ?? ride['riderDetails']?[uemail]?['boardedAt'];

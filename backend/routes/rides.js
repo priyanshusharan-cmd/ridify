@@ -899,6 +899,7 @@ router.patch('/end/:id', async (req, res) => {
         }
         const pd = getRiderDetail(ride, pName);
         if (pd) {
+          if (!pd.boardedAt) pd.boardedAt = ride.startedAt || new Date();
           pd.droppedAt = new Date();
           const safeName = pName.replace(/\./g, '_dot_');
           ride.riderDetails.set(safeName, pd);
@@ -921,6 +922,7 @@ router.patch('/end/:id', async (req, res) => {
           }
           const pd = getRiderDetail(ride, pName);
           if (pd) {
+            if (!pd.boardedAt) pd.boardedAt = ride.startedAt || new Date();
             pd.droppedAt = new Date();
             const safeName = pName.replace(/\./g, '_dot_');
             ride.riderDetails.set(safeName, pd);

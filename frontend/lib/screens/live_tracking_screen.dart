@@ -1020,7 +1020,7 @@ class _LiveTrackingScreenState extends State<LiveTrackingScreen> {
                             ),
                             onPressed: () => Navigator.push(context, MaterialPageRoute(builder: (_) => ChatScreen(myName: widget.myName, myEmail: widget.myEmail, otherName: widget.isDriver ? "Group" : widget.otherUserName, rideId: widget.rideId))),
                             icon: const Icon(Icons.chat_bubble_outline_rounded, color: Colors.white),
-                            label: const Text("Chat with Group", style: TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.w600)),
+                            label: const Text("Chat", style: TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.w600)),
                           ),
                         ),
                       ],

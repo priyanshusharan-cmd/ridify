@@ -724,7 +724,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                         ),
                         const SizedBox(height: 5),
                         Text(
-                          "Always verify your co-passenger's details and share your ride with a friend.",
+                          "Always verify your co-passenger's details and share your ride details with your friend or family.",
                           style: TextStyle(
                             color: mainTextColor,
                             fontSize: 13,
