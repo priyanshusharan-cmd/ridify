@@ -37,7 +37,8 @@ const RideSchema = new mongoose.Schema({
       seats: Number,
       startIndex: Number,
       endIndex: Number,
-      paid: { type: Boolean, default: false }
+      paid: { type: Boolean, default: false },
+      riderName: String
     }),
     default: {}
   },

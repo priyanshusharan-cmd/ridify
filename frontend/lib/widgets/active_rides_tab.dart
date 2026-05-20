@@ -428,7 +428,19 @@ class _ActiveRidesTabState extends State<ActiveRidesTab> {
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
                                 Text(displayName, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
-                                Text("$requestedSeats Seat(s) • ${distance.toStringAsFixed(1)} km", style: TextStyle(color: Theme.of(context).textTheme.bodyMedium?.color?.withValues(alpha: 0.6), fontSize: 13)),
+                                Text(requester, style: TextStyle(color: Theme.of(context).textTheme.bodyMedium?.color?.withValues(alpha: 0.6), fontSize: 12)),
+                                const SizedBox(height: 6),
+                                Row(
+                                  children: [
+                                    const Icon(Icons.event_seat, size: 14, color: Colors.grey),
+                                    const SizedBox(width: 4),
+                                    Text("$requestedSeats", style: const TextStyle(color: Colors.grey, fontSize: 12, fontWeight: FontWeight.w600)),
+                                    const SizedBox(width: 12),
+                                    const Icon(Icons.route, size: 14, color: Colors.grey),
+                                    const SizedBox(width: 4),
+                                    Text("${distance.toStringAsFixed(1)} km", style: const TextStyle(color: Colors.grey, fontSize: 12, fontWeight: FontWeight.w600)),
+                                  ],
+                                ),
                               ],
                             ),
                           ),
