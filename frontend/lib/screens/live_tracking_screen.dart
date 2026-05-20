@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/gestures.dart';
 import 'package:socket_io_client/socket_io_client.dart' as io;
 import '../core/socket_service.dart';
 import 'package:http/http.dart' as http;
@@ -736,20 +737,40 @@ class _LiveTrackingScreenState extends State<LiveTrackingScreen> {
             ),
           ));
         }),
-        // Bottom panel
-        DraggableScrollableSheet(
-          initialChildSize: widget.isDriver ? 0.35 : 0.25,
-          minChildSize: 0.15,
-          maxChildSize: 0.8,
-          snap: true,
+        Builder(
+          builder: (context) {
+            double baseSize = widget.isDriver ? 0.35 : 0.25;
+            if (widget.isDriver && rideData != null && activePassengers.isNotEmpty) {
+              baseSize += 0.05;
+            }
+            double contentSize = baseSize + (activePassengers.length * 0.14);
+            double maxSize = contentSize > 0.8 ? 0.8 : contentSize;
+            double minSize = widget.isDriver ? 0.35 : 0.25;
+            if (minSize > maxSize) minSize = maxSize;
+            double initSize = widget.isDriver ? (contentSize > 0.45 ? 0.45 : contentSize) : minSize;
+            if (initSize > maxSize) initSize = maxSize;
+            
+            return DraggableScrollableSheet(
+              initialChildSize: initSize,
+              minChildSize: minSize,
+              maxChildSize: maxSize,
+              snap: true,
           builder: (BuildContext context, ScrollController scrollController) {
             return Container(
               padding: const EdgeInsets.fromLTRB(20, 10, 20, 20),
               decoration: BoxDecoration(color: panelBg, borderRadius: const BorderRadius.vertical(top: Radius.circular(30)), boxShadow: const [BoxShadow(color: Colors.black12, blurRadius: 10)]),
-              child: ListView(
-                controller: scrollController,
-                padding: EdgeInsets.zero,
-                children: [
+              child: ScrollConfiguration(
+                behavior: ScrollConfiguration.of(context).copyWith(
+                  dragDevices: {
+                    PointerDeviceKind.touch,
+                    PointerDeviceKind.mouse,
+                    PointerDeviceKind.trackpad,
+                  },
+                ).copyWith(scrollbars: false),
+                child: ListView(
+                  controller: scrollController,
+                  padding: EdgeInsets.zero,
+                  children: [
                   // Drag handle
                   Center(
                     child: Container(
@@ -854,7 +875,7 @@ class _LiveTrackingScreenState extends State<LiveTrackingScreen> {
                     ],
                   ]),
                   // Capacity indicator
-                  if (widget.isDriver && isStarted) ...[
+                  if (widget.isDriver) ...[
                     const SizedBox(height: 16),
                     Container(
                       padding: const EdgeInsets.all(12),
@@ -1008,13 +1029,16 @@ class _LiveTrackingScreenState extends State<LiveTrackingScreen> {
                       ),
                       onPressed: () => Navigator.push(context, MaterialPageRoute(builder: (_) => ChatScreen(myName: widget.myName, myEmail: widget.myEmail, otherName: widget.isDriver ? "Group" : widget.otherUserName, rideId: widget.rideId))),
                       icon: const Icon(Icons.chat_bubble_outline_rounded, color: Colors.white), 
-                      label: const Text("Chat with Group", style: TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.w600)),
+                      label: const Text("Chat", style: TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.w600)),
                     )
                   ),
                 ],
               ),
+              ),
             );
           },
+        );
+        },
         ),
       ]),
     );

@@ -218,85 +218,80 @@ class _DriverCompletingScreenState extends State<DriverCompletingScreen> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Row(
+                      crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Icon(Icons.list_alt_rounded, color: const Color(0xFF4ADE80), size: 24),
                         const SizedBox(width: 12),
-                        Text(
-                          "Trip Summary",
-                          style: TextStyle(
-                            fontSize: 18,
-                            fontWeight: FontWeight.bold,
-                            color: isDark ? Colors.white : Colors.black,
-                          ),
+                        Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              "Trip Summary",
+                              style: TextStyle(
+                                fontSize: 18,
+                                fontWeight: FontWeight.bold,
+                                color: isDark ? Colors.white : Colors.black,
+                              ),
+                            ),
+                            const SizedBox(height: 4),
+                            Text(
+                              dateStr.replaceAll(' at ', ' • '),
+                              style: TextStyle(color: isDark ? Colors.white54 : Colors.grey[600], fontSize: 13),
+                            ),
+                          ],
                         ),
                       ],
                     ),
                     const SizedBox(height: 24),
                     
-                    // Row for Timeline and Stats
+                    // Timeline
                     Row(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        // Left side: Timeline
+                        Column(
+                          children: [
+                            const Icon(Icons.location_on, color: Color(0xFF4ADE80), size: 20),
+                            Container(height: 30, width: 2, color: isDark ? Colors.white24 : Colors.black12),
+                            const Icon(Icons.location_on, color: Colors.redAccent, size: 20),
+                          ],
+                        ),
+                        const SizedBox(width: 12),
                         Expanded(
-                          flex: 5,
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              Row(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Column(
-                                    children: [
-                                      const Icon(Icons.location_on, color: Color(0xFF4ADE80), size: 20),
-                                      Container(height: 30, width: 2, color: isDark ? Colors.white24 : Colors.black12),
-                                      const Icon(Icons.location_on, color: Colors.redAccent, size: 20),
-                                    ],
-                                  ),
-                                  const SizedBox(width: 12),
-                                  Expanded(
-                                    child: Column(
-                                      crossAxisAlignment: CrossAxisAlignment.start,
-                                      children: [
-                                        Text("From", style: TextStyle(color: isDark ? Colors.white54 : Colors.grey[600], fontSize: 12)),
-                                        const SizedBox(height: 2),
-                                        Text(pickup, style: TextStyle(fontWeight: FontWeight.bold, fontSize: 13, color: isDark ? Colors.white : Colors.black), maxLines: 2, overflow: TextOverflow.ellipsis),
-                                        const SizedBox(height: 18),
-                                        Text("To", style: TextStyle(color: isDark ? Colors.white54 : Colors.grey[600], fontSize: 12)),
-                                        const SizedBox(height: 2),
-                                        Text(dest, style: TextStyle(fontWeight: FontWeight.bold, fontSize: 13, color: isDark ? Colors.white : Colors.black), maxLines: 2, overflow: TextOverflow.ellipsis),
-                                      ],
-                                    ),
-                                  ),
-                                ],
-                              ),
+                              Text("From", style: TextStyle(color: isDark ? Colors.white54 : Colors.grey[600], fontSize: 12)),
+                              const SizedBox(height: 2),
+                              Text(pickup, style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14, color: isDark ? Colors.white : Colors.black), maxLines: 2, overflow: TextOverflow.ellipsis),
+                              const SizedBox(height: 18),
+                              Text("To", style: TextStyle(color: isDark ? Colors.white54 : Colors.grey[600], fontSize: 12)),
+                              const SizedBox(height: 2),
+                              Text(dest, style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14, color: isDark ? Colors.white : Colors.black), maxLines: 2, overflow: TextOverflow.ellipsis),
                             ],
                           ),
                         ),
-                        // Divider
-                        Container(
-                          width: 1,
-                          height: 140,
-                          color: isDark ? Colors.white10 : Colors.black12,
-                          margin: const EdgeInsets.symmetric(horizontal: 16),
-                        ),
-                        // Right side: Stats
-                        Expanded(
-                          flex: 6,
-                          child: Column(
-                            children: [
-                              _buildStatRow(Icons.calendar_today_rounded, "Date & Time", dateStr, isDark),
-                              const SizedBox(height: 12),
-                              _buildStatRow(Icons.people_outline_rounded, "Total Passengers", "${allInRide.length}", isDark),
-                              const SizedBox(height: 12),
-                              _buildStatRow(Icons.monetization_on_outlined, "Total Earnings", "₹$totalEarnings", isDark, valueColor: const Color(0xFF4ADE80)),
-                              const SizedBox(height: 12),
-                              _buildStatRow(Icons.add_road_rounded, "Distance Covered", distance, isDark),
-                              const SizedBox(height: 12),
-                              _buildStatRow(Icons.access_time_rounded, "Duration", duration, isDark),
-                            ],
-                          ),
-                        ),
+                      ],
+                    ),
+                    
+                    const Padding(
+                      padding: EdgeInsets.symmetric(vertical: 20),
+                      child: Divider(height: 1, color: Colors.white10),
+                    ),
+                    
+                    // Stats Grid
+                    Row(
+                      children: [
+                        Expanded(child: _buildStatGridItem(Icons.people_outline_rounded, "Passengers", "${allInRide.length}", isDark)),
+                        Container(width: 1, height: 40, color: isDark ? Colors.white10 : Colors.black12),
+                        Expanded(child: _buildStatGridItem(Icons.monetization_on_outlined, "Earnings", "₹$totalEarnings", isDark, valueColor: const Color(0xFF4ADE80))),
+                      ],
+                    ),
+                    const SizedBox(height: 16),
+                    Row(
+                      children: [
+                        Expanded(child: _buildStatGridItem(Icons.add_road_rounded, "Distance", distance, isDark)),
+                        Container(width: 1, height: 40, color: isDark ? Colors.white10 : Colors.black12),
+                        Expanded(child: _buildStatGridItem(Icons.access_time_rounded, "Duration", duration, isDark)),
                       ],
                     ),
                   ],
@@ -338,8 +333,7 @@ class _DriverCompletingScreenState extends State<DriverCompletingScreen> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        Expanded(child: _buildPerfStat("Rides\nCompleted", "$totalRidesCompleted", Icons.settings_steering_wheel, isDark, iconColor: const Color(0xFF4ADE80))),
-                        Expanded(child: _buildPerfStat("Rating", "$driverRating", Icons.star, isDark, iconColor: Colors.indigoAccent, showStars: true)),
+                        Expanded(child: _buildPerfStat("Rides\nCompleted", "$totalRidesCompleted", Icons.directions_car_rounded, isDark, iconColor: const Color(0xFF4ADE80))),
                         Expanded(child: _buildPerfStat("Online\nTime", "${totalOnlineTimeMins ~/ 60}h ${totalOnlineTimeMins % 60}m", Icons.access_time_filled, isDark, iconColor: Colors.deepPurpleAccent)),
                         Expanded(child: _buildPerfStat("Distance\nDriven", "$totalDistanceDriven km", Icons.add_road, isDark, iconColor: Colors.lightBlue)),
                       ],
@@ -379,61 +373,63 @@ class _DriverCompletingScreenState extends State<DriverCompletingScreen> {
                       ],
                     ),
                     const SizedBox(height: 24),
-                    Row(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        // Breakdown List
-                        Expanded(
-                          flex: 6,
-                          child: Column(
-                            children: earningsList.isEmpty 
-                              ? [Text("No passengers boarded", style: TextStyle(color: isDark ? Colors.white54 : Colors.grey[600]))]
-                              : earningsList.map((e) {
-                                  return Padding(
-                                    padding: const EdgeInsets.only(bottom: 12),
-                                    child: Row(
-                                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                      children: [
-                                        Expanded(child: Text(e['name'], style: TextStyle(color: isDark ? Colors.white70 : Colors.black87, fontSize: 14), overflow: TextOverflow.ellipsis)),
-                                        Text("₹${e['fare']}", style: TextStyle(color: isDark ? Colors.white70 : Colors.black87, fontSize: 14, fontWeight: FontWeight.bold)),
-                                      ],
+                    IntrinsicHeight(
+                      child: Row(
+                        crossAxisAlignment: CrossAxisAlignment.stretch,
+                        children: [
+                          // Breakdown List
+                          Expanded(
+                            flex: 6,
+                            child: Column(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: earningsList.isEmpty 
+                                ? [Text("No passengers boarded", style: TextStyle(color: isDark ? Colors.white54 : Colors.grey[600]))]
+                                : earningsList.map((e) {
+                                    return Padding(
+                                      padding: const EdgeInsets.only(bottom: 12),
+                                      child: Row(
+                                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                        children: [
+                                          Expanded(child: Text(e['name'], style: TextStyle(color: isDark ? Colors.white70 : Colors.black87, fontSize: 14), overflow: TextOverflow.ellipsis)),
+                                          Text("₹${e['fare']}", style: TextStyle(color: isDark ? Colors.white70 : Colors.black87, fontSize: 14, fontWeight: FontWeight.bold)),
+                                        ],
+                                      ),
+                                    );
+                                  }).toList(),
+                            ),
+                          ),
+                          // Divider
+                          VerticalDivider(
+                            color: isDark ? Colors.white10 : Colors.black12,
+                            thickness: 1,
+                            width: 40,
+                          ),
+                          // Total
+                          Expanded(
+                            flex: 4,
+                            child: Column(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                Stack(
+                                  alignment: Alignment.center,
+                                  children: [
+                                    Icon(Icons.account_balance_wallet, color: Colors.brown[400], size: 40),
+                                    Positioned(
+                                      top: 0,
+                                      right: 0,
+                                      child: Icon(Icons.attach_money_rounded, color: const Color(0xFF4ADE80), size: 20),
                                     ),
-                                  );
-                                }).toList(),
+                                  ],
+                                ),
+                                const SizedBox(height: 8),
+                                Text("Total Earnings", style: TextStyle(color: isDark ? Colors.white54 : Colors.grey[600], fontSize: 12)),
+                                const SizedBox(height: 4),
+                                Text("₹$totalEarnings", style: const TextStyle(color: Color(0xFF4ADE80), fontSize: 24, fontWeight: FontWeight.bold)),
+                              ],
+                            ),
                           ),
-                        ),
-                        // Divider
-                        Container(
-                          width: 1,
-                          height: earningsList.length * 28.0 > 60 ? earningsList.length * 28.0 : 60,
-                          color: isDark ? Colors.white10 : Colors.black12,
-                          margin: const EdgeInsets.symmetric(horizontal: 20),
-                        ),
-                        // Total
-                        Expanded(
-                          flex: 4,
-                          child: Column(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              Stack(
-                                alignment: Alignment.center,
-                                children: [
-                                  Icon(Icons.account_balance_wallet, color: Colors.brown[400], size: 40),
-                                  Positioned(
-                                    top: 0,
-                                    right: 0,
-                                    child: Icon(Icons.attach_money_rounded, color: const Color(0xFF4ADE80), size: 20),
-                                  ),
-                                ],
-                              ),
-                              const SizedBox(height: 8),
-                              Text("Total Earnings", style: TextStyle(color: isDark ? Colors.white54 : Colors.grey[600], fontSize: 12)),
-                              const SizedBox(height: 4),
-                              Text("₹$totalEarnings", style: const TextStyle(color: Color(0xFF4ADE80), fontSize: 24, fontWeight: FontWeight.bold)),
-                            ],
-                          ),
-                        ),
-                      ],
+                        ],
+                      ),
                     ),
                   ],
                 ),
@@ -471,7 +467,25 @@ class _DriverCompletingScreenState extends State<DriverCompletingScreen> {
     );
   }
 
-  Widget _buildStatRow(IconData icon, String title, String value, bool isDark, {Color? valueColor}) {
+  Widget _buildStatGridItem(IconData icon, String label, String value, bool isDark, {Color? valueColor}) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.center,
+      children: [
+        Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(icon, size: 14, color: isDark ? Colors.white54 : Colors.grey[600]),
+            const SizedBox(width: 6),
+            Text(label, style: TextStyle(color: isDark ? Colors.white54 : Colors.grey[600], fontSize: 12)),
+          ],
+        ),
+        const SizedBox(height: 8),
+        Text(value, style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16, color: valueColor ?? (isDark ? Colors.white : Colors.black))),
+      ],
+    );
+  }
+
+  Widget _buildStatRow(IconData icon, String label, String value, bool isDark, {Color? valueColor}) {
     return Padding(
       padding: const EdgeInsets.only(bottom: 14.0),
       child: Row(
@@ -479,7 +493,7 @@ class _DriverCompletingScreenState extends State<DriverCompletingScreen> {
           Icon(icon, size: 16, color: const Color(0xFF4ADE80)),
           const SizedBox(width: 12),
           Expanded(
-            child: Text(title, style: TextStyle(color: isDark ? Colors.white60 : Colors.grey[600], fontSize: 13)),
+            child: Text(label, style: TextStyle(color: isDark ? Colors.white60 : Colors.grey[600], fontSize: 13)),
           ),
           Text(value, style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14, color: valueColor ?? (isDark ? Colors.white : Colors.black))),
         ],

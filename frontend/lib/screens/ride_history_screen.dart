@@ -50,8 +50,9 @@ class _RideHistoryScreenState extends State<RideHistoryScreen> {
                     r['riderEmail'] != null &&
                     r['riderEmail'].toString().trim() == uemail;
                 bool amIRider =
-                    (r['passengers'] != null &&
-                        (r['passengers'] as List).contains(uemail)) ||
+                    (r['passengers'] != null && (r['passengers'] as List).contains(uemail)) ||
+                    (r['boardedPassengers'] != null && (r['boardedPassengers'] as List).contains(uemail)) ||
+                    (r['droppedPassengers'] != null && (r['droppedPassengers'] as List).contains(uemail)) ||
                     isDeclined ||
                     isKicked;
 
@@ -102,25 +103,7 @@ class _RideHistoryScreenState extends State<RideHistoryScreen> {
                 ],
               ),
             ),
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 8),
-              child: Container(
-                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-                decoration: BoxDecoration(
-                  color: isDark ? const Color(0xFF1E1E1E) : Colors.white,
-                  borderRadius: BorderRadius.circular(12),
-                  border: Border.all(color: isDark ? Colors.white10 : Colors.black12),
-                ),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Text("All Rides", style: TextStyle(color: isDark ? Colors.white : Colors.black, fontWeight: FontWeight.w600)),
-                    Icon(Icons.keyboard_arrow_down_rounded, color: isDark ? Colors.white54 : Colors.grey[600], size: 20),
-                  ],
-                ),
-              ),
-            ),
-            const SizedBox(height: 8),
+            const SizedBox(height: 16),
             Expanded(
               child: isLoading
                   ? Center(child: CircularProgressIndicator(color: Theme.of(context).primaryColor))
@@ -349,34 +332,63 @@ class _RideHistoryScreenState extends State<RideHistoryScreen> {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               // Ride Group / Driver Name
-              GestureDetector(
-                onTap: () {
-                  if (wasIDriver) {
-                    _showRideGroupPopup(context, ride, allInRide, isDark);
-                  }
-                },
-                child: Row(
-                  children: [
-                    Container(
-                      padding: const EdgeInsets.all(8),
-                      decoration: BoxDecoration(color: isDark ? Colors.white.withValues(alpha: 0.05) : Colors.black.withValues(alpha: 0.05), shape: BoxShape.circle),
-                      child: Icon(wasIDriver ? Icons.people_alt_rounded : Icons.person_rounded, size: 16, color: isDark ? Colors.white70 : Colors.grey[700]),
-                    ),
-                    const SizedBox(width: 12),
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(wasIDriver ? "Ride Group" : "Driver", style: TextStyle(color: isDark ? Colors.white54 : Colors.grey[600], fontSize: 11)),
-                        const SizedBox(height: 2),
-                        Text(wasIDriver ? "Yes" : (ride['riderName'] ?? "Unknown"), style: TextStyle(fontWeight: FontWeight.bold, fontSize: 13, color: isDark ? Colors.white : Colors.black)),
-                      ],
-                    ),
-                  ],
+              Expanded(
+                child: GestureDetector(
+                  onTap: () {
+                    if (wasIDriver) {
+                      _showRideGroupPopup(context, ride, allInRide, isDark);
+                    }
+                  },
+                  child: wasIDriver
+                      ? Row(
+                          children: [
+                            Container(
+                              padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
+                              decoration: BoxDecoration(
+                                color: isDark ? Colors.white.withValues(alpha: 0.1) : Colors.black.withValues(alpha: 0.05),
+                                borderRadius: BorderRadius.circular(20),
+                              ),
+                              child: Row(
+                                children: [
+                                  Icon(Icons.people_alt_rounded, size: 16, color: isDark ? Colors.white : Colors.black),
+                                  const SizedBox(width: 8),
+                                  Text("View Passengers", style: TextStyle(fontWeight: FontWeight.bold, fontSize: 12, color: isDark ? Colors.white : Colors.black)),
+                                ],
+                              ),
+                            ),
+                          ],
+                        )
+                      : Row(
+                          children: [
+                            Container(
+                              padding: const EdgeInsets.all(8),
+                              decoration: BoxDecoration(color: isDark ? Colors.white.withValues(alpha: 0.05) : Colors.black.withValues(alpha: 0.05), shape: BoxShape.circle),
+                              child: Icon(Icons.person_rounded, size: 16, color: isDark ? Colors.white70 : Colors.grey[700]),
+                            ),
+                            const SizedBox(width: 12),
+                            Expanded(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text("Driver", style: TextStyle(color: isDark ? Colors.white54 : Colors.grey[600], fontSize: 11)),
+                                  const SizedBox(height: 2),
+                                  Text(
+                                    (ride['riderName'] == null || ride['riderName'].toString().trim().isEmpty) ? "Unknown" : ride['riderName'].toString(),
+                                    style: TextStyle(fontWeight: FontWeight.bold, fontSize: 13, color: isDark ? Colors.white : Colors.black),
+                                    maxLines: 1,
+                                    overflow: TextOverflow.ellipsis,
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ],
+                        ),
                 ),
               ),
-              
+              const SizedBox(width: 12),
               // Status
               Row(
+                mainAxisSize: MainAxisSize.min,
                 children: [
                   Icon(statusIcon, size: 16, color: statusColor),
                   const SizedBox(width: 6),

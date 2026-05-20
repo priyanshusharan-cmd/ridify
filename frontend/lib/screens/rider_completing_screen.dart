@@ -183,81 +183,72 @@ class _RiderCompletingScreenState extends State<RiderCompletingScreen> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Row(
+                      crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Icon(Icons.list_alt_rounded, color: const Color(0xFF4ADE80), size: 24),
                         const SizedBox(width: 12),
-                        Text(
-                          "Trip Summary",
-                          style: TextStyle(
-                            fontSize: 18,
-                            fontWeight: FontWeight.bold,
-                            color: isDark ? Colors.white : Colors.black,
-                          ),
+                        Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              "Trip Summary",
+                              style: TextStyle(
+                                fontSize: 18,
+                                fontWeight: FontWeight.bold,
+                                color: isDark ? Colors.white : Colors.black,
+                              ),
+                            ),
+                            const SizedBox(height: 4),
+                            Text(
+                              dateStr.replaceAll(' at ', ' • '),
+                              style: TextStyle(color: isDark ? Colors.white54 : Colors.grey[600], fontSize: 13),
+                            ),
+                          ],
                         ),
                       ],
                     ),
                     const SizedBox(height: 24),
                     
-                    // Row for Timeline and Stats
+                    // Timeline
                     Row(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        // Left side: Timeline
+                        Column(
+                          children: [
+                            const Icon(Icons.location_on, color: Color(0xFF4ADE80), size: 20),
+                            Container(height: 30, width: 2, color: isDark ? Colors.white24 : Colors.black12),
+                            const Icon(Icons.location_on, color: Colors.redAccent, size: 20),
+                          ],
+                        ),
+                        const SizedBox(width: 12),
                         Expanded(
-                          flex: 5,
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              Row(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Column(
-                                    children: [
-                                      const Icon(Icons.location_on, color: Color(0xFF4ADE80), size: 20),
-                                      Container(height: 30, width: 2, color: isDark ? Colors.white24 : Colors.black12),
-                                      const Icon(Icons.location_on, color: Colors.redAccent, size: 20),
-                                    ],
-                                  ),
-                                  const SizedBox(width: 12),
-                                  Expanded(
-                                    child: Column(
-                                      crossAxisAlignment: CrossAxisAlignment.start,
-                                      children: [
-                                        Text("From", style: TextStyle(color: isDark ? Colors.white54 : Colors.grey[600], fontSize: 12)),
-                                        const SizedBox(height: 2),
-                                        Text(pickup, style: TextStyle(fontWeight: FontWeight.bold, fontSize: 13, color: isDark ? Colors.white : Colors.black), maxLines: 2, overflow: TextOverflow.ellipsis),
-                                        const SizedBox(height: 18),
-                                        Text("To", style: TextStyle(color: isDark ? Colors.white54 : Colors.grey[600], fontSize: 12)),
-                                        const SizedBox(height: 2),
-                                        Text(dest, style: TextStyle(fontWeight: FontWeight.bold, fontSize: 13, color: isDark ? Colors.white : Colors.black), maxLines: 2, overflow: TextOverflow.ellipsis),
-                                      ],
-                                    ),
-                                  ),
-                                ],
-                              ),
+                              Text("From", style: TextStyle(color: isDark ? Colors.white54 : Colors.grey[600], fontSize: 12)),
+                              const SizedBox(height: 2),
+                              Text(pickup, style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14, color: isDark ? Colors.white : Colors.black), maxLines: 2, overflow: TextOverflow.ellipsis),
+                              const SizedBox(height: 18),
+                              Text("To", style: TextStyle(color: isDark ? Colors.white54 : Colors.grey[600], fontSize: 12)),
+                              const SizedBox(height: 2),
+                              Text(dest, style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14, color: isDark ? Colors.white : Colors.black), maxLines: 2, overflow: TextOverflow.ellipsis),
                             ],
                           ),
                         ),
-                        // Divider
-                        Container(
-                          width: 1,
-                          height: 120,
-                          color: isDark ? Colors.white10 : Colors.black12,
-                          margin: const EdgeInsets.symmetric(horizontal: 16),
-                        ),
-                        // Right side: Stats
-                        Expanded(
-                          flex: 6,
-                          child: Column(
-                            children: [
-                              _buildStatRow(Icons.calendar_today_rounded, "Date & Time", dateStr, isDark),
-                              const SizedBox(height: 12),
-                              _buildStatRow(Icons.add_road_rounded, "Distance Covered", distance, isDark),
-                              const SizedBox(height: 12),
-                              _buildStatRow(Icons.access_time_rounded, "Duration", duration, isDark),
-                            ],
-                          ),
-                        ),
+                      ],
+                    ),
+                    
+                    const Padding(
+                      padding: EdgeInsets.symmetric(vertical: 20),
+                      child: Divider(height: 1, color: Colors.white10),
+                    ),
+                    
+                    // Stats Grid
+                    Row(
+                      children: [
+                        Expanded(child: _buildStatGridItem(Icons.add_road_rounded, "Distance", distance, isDark)),
+                        Container(width: 1, height: 40, color: isDark ? Colors.white10 : Colors.black12),
+                        Expanded(child: _buildStatGridItem(Icons.access_time_rounded, "Duration", duration, isDark)),
                       ],
                     ),
                   ],
@@ -376,6 +367,24 @@ class _RiderCompletingScreenState extends State<RiderCompletingScreen> {
           ),
         ),
       ),
+    );
+  }
+
+  Widget _buildStatGridItem(IconData icon, String label, String value, bool isDark, {Color? valueColor}) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.center,
+      children: [
+        Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(icon, size: 14, color: isDark ? Colors.white54 : Colors.grey[600]),
+            const SizedBox(width: 6),
+            Text(label, style: TextStyle(color: isDark ? Colors.white54 : Colors.grey[600], fontSize: 12)),
+          ],
+        ),
+        const SizedBox(height: 8),
+        Text(value, style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16, color: valueColor ?? (isDark ? Colors.white : Colors.black))),
+      ],
     );
   }
 
