@@ -509,7 +509,15 @@ class _LiveTrackingScreenState extends State<LiveTrackingScreen> {
     setState(() {
       if (rideData != null) rideData!['status'] = 'completed';
     });
-    try { await http.patch(Uri.parse('$kBaseUrl/api/rides/end/${widget.rideId}')); } catch (e) { debugPrint(e.toString()); syncRideStatus(); }
+    try { 
+      final res = await http.patch(Uri.parse('$kBaseUrl/api/rides/end/${widget.rideId}')); 
+      if (res.statusCode == 200 && mounted) {
+        _triggerCompletionScreen();
+      }
+    } catch (e) { 
+      debugPrint(e.toString()); 
+      syncRideStatus(); 
+    }
   }
   Future<void> startRide() async { 
     if (widget.rideId.isEmpty) return; 
