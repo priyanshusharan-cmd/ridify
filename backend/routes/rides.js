@@ -18,6 +18,39 @@ function adminOnly(req, res, next) {
 }
 
 /**
+ * Get the departure time in epoch milliseconds.
+ * Prefers expiresAt (minus 15 mins) as it is a timezone-independent timestamp
+ * created on the client side. Falls back to parsing departureTime string.
+ */
+function getDepartureTimeEpoch(ride) {
+  if (ride.expiresAt) {
+    return ride.expiresAt - 15 * 60 * 1000;
+  }
+  if (!ride.departureTime) return null;
+  try {
+    const match = ride.departureTime.match(/^(\d+)\/(\d+)\/(\d+)\s+at\s+(.+)$/i);
+    if (!match) return null;
+    const [_, day, month, year, timeStr] = match;
+    const timeMatch = timeStr.trim().match(/^(\d+):(\d+)(?:\s*(AM|PM))?$/i);
+    if (!timeMatch) return null;
+    let [__, hour, minute, ampm] = timeMatch;
+    hour = parseInt(hour, 10);
+    minute = parseInt(minute, 10);
+    if (ampm) {
+      if (ampm.toUpperCase() === 'PM' && hour < 12) {
+        hour += 12;
+      } else if (ampm.toUpperCase() === 'AM' && hour === 12) {
+        hour = 0;
+      }
+    }
+    const dt = new Date(parseInt(year, 10), parseInt(month, 10) - 1, parseInt(day, 10), hour, minute);
+    return dt.getTime();
+  } catch (e) {
+    return null;
+  }
+}
+
+/**
  * Get rider detail from riderDetails — works with both Mongoose Maps
  * (from .findById()) and plain objects (from .lean()).
  */
@@ -103,10 +136,11 @@ function checkCapacity(ride, newStartIndex, newEndIndex, requestedSeats) {
 // ── Search rides ─────────────────────────────────────────────────────────────
 router.get('/search', async (req, res) => {
   try {
-    const { pickup, destination, seats, vehicle, lat, lng, destLat, destLng, radius, date } = req.query;
+    const { pickup, destination, seats, vehicle, lat, lng, destLat, destLng, radius, date, searchTimeEpoch } = req.query;
     const currentTime = Date.now();
     const searchRadius = parseInt(radius) || 2000;
     const reqSeats = parseInt(seats) || 1;
+    const targetEpoch = searchTimeEpoch ? parseInt(searchTimeEpoch) : null;
 
     const userName = req.query.userName;
     const matchQuery = {
@@ -124,6 +158,15 @@ router.get('/search', async (req, res) => {
       const destPoint = turf.point([parseFloat(destLng), parseFloat(destLat)]);
 
       for (const ride of activeRides) {
+        if (targetEpoch) {
+          const rideDepEpoch = getDepartureTimeEpoch(ride);
+          if (rideDepEpoch) {
+            const diff = Math.abs(rideDepEpoch - targetEpoch);
+            if (diff > 60 * 60 * 1000) {
+              continue;
+            }
+          }
+        }
         if (!ride.routePath || ride.routePath.length < 2) continue;
 
         let minPickupDist = Infinity;

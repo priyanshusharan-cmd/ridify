@@ -145,8 +145,20 @@ class _FindRideScreenState extends State<FindRideScreen> {
       DateTime dateToSearch = _selectedDate ?? DateTime.now();
       String dateStr = "${dateToSearch.day}/${dateToSearch.month}/${dateToSearch.year}";
 
+      String timeQueryStr = "";
+      if (_selectedTime != null) {
+        final searchDt = DateTime(
+          dateToSearch.year,
+          dateToSearch.month,
+          dateToSearch.day,
+          _selectedTime!.hour,
+          _selectedTime!.minute,
+        );
+        timeQueryStr = "&searchTimeEpoch=${searchDt.millisecondsSinceEpoch}";
+      }
+
       final Uri searchUri = Uri.parse(
-        "$serverUrl?pickup=${Uri.encodeComponent(pickupController.text)}&destination=${Uri.encodeComponent(destinationController.text)}&seats=$selectedSeats&vehicle=$selectedVehicle&date=$dateStr&lat=$pickupLat&lng=$pickupLng&destLat=$destLat&destLng=$destLng&radius=${walkableRadius.toInt()}&userName=${Uri.encodeComponent(widget.userName)}",
+        "$serverUrl?pickup=${Uri.encodeComponent(pickupController.text)}&destination=${Uri.encodeComponent(destinationController.text)}&seats=$selectedSeats&vehicle=$selectedVehicle&date=$dateStr$timeQueryStr&lat=$pickupLat&lng=$pickupLng&destLat=$destLat&destLng=$destLng&radius=${walkableRadius.toInt()}&userName=${Uri.encodeComponent(widget.userName)}",
       );
 
       final response = await http.get(searchUri).timeout(const Duration(seconds: 15));
