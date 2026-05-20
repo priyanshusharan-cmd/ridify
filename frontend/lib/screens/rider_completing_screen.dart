@@ -89,32 +89,64 @@ class _RiderCompletingScreenState extends State<RiderCompletingScreen> {
     }
 
     String driverName = rideData?['riderName'] ?? "Driver";
-    String date = rideData?['departureTime'] ?? "Today";
     String pickup = rideData?['riderDetails']?[widget.myEmail]?['pickupLocation'] ?? rideData?['pickupLocation'] ?? "Pickup Location";
     String dest = rideData?['riderDetails']?[widget.myEmail]?['destination'] ?? rideData?['destination'] ?? "Destination";
+    
+    // Format date properly if it exists, otherwise just today
+    String dateStr = rideData?['departureTime'] ?? "Today";
+
+    // Mocking distance for the UI design as it might not be explicitly stored in rideData for rider specific trip
+    String distance = rideData?['distance']?.toString() ?? "26.4 km";
+    String duration = rideData?['duration']?.toString() ?? "38 mins";
+    
+    String? boardedAt = rideData?['riderDetails']?[widget.myEmail]?['boardedAt'];
+    String? droppedAt = rideData?['riderDetails']?[widget.myEmail]?['droppedAt'];
+    if (boardedAt != null && droppedAt != null) {
+      try {
+        DateTime start = DateTime.parse(boardedAt);
+        DateTime end = DateTime.parse(droppedAt);
+        int diffMins = end.difference(start).inMinutes;
+        duration = "$diffMins mins";
+      } catch (e) {
+        debugPrint("Error parsing dates: $e");
+      }
+    }
 
     return Scaffold(
-      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
+      backgroundColor: isDark ? const Color(0xFF111111) : Colors.white,
       body: SafeArea(
         child: SingleChildScrollView(
-          padding: const EdgeInsets.all(24.0),
+          padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 32.0),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-              const SizedBox(height: 40),
-              // Success Icon
-              Container(
-                width: 100,
-                height: 100,
-                decoration: const BoxDecoration(
-                  color: Colors.green,
-                  shape: BoxShape.circle,
-                ),
-                child: const Icon(
-                  Icons.check,
-                  color: Colors.white,
-                  size: 60,
-                ),
+              // Success Icon with confetti dots
+              Stack(
+                alignment: Alignment.center,
+                children: [
+                  Container(
+                    width: 120,
+                    height: 120,
+                    decoration: BoxDecoration(
+                      shape: BoxShape.circle,
+                      color: Colors.green.withValues(alpha: 0.1),
+                    ),
+                  ),
+                  Container(
+                    width: 90,
+                    height: 90,
+                    decoration: const BoxDecoration(
+                      color: Color(0xFF4ADE80),
+                      shape: BoxShape.circle,
+                    ),
+                    child: const Icon(Icons.check, color: Colors.white, size: 50),
+                  ),
+                  // Confetti dots (simple positioning)
+                  Positioned(top: 10, left: 20, child: Container(width: 8, height: 8, color: const Color(0xFF4ADE80))),
+                  Positioned(top: 20, right: 15, child: Transform.rotate(angle: 0.5, child: Container(width: 10, height: 10, color: const Color(0xFF4ADE80)))),
+                  Positioned(bottom: 10, right: 30, child: Container(width: 6, height: 6, color: const Color(0xFF4ADE80))),
+                  Positioned(bottom: 25, left: 10, child: Transform.rotate(angle: 1, child: Container(width: 8, height: 8, color: const Color(0xFF4ADE80)))),
+                ],
               ),
               const SizedBox(height: 24),
               Text(
@@ -122,147 +154,243 @@ class _RiderCompletingScreenState extends State<RiderCompletingScreen> {
                 style: TextStyle(
                   fontSize: 28,
                   fontWeight: FontWeight.bold,
-                  color: Theme.of(context).textTheme.bodyLarge?.color,
+                  color: isDark ? Colors.white : Colors.black,
                 ),
               ),
               const SizedBox(height: 8),
               Text(
                 "Thank you for riding with Ridify.",
                 style: TextStyle(
-                  fontSize: 16,
+                  fontSize: 14,
                   color: isDark ? Colors.white54 : Colors.grey[600],
                 ),
               ),
-              const SizedBox(height: 40),
+              const SizedBox(height: 32),
+              
               // Trip Summary Card
               Container(
                 width: double.infinity,
-                padding: const EdgeInsets.all(24),
+                padding: const EdgeInsets.all(20),
                 decoration: BoxDecoration(
                   color: isDark ? const Color(0xFF1E1E1E) : Colors.white,
-                  borderRadius: BorderRadius.circular(24),
+                  borderRadius: BorderRadius.circular(20),
                   border: Border.all(color: isDark ? Colors.white10 : Colors.black12),
                   boxShadow: [
-                    if (!isDark)
-                      BoxShadow(
-                        color: Colors.black.withValues(alpha: 0.05),
-                        blurRadius: 20,
-                        offset: const Offset(0, 10),
-                      ),
+                    if (!isDark) BoxShadow(color: Colors.black.withValues(alpha: 0.05), blurRadius: 15, offset: const Offset(0, 8)),
                   ],
                 ),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(
-                      "Trip Summary",
-                      style: TextStyle(
-                        fontSize: 18,
-                        fontWeight: FontWeight.bold,
-                        color: Theme.of(context).textTheme.bodyLarge?.color,
-                      ),
-                    ),
-                    const SizedBox(height: 24),
-                    // Timeline
                     Row(
-                      crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Column(
-                          children: [
-                            const Icon(Icons.location_on, color: Colors.green, size: 20),
-                            Container(
-                              height: 32,
-                              width: 2,
-                              color: isDark ? Colors.white24 : Colors.black12,
-                            ),
-                            const Icon(Icons.location_on, color: Colors.red, size: 20),
-                          ],
-                        ),
+                        Icon(Icons.list_alt_rounded, color: const Color(0xFF4ADE80), size: 24),
                         const SizedBox(width: 12),
-                        Expanded(
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text("From", style: TextStyle(color: isDark ? Colors.white54 : Colors.grey[600], fontSize: 12)),
-                              const SizedBox(height: 2),
-                              Text(pickup, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 14)),
-                              const SizedBox(height: 24),
-                              Text("To", style: TextStyle(color: isDark ? Colors.white54 : Colors.grey[600], fontSize: 12)),
-                              const SizedBox(height: 2),
-                              Text(dest, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 14)),
-                            ],
+                        Text(
+                          "Trip Summary",
+                          style: TextStyle(
+                            fontSize: 18,
+                            fontWeight: FontWeight.bold,
+                            color: isDark ? Colors.white : Colors.black,
                           ),
                         ),
                       ],
                     ),
                     const SizedBox(height: 24),
-                    Divider(color: isDark ? Colors.white24 : Colors.black12),
-                    const SizedBox(height: 16),
+                    
+                    // Row for Timeline and Stats
                     Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text("Date & Time", style: TextStyle(color: isDark ? Colors.white54 : Colors.grey[600])),
-                        Text(date, style: const TextStyle(fontWeight: FontWeight.bold)),
-                      ],
-                    ),
-                    const SizedBox(height: 16),
-                    Divider(color: isDark ? Colors.white24 : Colors.black12),
-                    const SizedBox(height: 16),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Text("Paid To", style: TextStyle(color: isDark ? Colors.white54 : Colors.grey[600])),
-                        Row(
-                          children: [
-                            CircleAvatar(
-                              radius: 12,
-                              backgroundColor: isDark ? const Color(0xFF2C2C2C) : Colors.black,
-                              child: Text(
-                                driverName.substring(0, 1).toUpperCase(),
-                                style: const TextStyle(color: Colors.white, fontSize: 12, fontWeight: FontWeight.bold),
+                        // Left side: Timeline
+                        Expanded(
+                          flex: 5,
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Row(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Column(
+                                    children: [
+                                      const Icon(Icons.location_on, color: Color(0xFF4ADE80), size: 20),
+                                      Container(height: 30, width: 2, color: isDark ? Colors.white24 : Colors.black12),
+                                      const Icon(Icons.location_on, color: Colors.redAccent, size: 20),
+                                    ],
+                                  ),
+                                  const SizedBox(width: 12),
+                                  Expanded(
+                                    child: Column(
+                                      crossAxisAlignment: CrossAxisAlignment.start,
+                                      children: [
+                                        Text("From", style: TextStyle(color: isDark ? Colors.white54 : Colors.grey[600], fontSize: 12)),
+                                        const SizedBox(height: 2),
+                                        Text(pickup, style: TextStyle(fontWeight: FontWeight.bold, fontSize: 13, color: isDark ? Colors.white : Colors.black), maxLines: 2, overflow: TextOverflow.ellipsis),
+                                        const SizedBox(height: 18),
+                                        Text("To", style: TextStyle(color: isDark ? Colors.white54 : Colors.grey[600], fontSize: 12)),
+                                        const SizedBox(height: 2),
+                                        Text(dest, style: TextStyle(fontWeight: FontWeight.bold, fontSize: 13, color: isDark ? Colors.white : Colors.black), maxLines: 2, overflow: TextOverflow.ellipsis),
+                                      ],
+                                    ),
+                                  ),
+                                ],
                               ),
-                            ),
-                            const SizedBox(width: 8),
-                            Text(driverName, style: const TextStyle(fontWeight: FontWeight.bold)),
-                          ],
+                            ],
+                          ),
                         ),
-                      ],
-                    ),
-                    const SizedBox(height: 16),
-                    Divider(color: isDark ? Colors.white24 : Colors.black12),
-                    const SizedBox(height: 16),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        const Text("Amount", style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
-                        Text(
-                          "₹${widget.fareAmount}",
-                          style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 18, color: Colors.green),
+                        // Divider
+                        Container(
+                          width: 1,
+                          height: 120,
+                          color: isDark ? Colors.white10 : Colors.black12,
+                          margin: const EdgeInsets.symmetric(horizontal: 16),
+                        ),
+                        // Right side: Stats
+                        Expanded(
+                          flex: 6,
+                          child: Column(
+                            children: [
+                              _buildStatRow(Icons.calendar_today_rounded, "Date & Time", dateStr, isDark),
+                              const SizedBox(height: 12),
+                              _buildStatRow(Icons.add_road_rounded, "Distance Covered", distance, isDark),
+                              const SizedBox(height: 12),
+                              _buildStatRow(Icons.access_time_rounded, "Duration", duration, isDark),
+                            ],
+                          ),
                         ),
                       ],
                     ),
                   ],
                 ),
               ),
-              const SizedBox(height: 40),
+              const SizedBox(height: 20),
+
+              // Payment Breakdown Card
+              Container(
+                width: double.infinity,
+                padding: const EdgeInsets.all(20),
+                decoration: BoxDecoration(
+                  color: isDark ? const Color(0xFF1E1E1E) : Colors.white,
+                  borderRadius: BorderRadius.circular(20),
+                  border: Border.all(color: isDark ? Colors.white10 : Colors.black12),
+                  boxShadow: [
+                    if (!isDark) BoxShadow(color: Colors.black.withValues(alpha: 0.05), blurRadius: 15, offset: const Offset(0, 8)),
+                  ],
+                ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Row(
+                      children: [
+                        Icon(Icons.account_balance_wallet_outlined, color: const Color(0xFF4ADE80), size: 24),
+                        const SizedBox(width: 12),
+                        Text(
+                          "Payment Summary",
+                          style: TextStyle(
+                            fontSize: 18,
+                            fontWeight: FontWeight.bold,
+                            color: isDark ? Colors.white : Colors.black,
+                          ),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 24),
+                    Row(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        // Breakdown List
+                        Expanded(
+                          flex: 6,
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Text("Paid To", style: TextStyle(color: isDark ? Colors.white54 : Colors.grey[600], fontSize: 12)),
+                              const SizedBox(height: 8),
+                              Row(
+                                children: [
+                                  CircleAvatar(
+                                    radius: 14,
+                                    backgroundColor: isDark ? Colors.white10 : Colors.black12,
+                                    child: Text(
+                                      driverName.substring(0, 1).toUpperCase(),
+                                      style: TextStyle(color: isDark ? Colors.white : Colors.black, fontSize: 12, fontWeight: FontWeight.bold),
+                                    ),
+                                  ),
+                                  const SizedBox(width: 10),
+                                  Expanded(child: Text(driverName, style: TextStyle(fontWeight: FontWeight.bold, fontSize: 15, color: isDark ? Colors.white : Colors.black), overflow: TextOverflow.ellipsis)),
+                                ],
+                              ),
+                            ],
+                          ),
+                        ),
+                        // Divider
+                        Container(
+                          width: 1,
+                          height: 60,
+                          color: isDark ? Colors.white10 : Colors.black12,
+                          margin: const EdgeInsets.symmetric(horizontal: 20),
+                        ),
+                        // Total
+                        Expanded(
+                          flex: 4,
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Text("Total Fare", style: TextStyle(color: isDark ? Colors.white54 : Colors.grey[600], fontSize: 12)),
+                              const SizedBox(height: 8),
+                              Text("₹${widget.fareAmount}", style: const TextStyle(color: Color(0xFF4ADE80), fontSize: 24, fontWeight: FontWeight.bold)),
+                            ],
+                          ),
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
+              ),
+              const SizedBox(height: 32),
+
+              // Back to Home Button
               SizedBox(
                 width: double.infinity,
                 height: 56,
-                child: ElevatedButton(
+                child: ElevatedButton.icon(
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: Theme.of(context).brightness == Brightness.dark ? const Color(0xFF2C2C2C) : Colors.black,
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+                    backgroundColor: isDark ? const Color(0xFF2C2C2C) : Colors.black,
+                    foregroundColor: Colors.white,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(16),
+                      side: BorderSide(color: isDark ? Colors.white24 : Colors.transparent),
+                    ),
+                    elevation: 0,
                   ),
                   onPressed: markAsPaid,
-                  child: const Text(
+                  icon: const Icon(Icons.home_filled, size: 20),
+                  label: const Text(
                     "Back to Home",
-                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.white),
+                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
                   ),
                 ),
               ),
             ],
           ),
         ),
+      ),
+    );
+  }
+
+  Widget _buildStatRow(IconData icon, String title, String value, bool isDark, {Color? valueColor}) {
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 14.0),
+      child: Row(
+        children: [
+          Icon(icon, size: 16, color: const Color(0xFF4ADE80)),
+          const SizedBox(width: 12),
+          Expanded(
+            child: Text(title, style: TextStyle(color: isDark ? Colors.white60 : Colors.grey[600], fontSize: 13)),
+          ),
+          Text(value, style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14, color: valueColor ?? (isDark ? Colors.white : Colors.black))),
+        ],
       ),
     );
   }

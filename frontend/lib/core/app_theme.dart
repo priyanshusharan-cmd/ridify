@@ -10,6 +10,8 @@ class AppTheme {
         backgroundColor: Colors.black,
         foregroundColor: Colors.white,
         elevation: 0,
+        scrolledUnderElevation: 0.0,
+        surfaceTintColor: Colors.transparent,
         iconTheme: IconThemeData(color: Colors.white),
       ),
       colorScheme: const ColorScheme.light(
@@ -47,6 +49,8 @@ class AppTheme {
         backgroundColor: Colors.black,
         foregroundColor: Colors.white,
         elevation: 0,
+        scrolledUnderElevation: 0.0,
+        surfaceTintColor: Colors.transparent,
         iconTheme: IconThemeData(color: Colors.white),
       ),
       colorScheme: const ColorScheme.dark(

@@ -744,6 +744,12 @@ router.patch('/board/:id/:riderName', async (req, res) => {
     if (!ride.boardedPassengers.includes(req.params.riderName)) {
       ride.boardedPassengers.push(req.params.riderName);
     }
+    const riderDetailBoard = getRiderDetail(ride, req.params.riderName);
+    if (riderDetailBoard) {
+      riderDetailBoard.boardedAt = new Date();
+      const safeName = req.params.riderName.replace(/\./g, '_dot_');
+      ride.riderDetails.set(safeName, riderDetailBoard);
+    }
     // Remove from arrivedAt — they've progressed past the "arrived" stage
     ride.arrivedAt = ride.arrivedAt.filter(p => p !== req.params.riderName);
 
@@ -776,6 +782,12 @@ router.patch('/dropoff/:id/:riderName', async (req, res) => {
     if (!ride.droppedPassengers) ride.droppedPassengers = [];
     if (!ride.droppedPassengers.includes(req.params.riderName)) {
       ride.droppedPassengers.push(req.params.riderName);
+    }
+    const riderDetailDrop = getRiderDetail(ride, req.params.riderName);
+    if (riderDetailDrop) {
+      riderDetailDrop.droppedAt = new Date();
+      const safeName = req.params.riderName.replace(/\./g, '_dot_');
+      ride.riderDetails.set(safeName, riderDetailDrop);
     }
 
     await ride.save();
@@ -832,6 +844,7 @@ router.patch('/start/:id', async (req, res) => {
     }
 
     ride.status = 'started';
+    ride.startedAt = new Date();
 
     if (ride.requests && ride.requests.length > 0) {
       const pendingReqs = [...ride.requests];
@@ -884,6 +897,12 @@ router.patch('/end/:id', async (req, res) => {
         if (!ride.droppedPassengers.includes(pName)) {
           ride.droppedPassengers.push(pName);
         }
+        const pd = getRiderDetail(ride, pName);
+        if (pd) {
+          pd.droppedAt = new Date();
+          const safeName = pName.replace(/\./g, '_dot_');
+          ride.riderDetails.set(safeName, pd);
+        }
       }
       ride.boardedPassengers = [];
       ride.passengers = [];
@@ -900,6 +919,12 @@ router.patch('/end/:id', async (req, res) => {
           if (!ride.droppedPassengers.includes(pName)) {
             ride.droppedPassengers.push(pName);
           }
+          const pd = getRiderDetail(ride, pName);
+          if (pd) {
+            pd.droppedAt = new Date();
+            const safeName = pName.replace(/\./g, '_dot_');
+            ride.riderDetails.set(safeName, pd);
+          }
         }
         ride.boardedPassengers = [];
         ride.passengers = [];
@@ -907,6 +932,7 @@ router.patch('/end/:id', async (req, res) => {
     }
 
     ride.status = 'completed';
+    ride.completedAt = new Date();
     await ride.save();
 
     const rideId = ride._id.toString();

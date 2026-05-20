@@ -38,7 +38,9 @@ const RideSchema = new mongoose.Schema({
       startIndex: Number,
       endIndex: Number,
       paid: { type: Boolean, default: false },
-      riderName: String
+      riderName: String,
+      boardedAt: Date,
+      droppedAt: Date
     }),
     default: {}
   },
@@ -51,7 +53,9 @@ const RideSchema = new mongoose.Schema({
   declined: { type: [String], default: [] },
   kicked: { type: [String], default: [] },
   seatAllocations: { type: Map, of: Number, default: {} },
-  chatMessages: [{ sender: String, senderEmail: String, text: String, timestamp: String }]
+  chatMessages: [{ sender: String, senderEmail: String, text: String, timestamp: String }],
+  startedAt: Date,
+  completedAt: Date
 }, {
   toJSON: {
     transform: (doc, ret) => {

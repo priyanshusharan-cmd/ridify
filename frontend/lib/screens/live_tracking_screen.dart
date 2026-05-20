@@ -737,138 +737,285 @@ class _LiveTrackingScreenState extends State<LiveTrackingScreen> {
           ));
         }),
         // Bottom panel
-        Align(alignment: Alignment.bottomCenter, child: Container(
-          padding: const EdgeInsets.all(20),
-          decoration: BoxDecoration(color: panelBg, borderRadius: const BorderRadius.vertical(top: Radius.circular(30)), boxShadow: const [BoxShadow(color: Colors.black12, blurRadius: 10)]),
-          child: Column(mainAxisSize: MainAxisSize.min, children: [
-            // Header row
-            Row(children: [
-              CircleAvatar(backgroundColor: isDark ? const Color(0xFF2C2C2C) : Colors.black, child: Text(isAccepted ? (widget.isDriver ? "G" : widget.otherUserName.substring(0, 1).toUpperCase()) : "?", style: const TextStyle(color: Colors.white))),
-              const SizedBox(width: 15),
-              Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-                Text(isAccepted ? (widget.isDriver ? "Ride Group" : widget.otherUserName) : "Finding Match...", style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: panelText), maxLines: 1, overflow: TextOverflow.ellipsis),
-                Row(children: [
-                  Container(width: 8, height: 8, decoration: BoxDecoration(shape: BoxShape.circle, color: isStarted ? Colors.blue : Colors.green)),
-                  const SizedBox(width: 6),
-                  Text(statusText, style: TextStyle(color: isStarted ? (isDark ? Colors.blue.shade300 : Colors.blue) : (isDark ? Colors.green.shade300 : Colors.green), fontWeight: FontWeight.bold, fontSize: 13)),
-                ]),
-              ])),
-              // Rider: Board button (grey until arrived, shows snackbar)
-              if (!widget.isDriver && isAccepted && !iHaveBoarded && !iAmDropped)
-                ElevatedButton(
-                  style: ElevatedButton.styleFrom(backgroundColor: !iAmArrived ? Colors.grey : (isDark ? const Color(0xFF1B4332) : Colors.green)),
-                  onPressed: () {
-                    if (!iAmArrived) {
-                      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("Wait for the driver to arrive"), backgroundColor: Colors.orange));
-                    } else {
-                      boardRide();
-                    }
-                  },
-                  child: const Text("Board", style: TextStyle(color: Colors.white)),
-                ),
-              // Driver: Start / Arrive disabled until started / End disabled until empty
-              if (widget.isDriver) ...[
-                if (!isStarted) ElevatedButton(style: ElevatedButton.styleFrom(backgroundColor: isDark ? const Color(0xFF1A3A5C) : Colors.blue), onPressed: startRide, child: const Text("Start", style: TextStyle(color: Colors.white)))
-                else ElevatedButton(
-                  style: ElevatedButton.styleFrom(backgroundColor: canEnd ? (isDark ? const Color(0xFF5C1A1A) : Colors.red) : Colors.grey),
-                  onPressed: () {
-                    if (!canEnd) {
-                      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("There are passengers still in the car"), backgroundColor: Colors.red));
-                    } else {
-                      endRide();
-                    }
-                  },
-                  child: const Text("End", style: TextStyle(color: Colors.white)),
-                ),
-              ],
-            ]),
-            // Capacity indicator
-            if (widget.isDriver && isStarted) ...[
-              const SizedBox(height: 8),
-              Row(children: [
-                Icon(Icons.airline_seat_recline_normal, size: 16, color: panelSub),
-                const SizedBox(width: 6),
-                Text("$currentlyOccupied / $totalCap seats occupied", style: TextStyle(color: panelSub, fontSize: 12, fontWeight: FontWeight.w600)),
-              ]),
-            ],
-            // Passenger list (driver view)
-            if (widget.isDriver && rideData != null && activePassengers.isNotEmpty) ...[
-              Divider(height: 20, color: isDark ? Colors.white24 : Colors.black12),
-              Align(alignment: Alignment.centerLeft, child: Text("Passengers", style: TextStyle(fontWeight: FontWeight.bold, color: panelSub, fontSize: 13))),
-              const SizedBox(height: 4),
-              ConstrainedBox(constraints: const BoxConstraints(maxHeight: 220), child: ListView(shrinkWrap: true, children: activePassengers.map<Widget>((p) {
-                bool isBoarded = (rideData!['boardedPassengers'] ?? []).contains(p);
-                bool isArrived = (rideData!['arrivedAt'] ?? []).contains(p);
-                int neededSeats = ((rideData?['riderDetails']?[p]?['seats']) ?? 1) as int;
-                bool canFit = (currentlyOccupied + neededSeats) <= totalCap;
-                String? pickupAddr = rideData?['riderDetails']?[p]?['pickupLocation'];
-                String? destAddr = rideData?['riderDetails']?[p]?['destination'];
-                String subtitle = isBoarded ? "Boarded ✓" : (isArrived ? "Arrived — waiting to board" : "Picking up soon");
-                String addrText = isBoarded ? (destAddr ?? "") : (pickupAddr ?? "");
-                // Truncate address
-                if (addrText.length > 40) addrText = "${addrText.substring(0, 40)}...";
-
-                String displayName = rideData?['riderDetails']?[p]?['riderName'] ?? p.toString();
-
-                return Container(
-                  margin: const EdgeInsets.only(bottom: 8),
-                  padding: const EdgeInsets.all(12),
-                  decoration: BoxDecoration(
-                    color: isDark ? const Color(0xFF252525) : Colors.grey.shade50,
-                    borderRadius: BorderRadius.circular(12),
-                    border: Border.all(color: isBoarded ? Colors.green.withValues(alpha: 0.3) : (isDark ? Colors.white10 : Colors.black12)),
+        DraggableScrollableSheet(
+          initialChildSize: widget.isDriver ? 0.35 : 0.25,
+          minChildSize: 0.15,
+          maxChildSize: 0.8,
+          snap: true,
+          builder: (BuildContext context, ScrollController scrollController) {
+            return Container(
+              padding: const EdgeInsets.fromLTRB(20, 10, 20, 20),
+              decoration: BoxDecoration(color: panelBg, borderRadius: const BorderRadius.vertical(top: Radius.circular(30)), boxShadow: const [BoxShadow(color: Colors.black12, blurRadius: 10)]),
+              child: ListView(
+                controller: scrollController,
+                padding: EdgeInsets.zero,
+                children: [
+                  // Drag handle
+                  Center(
+                    child: Container(
+                      width: 40,
+                      height: 5,
+                      margin: const EdgeInsets.only(bottom: 20),
+                      decoration: BoxDecoration(
+                        color: isDark ? Colors.white24 : Colors.black26,
+                        borderRadius: BorderRadius.circular(10),
+                      ),
+                    ),
                   ),
-                  child: Row(children: [
-                    CircleAvatar(radius: 16, backgroundColor: isDark ? const Color(0xFF2C2C2C) : Colors.grey[200], child: Text(displayName.substring(0, 1).toUpperCase(), style: TextStyle(color: panelText, fontWeight: FontWeight.bold, fontSize: 13))),
-                    const SizedBox(width: 12),
+                  // Header row
+                  Row(children: [
+                    Container(
+                      width: 56,
+                      height: 56,
+                      decoration: BoxDecoration(
+                        color: isDark ? const Color(0xFF2C2C2C) : Colors.grey.shade900,
+                        borderRadius: BorderRadius.circular(16),
+                      ),
+                      child: Center(
+                        child: Text(
+                          isAccepted ? (widget.isDriver ? "G" : widget.otherUserName.substring(0, 1).toUpperCase()) : "?", 
+                          style: const TextStyle(color: Colors.white, fontSize: 24, fontWeight: FontWeight.bold)
+                        ),
+                      ),
+                    ),
+                    const SizedBox(width: 16),
                     Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-                      Text(displayName, style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14, color: panelText)),
-                      Text(p.toString(), style: TextStyle(color: panelSub, fontSize: 11)),
+                      Text(isAccepted ? (widget.isDriver ? "Ride Group" : widget.otherUserName) : "Finding Match...", style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: panelText), maxLines: 1, overflow: TextOverflow.ellipsis),
                       const SizedBox(height: 4),
-                      Text(subtitle, style: TextStyle(color: isBoarded ? (isDark ? Colors.green.shade300 : Colors.green) : Colors.orange, fontSize: 11, fontWeight: FontWeight.w600)),
-                      if (addrText.isNotEmpty) ...[
-                        const SizedBox(height: 2),
-                        Text(addrText, style: TextStyle(color: panelSub, fontSize: 10), maxLines: 1, overflow: TextOverflow.ellipsis),
-                      ],
+                      Row(children: [
+                        Container(
+                          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                          decoration: BoxDecoration(
+                            color: isStarted ? Colors.blue.withValues(alpha: 0.1) : Colors.green.withValues(alpha: 0.1),
+                            borderRadius: BorderRadius.circular(8),
+                          ),
+                          child: Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Container(width: 8, height: 8, decoration: BoxDecoration(shape: BoxShape.circle, color: isStarted ? Colors.blue : Colors.green)),
+                              const SizedBox(width: 6),
+                              Text(statusText, style: TextStyle(color: isStarted ? (isDark ? Colors.blue.shade300 : Colors.blue.shade700) : (isDark ? Colors.green.shade300 : Colors.green.shade700), fontWeight: FontWeight.bold, fontSize: 12)),
+                            ],
+                          ),
+                        ),
+                      ]),
                     ])),
-                    // Action buttons - kick always visible
-                    if (isBoarded) ...[
-                      if (rideData?['routePreference'] != 'nonstop') ...[
-                        ElevatedButton(style: ElevatedButton.styleFrom(backgroundColor: Colors.redAccent, minimumSize: const Size(70, 32), padding: const EdgeInsets.symmetric(horizontal: 10)), onPressed: () => dropOffPassenger(p), child: const Text("Drop-off", style: TextStyle(color: Colors.white, fontSize: 11))),
-                        const SizedBox(width: 6),
-                      ],
-                      GestureDetector(onTap: () => _confirmKickPassenger(p), child: const Icon(Icons.person_remove, color: Colors.redAccent, size: 20)),
-                    ] else ...[
-                      if (!isArrived && rideData?['routePreference'] != 'nonstop' && rideData?['routePreference'] != 'shared_start') ...[
+                    // Rider: Board button
+                    if (!widget.isDriver && isAccepted && !iHaveBoarded && !iAmDropped)
+                      ElevatedButton(
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: !iAmArrived ? Colors.grey.shade300 : (isDark ? const Color(0xFF1B4332) : Colors.green.shade600),
+                          foregroundColor: !iAmArrived ? Colors.grey.shade600 : Colors.white,
+                          elevation: 0,
+                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                          padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+                        ),
+                        onPressed: () {
+                          if (!iAmArrived) {
+                            ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("Wait for the driver to arrive"), backgroundColor: Colors.orange));
+                          } else {
+                            boardRide();
+                          }
+                        },
+                        child: const Text("Board", style: TextStyle(fontWeight: FontWeight.bold, fontSize: 15)),
+                      ),
+                    // Driver: Start / End button
+                    if (widget.isDriver) ...[
+                      if (!isStarted) 
                         ElevatedButton(
-                          style: ElevatedButton.styleFrom(backgroundColor: (canFit && isStarted) ? Colors.green : Colors.grey, minimumSize: const Size(70, 32), padding: const EdgeInsets.symmetric(horizontal: 10)),
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: isDark ? const Color(0xFF1A3A5C) : Colors.blue.shade600,
+                            foregroundColor: Colors.white,
+                            elevation: 0,
+                            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                            padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 14),
+                          ),
+                          onPressed: startRide, 
+                          child: const Text("Start", style: TextStyle(fontWeight: FontWeight.bold, fontSize: 15))
+                        )
+                      else 
+                        ElevatedButton(
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: canEnd ? (isDark ? const Color(0xFF5C1A1A) : Colors.red.shade600) : Colors.grey.shade300,
+                            foregroundColor: canEnd ? Colors.white : Colors.grey.shade600,
+                            elevation: 0,
+                            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                            padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 14),
+                          ),
                           onPressed: () {
-                            if (!isStarted) {
-                              ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("First start the ride"), backgroundColor: Colors.orange));
-                            } else if (!canFit) {
-                              ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("Car capacity reached"), backgroundColor: Colors.red));
+                            if (!canEnd) {
+                              ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("There are passengers still in the car"), backgroundColor: Colors.red));
                             } else {
-                              driverArriveForPassenger(p);
+                              endRide();
                             }
                           },
-                          child: Text((canFit && isStarted) ? "Arrived" : (isStarted ? "Full" : "Arrived"), style: const TextStyle(color: Colors.white, fontSize: 11)),
+                          child: const Text("End", style: TextStyle(fontWeight: FontWeight.bold, fontSize: 15)),
                         ),
-                        const SizedBox(width: 6),
-                      ],
-                      GestureDetector(onTap: () => _confirmKickPassenger(p), child: const Icon(Icons.person_remove, color: Colors.redAccent, size: 20)),
                     ],
                   ]),
-                );
-              }).toList())),
-            ],
-            const SizedBox(height: 10),
-            SizedBox(width: double.infinity, height: 50, child: ElevatedButton.icon(
-              style: ElevatedButton.styleFrom(backgroundColor: isDark ? const Color(0xFF2C2C2C) : Colors.black),
-              onPressed: () => Navigator.push(context, MaterialPageRoute(builder: (_) => ChatScreen(myName: widget.myName, myEmail: widget.myEmail, otherName: widget.isDriver ? "Group" : widget.otherUserName, rideId: widget.rideId))),
-              icon: const Icon(Icons.chat_bubble_outline, color: Colors.white), label: const Text("Chat", style: TextStyle(color: Colors.white)),
-            )),
-          ]),
-        )),
+                  // Capacity indicator
+                  if (widget.isDriver && isStarted) ...[
+                    const SizedBox(height: 16),
+                    Container(
+                      padding: const EdgeInsets.all(12),
+                      decoration: BoxDecoration(
+                        color: isDark ? const Color(0xFF252525) : Colors.grey.shade50,
+                        borderRadius: BorderRadius.circular(12),
+                        border: Border.all(color: isDark ? Colors.white10 : Colors.black12),
+                      ),
+                      child: Row(children: [
+                        Icon(Icons.airline_seat_recline_normal, size: 20, color: Colors.blue.shade400),
+                        const SizedBox(width: 8),
+                        Text("$currentlyOccupied / $totalCap seats occupied", style: TextStyle(color: panelText, fontSize: 14, fontWeight: FontWeight.w600)),
+                      ]),
+                    ),
+                  ],
+                  // Passenger list (driver view)
+                  if (widget.isDriver && rideData != null && activePassengers.isNotEmpty) ...[
+                    const SizedBox(height: 20),
+                    Align(alignment: Alignment.centerLeft, child: Text("Passengers", style: TextStyle(fontWeight: FontWeight.bold, color: panelSub, fontSize: 14, letterSpacing: 0.5))),
+                    const SizedBox(height: 12),
+                    ...activePassengers.map<Widget>((p) {
+                      bool isBoarded = (rideData!['boardedPassengers'] ?? []).contains(p);
+                      bool isArrived = (rideData!['arrivedAt'] ?? []).contains(p);
+                      int neededSeats = ((rideData?['riderDetails']?[p]?['seats']) ?? 1) as int;
+                      bool canFit = (currentlyOccupied + neededSeats) <= totalCap;
+                      String? pickupAddr = rideData?['riderDetails']?[p]?['pickupLocation'];
+                      String? destAddr = rideData?['riderDetails']?[p]?['destination'];
+                      String subtitle = isBoarded ? "Boarded ✓" : (isArrived ? "Arrived — waiting to board" : "Picking up soon");
+                      String addrText = isBoarded ? (destAddr ?? "") : (pickupAddr ?? "");
+
+                      String displayName = rideData?['riderDetails']?[p]?['riderName'] ?? p.toString();
+
+                      return Container(
+                        margin: const EdgeInsets.only(bottom: 12),
+                        padding: const EdgeInsets.all(16),
+                        decoration: BoxDecoration(
+                          color: isDark ? const Color(0xFF2A2A2A) : Colors.white,
+                          borderRadius: BorderRadius.circular(16),
+                          boxShadow: [
+                            BoxShadow(
+                              color: isDark ? Colors.black.withValues(alpha: 0.2) : Colors.black.withValues(alpha: 0.05),
+                              blurRadius: 10,
+                              offset: const Offset(0, 4),
+                            )
+                          ],
+                        ),
+                        child: Row(children: [
+                          Container(
+                            width: 48,
+                            height: 48,
+                            decoration: BoxDecoration(
+                              shape: BoxShape.circle,
+                              gradient: LinearGradient(
+                                colors: [Colors.blue.shade400, Colors.blue.shade700],
+                                begin: Alignment.topLeft,
+                                end: Alignment.bottomRight,
+                              ),
+                            ),
+                            child: Center(
+                              child: Text(
+                                displayName.substring(0, 1).toUpperCase(),
+                                style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 18),
+                              ),
+                            ),
+                          ),
+                          const SizedBox(width: 16),
+                          Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+                            Text(displayName, style: TextStyle(fontWeight: FontWeight.w700, fontSize: 16, color: panelText)),
+                            const SizedBox(height: 2),
+                            Text(
+                              subtitle, 
+                              style: TextStyle(
+                                color: isBoarded ? Colors.green.shade600 : Colors.orange.shade600, 
+                                fontSize: 12, 
+                                fontWeight: FontWeight.w600
+                              )
+                            ),
+                            if (addrText.isNotEmpty) ...[
+                              const SizedBox(height: 4),
+                              Row(
+                                children: [
+                                  Icon(Icons.location_on, size: 12, color: panelSub),
+                                  const SizedBox(width: 4),
+                                  Expanded(child: Text(addrText, style: TextStyle(color: panelSub, fontSize: 12), maxLines: 1, overflow: TextOverflow.ellipsis)),
+                                ],
+                              ),
+                            ],
+                          ])),
+                          const SizedBox(width: 8),
+                          // Action buttons
+                          if (isBoarded) ...[
+                            if (rideData?['routePreference'] != 'nonstop') ...[
+                              TextButton(
+                                style: TextButton.styleFrom(
+                                  backgroundColor: Colors.red.shade50,
+                                  foregroundColor: Colors.red.shade700,
+                                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+                                ),
+                                onPressed: () => dropOffPassenger(p), 
+                                child: const Text("Drop-off", style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold)),
+                              ),
+                              const SizedBox(width: 8),
+                            ],
+                            IconButton(
+                              onPressed: () => _confirmKickPassenger(p), 
+                              icon: Icon(Icons.person_remove_rounded, color: Colors.red.shade300, size: 22),
+                              style: IconButton.styleFrom(backgroundColor: isDark ? Colors.white10 : Colors.grey.shade100),
+                            ),
+                          ] else ...[
+                            if (!isArrived && rideData?['routePreference'] != 'nonstop' && rideData?['routePreference'] != 'shared_start') ...[
+                              TextButton(
+                                style: TextButton.styleFrom(
+                                  backgroundColor: (canFit && isStarted) ? Colors.green.shade50 : Colors.grey.shade100,
+                                  foregroundColor: (canFit && isStarted) ? Colors.green.shade700 : Colors.grey.shade600,
+                                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+                                ),
+                                onPressed: () {
+                                  if (!isStarted) {
+                                    ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("First start the ride"), backgroundColor: Colors.orange));
+                                  } else if (!canFit) {
+                                    ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("Car capacity reached"), backgroundColor: Colors.red));
+                                  } else {
+                                    driverArriveForPassenger(p);
+                                  }
+                                },
+                                child: Text((canFit && isStarted) ? "Arrived" : (isStarted ? "Full" : "Arrived"), style: const TextStyle(fontSize: 12, fontWeight: FontWeight.bold)),
+                              ),
+                              const SizedBox(width: 8),
+                            ],
+                            IconButton(
+                              onPressed: () => _confirmKickPassenger(p), 
+                              icon: Icon(Icons.person_remove_rounded, color: Colors.red.shade300, size: 22),
+                              style: IconButton.styleFrom(backgroundColor: isDark ? Colors.white10 : Colors.grey.shade100),
+                            ),
+                          ],
+                        ]),
+                      );
+                    }),
+                  ],
+                  const SizedBox(height: 20),
+                  SizedBox(
+                    width: double.infinity, 
+                    height: 56, 
+                    child: ElevatedButton.icon(
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: isDark ? const Color(0xFF333333) : Colors.black,
+                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+                        elevation: 0,
+                      ),
+                      onPressed: () => Navigator.push(context, MaterialPageRoute(builder: (_) => ChatScreen(myName: widget.myName, myEmail: widget.myEmail, otherName: widget.isDriver ? "Group" : widget.otherUserName, rideId: widget.rideId))),
+                      icon: const Icon(Icons.chat_bubble_outline_rounded, color: Colors.white), 
+                      label: const Text("Chat with Group", style: TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.w600)),
+                    )
+                  ),
+                ],
+              ),
+            );
+          },
+        ),
       ]),
     );
   }
