@@ -62,10 +62,11 @@ function getDepartureTimeEpoch(ride) {
  */
 function getRiderDetail(ride, name) {
   if (!ride.riderDetails) return null;
+  const safeName = name.replace(/\./g, '_dot_');
   if (typeof ride.riderDetails.get === 'function') {
-    return ride.riderDetails.get(name) || null;
+    return ride.riderDetails.get(safeName) || null;
   }
-  return ride.riderDetails[name] || null;
+  return ride.riderDetails[safeName] || null;
 }
 
 /**
@@ -157,6 +158,18 @@ router.get('/search', async (req, res) => {
     if (date) matchQuery.departureTime = { $regex: new RegExp(`^${date}`, 'i') };
 
     const activeRides = await Ride.find(matchQuery).lean();
+    
+    // Decode map keys since toJSON transform doesn't run on lean objects
+    activeRides.forEach(ride => {
+      if (ride.riderDetails) {
+        const decoded = {};
+        for (const [key, value] of Object.entries(ride.riderDetails)) {
+          decoded[key.replace(/_dot_/g, '.')] = value;
+        }
+        ride.riderDetails = decoded;
+      }
+    });
+
     const results = [];
 
     if (lat && lng && destLat && destLng) {
@@ -273,7 +286,7 @@ router.get('/search', async (req, res) => {
 router.get('/', async (req, res) => {
   try {
     const currentTime = Date.now();
-    const validRides = await Ride.find({
+    const rides = await Ride.find({
       $or: [
         { expiresAt: { $gt: currentTime } },
         { expiresAt: null },
@@ -281,7 +294,19 @@ router.get('/', async (req, res) => {
         { status: { $in: ['accepted', 'full', 'started', 'completed', 'cancelled'] } }
       ]
     }, { routePath: 0, chatMessages: 0 }).lean();
-    res.status(200).json(validRides);
+
+    // Decode map keys
+    rides.forEach(ride => {
+      if (ride.riderDetails) {
+        const decoded = {};
+        for (const [key, value] of Object.entries(ride.riderDetails)) {
+          decoded[key.replace(/_dot_/g, '.')] = value;
+        }
+        ride.riderDetails = decoded;
+      }
+    });
+
+    res.status(200).json(rides);
   } catch (err) { res.status(500).json({ error: err.message }); }
 });
 
@@ -416,7 +441,8 @@ router.patch('/request/:id', async (req, res) => {
 
     ride.requests.push(riderEmail);
     if (!ride.riderDetails) ride.riderDetails = new Map();
-    ride.riderDetails.set(riderEmail, {
+    const safeEmail = riderEmail.replace(/\./g, '_dot_');
+    ride.riderDetails.set(safeEmail, {
       pickupLat, pickupLng, destLat, destLng, pickupLocation, destination,
       fare: computedFare, distance: computedDistance, seats,
       startIndex, endIndex, paid: false, riderName: riderName || ''
@@ -780,7 +806,8 @@ router.patch('/pay/:id/:riderName', async (req, res) => {
     }
 
     detail.paid = true;
-    ride.riderDetails.set(req.params.riderName, detail);
+    const safeName = req.params.riderName.replace(/\./g, '_dot_');
+    ride.riderDetails.set(safeName, detail);
     
     if (!ride.paidPassengers) ride.paidPassengers = [];
     if (!ride.paidPassengers.includes(req.params.riderName)) {

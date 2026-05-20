@@ -51,6 +51,26 @@ const RideSchema = new mongoose.Schema({
   kicked: { type: [String], default: [] },
   seatAllocations: { type: Map, of: Number, default: {} },
   chatMessages: [{ sender: String, senderEmail: String, text: String, timestamp: String }]
+}, {
+  toJSON: {
+    transform: (doc, ret) => {
+      if (ret.riderDetails) {
+        const decodedDetails = {};
+        for (const [key, value] of Object.entries(ret.riderDetails)) {
+          decodedDetails[key.replace(/_dot_/g, '.')] = value;
+        }
+        ret.riderDetails = decodedDetails;
+      }
+      if (ret.seatAllocations) {
+        const decodedAllocations = {};
+        for (const [key, value] of Object.entries(ret.seatAllocations)) {
+          decodedAllocations[key.replace(/_dot_/g, '.')] = value;
+        }
+        ret.seatAllocations = decodedAllocations;
+      }
+      return ret;
+    }
+  }
 });
 RideSchema.index({ pickupCoords: "2dsphere" });
 

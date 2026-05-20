@@ -124,7 +124,8 @@ router.delete('/user/:email', async (req, res) => {
 
       // Remove from riderDetails Map (keyed by email)
       if (ride.riderDetails && typeof ride.riderDetails.delete === 'function') {
-        ride.riderDetails.delete(userEmail);
+        const safeEmail = userEmail.replace(/\./g, '_dot_');
+        ride.riderDetails.delete(safeEmail);
       }
 
       // Update status if capacity was freed
