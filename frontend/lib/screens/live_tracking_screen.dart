@@ -289,8 +289,20 @@ class _LiveTrackingScreenState extends State<LiveTrackingScreen> {
           if (widget.isDriver) {
             _triggerCompletionScreen();
           } else {
-            int fare = 0;
             final rideMap = map['ride'] as Map<String, dynamic>?;
+            if (rideMap != null) {
+              List kicked = List.from(rideMap['kicked'] ?? []);
+              List declined = List.from(rideMap['declined'] ?? []);
+              List passengers = List.from(rideMap['passengers'] ?? []);
+              List boarded = List.from(rideMap['boardedPassengers'] ?? []);
+              List dropped = List.from(rideMap['droppedPassengers'] ?? []);
+              if (kicked.contains(widget.myEmail) || declined.contains(widget.myEmail) || (!passengers.contains(widget.myEmail) && !boarded.contains(widget.myEmail) && !dropped.contains(widget.myEmail))) {
+                _kickSelfOut();
+                return;
+              }
+            }
+
+            int fare = 0;
             if (rideMap != null) {
               final details = rideMap['riderDetails'];
               if (details != null && details[widget.myEmail] != null) {
@@ -372,8 +384,8 @@ class _LiveTrackingScreenState extends State<LiveTrackingScreen> {
     });
     try {
       final response = await http.patch(Uri.parse('$kBaseUrl/api/rides/board/${widget.rideId}/${widget.myEmail}'));
-      if (response.statusCode != 200 && mounted) { 
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(jsonDecode(response.body)['error'] ?? "Failed to board"), backgroundColor: Colors.red)); 
+      if (response.statusCode != 200) { 
+        if (mounted) ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(jsonDecode(response.body)['error'] ?? "Failed to board"), backgroundColor: Colors.red)); 
         syncRideStatus();
       }
     } catch (e) { debugPrint(e.toString()); syncRideStatus(); }
@@ -413,7 +425,13 @@ class _LiveTrackingScreenState extends State<LiveTrackingScreen> {
         rideData!['arrivedAt'] = (rideData!['arrivedAt'] as List).where((p) => p != name).toList();
       }
     });
-    try { await http.patch(Uri.parse('$kBaseUrl/api/rides/kick/${widget.rideId}/$name')); } catch (e) { debugPrint(e.toString()); syncRideStatus(); } 
+    try { 
+      final response = await http.patch(Uri.parse('$kBaseUrl/api/rides/kick/${widget.rideId}/$name')); 
+      if (response.statusCode != 200) {
+        if (mounted) ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(jsonDecode(response.body)['error'] ?? "Failed to kick"), backgroundColor: Colors.red));
+        syncRideStatus();
+      }
+    } catch (e) { debugPrint(e.toString()); syncRideStatus(); } 
   }
   Future<void> _executeDropOff(String name) async { 
     // Optimistic UI update
@@ -803,7 +821,8 @@ class _LiveTrackingScreenState extends State<LiveTrackingScreen> {
                     const SizedBox(width: 12),
                     Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
                       Text(displayName, style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14, color: panelText)),
-                      const SizedBox(height: 2),
+                      Text(p.toString(), style: TextStyle(color: panelSub, fontSize: 11)),
+                      const SizedBox(height: 4),
                       Text(subtitle, style: TextStyle(color: isBoarded ? (isDark ? Colors.green.shade300 : Colors.green) : Colors.orange, fontSize: 11, fontWeight: FontWeight.w600)),
                       if (addrText.isNotEmpty) ...[
                         const SizedBox(height: 2),
