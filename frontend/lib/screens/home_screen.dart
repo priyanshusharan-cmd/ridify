@@ -232,7 +232,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
 
   void _initSocket() {
     final socketService = SocketService();
-    socketService.registerUser(widget.userName);
+    socketService.registerUser(widget.userEmail);
     final socket = socketService.socket;
 
     // Direct state updates — no re-fetch needed
@@ -269,7 +269,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
     socket.on('ride_ended', (data) {
       fetchRides();
       if (mounted && data != null) {
-        final bool iAmDriver = data['riderName'] == widget.userName;
+        final bool iAmDriver = data['riderEmail'] == widget.userEmail;
         if (iAmDriver) {
           WidgetsBinding.instance.addPostFrameCallback((_) {
             if (!mounted) return;
@@ -303,7 +303,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
     int requestsForMeCount = 0;
     for (final r in allRides.where(
       (r) =>
-          r['riderName'] == widget.userName &&
+          r['riderEmail'] == widget.userEmail &&
           r['status'] != 'cancelled' &&
           r['status'] != 'completed',
     )) {
@@ -315,10 +315,11 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
       ActiveRidesTab(
         rides: allRides,
         myName: widget.userName,
+        myEmail: widget.userEmail,
         onRefresh: fetchRides,
         onGoHome: () => setState(() => _currentIndex = 0),
       ),
-      RideHistoryScreen(userName: widget.userName),
+      RideHistoryScreen(userName: widget.userName, userEmail: widget.userEmail),
       ProfileScreen(
         userName: widget.userName,
         userAge: widget.userAge,
@@ -530,7 +531,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
         final Map? riderDetails = ride['riderDetails'] as Map?;
         final double baseFare = double.tryParse(ride['fare'].toString()) ?? 0.0;
 
-        if (ride['riderName'] == widget.userName) {
+        if (ride['riderEmail'] == widget.userEmail) {
           for (final p in dropped) {
             if (riderDetails != null && riderDetails[p] != null) {
               totalEarnings += (riderDetails[p]['fare'] as num?)?.toDouble() ?? 0.0;
@@ -540,12 +541,12 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
               totalEarnings += baseFare * seats;
             }
           }
-        } else if (dropped.contains(widget.userName)) {
-          if (riderDetails != null && riderDetails[widget.userName] != null) {
-            totalSpending += (riderDetails[widget.userName]['fare'] as num?)?.toDouble() ?? 0.0;
+        } else if (dropped.contains(widget.userEmail)) {
+          if (riderDetails != null && riderDetails[widget.userEmail] != null) {
+            totalSpending += (riderDetails[widget.userEmail]['fare'] as num?)?.toDouble() ?? 0.0;
           } else {
             final Map? allocations = ride['seatAllocations'] as Map?;
-            final int mySeats = (allocations?[widget.userName] as num?)?.toInt() ?? 1;
+            final int mySeats = (allocations?[widget.userEmail] as num?)?.toInt() ?? 1;
             totalSpending += baseFare * mySeats;
           }
         }
@@ -576,7 +577,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                     context,
                     MaterialPageRoute(
                       builder: (_) =>
-                          OfferRideScreen(userName: widget.userName),
+                          OfferRideScreen(userName: widget.userName, userEmail: widget.userEmail),
                     ),
                   ).then((result) {
                     // ── Success Celebration ────────────────────────────────────
@@ -595,7 +596,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
               () => Navigator.push(
                 context,
                 MaterialPageRoute(
-                  builder: (_) => FindRideScreen(userName: widget.userName),
+                  builder: (_) => FindRideScreen(userName: widget.userName, userEmail: widget.userEmail),
                 ),
               ).then((_) => fetchRides()),
             ),

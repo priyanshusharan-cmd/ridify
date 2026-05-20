@@ -148,7 +148,7 @@ router.get('/search', async (req, res) => {
     const reqSeats = parseInt(seats) || 1;
     const targetEpoch = searchTimeEpoch ? parseInt(searchTimeEpoch) : null;
 
-    const userName = req.query.userName;
+    const userEmail = req.query.userEmail;
     const matchQuery = {
       status: { $in: ['available', 'accepted'] },
       $or: [{ expiresAt: { $gt: currentTime } }, { expiresAt: null }, { expiresAt: { $exists: false } }]
@@ -220,11 +220,11 @@ router.get('/search', async (req, res) => {
 
         if (minPickupDist <= effectiveRadius && minDestDist <= effectiveRadius && startIndex < endIndex) {
           // Skip rides where the searching user has already been declined, kicked, or is already a passenger/requester
-          if (userName) {
-            if ((ride.declined || []).includes(userName)) continue;
-            if ((ride.kicked || []).includes(userName)) continue;
-            if ((ride.passengers || []).includes(userName)) continue;
-            if ((ride.requests || []).includes(userName)) continue;
+          if (userEmail) {
+            if ((ride.declined || []).includes(userEmail)) continue;
+            if ((ride.kicked || []).includes(userEmail)) continue;
+            if ((ride.passengers || []).includes(userEmail)) continue;
+            if ((ride.requests || []).includes(userEmail)) continue;
           }
 
           let tripDistance = 0;
@@ -322,7 +322,7 @@ router.post('/', async (req, res) => {
 
     // Join driver into the ride's socket room
     const rideId = newRide._id.toString();
-    req.joinUserToRide(data.riderName, rideId);
+    req.joinUserToRide(data.riderEmail, rideId);
 
     res.status(201).json({ success: true, ride: newRide });
   } catch (err) { res.status(500).json({ error: err.message }); }
@@ -367,10 +367,10 @@ router.delete('/', adminOnly, async (req, res) => {
 // ── Request a ride — join requester + scoped emit ────────────────────────────
 router.patch('/request/:id', async (req, res) => {
   try {
-    const { riderName, seats, computedFare, computedDistance, startIndex, endIndex, pickupLat, pickupLng, destLat, destLng, pickupLocation, destination } = req.body;
+    const { riderName, riderEmail, seats, computedFare, computedDistance, startIndex, endIndex, pickupLat, pickupLng, destLat, destLng, pickupLocation, destination } = req.body;
 
-    if (!riderName || !riderName.trim()) {
-      return res.status(400).json({ error: "Rider name is required." });
+    if (!riderEmail || !riderEmail.trim()) {
+      return res.status(400).json({ error: "Rider email is required." });
     }
     
     const seatCount = parseInt(seats);
@@ -386,7 +386,7 @@ router.patch('/request/:id', async (req, res) => {
     if (!ride) return res.status(404).json({ error: "Ride not found" });
 
     // Prevent driver from requesting their own ride
-    if (ride.riderName === riderName) {
+    if (ride.riderEmail === riderEmail) {
       return res.status(400).json({ error: "You cannot request your own ride." });
     }
 
@@ -395,14 +395,14 @@ router.patch('/request/:id', async (req, res) => {
       return res.status(400).json({ error: "This ride has expired." });
     }
 
-    // Prevent duplicate requests
-    if (ride.requests.includes(riderName) || ride.passengers.includes(riderName)) {
+    // Prevent duplicate requests (arrays now store emails)
+    if (ride.requests.includes(riderEmail) || ride.passengers.includes(riderEmail)) {
       return res.status(400).json({ error: "You have already requested or joined this ride." });
     }
-    if (ride.declined.includes(riderName)) {
+    if (ride.declined.includes(riderEmail)) {
       return res.status(400).json({ error: "You were already declined for this ride." });
     }
-    if (ride.kicked.includes(riderName)) {
+    if (ride.kicked.includes(riderEmail)) {
       return res.status(400).json({ error: "You were removed from this ride." });
     }
     if (['started', 'completed', 'cancelled'].includes(ride.status)) {
@@ -414,18 +414,18 @@ router.patch('/request/:id', async (req, res) => {
       return res.status(400).json({ error: "Capacity exceeded for this segment" });
     }
 
-    ride.requests.push(riderName);
+    ride.requests.push(riderEmail);
     if (!ride.riderDetails) ride.riderDetails = new Map();
-    ride.riderDetails.set(riderName, {
+    ride.riderDetails.set(riderEmail, {
       pickupLat, pickupLng, destLat, destLng, pickupLocation, destination,
       fare: computedFare, distance: computedDistance, seats,
-      startIndex, endIndex, paid: false
+      startIndex, endIndex, paid: false, riderName: riderName || ''
     });
     
     await ride.save();
 
     const rideId = ride._id.toString();
-    req.joinUserToRide(riderName, rideId);
+    req.joinUserToRide(riderEmail, rideId);
     req.io.to(rideId).emit('new_ride_request', { rideId, ride: ride.toJSON() });
 
     res.status(200).json({ success: true });
@@ -888,6 +888,7 @@ router.patch('/end/:id', async (req, res) => {
         ride: ride.toJSON(),
         passengers: ride.droppedPassengers,
         riderName: ride.riderName,
+        riderEmail: ride.riderEmail,
         boardedPassengers: ride.boardedPassengers
     });
     res.status(200).json(ride);
@@ -897,7 +898,7 @@ router.patch('/end/:id', async (req, res) => {
 // ── Chat — scoped emit ──────────────────────────────────────────────────────
 router.post('/:id/chat', async (req, res) => {
   try {
-    const { sender, text, timestamp } = req.body;
+    const { sender, senderEmail, text, timestamp } = req.body;
     if (!sender || !sender.trim() || !text || !text.trim()) {
       return res.status(400).json({ error: "Sender and text are required." });
     }
@@ -906,9 +907,9 @@ router.post('/:id/chat', async (req, res) => {
     if (['completed', 'cancelled'].includes(ride.status)) {
       return res.status(400).json({ error: `Cannot chat on a ${ride.status} ride.` });
     }
-    ride.chatMessages.push({ sender, text, timestamp });
+    ride.chatMessages.push({ sender, senderEmail: senderEmail || '', text, timestamp });
     await ride.save();
-    req.io.to(req.params.id).emit('receive_message', { rideId: req.params.id, sender, text, timestamp });
+    req.io.to(req.params.id).emit('receive_message', { rideId: req.params.id, sender, senderEmail: senderEmail || '', text, timestamp });
     res.status(200).json({ success: true });
   } catch (err) { res.status(500).json({ error: err.message }); }
 });

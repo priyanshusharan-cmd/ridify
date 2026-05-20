@@ -7,12 +7,14 @@ import '../core/socket_service.dart';
 
 class ChatScreen extends StatefulWidget {
   final String myName;
+  final String myEmail;
   final String otherName;
   final String rideId;
 
   const ChatScreen({
     super.key,
     required this.myName,
+    required this.myEmail,
     required this.otherName,
     required this.rideId,
   });
@@ -50,12 +52,14 @@ class _ChatScreenState extends State<ChatScreen> {
         final data = jsonDecode(response.body);
         
         List<String> allParticipants = [];
-        if (data['riderName'] != null && data['riderName'] != widget.myName) {
+        if (data['riderName'] != null && data['riderEmail'] != widget.myEmail) {
           allParticipants.add(data['riderName']);
         }
-        if (data['passengers'] != null) {
-          for (var p in data['passengers']) {
-            if (p != widget.myName) allParticipants.add(p);
+        for (var p in (data['passengers'] ?? [])) {
+          if (p != widget.myEmail) {
+            // Try to get display name from riderDetails
+            String displayName = data['riderDetails']?[p]?['riderName'] ?? p;
+            allParticipants.add(displayName);
           }
         }
         
@@ -67,7 +71,8 @@ class _ChatScreenState extends State<ChatScreen> {
           if (data['chatMessages'] != null) {
             for (var msg in data['chatMessages']) {
               messages.add({
-                'sender': msg['sender'], 
+                'sender': msg['sender'],
+                'senderEmail': msg['senderEmail'] ?? '',
                 'text': msg['text'],
                 'timestamp': msg['timestamp']
               });
@@ -100,7 +105,7 @@ class _ChatScreenState extends State<ChatScreen> {
       await http.post(
         Uri.parse('$kBaseUrl/api/rides/${widget.rideId}/chat'),
         headers: {"Content-Type": "application/json"},
-        body: jsonEncode({"sender": widget.myName, "text": text, "timestamp": timeString}),
+        body: jsonEncode({"sender": widget.myName, "senderEmail": widget.myEmail, "text": text, "timestamp": timeString}),
       );
     } catch (e) {
       debugPrint(e.toString());
@@ -175,7 +180,7 @@ class _ChatScreenState extends State<ChatScreen> {
               padding: const EdgeInsets.all(20),
               itemCount: messages.length,
               itemBuilder: (context, index) {
-                bool isMe = messages[index]['sender'] == widget.myName;
+                bool isMe = messages[index]['senderEmail'] == widget.myEmail;
                 return Align(
                   alignment: isMe
                       ? Alignment.centerRight

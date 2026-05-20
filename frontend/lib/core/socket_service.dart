@@ -10,7 +10,7 @@ class SocketService {
   SocketService._internal();
 
   io.Socket? _socket;
-  String? _userName;
+  String? _userEmail;
   final Map<String, int> _joinedRidesCount = {};
 
   /// The single shared socket. Created lazily on first access.
@@ -31,8 +31,8 @@ class SocketService {
     s.onConnect((_) {
       debugPrint('🔌 Socket connected: ${s.id}');
       // Re-register user on reconnect
-      if (_userName != null) {
-        s.emit('register_user', {'userName': _userName});
+      if (_userEmail != null) {
+        s.emit('register_user', {'userEmail': _userEmail});
       }
       // Re-join all ride rooms on reconnect
       for (final rideId in _joinedRidesCount.keys) {
@@ -47,9 +47,9 @@ class SocketService {
   }
 
   /// Register this user identity. Call once after login.
-  void registerUser(String userName) {
-    _userName = userName;
-    socket.emit('register_user', {'userName': userName});
+  void registerUser(String userEmail) {
+    _userEmail = userEmail;
+    socket.emit('register_user', {'userEmail': userEmail});
   }
 
   /// Join a ride room for targeted events.
@@ -82,6 +82,6 @@ class SocketService {
     _socket?.dispose();
     _socket = null;
     _joinedRidesCount.clear();
-    _userName = null;
+    _userEmail = null;
   }
 }

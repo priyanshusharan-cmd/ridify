@@ -25,14 +25,14 @@ app.use(express.json({ limit: '5mb' }));
 // USER ↔ SOCKET TRACKING
 // =============================================
 
-// userName → Set<socketId>  (supports multiple devices per user)
+// userEmail → Set<socketId>  (supports multiple devices per user)
 const userSockets = new Map();
 
 /**
  * Emit an event to a specific user across all their connected devices.
  */
-function emitToUser(userName, event, data) {
-  const sockets = userSockets.get(userName);
+function emitToUser(userEmail, event, data) {
+  const sockets = userSockets.get(userEmail);
   if (sockets) {
     for (const sid of sockets) {
       io.to(sid).emit(event, data);
@@ -43,8 +43,8 @@ function emitToUser(userName, event, data) {
 /**
  * Join all of a user's connected sockets into a ride room.
  */
-function joinUserToRide(userName, rideId) {
-  const sockets = userSockets.get(userName);
+function joinUserToRide(userEmail, rideId) {
+  const sockets = userSockets.get(userEmail);
   if (sockets) {
     for (const sid of sockets) {
       const s = io.sockets.sockets.get(sid);
@@ -76,34 +76,34 @@ io.on('connection', (socket) => {
   console.log(`📡 Device connected: ${socket.id}`);
 
   // ── Register user identity ─────────────────────────────────────────
-  // Client sends { userName } right after connecting.
+  // Client sends { userEmail } right after connecting.
   // Server maps the socket and auto-joins all active ride rooms.
   socket.on('register_user', async (data) => {
-    const userName = data?.userName;
-    if (!userName) return;
+    const userEmail = data?.userEmail;
+    if (!userEmail) return;
 
-    socket.userName = userName;
+    socket.userEmail = userEmail;
 
-    if (!userSockets.has(userName)) {
-      userSockets.set(userName, new Set());
+    if (!userSockets.has(userEmail)) {
+      userSockets.set(userEmail, new Set());
     }
-    userSockets.get(userName).add(socket.id);
+    userSockets.get(userEmail).add(socket.id);
 
     // Auto-join rooms for every ride this user is involved in
     try {
       const rides = await Ride.find({
         status: { $in: ['available', 'accepted', 'full', 'started'] },
         $or: [
-          { riderName: userName },
-          { passengers: userName },
-          { requests: userName },
+          { riderEmail: userEmail },
+          { passengers: userEmail },
+          { requests: userEmail },
         ],
       }, '_id');
 
       for (const ride of rides) {
         socket.join(ride._id.toString());
       }
-      console.log(`👤 ${userName} registered, joined ${rides.length} rooms`);
+      console.log(`👤 ${userEmail} registered, joined ${rides.length} rooms`);
     } catch (e) {
       console.error('Auto-join error:', e.message);
     }
@@ -111,7 +111,7 @@ io.on('connection', (socket) => {
 
   // ── Explicit room management ───────────────────────────────────────
   socket.on('join_ride', (data) => {
-    if (!socket.userName) return; // Must register first
+    if (!socket.userEmail) return; // Must register first
     if (data?.rideId) {
       socket.join(data.rideId);
     }
@@ -125,7 +125,7 @@ io.on('connection', (socket) => {
 
   // ── Driver location — scoped to ride room ──────────────────────────
   socket.on('driver_location_update', (data) => {
-    if (!socket.userName) return; // Must register first
+    if (!socket.userEmail) return; // Must register first
     if (data?.rideId) {
       // Broadcast to everyone in the room EXCEPT the sender
       socket.to(data.rideId).emit('driver_location_update', data);
@@ -134,10 +134,10 @@ io.on('connection', (socket) => {
 
   // ── Cleanup on disconnect ──────────────────────────────────────────
   socket.on('disconnect', () => {
-    if (socket.userName && userSockets.has(socket.userName)) {
-      userSockets.get(socket.userName).delete(socket.id);
-      if (userSockets.get(socket.userName).size === 0) {
-        userSockets.delete(socket.userName);
+    if (socket.userEmail && userSockets.has(socket.userEmail)) {
+      userSockets.get(socket.userEmail).delete(socket.id);
+      if (userSockets.get(socket.userEmail).size === 0) {
+        userSockets.delete(socket.userEmail);
       }
     }
     console.log(`📡 Device disconnected: ${socket.id}`);

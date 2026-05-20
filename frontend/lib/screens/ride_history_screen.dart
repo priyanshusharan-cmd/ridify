@@ -6,7 +6,8 @@ import '../core/constants.dart';
 
 class RideHistoryScreen extends StatefulWidget {
   final String userName;
-  const RideHistoryScreen({super.key, required this.userName});
+  final String userEmail;
+  const RideHistoryScreen({super.key, required this.userName, required this.userEmail});
 
   @override
   State<RideHistoryScreen> createState() => _RideHistoryScreenState();
@@ -32,13 +33,13 @@ class _RideHistoryScreenState extends State<RideHistoryScreen> {
         setState(() {
           myCompletedRides = allRides
               .where((r) {
-                String uname = widget.userName.trim();
+                String uemail = widget.userEmail.trim();
                 bool isDeclined =
                     r['declined'] != null &&
-                    (r['declined'] as List).contains(uname);
+                    (r['declined'] as List).contains(uemail);
                 bool isKicked =
                     r['kicked'] != null &&
-                    (r['kicked'] as List).contains(uname);
+                    (r['kicked'] as List).contains(uemail);
                 bool isFinished =
                     r['status'] == 'completed' ||
                     r['status'] == 'cancelled' ||
@@ -46,11 +47,11 @@ class _RideHistoryScreenState extends State<RideHistoryScreen> {
                     isKicked;
 
                 bool amIDriver =
-                    r['riderName'] != null &&
-                    r['riderName'].toString().trim() == uname;
+                    r['riderEmail'] != null &&
+                    r['riderEmail'].toString().trim() == uemail;
                 bool amIRider =
                     (r['passengers'] != null &&
-                        (r['passengers'] as List).contains(uname)) ||
+                        (r['passengers'] as List).contains(uemail)) ||
                     isDeclined ||
                     isKicked;
 
@@ -124,18 +125,18 @@ class _RideHistoryScreenState extends State<RideHistoryScreen> {
                       itemCount: myCompletedRides.length,
                       itemBuilder: (context, index) {
                         final ride = myCompletedRides[index];
-                        String uname = widget.userName.trim();
+                        String uemail = widget.userEmail.trim();
 
                         bool wasIDriver =
-                            ride['riderName'] != null &&
-                            ride['riderName'].toString().trim() == uname;
+                            ride['riderEmail'] != null &&
+                            ride['riderEmail'].toString().trim() == uemail;
                         bool isCancelled = ride['status'] == 'cancelled';
                         bool wasDeclined =
                             ride['declined'] != null &&
-                            (ride['declined'] as List).contains(uname);
+                            (ride['declined'] as List).contains(uemail);
                         bool wasKicked =
                             ride['kicked'] != null &&
-                            (ride['kicked'] as List).contains(uname);
+                            (ride['kicked'] as List).contains(uemail);
 
                         final isDark = Theme.of(context).brightness == Brightness.dark;
 

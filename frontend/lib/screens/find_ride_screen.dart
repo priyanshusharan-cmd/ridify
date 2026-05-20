@@ -11,7 +11,8 @@ import 'map_picker_screen.dart';
 
 class FindRideScreen extends StatefulWidget {
   final String userName;
-  const FindRideScreen({super.key, required this.userName});
+  final String userEmail;
+  const FindRideScreen({super.key, required this.userName, required this.userEmail});
 
   @override
   State<FindRideScreen> createState() => _FindRideScreenState();
@@ -158,7 +159,7 @@ class _FindRideScreenState extends State<FindRideScreen> {
       }
 
       final Uri searchUri = Uri.parse(
-        "$serverUrl?pickup=${Uri.encodeComponent(pickupController.text)}&destination=${Uri.encodeComponent(destinationController.text)}&seats=$selectedSeats&vehicle=$selectedVehicle&date=$dateStr$timeQueryStr&lat=$pickupLat&lng=$pickupLng&destLat=$destLat&destLng=$destLng&radius=${walkableRadius.toInt()}&userName=${Uri.encodeComponent(widget.userName)}",
+        "$serverUrl?pickup=${Uri.encodeComponent(pickupController.text)}&destination=${Uri.encodeComponent(destinationController.text)}&seats=$selectedSeats&vehicle=$selectedVehicle&date=$dateStr$timeQueryStr&lat=$pickupLat&lng=$pickupLng&destLat=$destLat&destLng=$destLng&radius=${walkableRadius.toInt()}&userEmail=${Uri.encodeComponent(widget.userEmail)}",
       );
 
       final response = await http.get(searchUri).timeout(const Duration(seconds: 15));
@@ -166,7 +167,7 @@ class _FindRideScreenState extends State<FindRideScreen> {
       if (response.statusCode == 200) {
         List<dynamic> allRides = jsonDecode(response.body);
         List<dynamic> validRides = allRides
-            .where((ride) => ride['riderName'] != widget.userName)
+            .where((ride) => ride['riderEmail'] != widget.userEmail)
             .toList();
 
         if (mounted) {
@@ -217,6 +218,7 @@ class _FindRideScreenState extends State<FindRideScreen> {
         headers: {"Content-Type": "application/json"},
         body: jsonEncode({
           "riderName": widget.userName,
+          "riderEmail": widget.userEmail,
           "seats": selectedSeats,
           "computedFare": ride['computedFare'],
           "computedDistance": ride['computedDistance'],

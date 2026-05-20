@@ -18,9 +18,10 @@ class LiveTrackingScreen extends StatefulWidget {
   final bool isDriver;
   final bool isAlreadyAccepted;
   final String myName;
+  final String myEmail;
   final String otherUserName;
   final String rideId;
-  const LiveTrackingScreen({super.key, this.isDriver = false, this.isAlreadyAccepted = false, this.myName = "Me", this.otherUserName = "Group", this.rideId = ""});
+  const LiveTrackingScreen({super.key, this.isDriver = false, this.isAlreadyAccepted = false, this.myName = "Me", this.myEmail = "", this.otherUserName = "Group", this.rideId = ""});
   @override
   State<LiveTrackingScreen> createState() => _LiveTrackingScreenState();
 }
@@ -137,12 +138,12 @@ class _LiveTrackingScreenState extends State<LiveTrackingScreen> {
       final response = await http.get(Uri.parse('$kBaseUrl/api/rides/${widget.rideId}'));
       if (response.statusCode == 200 && mounted) {
         final data = jsonDecode(response.body);
-        if (!widget.isDriver && !(data['passengers'] ?? []).contains(widget.myName) && !(data['boardedPassengers'] ?? []).contains(widget.myName) && !(data['droppedPassengers'] ?? []).contains(widget.myName)) { _kickSelfOut(); return; }
+        if (!widget.isDriver && !(data['passengers'] ?? []).contains(widget.myEmail) && !(data['boardedPassengers'] ?? []).contains(widget.myEmail) && !(data['droppedPassengers'] ?? []).contains(widget.myEmail)) { _kickSelfOut(); return; }
         // If rider was dropped, navigate to payment
-        if (!widget.isDriver && (data['droppedPassengers'] ?? []).contains(widget.myName)) {
+        if (!widget.isDriver && (data['droppedPassengers'] ?? []).contains(widget.myEmail)) {
           int fare = 0;
           final details = data['riderDetails'];
-          if (details != null && details[widget.myName] != null) fare = details[widget.myName]['fare'] ?? 0;
+          if (details != null && details[widget.myEmail] != null) fare = details[widget.myEmail]['fare'] ?? 0;
           _triggerPaymentScreen(fare);
           return;
         }
@@ -193,7 +194,7 @@ class _LiveTrackingScreenState extends State<LiveTrackingScreen> {
       if (data == null) return;
       final map = Map<String, dynamic>.from(data);
       if (mounted && map['rideId'].toString() == widget.rideId) {
-        if (!widget.isDriver && map['riderName'] == widget.myName) {
+        if (!widget.isDriver && map['riderName'] == widget.myEmail) {
           _triggerPaymentScreen(map['fare'] ?? 0);
         } else if (map['ride'] != null) {
           setState(() {
@@ -212,9 +213,9 @@ class _LiveTrackingScreenState extends State<LiveTrackingScreen> {
           setState(() {
             rideData = Map<String, dynamic>.from(map['ride']);
             // Proactively mark as arrived for instantaneous UI update
-            if (map['riderName'] == widget.myName) {
+            if (map['riderName'] == widget.myEmail) {
               List arrived = List.from(rideData!['arrivedAt'] ?? []);
-              if (!arrived.contains(widget.myName)) arrived.add(widget.myName);
+              if (!arrived.contains(widget.myEmail)) arrived.add(widget.myEmail);
               rideData!['arrivedAt'] = arrived;
             }
           });
@@ -223,8 +224,8 @@ class _LiveTrackingScreenState extends State<LiveTrackingScreen> {
         // Only show the banner if this event is specifically for this passenger
         // AND they haven't already boarded (prevents stale re-notifications)
         if (!widget.isDriver &&
-            map['riderName'] == widget.myName &&
-            !(rideData?['boardedPassengers'] ?? []).contains(widget.myName)) {
+            map['riderName'] == widget.myEmail &&
+            !(rideData?['boardedPassengers'] ?? []).contains(widget.myEmail)) {
           ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("Driver has arrived! Please board."), backgroundColor: Colors.green));
         }
       }
@@ -252,7 +253,7 @@ class _LiveTrackingScreenState extends State<LiveTrackingScreen> {
             rideData = Map<String, dynamic>.from(map['ride']);
           });
         }
-        if (map['kickedUser'] == widget.myName) {
+        if (map['kickedUser'] == widget.myEmail) {
           _kickSelfOut();
         }
       }
@@ -292,8 +293,8 @@ class _LiveTrackingScreenState extends State<LiveTrackingScreen> {
             final rideMap = map['ride'] as Map<String, dynamic>?;
             if (rideMap != null) {
               final details = rideMap['riderDetails'];
-              if (details != null && details[widget.myName] != null) {
-                fare = (details[widget.myName]['fare'] as num?)?.toInt() ?? 0;
+              if (details != null && details[widget.myEmail] != null) {
+                fare = (details[widget.myEmail]['fare'] as num?)?.toInt() ?? 0;
               }
             }
             _triggerPaymentScreen(fare);
@@ -329,7 +330,7 @@ class _LiveTrackingScreenState extends State<LiveTrackingScreen> {
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (!mounted) return;
       Navigator.of(context).popUntil((route) => route.isFirst);
-      Navigator.of(context).push(MaterialPageRoute(builder: (_) => RiderCompletingScreen(isDriver: false, rideId: widget.rideId, myName: widget.myName, fareAmount: fareAmount)));
+      Navigator.of(context).push(MaterialPageRoute(builder: (_) => RiderCompletingScreen(isDriver: false, rideId: widget.rideId, myName: widget.myName, myEmail: widget.myEmail, fareAmount: fareAmount)));
     });
   }
 
@@ -365,12 +366,12 @@ class _LiveTrackingScreenState extends State<LiveTrackingScreen> {
     setState(() {
       if (rideData != null) {
         List boarded = List.from(rideData!['boardedPassengers'] ?? []);
-        if (!boarded.contains(widget.myName)) boarded.add(widget.myName);
+        if (!boarded.contains(widget.myEmail)) boarded.add(widget.myEmail);
         rideData!['boardedPassengers'] = boarded;
       }
     });
     try {
-      final response = await http.patch(Uri.parse('$kBaseUrl/api/rides/board/${widget.rideId}/${widget.myName}'));
+      final response = await http.patch(Uri.parse('$kBaseUrl/api/rides/board/${widget.rideId}/${widget.myEmail}'));
       if (response.statusCode != 200 && mounted) { 
         ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(jsonDecode(response.body)['error'] ?? "Failed to board"), backgroundColor: Colors.red)); 
         syncRideStatus();
@@ -378,12 +379,13 @@ class _LiveTrackingScreenState extends State<LiveTrackingScreen> {
     } catch (e) { debugPrint(e.toString()); syncRideStatus(); }
   }
 
-  void _confirmKickPassenger(String name) {
+  void _confirmKickPassenger(String passengerEmail) {
+    String displayName = rideData?['riderDetails']?[passengerEmail]?['riderName'] ?? passengerEmail;
     showDialog(
       context: context,
       builder: (_) => AlertDialog(
         title: const Text("Kick Passenger"),
-        content: Text("Are you sure you want to kick out $name?"),
+        content: Text("Are you sure you want to kick out $displayName?"),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
@@ -393,7 +395,7 @@ class _LiveTrackingScreenState extends State<LiveTrackingScreen> {
             style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
             onPressed: () {
               Navigator.pop(context);
-              kickPassenger(name);
+              kickPassenger(passengerEmail);
             },
             child: const Text("Confirm", style: TextStyle(color: Colors.white)),
           ),
@@ -427,11 +429,12 @@ class _LiveTrackingScreenState extends State<LiveTrackingScreen> {
     try { await http.patch(Uri.parse('$kBaseUrl/api/rides/dropoff/${widget.rideId}/$name')); } catch (e) { debugPrint(e.toString()); syncRideStatus(); } 
   }
 
-  Future<void> dropOffPassenger(String name) async {
-    int fare = rideData?['riderDetails']?[name]?['fare'] ?? 0;
+  Future<void> dropOffPassenger(String passengerEmail) async {
+    String displayName = rideData?['riderDetails']?[passengerEmail]?['riderName'] ?? passengerEmail;
+    int fare = rideData?['riderDetails']?[passengerEmail]?['fare'] ?? 0;
     showDialog(context: context, builder: (_) => AlertDialog(
-      title: Text("Drop-off $name"), content: Text("Collect ₹$fare from $name."),
-      actions: [TextButton(onPressed: () { Navigator.pop(context); _executeDropOff(name); }, child: const Text("Confirm Drop-off", style: TextStyle(color: Colors.green)))],
+      title: Text("Drop-off $displayName"), content: Text("Collect ₹$fare from $displayName."),
+      actions: [TextButton(onPressed: () { Navigator.pop(context); _executeDropOff(passengerEmail); }, child: const Text("Confirm Drop-off", style: TextStyle(color: Colors.green)))],
     ));
   }
 
@@ -457,10 +460,11 @@ class _LiveTrackingScreenState extends State<LiveTrackingScreen> {
       int totalFare = 0;
       List<String> details = [];
       for (var p in boardedPassengers) {
-        String name = p.toString();
-        int fare = (rideData?['riderDetails']?[name]?['fare'] as num?)?.toInt() ?? 0;
+        String pEmail = p.toString();
+        String displayName = rideData?['riderDetails']?[pEmail]?['riderName'] ?? pEmail;
+        int fare = (rideData?['riderDetails']?[pEmail]?['fare'] as num?)?.toInt() ?? 0;
         totalFare += fare;
-        details.add("$name: ₹$fare");
+        details.add("$displayName: ₹$fare");
       }
       
       bool? confirm = await showDialog<bool>(
@@ -525,10 +529,12 @@ class _LiveTrackingScreenState extends State<LiveTrackingScreen> {
     for (var wp in wps) {
       String p = wp['passenger'];
       if (wp['type'] == 'pickup' && pref != 'shared_start' && !(rideData!['boardedPassengers'] ?? []).contains(p) && !(rideData!['droppedPassengers'] ?? []).contains(p)) {
-        return {"title": "$p's Pickup", "address": wp['location'], "lat": wp['lat'], "lng": wp['lng']};
+        String displayName = rideData?['riderDetails']?[p]?['riderName'] ?? p;
+        return {"title": "$displayName's Pickup", "address": wp['location'], "lat": wp['lat'], "lng": wp['lng']};
       }
       if (wp['type'] == 'dropoff' && (rideData!['boardedPassengers'] ?? []).contains(p)) {
-        return {"title": "$p's Drop", "address": wp['location'], "lat": wp['lat'], "lng": wp['lng']};
+        String displayName = rideData?['riderDetails']?[p]?['riderName'] ?? p;
+        return {"title": "$displayName's Drop", "address": wp['location'], "lat": wp['lat'], "lng": wp['lng']};
       }
     }
     
@@ -578,9 +584,9 @@ class _LiveTrackingScreenState extends State<LiveTrackingScreen> {
     final panelSub = isDark ? Colors.white54 : Colors.grey;
     String driverLabel = widget.isDriver ? "Me (Driver)" : "${widget.otherUserName} (Driver)";
 
-    bool iHaveBoarded = (rideData?['boardedPassengers'] ?? []).contains(widget.myName);
-    bool iAmArrived = (rideData?['arrivedAt'] ?? []).contains(widget.myName);
-    bool iAmDropped = (rideData?['droppedPassengers'] ?? []).contains(widget.myName);
+    bool iHaveBoarded = (rideData?['boardedPassengers'] ?? []).contains(widget.myEmail);
+    bool iAmArrived = (rideData?['arrivedAt'] ?? []).contains(widget.myEmail);
+    bool iAmDropped = (rideData?['droppedPassengers'] ?? []).contains(widget.myEmail);
 
     String statusText;
     if (isStarted) {
@@ -782,6 +788,8 @@ class _LiveTrackingScreenState extends State<LiveTrackingScreen> {
                 // Truncate address
                 if (addrText.length > 40) addrText = "${addrText.substring(0, 40)}...";
 
+                String displayName = rideData?['riderDetails']?[p]?['riderName'] ?? p.toString();
+
                 return Container(
                   margin: const EdgeInsets.only(bottom: 8),
                   padding: const EdgeInsets.all(12),
@@ -791,10 +799,10 @@ class _LiveTrackingScreenState extends State<LiveTrackingScreen> {
                     border: Border.all(color: isBoarded ? Colors.green.withValues(alpha: 0.3) : (isDark ? Colors.white10 : Colors.black12)),
                   ),
                   child: Row(children: [
-                    CircleAvatar(radius: 16, backgroundColor: isDark ? const Color(0xFF2C2C2C) : Colors.grey[200], child: Text(p.toString().substring(0, 1).toUpperCase(), style: TextStyle(color: panelText, fontWeight: FontWeight.bold, fontSize: 13))),
+                    CircleAvatar(radius: 16, backgroundColor: isDark ? const Color(0xFF2C2C2C) : Colors.grey[200], child: Text(displayName.substring(0, 1).toUpperCase(), style: TextStyle(color: panelText, fontWeight: FontWeight.bold, fontSize: 13))),
                     const SizedBox(width: 12),
                     Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-                      Text(p, style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14, color: panelText)),
+                      Text(displayName, style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14, color: panelText)),
                       const SizedBox(height: 2),
                       Text(subtitle, style: TextStyle(color: isBoarded ? (isDark ? Colors.green.shade300 : Colors.green) : Colors.orange, fontSize: 11, fontWeight: FontWeight.w600)),
                       if (addrText.isNotEmpty) ...[
@@ -835,7 +843,7 @@ class _LiveTrackingScreenState extends State<LiveTrackingScreen> {
             const SizedBox(height: 10),
             SizedBox(width: double.infinity, height: 50, child: ElevatedButton.icon(
               style: ElevatedButton.styleFrom(backgroundColor: isDark ? const Color(0xFF2C2C2C) : Colors.black),
-              onPressed: () => Navigator.push(context, MaterialPageRoute(builder: (_) => ChatScreen(myName: widget.myName, otherName: widget.isDriver ? "Group" : widget.otherUserName, rideId: widget.rideId))),
+              onPressed: () => Navigator.push(context, MaterialPageRoute(builder: (_) => ChatScreen(myName: widget.myName, myEmail: widget.myEmail, otherName: widget.isDriver ? "Group" : widget.otherUserName, rideId: widget.rideId))),
               icon: const Icon(Icons.chat_bubble_outline, color: Colors.white), label: const Text("Chat", style: TextStyle(color: Colors.white)),
             )),
           ]),

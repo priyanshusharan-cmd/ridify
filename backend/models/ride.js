@@ -2,6 +2,7 @@ const mongoose = require('mongoose');
 
 const RideSchema = new mongoose.Schema({
   riderName: String,
+  riderEmail: String,
   pickupLocation: String,
   pickupLat: Number,
   pickupLng: Number,
@@ -49,7 +50,7 @@ const RideSchema = new mongoose.Schema({
   declined: { type: [String], default: [] },
   kicked: { type: [String], default: [] },
   seatAllocations: { type: Map, of: Number, default: {} },
-  chatMessages: [{ sender: String, text: String, timestamp: String }]
+  chatMessages: [{ sender: String, senderEmail: String, text: String, timestamp: String }]
 });
 RideSchema.index({ pickupCoords: "2dsphere" });
 

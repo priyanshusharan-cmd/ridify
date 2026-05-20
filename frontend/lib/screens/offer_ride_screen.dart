@@ -9,7 +9,8 @@ import 'map_picker_screen.dart';
 
 class OfferRideScreen extends StatefulWidget {
   final String userName;
-  const OfferRideScreen({super.key, required this.userName});
+  final String userEmail;
+  const OfferRideScreen({super.key, required this.userName, required this.userEmail});
 
   @override
   State<OfferRideScreen> createState() => _OfferRideScreenState();
@@ -223,6 +224,7 @@ class _OfferRideScreenState extends State<OfferRideScreen> {
         headers: {"Content-Type": "application/json"},
         body: jsonEncode({
           "riderName": widget.userName,
+          "riderEmail": widget.userEmail,
           "pickupLocation": pickupController.text,
           "pickupLat": pickupLat,
           "pickupLng": pickupLng,

@@ -8,6 +8,7 @@ class RiderCompletingScreen extends StatefulWidget {
   final bool isDriver;
   final String rideId;
   final String myName;
+  final String myEmail;
   final int fareAmount;
 
   const RiderCompletingScreen({
@@ -15,6 +16,7 @@ class RiderCompletingScreen extends StatefulWidget {
     this.isDriver = false,
     this.rideId = "",
     this.myName = "",
+    this.myEmail = "",
     this.fareAmount = 0,
   });
 
@@ -57,7 +59,7 @@ class _RiderCompletingScreenState extends State<RiderCompletingScreen> {
 
   Future<void> markAsPaid() async {
     try {
-      await http.patch(Uri.parse('$kBaseUrl/api/rides/pay/${widget.rideId}/${widget.myName}'));
+      await http.patch(Uri.parse('$kBaseUrl/api/rides/pay/${widget.rideId}/${widget.myEmail}'));
       setState(() {
         isPaid = true;
       });
@@ -88,8 +90,8 @@ class _RiderCompletingScreenState extends State<RiderCompletingScreen> {
 
     String driverName = rideData?['riderName'] ?? "Driver";
     String date = rideData?['departureTime'] ?? "Today";
-    String pickup = rideData?['riderDetails']?[widget.myName]?['pickupLocation'] ?? rideData?['pickupLocation'] ?? "Pickup Location";
-    String dest = rideData?['riderDetails']?[widget.myName]?['destination'] ?? rideData?['destination'] ?? "Destination";
+    String pickup = rideData?['riderDetails']?[widget.myEmail]?['pickupLocation'] ?? rideData?['pickupLocation'] ?? "Pickup Location";
+    String dest = rideData?['riderDetails']?[widget.myEmail]?['destination'] ?? rideData?['destination'] ?? "Destination";
 
     return Scaffold(
       backgroundColor: Theme.of(context).scaffoldBackgroundColor,

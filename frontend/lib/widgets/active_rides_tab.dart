@@ -8,6 +8,7 @@ import '../core/utils.dart';
 class ActiveRidesTab extends StatefulWidget {
   final List<dynamic> rides;
   final String myName;
+  final String myEmail;
   final VoidCallback onRefresh;
   final VoidCallback onGoHome;
 
@@ -15,6 +16,7 @@ class ActiveRidesTab extends StatefulWidget {
     super.key,
     required this.rides,
     required this.myName,
+    required this.myEmail,
     required this.onRefresh,
     required this.onGoHome,
   });
@@ -105,7 +107,7 @@ class _ActiveRidesTabState extends State<ActiveRidesTab> {
   }
 
   void _openMap(Map<String, dynamic> r) {
-    bool isDriver = r['riderName'] == widget.myName;
+    bool isDriver = r['riderEmail'] == widget.myEmail;
     Navigator.push(
       context,
       MaterialPageRoute(
@@ -114,6 +116,7 @@ class _ActiveRidesTabState extends State<ActiveRidesTab> {
           isAlreadyAccepted: true,
           rideId: r['_id'].toString(),
           myName: widget.myName,
+          myEmail: widget.myEmail,
           otherUserName: isDriver ? "Group" : r['riderName'],
         ),
       ),
@@ -276,19 +279,19 @@ class _ActiveRidesTabState extends State<ActiveRidesTab> {
         .toList();
 
     final List<dynamic> myOfferedRides = activeRidesOnly.where((r) {
-      return r['riderName'] == widget.myName &&
+      return r['riderEmail'] == widget.myEmail &&
           (r['status'] == 'available' ||
               r['status'] == 'accepted' ||
               r['status'] == 'full');
     }).toList();
 
     final List<dynamic> myPendingRequests = activeRidesOnly
-        .where((r) => (r['requests'] as List?)?.contains(widget.myName) ?? false)
+        .where((r) => (r['requests'] as List?)?.contains(widget.myEmail) ?? false)
         .toList();
 
     final List<dynamic> liveRides = activeRidesOnly.where((r) {
-      final bool isDriver = r['riderName'] == widget.myName;
-      final bool isPassenger = (r['passengers'] as List?)?.contains(widget.myName) ?? false;
+      final bool isDriver = r['riderEmail'] == widget.myEmail;
+      final bool isPassenger = (r['passengers'] as List?)?.contains(widget.myEmail) ?? false;
 
       if (isDriver) {
         return r['status'] == 'started';
@@ -390,6 +393,7 @@ class _ActiveRidesTabState extends State<ActiveRidesTab> {
               const SizedBox(height: 16),
               ...requests.map((requester) {
                 final riderDetail = (selectedObj['riderDetails'] as Map?)?[requester] as Map?;
+                final String displayName = (riderDetail?['riderName'] ?? requester).toString();
                 final int requestedSeats = (riderDetail?['seats'] as num?)?.toInt() ?? ((selectedObj['seatAllocations'] as Map?)?[requester] as num?)?.toInt() ?? 1;
                 final num fare = riderDetail?['fare'] ?? selectedObj['fare'] ?? 0;
                 final num distance = riderDetail?['distance'] ?? 0;
@@ -416,14 +420,14 @@ class _ActiveRidesTabState extends State<ActiveRidesTab> {
                         children: [
                           CircleAvatar(
                             backgroundColor: Theme.of(context).brightness == Brightness.dark ? const Color(0xFF2C2C2C) : Colors.black,
-                            child: Text(requester.toString().substring(0, 1).toUpperCase(), style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
+                            child: Text(displayName.substring(0, 1).toUpperCase(), style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
                           ),
                           const SizedBox(width: 12),
                           Expanded(
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
-                                Text("$requester", style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
+                                Text(displayName, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
                                 Text("$requestedSeats Seat(s) • ${distance.toStringAsFixed(1)} km", style: TextStyle(color: Theme.of(context).textTheme.bodyMedium?.color?.withValues(alpha: 0.6), fontSize: 13)),
                               ],
                             ),
@@ -580,7 +584,7 @@ class _ActiveRidesTabState extends State<ActiveRidesTab> {
                             ),
                           ),
                           TextButton(
-                            onPressed: () => _action("$kBaseUrl/api/rides/decline/${r['_id']}/${widget.myName}", context),
+                            onPressed: () => _action("$kBaseUrl/api/rides/decline/${r['_id']}/${widget.myEmail}", context),
                             child: const Text("Cancel", style: TextStyle(color: Colors.red, fontWeight: FontWeight.bold)),
                           ),
                         ],

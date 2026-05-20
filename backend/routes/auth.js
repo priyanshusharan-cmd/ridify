@@ -38,11 +38,6 @@ router.post('/register', async (req, res) => {
     if (existingUser) {
       return res.status(400).json({ error: 'An account with this email already exists.' });
     }
-    const escapedName = name.trim().replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-    const existingName = await User.findOne({ name: { $regex: new RegExp(`^${escapedName}$`, 'i') } });
-    if (existingName) {
-      return res.status(400).json({ error: 'An account with this name already exists.' });
-    }
     if (!isValidEmail(email)) {
       return res.status(400).json({ error: 'Please enter a valid email address.' });
     }
@@ -100,10 +95,10 @@ router.delete('/user/:email', async (req, res) => {
       return res.status(404).json({ error: 'User not found.' });
     }
 
-    const userName = user.name;
+    const userEmail = user.email;
 
     // 1. Cancel all rides this user is hosting and notify rooms
-    const hostedRides = await Ride.find({ riderName: userName, status: { $nin: ['completed', 'cancelled'] } });
+    const hostedRides = await Ride.find({ riderEmail: userEmail, status: { $nin: ['completed', 'cancelled'] } });
     for (const ride of hostedRides) {
       ride.status = 'cancelled';
       await ride.save();
@@ -111,25 +106,25 @@ router.delete('/user/:email', async (req, res) => {
       req.io.to(rideId).emit('ride_cancelled', { rideId, ride: ride.toJSON() });
     }
 
-    // 2. Remove user from all ride arrays they appear in
+    // 2. Remove user from all ride arrays they appear in (arrays now store emails)
     const affectedRides = await Ride.find({
       $or: [
-        { passengers: userName },
-        { requests: userName },
-        { boardedPassengers: userName },
-        { arrivedAt: userName },
+        { passengers: userEmail },
+        { requests: userEmail },
+        { boardedPassengers: userEmail },
+        { arrivedAt: userEmail },
       ]
     });
 
     for (const ride of affectedRides) {
-      ride.passengers = ride.passengers.filter(p => p !== userName);
-      ride.requests = ride.requests.filter(p => p !== userName);
-      ride.boardedPassengers = ride.boardedPassengers.filter(p => p !== userName);
-      ride.arrivedAt = (ride.arrivedAt || []).filter(p => p !== userName);
+      ride.passengers = ride.passengers.filter(p => p !== userEmail);
+      ride.requests = ride.requests.filter(p => p !== userEmail);
+      ride.boardedPassengers = ride.boardedPassengers.filter(p => p !== userEmail);
+      ride.arrivedAt = (ride.arrivedAt || []).filter(p => p !== userEmail);
 
-      // Remove from riderDetails Map
+      // Remove from riderDetails Map (keyed by email)
       if (ride.riderDetails && typeof ride.riderDetails.delete === 'function') {
-        ride.riderDetails.delete(userName);
+        ride.riderDetails.delete(userEmail);
       }
 
       // Update status if capacity was freed
