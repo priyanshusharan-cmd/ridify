@@ -133,17 +133,24 @@ class _DriverCompletingScreenState extends State<DriverCompletingScreen> {
       totalEarnings += fare;
     }
 
-    // Mocking distance for the UI design as it might not be explicitly stored in rideData
-    String distance = rideData?['distance']?.toString() ?? "26.4 km";
-    String duration = rideData?['duration']?.toString() ?? "38 mins";
-    if (rideData?['startedAt'] != null && rideData?['completedAt'] != null) {
-      try {
-        DateTime start = DateTime.parse(rideData!['startedAt']);
-        DateTime end = DateTime.parse(rideData!['completedAt']);
-        int diffMins = end.difference(start).inMinutes;
-        duration = "$diffMins mins";
-      } catch (e) {
-        debugPrint("Error parsing dates: $e");
+    String distance = "0.0 km";
+    String duration = "0 mins";
+    if (rideData?['status'] == 'cancelled') {
+      distance = "0.0 km";
+      duration = "0 mins";
+    } else {
+      String d = (rideData?['totalDistance'] ?? rideData?['distance'] ?? "0.0").toString();
+      distance = d.contains("km") ? d : "$d km";
+      
+      if (rideData?['startedAt'] != null && rideData?['completedAt'] != null) {
+        try {
+          DateTime start = DateTime.parse(rideData!['startedAt']);
+          DateTime end = DateTime.parse(rideData!['completedAt']);
+          int diffMins = end.difference(start).inMinutes;
+          duration = "${diffMins < 0 ? 0 : diffMins} mins";
+        } catch (e) {
+          debugPrint("Error parsing dates: $e");
+        }
       }
     }
 

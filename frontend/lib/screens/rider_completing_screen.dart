@@ -95,20 +95,27 @@ class _RiderCompletingScreenState extends State<RiderCompletingScreen> {
     // Format date properly if it exists, otherwise just today
     String dateStr = rideData?['departureTime'] ?? "Today";
 
-    // Mocking distance for the UI design as it might not be explicitly stored in rideData for rider specific trip
-    String distance = rideData?['distance']?.toString() ?? "26.4 km";
-    String duration = rideData?['duration']?.toString() ?? "38 mins";
-    
-    String? boardedAt = rideData?['riderDetails']?[widget.myEmail]?['boardedAt'];
-    String? droppedAt = rideData?['riderDetails']?[widget.myEmail]?['droppedAt'];
-    if (boardedAt != null && droppedAt != null) {
-      try {
-        DateTime start = DateTime.parse(boardedAt);
-        DateTime end = DateTime.parse(droppedAt);
-        int diffMins = end.difference(start).inMinutes;
-        duration = "$diffMins mins";
-      } catch (e) {
-        debugPrint("Error parsing dates: $e");
+    String distance = "0.0 km";
+    String duration = "0 mins";
+
+    if (rideData?['status'] == 'cancelled') {
+      distance = "0.0 km";
+      duration = "0 mins";
+    } else {
+      String d = (rideData?['riderDetails']?[widget.myEmail]?['computedDistance'] ?? "0.0").toString();
+      distance = d.contains("km") ? d : "$d km";
+      
+      String? boardedAt = rideData?['riderDetails']?[widget.myEmail]?['boardedAt'];
+      String? droppedAt = rideData?['riderDetails']?[widget.myEmail]?['droppedAt'];
+      if (boardedAt != null && droppedAt != null) {
+        try {
+          DateTime start = DateTime.parse(boardedAt);
+          DateTime end = DateTime.parse(droppedAt);
+          int diffMins = end.difference(start).inMinutes;
+          duration = "${diffMins < 0 ? 0 : diffMins} mins";
+        } catch (e) {
+          debugPrint("Error parsing dates: $e");
+        }
       }
     }
 

@@ -174,27 +174,40 @@ class _RideHistoryScreenState extends State<RideHistoryScreen> {
       timePart = rawDate; // Fallback
     }
 
-    // Mock distance/duration if missing
-    String distance = ride['distance']?.toString() ?? "26.4 km";
-    String duration = ride['duration']?.toString() ?? "38 mins";
-    
-    if (wasIDriver) {
-      if (ride['startedAt'] != null && ride['completedAt'] != null) {
-        try {
-          DateTime start = DateTime.parse(ride['startedAt']);
-          DateTime end = DateTime.parse(ride['completedAt']);
-          duration = "${end.difference(start).inMinutes} mins";
-        } catch (_) {}
-      }
+    String distance = "0.0 km";
+    String duration = "0 mins";
+
+    if (isCancelled) {
+      distance = "0.0 km";
+      duration = "0 mins";
     } else {
-      String? boardedAt = ride['riderDetails']?[uemail.replaceAll('.', '_dot_')]?['boardedAt'] ?? ride['riderDetails']?[uemail]?['boardedAt'];
-      String? droppedAt = ride['riderDetails']?[uemail.replaceAll('.', '_dot_')]?['droppedAt'] ?? ride['riderDetails']?[uemail]?['droppedAt'];
-      if (boardedAt != null && droppedAt != null) {
-        try {
-          DateTime start = DateTime.parse(boardedAt);
-          DateTime end = DateTime.parse(droppedAt);
-          duration = "${end.difference(start).inMinutes} mins";
-        } catch (_) {}
+      if (wasIDriver) {
+        String d = (ride['totalDistance'] ?? ride['distance'] ?? "0.0").toString();
+        distance = d.contains("km") ? d : "$d km";
+        
+        if (ride['startedAt'] != null && ride['completedAt'] != null) {
+          try {
+            DateTime start = DateTime.parse(ride['startedAt']);
+            DateTime end = DateTime.parse(ride['completedAt']);
+            int diff = end.difference(start).inMinutes;
+            duration = "${diff < 0 ? 0 : diff} mins";
+          } catch (_) {}
+        }
+      } else {
+        String d = (ride['riderDetails']?[uemail.replaceAll('.', '_dot_')]?['computedDistance'] ?? 
+                   ride['riderDetails']?[uemail]?['computedDistance'] ?? "0.0").toString();
+        distance = d.contains("km") ? d : "$d km";
+
+        String? boardedAt = ride['riderDetails']?[uemail.replaceAll('.', '_dot_')]?['boardedAt'] ?? ride['riderDetails']?[uemail]?['boardedAt'];
+        String? droppedAt = ride['riderDetails']?[uemail.replaceAll('.', '_dot_')]?['droppedAt'] ?? ride['riderDetails']?[uemail]?['droppedAt'];
+        if (boardedAt != null && droppedAt != null) {
+          try {
+            DateTime start = DateTime.parse(boardedAt);
+            DateTime end = DateTime.parse(droppedAt);
+            int diff = end.difference(start).inMinutes;
+            duration = "${diff < 0 ? 0 : diff} mins";
+          } catch (_) {}
+        }
       }
     }
 
