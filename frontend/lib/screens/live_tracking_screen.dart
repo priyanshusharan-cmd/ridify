@@ -319,7 +319,7 @@ class _LiveTrackingScreenState extends State<LiveTrackingScreen> {
     _on('ride_cancelled', (data) {
       if (data == null) return;
       final map = Map<String, dynamic>.from(data);
-      if (mounted && map['rideId'].toString() == widget.rideId) {
+      if (mounted && map['rideId'].toString() == widget.rideId && !_isNavigatingToCompletion) {
         Navigator.pop(context);
         ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("Ride cancelled"), backgroundColor: Colors.red));
       }
@@ -328,11 +328,16 @@ class _LiveTrackingScreenState extends State<LiveTrackingScreen> {
 
   // Driver-only green completion screen
   void _triggerCompletionScreen() {
-    if (_isNavigatingToCompletion || !mounted) return;
+    if (_isNavigatingToCompletion || !mounted) {
+      return;
+    }
     _isNavigatingToCompletion = true;
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      if (!mounted) return;
-      Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (_) => DriverCompletingScreen(rideId: widget.rideId)));
+    // Delay to ensure dialog is fully closed and context is stable
+    Future.delayed(const Duration(milliseconds: 100), () {
+      if (!mounted) {
+        return;
+      }
+      Navigator.of(context).push(MaterialPageRoute(builder: (context) => DriverCompletingScreen(rideId: widget.rideId)));
     });
   }
 
@@ -508,14 +513,13 @@ class _LiveTrackingScreenState extends State<LiveTrackingScreen> {
     setState(() {
       if (rideData != null) rideData!['status'] = 'completed';
     });
-    try { 
-      final res = await http.patch(Uri.parse('$kBaseUrl/api/rides/end/${widget.rideId}')); 
+    try {
+      final res = await http.patch(Uri.parse('$kBaseUrl/api/rides/end/${widget.rideId}'));
       if (res.statusCode == 200 && mounted) {
         _triggerCompletionScreen();
       }
-    } catch (e) { 
-      debugPrint(e.toString()); 
-      syncRideStatus(); 
+    } catch (e) {
+      syncRideStatus();
     }
   }
   Future<void> startRide() async { 

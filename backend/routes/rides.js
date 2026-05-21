@@ -265,7 +265,8 @@ router.get('/search', async (req, res) => {
           if (checkCapacityForSearch(ride, startIndex, endIndex, reqSeats)) {
             let percentage = tripDistance / (ride.totalDistance || tripDistance || 1);
             if (percentage > 1) percentage = 1;
-            const computedFare = Math.round(ride.fare * percentage);
+            // If percentage is >= 0.99, charge full fare to avoid rounding losses
+            const computedFare = percentage >= 0.99 ? ride.fare : Math.round(ride.fare * percentage);
 
             const rideObj = { ...ride };
             rideObj.computedFare = computedFare;

@@ -268,17 +268,6 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
     // Riders are handled via passenger_dropped in live_tracking_screen
     socket.on('ride_ended', (data) {
       fetchRides();
-      if (mounted && data != null) {
-        final bool iAmDriver = data['riderEmail'] == widget.userEmail;
-        if (iAmDriver) {
-          WidgetsBinding.instance.addPostFrameCallback((_) {
-            if (!mounted) return;
-            Navigator.of(context).popUntil((route) => route.isFirst);
-            _triggerVictoryLap();
-            setState(() => _currentIndex = 0);
-          });
-        }
-      }
     });
 
     socket.on('database_wiped', (_) {
