@@ -144,7 +144,8 @@ class _DriverCompletingScreenState extends State<DriverCompletingScreen> {
       duration = "0 mins";
     } else {
       String d = (rideData?['totalDistance'] ?? rideData?['distance'] ?? "0.0").toString();
-      distance = d.contains("km") ? d : "$d km";
+      double distValue = double.tryParse(d.replaceAll(RegExp(r'[^0-9.]'), '')) ?? 0.0;
+      distance = "${distValue.toStringAsFixed(1)} km";
       
       if (rideData?['startedAt'] != null && rideData?['completedAt'] != null) {
         try {

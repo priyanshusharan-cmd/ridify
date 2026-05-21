@@ -183,7 +183,8 @@ class _RideHistoryScreenState extends State<RideHistoryScreen> {
     } else {
       if (wasIDriver) {
         String d = (ride['totalDistance'] ?? ride['distance'] ?? "0.0").toString();
-        distance = d.contains("km") ? d : "$d km";
+        double distValue = double.tryParse(d.replaceAll(RegExp(r'[^0-9.]'), '')) ?? 0.0;
+        distance = "${distValue.toStringAsFixed(1)} km";
         
         if (ride['startedAt'] != null && ride['completedAt'] != null) {
           try {
@@ -196,7 +197,8 @@ class _RideHistoryScreenState extends State<RideHistoryScreen> {
       } else {
         String d = (ride['riderDetails']?[uemail.replaceAll('.', '_dot_')]?['distance'] ?? 
                    ride['riderDetails']?[uemail]?['distance'] ?? "0.0").toString();
-        distance = d.contains("km") ? d : "$d km";
+        double distValue = double.tryParse(d.replaceAll(RegExp(r'[^0-9.]'), '')) ?? 0.0;
+        distance = "${distValue.toStringAsFixed(1)} km";
 
         String? boardedAt = ride['riderDetails']?[uemail.replaceAll('.', '_dot_')]?['boardedAt'] ?? ride['riderDetails']?[uemail]?['boardedAt'];
         String? droppedAt = ride['riderDetails']?[uemail.replaceAll('.', '_dot_')]?['droppedAt'] ?? ride['riderDetails']?[uemail]?['droppedAt'];

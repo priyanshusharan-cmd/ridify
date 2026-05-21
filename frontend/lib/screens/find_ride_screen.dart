@@ -524,13 +524,7 @@ class _FindRideScreenState extends State<FindRideScreen> {
                   style: const TextStyle(color: Colors.grey),
                   children: [
                     const TextSpan(text: "Searching within "),
-                    TextSpan(
-                      text: "${(walkableRadius / 1000).toStringAsFixed(1)}Km",
-                      style: TextStyle(
-                        fontWeight: FontWeight.bold,
-                        color: Theme.of(context).brightness == Brightness.dark ? Colors.white : Colors.black,
-                      ),
-                    ),
+                    TextSpan(text: "${(walkableRadius / 1000).toStringAsFixed(1)} km"),
                     const TextSpan(text: " of your radius"),
                   ],
                 ),
