@@ -63,7 +63,7 @@ class _RiderCompletingScreenState extends State<RiderCompletingScreen> {
       setState(() {
         isPaid = true;
       });
-      if (mounted) Navigator.pop(context);
+      if (mounted) Navigator.of(context).popUntil((route) => route.isFirst);
     } catch (e) {
       debugPrint("Error: $e");
     }
@@ -121,7 +121,14 @@ class _RiderCompletingScreenState extends State<RiderCompletingScreen> {
       }
     }
 
-    return Scaffold(
+    return PopScope(
+      canPop: false,
+      onPopInvokedWithResult: (didPop, result) {
+        if (!didPop) {
+          Navigator.of(context).popUntil((route) => route.isFirst);
+        }
+      },
+      child: Scaffold(
       backgroundColor: isDark ? const Color(0xFF111111) : Colors.white,
       body: SafeArea(
         child: SingleChildScrollView(
@@ -389,6 +396,7 @@ class _RiderCompletingScreenState extends State<RiderCompletingScreen> {
           ),
         ),
       ),
+    ),
     );
   }
 

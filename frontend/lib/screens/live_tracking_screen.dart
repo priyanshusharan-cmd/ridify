@@ -337,7 +337,7 @@ class _LiveTrackingScreenState extends State<LiveTrackingScreen> {
       if (!mounted) {
         return;
       }
-      Navigator.of(context).push(MaterialPageRoute(builder: (context) => DriverCompletingScreen(rideId: widget.rideId)));
+      Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (context) => DriverCompletingScreen(rideId: widget.rideId)));
     });
   }
 

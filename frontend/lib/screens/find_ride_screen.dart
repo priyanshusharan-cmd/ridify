@@ -636,7 +636,7 @@ class _AvailableRidesScreenState extends State<AvailableRidesScreen> {
   String selectedFilter = 'Any'; // Any, Sedan, Bike, SUV
   String sortOption = 'low_to_high'; // low_to_high, high_to_low
 
-  bool _isSendingRequest = false;
+  String? _sendingRideId;
 
   @override
   void initState() {
@@ -721,8 +721,8 @@ class _AvailableRidesScreenState extends State<AvailableRidesScreen> {
   }
 
   Future<void> sendRideRequest(dynamic ride, String driverName) async {
-    if (_isSendingRequest) return;
-    setState(() => _isSendingRequest = true);
+    if (_sendingRideId != null) return;
+    setState(() => _sendingRideId = ride['_id']);
     try {
       final response = await http.patch(
         Uri.parse("$kBaseUrl/api/rides/request/${ride['_id']}"),
@@ -786,7 +786,7 @@ class _AvailableRidesScreenState extends State<AvailableRidesScreen> {
       }
     } finally {
       if (mounted) {
-        setState(() => _isSendingRequest = false);
+        setState(() => _sendingRideId = null);
       }
     }
   }
@@ -1150,7 +1150,7 @@ class _AvailableRidesScreenState extends State<AvailableRidesScreen> {
                       minimumSize: const Size(100, 40),
                     ),
                     onPressed: () => sendRideRequest(ride, driverName),
-                    child: _isSendingRequest 
+                    child: _sendingRideId == ride['_id'] 
                         ? SizedBox(width: 16, height: 16, child: CircularProgressIndicator(strokeWidth: 2, color: isDark ? Colors.black : Colors.white))
                         : const Text("Book", style: TextStyle(fontWeight: FontWeight.bold)),
                   ),

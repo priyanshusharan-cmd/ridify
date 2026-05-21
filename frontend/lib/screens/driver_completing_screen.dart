@@ -159,7 +159,14 @@ class _DriverCompletingScreenState extends State<DriverCompletingScreen> {
       }
     }
 
-    return Scaffold(
+    return PopScope(
+      canPop: false,
+      onPopInvokedWithResult: (didPop, result) {
+        if (!didPop) {
+          Navigator.of(context).popUntil((route) => route.isFirst);
+        }
+      },
+      child: Scaffold(
       backgroundColor: isDark ? const Color(0xFF111111) : Colors.white,
       body: SafeArea(
         child: SingleChildScrollView(
@@ -489,6 +496,7 @@ class _DriverCompletingScreenState extends State<DriverCompletingScreen> {
           ),
         ),
       ),
+    ),
     );
   }
 
