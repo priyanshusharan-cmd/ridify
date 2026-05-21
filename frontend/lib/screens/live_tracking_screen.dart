@@ -332,8 +332,7 @@ class _LiveTrackingScreenState extends State<LiveTrackingScreen> {
     _isNavigatingToCompletion = true;
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (!mounted) return;
-      Navigator.of(context).popUntil((route) => route.isFirst);
-      Navigator.of(context).push(MaterialPageRoute(builder: (_) => DriverCompletingScreen(rideId: widget.rideId)));
+      Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (_) => DriverCompletingScreen(rideId: widget.rideId)));
     });
   }
 
