@@ -266,6 +266,7 @@ class _ActiveRidesTabState extends State<ActiveRidesTab> {
               ride: selectedObj,
               isDetail: true,
               onCancelOffer: () => _confirmCancelOffer(selectedObj['_id'].toString()),
+              onOpenMap: () => _openMap(selectedObj),
             ),
             const SizedBox(height: 10),
             if (requests.isEmpty)
