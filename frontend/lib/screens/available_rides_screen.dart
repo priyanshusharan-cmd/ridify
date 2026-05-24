@@ -1,8 +1,5 @@
 import 'package:flutter/material.dart';
 import 'dart:async';
-import 'package:http/http.dart' as http;
-import 'dart:convert';
-import '../core/constants.dart';
 import '../widgets/find_ride/available_ride_card.dart';
 import '../services/ride_service.dart';
 
@@ -193,7 +190,6 @@ class _AvailableRidesScreenState extends State<AvailableRidesScreen> {
   @override
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
-    final bgColor = Theme.of(context).scaffoldBackgroundColor;
     final cardColor = Theme.of(context).cardColor;
     final primaryTextColor = Theme.of(context).textTheme.bodyLarge?.color;
     final subtitleColor = isDark ? Colors.white54 : Colors.grey[600];

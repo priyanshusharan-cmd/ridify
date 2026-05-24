@@ -1,12 +1,9 @@
 import 'package:flutter/material.dart';
-import '../core/constants.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 import '../services/ride_service.dart';
 import '../core/socket_service.dart';
 import '../widgets/completion/fare_summary.dart';
 import '../widgets/completion/success_icon.dart';
 import '../widgets/completion/trip_summary_card.dart';
-import '../widgets/completion/rating_bar.dart';
 
 class RiderCompletingScreen extends StatefulWidget {
   final bool isDriver;

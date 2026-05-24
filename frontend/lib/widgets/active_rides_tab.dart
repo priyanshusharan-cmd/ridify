@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
-import '../core/constants.dart';
 import '../services/ride_service.dart';
 import '../screens/live_tracking_screen.dart';
-import '../core/utils.dart';
 import 'active_rides/offered_ride_card.dart';
 import 'active_rides/request_detail_card.dart';
 import 'active_rides/pending_request_tile.dart';
@@ -368,8 +366,8 @@ class _ActiveRidesTabState extends State<ActiveRidesTab> {
                 (r) => OfferedRideCard(
                   ride: r as Map<String, dynamic>,
                   isOngoing: true,
-                  onTap: () => _openMap(r as Map<String, dynamic>),
-                  onOpenMap: () => _openMap(r as Map<String, dynamic>),
+                  onTap: () => _openMap(r),
+                  onOpenMap: () => _openMap(r),
                 )
               ),
             ],

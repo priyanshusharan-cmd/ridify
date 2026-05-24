@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:socket_io_client/socket_io_client.dart' as io;
 import '../services/chat_service.dart';
 import '../services/ride_service.dart';
-import '../core/constants.dart';
 import '../core/socket_service.dart';
 
 class ChatScreen extends StatefulWidget {

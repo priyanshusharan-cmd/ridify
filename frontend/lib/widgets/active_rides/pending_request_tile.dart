@@ -1,6 +1,4 @@
 import 'package:flutter/material.dart';
-import '../../core/constants.dart';
-import '../../core/utils.dart';
 import 'offered_ride_card.dart';
 
 class PendingRequestTile extends StatelessWidget {

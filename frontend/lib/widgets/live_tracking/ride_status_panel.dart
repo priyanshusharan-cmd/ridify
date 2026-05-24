@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/gestures.dart';
 import '../../screens/chat_screen.dart';
-import '../../screens/chat_screen.dart';
 import 'passenger_tile.dart';
 
 class RideStatusPanel extends StatelessWidget {

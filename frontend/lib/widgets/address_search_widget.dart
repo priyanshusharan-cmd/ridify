@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'dart:async';
 import '../services/nominatim_service.dart';
-import 'dart:async';
 
 class AddressSearchWidget extends StatefulWidget {
   final String hintText;

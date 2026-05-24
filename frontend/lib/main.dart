@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:provider/provider.dart';
-import 'core/constants.dart';
 import 'services/health_service.dart';
 import 'core/theme_provider.dart';
 import 'core/app_theme.dart';

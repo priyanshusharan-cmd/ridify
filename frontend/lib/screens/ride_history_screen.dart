@@ -1,7 +1,5 @@
 import 'package:flutter/material.dart';
-import '../core/utils.dart';
 import '../services/ride_service.dart';
-import '../core/constants.dart';
 import '../widgets/history/ride_history_card.dart';
 
 class RideHistoryScreen extends StatefulWidget {

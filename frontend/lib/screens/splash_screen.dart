@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import '../core/constants.dart';
 import '../services/health_service.dart';
 import 'home_screen.dart';
 import 'login_screen.dart';

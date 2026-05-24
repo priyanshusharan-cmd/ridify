@@ -1,12 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/gestures.dart';
 import 'package:socket_io_client/socket_io_client.dart' as io;
 import '../core/socket_service.dart';
-import 'package:http/http.dart' as http;
 import 'dart:async';
-import 'dart:convert';
 import 'dart:math' as math;
-import 'chat_screen.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:flutter_map_cancellable_tile_provider/flutter_map_cancellable_tile_provider.dart';
 import 'package:latlong2/latlong.dart';
@@ -14,7 +10,6 @@ import 'package:geolocator/geolocator.dart';
 import 'package:url_launcher/url_launcher.dart';
 import '../services/ride_service.dart';
 import '../services/location_service.dart';
-import '../core/constants.dart';
 import 'rider_completing_screen.dart';
 import 'driver_completing_screen.dart';
 import '../widgets/live_tracking/animated_marker.dart';
@@ -502,7 +497,7 @@ class _LiveTrackingScreenState extends State<LiveTrackingScreen> {
       if (rideData != null) rideData!['status'] = 'completed';
     });
     try {
-      final res = await RideService.endRide(widget.rideId);
+      await RideService.endRide(widget.rideId);
       if (mounted) {
         _triggerCompletionScreen();
       }
@@ -599,9 +594,6 @@ class _LiveTrackingScreenState extends State<LiveTrackingScreen> {
   @override
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
-    final panelBg = isDark ? const Color(0xFF1E1E1E) : Colors.white;
-    final panelText = isDark ? Colors.white : Colors.black;
-    final panelSub = isDark ? Colors.white54 : Colors.grey;
     String driverLabel = widget.isDriver ? "Me (Driver)" : "${widget.otherUserName} (Driver)";
 
     bool iHaveBoarded = (rideData?['boardedPassengers'] ?? []).contains(widget.myEmail);

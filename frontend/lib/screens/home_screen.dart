@@ -1,6 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:http/http.dart' as http;
-import 'dart:convert';
 import 'dart:async';
 import '../core/socket_service.dart';
 import 'find_ride_screen.dart';
@@ -45,18 +43,7 @@ import '../widgets/home/ridify_app_bar_title.dart';
 //
 //    Text stays fully visible (revealFactor = 1.0) for the entire victory lap.
 // ─────────────────────────────────────────────────────────────────────────────
-const double _kCarW = 75.0; // car width  – never changes
-const double _kCarH = 120.0; // car height – never changes
-const double _kCarOffLeft = -125.0; // guaranteed off-screen starting X
-const double _kCarGap = 8.0; // px gap between text right-edge and car
-const double _kPhase1End = 0.600; // startup: fraction where Phase 1 ends
-const double _kTeleportEnd =
-    0.560; // startup: fraction where teleport ends / Phase 2 starts
-
-// Victory lap phase boundaries
-const double _kVPhase1End = 0.450; // fraction where car exits right
-const double _kVTeleportEnd =
-    0.500; // fraction where teleport snaps / Phase B starts
+// Animation parameters are mostly encapsulated in RidifyAppBarTitle.
 
 class HomeScreen extends StatefulWidget {
   final String userName;
@@ -117,7 +104,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
       textDirection: TextDirection.ltr,
     )..layout();
     _ridifyTextWidth = tp.width;
-    _parkingX = _ridifyTextWidth + _kCarGap;
+    _parkingX = _ridifyTextWidth + 8.0; // 8.0 is the gap
 
     // Startup controller – runs linearly; all easing is applied per-phase.
     _startupController = AnimationController(
@@ -142,57 +129,8 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
     _initSocket();
   }
 
-  // ── Animation helpers ──────────────────────────────────────────────────────
+  // ── Animation helpers (extracted to RidifyAppBarTitle) ─────────
 
-  /// Returns the car's left-edge X for the STARTUP animation.
-  double _carX(double progress, double screenWidth) {
-    if (progress < _kPhase1End) {
-      // Phase 1: easeIn → starts stationary, accelerates, exits at full speed.
-      final double t = progress / _kPhase1End;
-      final double eased = Curves.easeIn.transform(t);
-      return _kCarOffLeft + (screenWidth - _kCarOffLeft + _kCarW) * eased;
-    } else if (progress < _kTeleportEnd) {
-      // Teleport: snap instantly; car is invisible off the left edge.
-      return _kCarOffLeft;
-    } else {
-      // Phase 2: easeOut → fast entry, smooth deceleration, dead stop.
-      final double t = (progress - _kTeleportEnd) / (1.0 - _kTeleportEnd);
-      final double eased = Curves.easeOut.transform(t);
-      return _kCarOffLeft + (_parkingX - _kCarOffLeft) * eased;
-    }
-  }
-
-  /// Returns the car's left-edge X for the VICTORY LAP animation.
-  ///
-  /// Phase A : car accelerates out of parking spot and exits off the right.
-  /// Teleport: car snaps back to the far-left (invisible).
-  /// Phase B : car enters from left, decelerates, and re-parks.
-  double _victoryCarX(double progress, double screenWidth) {
-    if (progress < _kVPhase1End) {
-      // Phase A: easeIn – smooth launch from parking spot → off right edge.
-      final double t = progress / _kVPhase1End;
-      final double eased = Curves.easeIn.transform(t);
-      // Travel: _parkingX → (screenWidth + _kCarW)  [fully off-right]
-      return _parkingX + (screenWidth + _kCarW - _parkingX) * eased;
-    } else if (progress < _kVTeleportEnd) {
-      // Teleport: invisible wrap to the left.
-      return _kCarOffLeft;
-    } else {
-      // Phase B: easeOut – fast entry from left → dead stop at _parkingX.
-      final double t = (progress - _kVTeleportEnd) / (1.0 - _kVTeleportEnd);
-      final double eased = Curves.easeOut.transform(t);
-      return _kCarOffLeft + (_parkingX - _kCarOffLeft) * eased;
-    }
-  }
-
-  /// Fraction of the "Ridify" text that should be visible (0.0 – 1.0).
-  ///
-  /// During the VICTORY LAP, text is always 1.0 (already fully painted).
-  /// During the STARTUP animation, text is revealed behind the car's back bumper.
-  double _revealFactor(double progress, double carX) {
-    if (progress >= _kPhase1End) return 1.0;
-    return ((carX + 5.0) / _ridifyTextWidth).clamp(0.0, 1.0);
-  }
 
   // ── Victory Lap trigger ────────────────────────────────────────────────────
 
@@ -427,8 +365,6 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
 
   // ── Home tab ───────────────────────────────────────────────────────────────
   Widget _buildHomeTab() {
-    final isDarkTheme = Theme.of(context).brightness == Brightness.dark;
-    
     double totalEarnings = 0;
     double totalSpending = 0;
 
