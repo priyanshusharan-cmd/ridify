@@ -539,13 +539,28 @@ class _LiveTrackingScreenState extends State<LiveTrackingScreen> {
         wps.add({"type": "dropoff", "passenger": p, "index": d['endIndex'] ?? 9999, "location": d['destination'] ?? "Drop-off", "lat": d['destLat'], "lng": d['destLng']});
       }
     }
-    wps.sort((a, b) => (a['index'] as int).compareTo(b['index'] as int));
+    wps.sort((a, b) {
+      int cmp = (a['index'] as num).compareTo(b['index'] as num);
+      if (cmp != 0) return cmp;
+      if (a['type'] == 'dropoff' && b['type'] == 'pickup') return -1;
+      if (a['type'] == 'pickup' && b['type'] == 'dropoff') return 1;
+      return 0;
+    });
     
+    int totalSeats = (rideData!['totalSeats'] as num?)?.toInt() ?? 4;
+    int currentlyOccupied = 0;
+    for (String p in (rideData!['boardedPassengers'] ?? [])) {
+      currentlyOccupied += (rideData!['riderDetails']?[p]?['seats'] as num?)?.toInt() ?? 1;
+    }
+
     for (var wp in wps) {
       String p = wp['passenger'];
       if (wp['type'] == 'pickup' && pref != 'shared_start' && !(rideData!['boardedPassengers'] ?? []).contains(p) && !(rideData!['droppedPassengers'] ?? []).contains(p)) {
-        String displayName = rideData?['riderDetails']?[p]?['riderName'] ?? p;
-        return {"title": "$displayName's Pickup", "address": wp['location'], "lat": wp['lat'], "lng": wp['lng']};
+        int seatsNeeded = (rideData!['riderDetails']?[p]?['seats'] as num?)?.toInt() ?? 1;
+        if (currentlyOccupied + seatsNeeded <= totalSeats) {
+          String displayName = rideData?['riderDetails']?[p]?['riderName'] ?? p;
+          return {"title": "$displayName's Pickup", "address": wp['location'], "lat": wp['lat'], "lng": wp['lng']};
+        }
       }
       if (wp['type'] == 'dropoff' && (rideData!['boardedPassengers'] ?? []).contains(p)) {
         String displayName = rideData?['riderDetails']?[p]?['riderName'] ?? p;
