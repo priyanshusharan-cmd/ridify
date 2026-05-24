@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:socket_io_client/socket_io_client.dart' as io;
-import 'package:http/http.dart' as http;
-import 'dart:convert';
+import '../services/chat_service.dart';
+import '../services/ride_service.dart';
 import '../core/constants.dart';
 import '../core/socket_service.dart';
 
@@ -45,11 +45,8 @@ class _ChatScreenState extends State<ChatScreen> {
 
   Future<void> fetchChatHistory() async {
     try {
-      final response = await http.get(
-        Uri.parse('$kBaseUrl/api/rides/${widget.rideId}'),
-      );
-      if (response.statusCode == 200 && mounted) {
-        final data = jsonDecode(response.body);
+      final data = await RideService.getRideById(widget.rideId);
+      if (mounted) {
         
         List<String> allParticipants = [];
         if (data['riderName'] != null && data['riderEmail'] != widget.myEmail) {
@@ -102,11 +99,7 @@ class _ChatScreenState extends State<ChatScreen> {
     final timeString = TimeOfDay.now().format(context);
 
     try {
-      await http.post(
-        Uri.parse('$kBaseUrl/api/rides/${widget.rideId}/chat'),
-        headers: {"Content-Type": "application/json"},
-        body: jsonEncode({"sender": widget.myName, "senderEmail": widget.myEmail, "text": text, "timestamp": timeString}),
-      );
+      await ChatService.sendMessage(widget.rideId, widget.myName, widget.myEmail, text, timeString);
     } catch (e) {
       debugPrint(e.toString());
     }

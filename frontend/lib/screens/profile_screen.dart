@@ -3,6 +3,7 @@ import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:provider/provider.dart';
 import 'login_screen.dart';
+import '../services/auth_service.dart';
 import '../core/constants.dart';
 import '../core/theme_provider.dart';
 
@@ -51,26 +52,22 @@ class _ProfileScreenState extends State<ProfileScreen> {
   // ── DELETE OWN ACCOUNT ────────────────────────────────────────────────────
   Future<void> _deleteAccount() async {
     try {
-      final response = await http.delete(
-        Uri.parse("$kBaseUrl/api/auth/user/$email"),
+      await AuthService.deleteAccount(email);
+      final prefs = await SharedPreferences.getInstance();
+      await prefs.clear();
+      if (!mounted) return;
+      Navigator.pushAndRemoveUntil(
+        context,
+        MaterialPageRoute(builder: (_) => const LoginScreen()),
+        (route) => false,
       );
-      if (response.statusCode == 200 && mounted) {
-        final prefs = await SharedPreferences.getInstance();
-        await prefs.clear();
-        if (!mounted) return;
-        Navigator.pushAndRemoveUntil(
-          context,
-          MaterialPageRoute(builder: (_) => const LoginScreen()),
-          (route) => false,
-        );
-        if (!mounted) return;
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text("Account successfully deleted"),
-            backgroundColor: Colors.red,
-          ),
-        );
-      }
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text("Account successfully deleted"),
+          backgroundColor: Colors.red,
+        ),
+      );
     } catch (e) {
       debugPrint(e.toString());
     }
@@ -106,32 +103,20 @@ class _ProfileScreenState extends State<ProfileScreen> {
     if (confirmed != true || !mounted) return;
 
     try {
-      final response = await http.delete(
-        Uri.parse("$kBaseUrl/api/auth/users"),
-        headers: {'x-admin-email': email},
+      await AuthService.adminDeleteAllUsers(email);
+      final prefs = await SharedPreferences.getInstance();
+      await prefs.clear(); // Auto-logout
+      if (!mounted) return;
+      Navigator.of(context).pushAndRemoveUntil(
+        MaterialPageRoute(builder: (_) => const LoginScreen()),
+        (route) => false,
       );
-      if (response.statusCode == 200 && mounted) {
-        final prefs = await SharedPreferences.getInstance();
-        await prefs.clear(); // Auto-logout
-        if (!mounted) return;
-        Navigator.of(context).pushAndRemoveUntil(
-          MaterialPageRoute(builder: (_) => const LoginScreen()),
-          (route) => false,
-        );
-      } else if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text("Failed to wipe users. Are you an admin?"),
-            backgroundColor: Colors.red,
-          ),
-        );
-      }
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text("Connection error."),
-            backgroundColor: Colors.orange,
+          SnackBar(
+            content: Text(e.toString().replaceAll('Exception: ', '')),
+            backgroundColor: Colors.red,
           ),
         );
       }

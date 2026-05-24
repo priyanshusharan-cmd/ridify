@@ -1,0 +1,401 @@
+import 'package:flutter/material.dart';
+import 'dart:async';
+import 'package:http/http.dart' as http;
+import 'dart:convert';
+import '../core/constants.dart';
+import '../widgets/find_ride/available_ride_card.dart';
+import '../services/ride_service.dart';
+
+class AvailableRidesScreen extends StatefulWidget {
+  final List<dynamic> initialRides;
+  final String userName;
+  final String userEmail;
+  final int selectedSeats;
+  final double pickupLat;
+  final double pickupLng;
+  final double destLat;
+  final double destLng;
+  final String pickupLocation;
+  final String destination;
+  final VoidCallback? onBack;
+
+  const AvailableRidesScreen({
+    super.key,
+    required this.initialRides,
+    required this.userName,
+    required this.userEmail,
+    required this.selectedSeats,
+    required this.pickupLat,
+    required this.pickupLng,
+    required this.destLat,
+    required this.destLng,
+    required this.pickupLocation,
+    required this.destination,
+    this.onBack,
+  });
+
+  @override
+  State<AvailableRidesScreen> createState() => _AvailableRidesScreenState();
+}
+
+class _AvailableRidesScreenState extends State<AvailableRidesScreen> {
+  late List<dynamic> allRides;
+  late List<dynamic> displayedRides;
+  String selectedFilter = 'Any'; // Any, Sedan, Bike, SUV
+  String sortOption = 'low_to_high'; // low_to_high, high_to_low
+
+  String? _sendingRideId;
+
+  @override
+  void initState() {
+    super.initState();
+    allRides = List.from(widget.initialRides);
+    _applyFiltersAndSort();
+  }
+
+  void _applyFiltersAndSort() {
+    setState(() {
+      displayedRides = allRides.where((ride) {
+        if (selectedFilter == 'Any') return true;
+        final vehicleType = ride['vehicleType']?.toString().toLowerCase() ?? '';
+        return vehicleType.contains(selectedFilter.toLowerCase());
+      }).toList();
+
+      displayedRides.sort((a, b) {
+        final fareA = (a['computedFare'] ?? a['fare'] ?? 0) as num;
+        final fareB = (b['computedFare'] ?? b['fare'] ?? 0) as num;
+        if (sortOption == 'low_to_high') {
+          return fareA.compareTo(fareB);
+        } else {
+          return fareB.compareTo(fareA);
+        }
+      });
+    });
+  }
+
+  void _showSortOptions() {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    showModalBottomSheet(
+      context: context,
+      backgroundColor: Colors.transparent,
+      builder: (context) {
+        return Container(
+          padding: const EdgeInsets.all(24),
+          decoration: BoxDecoration(
+            color: Theme.of(context).scaffoldBackgroundColor,
+            borderRadius: const BorderRadius.vertical(top: Radius.circular(24)),
+          ),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              const Text(
+                "Sort Options",
+                style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+              ),
+              const SizedBox(height: 20),
+              ListTile(
+                contentPadding: EdgeInsets.zero,
+                leading: Icon(Icons.arrow_upward, color: isDark ? Colors.white : Colors.black),
+                title: const Text("Price: Low to High"),
+                trailing: sortOption == 'low_to_high' ? const Icon(Icons.check, color: Colors.green) : null,
+                onTap: () {
+                  setState(() {
+                    sortOption = 'low_to_high';
+                  });
+                  _applyFiltersAndSort();
+                  Navigator.pop(context);
+                },
+              ),
+              ListTile(
+                contentPadding: EdgeInsets.zero,
+                leading: Icon(Icons.arrow_downward, color: isDark ? Colors.white : Colors.black),
+                title: const Text("Price: High to Low"),
+                trailing: sortOption == 'high_to_low' ? const Icon(Icons.check, color: Colors.green) : null,
+                onTap: () {
+                  setState(() {
+                    sortOption = 'high_to_low';
+                  });
+                  _applyFiltersAndSort();
+                  Navigator.pop(context);
+                },
+              ),
+              const SizedBox(height: 20),
+            ],
+          ),
+        );
+      },
+    );
+  }
+
+  Future<void> sendRideRequest(dynamic ride, String driverName) async {
+    if (_sendingRideId != null) return;
+    setState(() => _sendingRideId = ride['_id']);
+    try {
+      await RideService.requestRide(ride['_id'], {
+        "riderName": widget.userName,
+        "riderEmail": widget.userEmail,
+        "seats": widget.selectedSeats,
+        "computedFare": ride['computedFare'],
+        "computedDistance": ride['computedDistance'],
+        "startIndex": ride['startIndex'],
+        "endIndex": ride['endIndex'],
+        "pickupLat": widget.pickupLat,
+        "pickupLng": widget.pickupLng,
+        "destLat": widget.destLat,
+        "destLng": widget.destLng,
+        "pickupLocation": widget.pickupLocation,
+        "destination": widget.destination
+      });
+
+      if (mounted) {
+        // Successfully requested ride
+        if (widget.onBack != null) {
+          // It's rendered inside FindRideScreen via AnimatedSwitcher
+          Navigator.pop(context); // Close the FindRideScreen wrapper entirely
+        } else {
+          Navigator.pop(context); // Pop Available Rides Screen
+          Navigator.pop(context); // Pop Find Ride Screen, back to home
+        }
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text("Ride Requested!"),
+            backgroundColor: Colors.orange,
+          ),
+        );
+      }
+    } on TimeoutException {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text("Request timed out. Please try again."),
+            backgroundColor: Colors.red,
+          ),
+        );
+      }
+    } catch (e) {
+      debugPrint("❌ Request Error: $e");
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text("Could not send request. Check your connection."),
+            backgroundColor: Colors.red,
+          ),
+        );
+      }
+    } finally {
+      if (mounted) {
+        setState(() => _sendingRideId = null);
+      }
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final bgColor = Theme.of(context).scaffoldBackgroundColor;
+    final cardColor = Theme.of(context).cardColor;
+    final primaryTextColor = Theme.of(context).textTheme.bodyLarge?.color;
+    final subtitleColor = isDark ? Colors.white54 : Colors.grey[600];
+
+    return Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Padding(
+            padding: const EdgeInsets.only(left: 16, right: 16, top: 16, bottom: 0),
+            child: Row(
+              children: [
+                GestureDetector(
+                  onTap: widget.onBack ?? () => Navigator.pop(context),
+                  child: Container(
+                    padding: const EdgeInsets.all(8),
+                    decoration: BoxDecoration(
+                      shape: BoxShape.circle,
+                      border: Border.all(color: Theme.of(context).dividerColor),
+                    ),
+                    child: Icon(Icons.arrow_back, color: primaryTextColor, size: 20),
+                  ),
+                ),
+                const SizedBox(width: 16),
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      "Available Rides",
+                      style: TextStyle(
+                        fontSize: 22,
+                        fontWeight: FontWeight.bold,
+                        color: primaryTextColor,
+                      ),
+                    ),
+                    Text(
+                      "Choose a ride that fits your journey",
+                      style: TextStyle(
+                        fontSize: 12,
+                        color: subtitleColor,
+                      ),
+                    ),
+                  ],
+                ),
+              ],
+            ),
+          ),
+          // Header Card with Locations
+          Container(
+            width: double.infinity,
+            margin: const EdgeInsets.all(16),
+            padding: const EdgeInsets.all(16),
+            decoration: BoxDecoration(
+              color: cardColor,
+              borderRadius: BorderRadius.circular(16),
+              border: Border.all(color: Colors.transparent),
+              boxShadow: isDark
+                  ? []
+                  : [BoxShadow(color: Colors.black.withValues(alpha: 0.05), blurRadius: 10, offset: const Offset(0, 5))],
+            ),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const Icon(Icons.location_on_outlined, color: Colors.green, size: 20),
+                    const SizedBox(width: 12),
+                    Expanded(
+                      child: Text(
+                        widget.pickupLocation,
+                        style: TextStyle(color: primaryTextColor, fontSize: 14, fontWeight: FontWeight.w500),
+                        maxLines: 2,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    ),
+                  ],
+                ),
+                Padding(
+                  padding: const EdgeInsets.only(left: 9, top: 4, bottom: 4),
+                  child: Container(width: 2, height: 16, color: Theme.of(context).dividerColor),
+                ),
+                Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const Icon(Icons.flag_outlined, color: Colors.red, size: 20),
+                    const SizedBox(width: 12),
+                    Expanded(
+                      child: Text(
+                        widget.destination,
+                        style: TextStyle(color: primaryTextColor, fontSize: 14, fontWeight: FontWeight.w500),
+                        maxLines: 2,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    ),
+                  ],
+                ),
+              ],
+            ),
+          ),
+
+          // Filters Row
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16.0),
+            child: Row(
+              children: [
+                Expanded(
+                  child: SingleChildScrollView(
+                    scrollDirection: Axis.horizontal,
+                    child: Row(
+                      children: ['Any', 'Sedan', 'Bike', 'SUV'].map((filter) {
+                        bool isSelected = selectedFilter == filter;
+                        return GestureDetector(
+                          onTap: () {
+                            setState(() {
+                              selectedFilter = filter;
+                            });
+                            _applyFiltersAndSort();
+                          },
+                          child: Container(
+                            margin: const EdgeInsets.only(right: 8),
+                            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+                            decoration: BoxDecoration(
+                              color: isSelected
+                                  ? (isDark ? Colors.white : Colors.black)
+                                  : cardColor,
+                              borderRadius: BorderRadius.circular(12),
+                              border: Border.all(
+                                color: isSelected ? Colors.transparent : Theme.of(context).dividerColor,
+                              ),
+                            ),
+                            child: Row(
+                              children: [
+                                if (filter == 'Any') ...[
+                                  Icon(Icons.grid_view, size: 16, color: isSelected ? (isDark ? Colors.black : Colors.white) : primaryTextColor),
+                                  const SizedBox(width: 6),
+                                ] else if (filter == 'Sedan') ...[
+                                  Icon(Icons.directions_car, size: 16, color: isSelected ? (isDark ? Colors.black : Colors.white) : primaryTextColor),
+                                  const SizedBox(width: 6),
+                                ] else if (filter == 'Bike') ...[
+                                  Icon(Icons.motorcycle, size: 16, color: isSelected ? (isDark ? Colors.black : Colors.white) : primaryTextColor),
+                                  const SizedBox(width: 6),
+                                ] else if (filter == 'SUV') ...[
+                                  Icon(Icons.airport_shuttle, size: 16, color: isSelected ? (isDark ? Colors.black : Colors.white) : primaryTextColor),
+                                  const SizedBox(width: 6),
+                                ],
+                                Text(
+                                  filter,
+                                  style: TextStyle(
+                                    color: isSelected ? (isDark ? Colors.black : Colors.white) : primaryTextColor,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        );
+                      }).toList(),
+                    ),
+                  ),
+                ),
+                GestureDetector(
+                  onTap: _showSortOptions,
+                  child: Container(
+                    padding: const EdgeInsets.all(10),
+                    decoration: BoxDecoration(
+                      color: cardColor,
+                      borderRadius: BorderRadius.circular(12),
+                      border: Border.all(color: Theme.of(context).dividerColor),
+                    ),
+                    child: Icon(Icons.filter_list, color: primaryTextColor, size: 20),
+                  ),
+                ),
+              ],
+            ),
+          ),
+          const SizedBox(height: 16),
+
+          // List of Rides
+          Expanded(
+            child: displayedRides.isEmpty
+                ? Center(
+                    child: Text(
+                      "No rides available for this filter.",
+                      style: TextStyle(color: subtitleColor, fontSize: 16),
+                    ),
+                  )
+                : ListView.builder(
+                    padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                    itemCount: displayedRides.length,
+                    itemBuilder: (context, index) {
+                      final ride = displayedRides[index];
+                      return AvailableRideCard(
+                        ride: ride,
+                        isSending: _sendingRideId == ride['_id'],
+                        onBook: () => sendRideRequest(ride, ride['riderName'] ?? "Driver"),
+                        fallbackPickup: widget.pickupLocation,
+                        fallbackDestination: widget.destination,
+                      );
+                    },
+                  ),
+          ),
+        ],
+      );
+  }
+}

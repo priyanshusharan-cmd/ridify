@@ -9,6 +9,11 @@ import 'profile_screen.dart';
 import 'ride_history_screen.dart';
 import '../widgets/active_rides_tab.dart';
 import '../core/constants.dart';
+import '../services/ride_service.dart';
+import '../widgets/home/action_card.dart';
+import '../widgets/home/earnings_display.dart';
+import '../widgets/home/safety_banner.dart';
+import '../widgets/home/ridify_app_bar_title.dart';
 
 // ─────────────────────────────────────────────────────────────────────────────
 //  Animation constants
@@ -221,10 +226,8 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
 
   Future<void> fetchRides() async {
     try {
-      final response = await http.get(Uri.parse("$kBaseUrl/api/rides"));
-      if (response.statusCode == 200 && mounted) {
-        setState(() => allRides = jsonDecode(response.body));
-      }
+      final rides = await RideService.getAllRides();
+      if (mounted) setState(() => allRides = rides);
     } catch (e) {
       debugPrint("❌ Fetch Error: $e");
     }
@@ -323,79 +326,12 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
         elevation: 0,
         centerTitle: false,
         titleSpacing: 24,
-        title: LayoutBuilder(
-          builder: (context, constraints) {
-            // We merge both controllers so the builder fires on every tick of
-            // whichever controller is currently active.
-            return AnimatedBuilder(
-              animation: Listenable.merge([
-                _startupController,
-                _victoryController,
-              ]),
-              builder: (context, _) {
-                final double screenWidth = constraints.maxWidth;
-                final double carX;
-                final double revealF;
-
-                if (_isVictoryLapRunning) {
-                  // ── Victory Lap mode ───────────────────────────────────────
-                  // Text is already fully painted — keep revealF at 1.0 the
-                  // whole time so "Ridify" never disappears during the lap.
-                  carX = _victoryCarX(_victoryController.value, screenWidth);
-                  revealF = 1.0;
-                } else {
-                  // ── Startup / idle mode ────────────────────────────────────
-                  final double progress = _startupController.value;
-                  carX = _carX(progress, screenWidth);
-                  revealF = _revealFactor(progress, carX);
-                }
-
-                // ── Title Stack ──────────────────────────────────────────────
-                //
-                // This Stack is ALWAYS used – even after all animation ends.
-                // When frozen at idle: revealF == 1.0 and carX == _parkingX.
-                // Because _parkingX is derived from the same TextPainter style
-                // as the Text widget, the frozen Stack is pixel-identical to
-                // what a static Row would produce – with zero visual jump.
-                return Stack(
-                  clipBehavior: Clip.none, // car can overhang during Phase 1
-                  alignment: Alignment.centerLeft,
-                  children: [
-                    // ── "Ridify" label – left-to-right reveal ────────────────
-                    ClipRect(
-                      child: Align(
-                        alignment: Alignment.centerLeft,
-                        widthFactor: revealF,
-                        child: const Text(
-                          'Ridify',
-                          style: TextStyle(
-                            color: Colors.white,
-                            fontSize: 28,
-                            fontWeight: FontWeight.bold,
-                            letterSpacing: -1,
-                          ),
-                        ),
-                      ),
-                    ),
-
-                    // ── Car logo ──────────────────────────────────────────────
-                    Transform.translate(
-                      offset: Offset(carX, 0),
-                      child: ClipRRect(
-                        borderRadius: BorderRadius.circular(10),
-                        child: Image.asset(
-                          'assets/iconWithoutBackground.png',
-                          width: _kCarW,
-                          height: _kCarH,
-                          fit: BoxFit.cover,
-                        ),
-                      ),
-                    ),
-                  ],
-                );
-              },
-            );
-          },
+        title: RidifyAppBarTitle(
+          startupController: _startupController,
+          victoryController: _victoryController,
+          isVictoryLapRunning: _isVictoryLapRunning,
+          ridifyTextWidth: _ridifyTextWidth,
+          parkingX: _parkingX,
         ),
         actions: [
           if (kAdminEmails.contains(widget.userEmail.toLowerCase()))
@@ -435,10 +371,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                   ),
                 );
                 if (confirmed == true && mounted) {
-                  await http.delete(
-                    Uri.parse("$kBaseUrl/api/rides"),
-                    headers: {'x-admin-email': widget.userEmail},
-                  );
+                  await RideService.adminDeleteAllRides(widget.userEmail);
                   if (context.mounted) {
                     ScaffoldMessenger.of(context).showSnackBar(
                       const SnackBar(
@@ -496,21 +429,6 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
   Widget _buildHomeTab() {
     final isDarkTheme = Theme.of(context).brightness == Brightness.dark;
     
-    final Color earningsBg = isDarkTheme ? const Color(0xFF162B1D) : Colors.green.shade50;
-    final Color earningsBorder = isDarkTheme ? const Color(0xFF23472C) : Colors.green.shade100;
-    final Color earningsIconBg = isDarkTheme ? const Color(0xFF1E3F26) : Colors.green.shade100;
-    final Color earningsText = isDarkTheme ? Colors.green.shade300 : Colors.green;
-    
-    final Color spendingBg = isDarkTheme ? const Color(0xFF331A1A) : Colors.red.shade50;
-    final Color spendingBorder = isDarkTheme ? const Color(0xFF4D2626) : Colors.red.shade100;
-    final Color spendingIconBg = isDarkTheme ? const Color(0xFF402020) : Colors.red.shade100;
-    final Color spendingText = isDarkTheme ? Colors.red.shade300 : Colors.red;
-    
-    final Color safetyBg = isDarkTheme ? const Color(0xFF1A2633) : Colors.blue.shade50;
-    final Color safetyBorder = isDarkTheme ? const Color(0xFF26394D) : Colors.blue.shade100;
-    final Color safetyText = isDarkTheme ? Colors.blue.shade300 : Colors.blue;
-    final Color mainTextColor = isDarkTheme ? Colors.white : Colors.black87;
-
     double totalEarnings = 0;
     double totalSpending = 0;
 
@@ -557,11 +475,11 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
               ),
             ),
             const SizedBox(height: 25),
-            _actionCard(
-              "Offer a Ride",
-              "Share your journey",
-              true,
-              () =>
+            ActionCard(
+              title: "Offer a Ride",
+              subtitle: "Share your journey",
+              isPrimary: true,
+              onTap: () =>
                   Navigator.push(
                     context,
                     MaterialPageRoute(
@@ -569,20 +487,16 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                           OfferRideScreen(userName: widget.userName, userEmail: widget.userEmail),
                     ),
                   ).then((result) {
-                    // ── Success Celebration ────────────────────────────────────
-                    // offer_ride_screen.dart pops with 'ride_posted' on success.
-                    // Only the person who just posted gets this trigger – no
-                    // Socket.IO, no broadcast, purely local navigation result.
                     if (result == 'ride_posted') _triggerVictoryLap();
                     fetchRides();
                   }),
             ),
             const SizedBox(height: 16),
-            _actionCard(
-              "Find a Ride",
-              "Get where you need to go",
-              false,
-              () => Navigator.push(
+            ActionCard(
+              title: "Find a Ride",
+              subtitle: "Get where you need to go",
+              isPrimary: false,
+              onTap: () => Navigator.push(
                 context,
                 MaterialPageRoute(
                   builder: (_) => FindRideScreen(userName: widget.userName, userEmail: widget.userEmail),
@@ -590,211 +504,16 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
               ).then((_) => fetchRides()),
             ),
             const SizedBox(height: 30),
-            Row(
-              children: [
-                Expanded(
-                  child: Container(
-                    padding: const EdgeInsets.all(16),
-                    decoration: BoxDecoration(
-                      color: earningsBg,
-                      borderRadius: BorderRadius.circular(20),
-                      border: Border.all(color: earningsBorder),
-                    ),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Container(
-                          padding: const EdgeInsets.all(10),
-                          decoration: BoxDecoration(
-                            color: earningsIconBg,
-                            shape: BoxShape.circle,
-                          ),
-                          child: Icon(
-                            Icons.arrow_downward,
-                            color: earningsText,
-                            size: 24,
-                          ),
-                        ),
-                        const SizedBox(height: 12),
-                        Text(
-                          "Total Earnings",
-                          style: TextStyle(
-                            color: earningsText,
-                            fontWeight: FontWeight.bold,
-                            fontSize: 14,
-                          ),
-                        ),
-                        const SizedBox(height: 4),
-                        Text(
-                          "₹${totalEarnings.toStringAsFixed(0)}",
-                          style: TextStyle(
-                            color: mainTextColor,
-                            fontSize: 22,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-                const SizedBox(width: 16),
-                Expanded(
-                  child: Container(
-                    padding: const EdgeInsets.all(16),
-                    decoration: BoxDecoration(
-                      color: spendingBg,
-                      borderRadius: BorderRadius.circular(20),
-                      border: Border.all(color: spendingBorder),
-                    ),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Container(
-                          padding: const EdgeInsets.all(10),
-                          decoration: BoxDecoration(
-                            color: spendingIconBg,
-                            shape: BoxShape.circle,
-                          ),
-                          child: Icon(
-                            Icons.arrow_upward,
-                            color: spendingText,
-                            size: 24,
-                          ),
-                        ),
-                        const SizedBox(height: 12),
-                        Text(
-                          "Total Spending",
-                          style: TextStyle(
-                            color: spendingText,
-                            fontWeight: FontWeight.bold,
-                            fontSize: 14,
-                          ),
-                        ),
-                        const SizedBox(height: 4),
-                        Text(
-                          "₹${totalSpending.toStringAsFixed(0)}",
-                          style: TextStyle(
-                            color: mainTextColor,
-                            fontSize: 22,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-              ],
+            EarningsDisplay(
+              totalEarnings: totalEarnings,
+              totalSpending: totalSpending,
             ),
             const SizedBox(height: 16),
-            Container(
-              width: double.infinity,
-              padding: const EdgeInsets.all(20),
-              decoration: BoxDecoration(
-                color: safetyBg,
-                borderRadius: BorderRadius.circular(20),
-                border: Border.all(color: safetyBorder),
-              ),
-              child: Row(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Icon(Icons.security, color: safetyText, size: 30),
-                  const SizedBox(width: 15),
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          "Safety First",
-                          style: TextStyle(
-                            color: safetyText,
-                            fontWeight: FontWeight.bold,
-                            fontSize: 16,
-                          ),
-                        ),
-                        const SizedBox(height: 5),
-                        Text(
-                          "Always verify your co-passenger’s details and share your ride details with your family or friends.",
-                          style: TextStyle(
-                            color: mainTextColor,
-                            fontSize: 13,
-                            height: 1.4,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ],
-              ),
-            ),
+            const SafetyBanner(),
           ],
         ),
       ),
     );
   }
 
-  Widget _actionCard(
-    String title,
-    String subtitle,
-    bool isPrimary,
-    VoidCallback onTap,
-  ) {
-    final isDarkTheme = Theme.of(context).brightness == Brightness.dark;
-    
-    // In light mode: primary card is black, secondary is white.
-    // In dark mode: primary card is dark charcoal, secondary is dark grey (cardColor).
-    final bgColor = isPrimary 
-      ? (isDarkTheme ? const Color(0xFF2C2C2C) : Colors.black)
-      : Theme.of(context).cardColor;
-      
-    final fgColor = isPrimary 
-      ? Colors.white
-      : Theme.of(context).textTheme.bodyLarge?.color;
-      
-    final subColor = isPrimary
-      ? Colors.white70
-      : (isDarkTheme ? Colors.white54 : Colors.black54);
-      
-    final borderColor = isDarkTheme ? Colors.transparent : Colors.black12;
-
-    return GestureDetector(
-      onTap: onTap,
-      child: Container(
-        width: double.infinity,
-        padding: const EdgeInsets.all(24),
-        decoration: BoxDecoration(
-          color: bgColor,
-          borderRadius: BorderRadius.circular(24),
-          border: Border.all(color: isPrimary ? Colors.transparent : borderColor),
-        ),
-        child: Row(
-          children: [
-            Icon(
-              isPrimary ? Icons.directions_car : Icons.search,
-              color: fgColor,
-            ),
-            const SizedBox(width: 16),
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  title,
-                  style: TextStyle(
-                    color: fgColor,
-                    fontWeight: FontWeight.bold,
-                    fontSize: 18,
-                  ),
-                ),
-                Text(
-                  subtitle,
-                  style: TextStyle(
-                    color: subColor,
-                  ),
-                ),
-              ],
-            ),
-          ],
-        ),
-      ),
-    );
-  }
 }

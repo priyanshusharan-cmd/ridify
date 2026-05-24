@@ -1,9 +1,46 @@
 import 'package:flutter/material.dart';
-import 'package:http/http.dart' as http;
 import '../core/constants.dart';
+import '../services/ride_service.dart';
 import '../screens/live_tracking_screen.dart';
-
 import '../core/utils.dart';
+import 'active_rides/offered_ride_card.dart';
+import 'active_rides/request_detail_card.dart';
+import 'active_rides/pending_request_tile.dart';
+
+class EmptyState extends StatelessWidget {
+  const EmptyState({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        const Padding(
+          padding: EdgeInsets.all(24.0),
+          child: Text(
+            "Activity",
+            style: TextStyle(fontSize: 28, fontWeight: FontWeight.bold),
+          ),
+        ),
+        Expanded(
+          child: Center(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Icon(Icons.directions_car, size: 80, color: Colors.grey.shade300),
+                const SizedBox(height: 16),
+                const Text(
+                  "No active rides or requests.",
+                  style: TextStyle(color: Colors.grey, fontSize: 18, fontWeight: FontWeight.w500),
+                ),
+              ],
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+}
 
 class ActiveRidesTab extends StatefulWidget {
   final List<dynamic> rides;
@@ -29,10 +66,10 @@ class _ActiveRidesTabState extends State<ActiveRidesTab> {
   final Set<String> _processingAccepts = {};
   String? _selectedRideId;
 
-  Future<void> _action(String url, BuildContext context) async {
+  Future<void> _declineRider(String rideId, String requester, BuildContext context) async {
     try {
-      final res = await http.patch(Uri.parse(url));
-      if (res.statusCode == 200) widget.onRefresh();
+      await RideService.declineRider(rideId, requester);
+      widget.onRefresh();
     } catch (e) {
       debugPrint("$e");
     }
@@ -45,18 +82,15 @@ class _ActiveRidesTabState extends State<ActiveRidesTab> {
     setState(() => _processingAccepts.add(key));
 
     try {
-      final res = await http.patch(Uri.parse("$kBaseUrl/api/rides/accept/$rideId/$requester"));
-      if (res.statusCode == 200) {
-        widget.onRefresh();
-      } else {
-        if (context.mounted) {
-          final body = res.body;
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text(body), backgroundColor: Colors.red),
-          );
-        }
-      }
+      await RideService.acceptRider(rideId, requester);
+      widget.onRefresh();
     } catch (e) {
+      if (context.mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(e.toString().replaceAll('Exception: ', '')), backgroundColor: Colors.red),
+        );
+      }
+      debugPrint("$e");
       debugPrint("$e");
     } finally {
       if (mounted) setState(() => _processingAccepts.remove(key));
@@ -65,18 +99,16 @@ class _ActiveRidesTabState extends State<ActiveRidesTab> {
 
   Future<void> _cancelOfferedRide(String id, BuildContext context) async {
     try {
-      final res = await http.delete(Uri.parse("$kBaseUrl/api/rides/$id"));
-      if (res.statusCode == 200) {
-        if (!context.mounted) return;
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text("Ride offer cancelled"),
-            backgroundColor: Colors.red,
-          ),
-        );
-        setState(() => _selectedRideId = null);
-        widget.onRefresh();
-      }
+      await RideService.cancelRide(id);
+      if (!context.mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text("Ride offer cancelled"),
+          backgroundColor: Colors.red,
+        ),
+      );
+      setState(() => _selectedRideId = null);
+      widget.onRefresh();
     } catch (e) {
       debugPrint("$e");
     }
@@ -126,151 +158,7 @@ class _ActiveRidesTabState extends State<ActiveRidesTab> {
     });
   }
 
-  Widget _buildTimelineAddress(String? pickup, String? destination, bool isDark) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Row(
-          children: [
-            const Icon(Icons.circle, color: Colors.green, size: 14),
-            const SizedBox(width: 12),
-            Expanded(
-              child: Text(
-                formatAddress(pickup),
-                maxLines: 1,
-                overflow: TextOverflow.ellipsis,
-                style: TextStyle(
-                  fontWeight: FontWeight.w600,
-                  fontSize: 14,
-                  color: isDark ? Colors.white : Colors.black,
-                ),
-              ),
-            ),
-          ],
-        ),
-        Padding(
-          padding: const EdgeInsets.only(left: 6, top: 4, bottom: 4),
-          child: Container(
-            height: 15,
-            width: 2,
-            color: isDark ? Colors.white24 : Colors.black12,
-          ),
-        ),
-        Row(
-          children: [
-            const Icon(Icons.circle, color: Colors.red, size: 14),
-            const SizedBox(width: 12),
-            Expanded(
-              child: Text(
-                formatAddress(destination),
-                maxLines: 1,
-                overflow: TextOverflow.ellipsis,
-                style: TextStyle(
-                  fontWeight: FontWeight.w600,
-                  fontSize: 14,
-                  color: isDark ? Colors.white : Colors.black,
-                ),
-              ),
-            ),
-          ],
-        ),
-      ],
-    );
-  }
 
-  Widget _buildRideCard(Map<String, dynamic> r, {bool isDetail = false, bool isOngoing = false, VoidCallback? onTap}) {
-    final List requests = r['requests'] as List? ?? [];
-    final int reqCount = requests.length;
-    final List passengers = r['passengers'] as List? ?? [];
-    final bool isDark = Theme.of(context).brightness == Brightness.dark;
-
-    return GestureDetector(
-      onTap: onTap,
-      child: Container(
-        margin: const EdgeInsets.only(bottom: 15),
-        decoration: BoxDecoration(
-          color: isDark ? const Color(0xFF1E1E1E) : Colors.white,
-          borderRadius: BorderRadius.circular(20),
-          border: Border.all(color: isDark ? Colors.white10 : Colors.black12),
-        ),
-        padding: const EdgeInsets.all(20),
-        child: Row(
-          children: [
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    children: [
-                      Row(
-                        children: [
-                          Icon(Icons.directions_car, size: 28, color: isDark ? Colors.white : Colors.black),
-                          const SizedBox(width: 12),
-                          Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text("${r['availableSeats']} Seats", style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18, color: isDark ? Colors.white : Colors.black)),
-                              const SizedBox(height: 4),
-                              Text(r['departureTime'].toString().replaceAll(' at ', ' • '), style: const TextStyle(color: Colors.grey, fontSize: 13, fontWeight: FontWeight.w600)),
-                            ],
-                          ),
-                        ],
-                      ),
-                      Row(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          if (passengers.isEmpty)
-                            if (isDetail)
-                              GestureDetector(
-                                onTap: () => _confirmCancelOffer(r['_id'].toString()),
-                                child: const Icon(Icons.close, color: Colors.grey, size: 28),
-                              )
-                            else
-                              Container(
-                                padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
-                                decoration: BoxDecoration(
-                                  color: Colors.green.withValues(alpha: 0.1),
-                                  borderRadius: BorderRadius.circular(20),
-                                ),
-                                child: Text(
-                                  "$reqCount Request${reqCount == 1 ? '' : 's'}",
-                                  style: const TextStyle(color: Colors.green, fontWeight: FontWeight.bold, fontSize: 13),
-                                ),
-                              )
-                          else if (!isOngoing)
-                            Material(
-                              color: isDark ? Colors.grey[800] : Colors.grey[200],
-                              borderRadius: BorderRadius.circular(20),
-                              child: InkWell(
-                                onTap: () => _openMap(r),
-                                borderRadius: BorderRadius.circular(20),
-                                child: Container(
-                                  padding: const EdgeInsets.all(12),
-                                  child: Icon(Icons.map, size: 22, color: isDark ? Colors.white : Colors.black),
-                                ),
-                              ),
-                            ),
-                        ],
-                      ),
-                    ],
-                  ),
-                  const SizedBox(height: 20),
-                  _buildTimelineAddress(r['pickupLocation']?.toString(), r['destination']?.toString(), isDark),
-                ],
-              ),
-            ),
-            if (!isDetail)
-              const Padding(
-                padding: EdgeInsets.only(left: 12.0),
-                child: Icon(Icons.chevron_right, color: Colors.grey),
-              ),
-          ],
-        ),
-      ),
-    );
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -376,7 +264,11 @@ class _ActiveRidesTabState extends State<ActiveRidesTab> {
               ],
             ),
             const SizedBox(height: 24),
-            _buildRideCard(selectedObj, isDetail: true),
+            OfferedRideCard(
+              ride: selectedObj,
+              isDetail: true,
+              onCancelOffer: () => _confirmCancelOffer(selectedObj['_id'].toString()),
+            ),
             const SizedBox(height: 10),
             if (requests.isEmpty)
               const Center(
@@ -392,104 +284,14 @@ class _ActiveRidesTabState extends State<ActiveRidesTab> {
               const Text("Requests", style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
               const SizedBox(height: 16),
               ...requests.map((requester) {
-                final riderDetail = (selectedObj['riderDetails'] as Map?)?[requester] as Map?;
-                final String displayName = (riderDetail?['riderName'] ?? requester).toString();
-                final int requestedSeats = (riderDetail?['seats'] as num?)?.toInt() ?? ((selectedObj['seatAllocations'] as Map?)?[requester] as num?)?.toInt() ?? 1;
-                final num fare = riderDetail?['fare'] ?? selectedObj['fare'] ?? 0;
-                final num distance = riderDetail?['distance'] ?? 0;
-                final String pickupAddr = (riderDetail?['pickupLocation'] ?? '').toString();
-                final String destAddr = (riderDetail?['destination'] ?? '').toString();
-                String shortPickup = pickupAddr.length > 50 ? '${pickupAddr.substring(0, 50)}...' : pickupAddr;
-                String shortDest = destAddr.length > 50 ? '${destAddr.substring(0, 50)}...' : destAddr;
-
                 final String acceptKey = '${selectedObj['_id']}_$requester';
                 final bool isProcessing = _processingAccepts.contains(acceptKey);
-
-                return Container(
-                  margin: const EdgeInsets.only(bottom: 16.0),
-                  padding: const EdgeInsets.all(16),
-                  decoration: BoxDecoration(
-                    color: Theme.of(context).brightness == Brightness.dark ? const Color(0xFF1E1E1E) : Colors.grey.shade50,
-                    borderRadius: BorderRadius.circular(16),
-                    border: Border.all(color: Theme.of(context).brightness == Brightness.dark ? Colors.white10 : Colors.black12),
-                  ),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Row(
-                        children: [
-                          CircleAvatar(
-                            backgroundColor: Theme.of(context).brightness == Brightness.dark ? const Color(0xFF2C2C2C) : Colors.black,
-                            child: Text(displayName.substring(0, 1).toUpperCase(), style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
-                          ),
-                          const SizedBox(width: 12),
-                          Expanded(
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text(displayName, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
-                                Text(requester, style: TextStyle(color: Theme.of(context).textTheme.bodyMedium?.color?.withValues(alpha: 0.6), fontSize: 12)),
-                                const SizedBox(height: 6),
-                                Row(
-                                  children: [
-                                    const Icon(Icons.event_seat, size: 14, color: Colors.grey),
-                                    const SizedBox(width: 4),
-                                    Text("$requestedSeats", style: const TextStyle(color: Colors.grey, fontSize: 12, fontWeight: FontWeight.w600)),
-                                    const SizedBox(width: 12),
-                                    const Icon(Icons.route, size: 14, color: Colors.grey),
-                                    const SizedBox(width: 4),
-                                    Text("${distance.toStringAsFixed(1)} km", style: const TextStyle(color: Colors.grey, fontSize: 12, fontWeight: FontWeight.w600)),
-                                  ],
-                                ),
-                              ],
-                            ),
-                          ),
-                          Container(
-                            padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
-                            decoration: BoxDecoration(color: Colors.green.withValues(alpha: 0.15), borderRadius: BorderRadius.circular(20)),
-                            child: Text("₹$fare", style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16, color: Colors.green)),
-                          ),
-                        ],
-                      ),
-                      if (shortPickup.isNotEmpty || shortDest.isNotEmpty) ...[
-                        const SizedBox(height: 16),
-                        Container(
-                          padding: const EdgeInsets.all(12),
-                          decoration: BoxDecoration(
-                            color: Theme.of(context).brightness == Brightness.dark ? const Color(0xFF252525) : Colors.white,
-                            borderRadius: BorderRadius.circular(12),
-                          ),
-                          child: Column(children: [
-                            if (shortPickup.isNotEmpty) Row(children: [const Icon(Icons.circle, color: Colors.green, size: 10), const SizedBox(width: 10), Expanded(child: Text(shortPickup, style: TextStyle(fontSize: 12, color: Theme.of(context).textTheme.bodyMedium?.color?.withValues(alpha: 0.8)), maxLines: 1, overflow: TextOverflow.ellipsis))]),
-                            if (shortPickup.isNotEmpty && shortDest.isNotEmpty) Padding(padding: const EdgeInsets.only(left: 4, top: 4, bottom: 4), child: Align(alignment: Alignment.centerLeft, child: Container(height: 12, width: 2, color: Theme.of(context).brightness == Brightness.dark ? Colors.white24 : Colors.black12))),
-                            if (shortDest.isNotEmpty) Row(children: [const Icon(Icons.circle, color: Colors.red, size: 10), const SizedBox(width: 10), Expanded(child: Text(shortDest, style: TextStyle(fontSize: 12, color: Theme.of(context).textTheme.bodyMedium?.color?.withValues(alpha: 0.8)), maxLines: 1, overflow: TextOverflow.ellipsis))]),
-                          ]),
-                        ),
-                      ],
-                      const SizedBox(height: 16),
-                      Row(
-                        children: [
-                          Expanded(child: OutlinedButton(
-                            style: OutlinedButton.styleFrom(side: const BorderSide(color: Colors.redAccent), padding: const EdgeInsets.symmetric(vertical: 14), shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12))),
-                            onPressed: isProcessing ? null : () => _action("$kBaseUrl/api/rides/decline/${selectedObj['_id']}/$requester", context),
-                            child: const Text("Decline", style: TextStyle(color: Colors.redAccent, fontWeight: FontWeight.bold, fontSize: 16)),
-                          )),
-                          const SizedBox(width: 12),
-                          Expanded(child: ElevatedButton(
-                            style: ElevatedButton.styleFrom(
-                              backgroundColor: isProcessing ? Colors.grey : (Theme.of(context).brightness == Brightness.dark ? Colors.white : Colors.black),
-                              padding: const EdgeInsets.symmetric(vertical: 14),
-                              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-                            ),
-                            onPressed: isProcessing ? null : () => _acceptRider(selectedObj['_id'], requester, context),
-                            child: isProcessing
-                              ? const SizedBox(width: 20, height: 20, child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white))
-                              : Text("Accept", style: TextStyle(color: Theme.of(context).brightness == Brightness.dark ? Colors.black : Colors.white, fontWeight: FontWeight.bold, fontSize: 16)),
-                          )),
-                        ],
-                      ),
-                    ],
-                  ),
+                return RequestDetailCard(
+                  ride: selectedObj,
+                  requester: requester.toString(),
+                  isProcessing: isProcessing,
+                  onAccept: () => _acceptRider(selectedObj['_id'], requester.toString(), context),
+                  onDecline: () => _declineRider(selectedObj['_id'].toString(), requester.toString(), context),
                 );
               }),
             ],
@@ -504,32 +306,9 @@ class _ActiveRidesTabState extends State<ActiveRidesTab> {
         myOfferedRides.isEmpty && myPendingRequests.isEmpty && liveRides.isEmpty;
 
     if (isEmpty) {
-      return SafeArea(
-        key: const ValueKey('list_view'),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            const Padding(
-              padding: EdgeInsets.all(24.0),
-              child: Text(
-                "Activity",
-                style: TextStyle(fontSize: 28, fontWeight: FontWeight.bold),
-              ),
-            ),
-            Expanded(
-              child: Center(
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Icon(Icons.directions_car, size: 80, color: Colors.grey.shade300),
-                    const SizedBox(height: 16),
-                    const Text("No active rides or requests.", style: TextStyle(color: Colors.grey, fontSize: 18, fontWeight: FontWeight.w500)),
-                  ],
-                ),
-              ),
-            ),
-          ],
-        ),
+      return const SafeArea(
+        key: ValueKey('list_view'),
+        child: EmptyState(),
       );
     }
 
@@ -552,7 +331,12 @@ class _ActiveRidesTabState extends State<ActiveRidesTab> {
                 style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
               ),
               const SizedBox(height: 16),
-              ...myOfferedRides.map((r) => _buildRideCard(r as Map<String, dynamic>, onTap: () => setState(() => _selectedRideId = r['_id'].toString()))),
+              ...myOfferedRides.map((r) => OfferedRideCard(
+                ride: r as Map<String, dynamic>,
+                onTap: () => setState(() => _selectedRideId = r['_id'].toString()),
+                onCancelOffer: () => _confirmCancelOffer(r['_id'].toString()),
+                onOpenMap: () => _openMap(r),
+              )),
               const SizedBox(height: 30),
             ],
 
@@ -564,48 +348,11 @@ class _ActiveRidesTabState extends State<ActiveRidesTab> {
               ),
               const SizedBox(height: 16),
               ...myPendingRequests.map(
-                (r) => Container(
-                  margin: const EdgeInsets.only(bottom: 15),
-                  padding: const EdgeInsets.all(20),
-                  decoration: BoxDecoration(
-                    color: Theme.of(context).brightness == Brightness.dark ? const Color(0xFF1E1E1E) : Colors.white,
-                    borderRadius: BorderRadius.circular(20),
-                    border: Border.all(color: Theme.of(context).brightness == Brightness.dark ? Colors.white10 : Colors.black12),
-                  ),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Expanded(
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text("Waiting for ${r['riderName']}", style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16, color: Theme.of(context).textTheme.bodyLarge?.color), overflow: TextOverflow.ellipsis),
-                                const SizedBox(height: 4),
-                                Container(
-                                  padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
-                                  decoration: BoxDecoration(
-                                    color: Theme.of(context).brightness == Brightness.dark ? Colors.amber.shade300.withValues(alpha: 0.15) : Colors.amber.shade800.withValues(alpha: 0.1),
-                                    borderRadius: BorderRadius.circular(20),
-                                  ),
-                                  child: Text("Pending", style: TextStyle(color: Theme.of(context).brightness == Brightness.dark ? Colors.amber.shade300 : Colors.amber.shade800, fontWeight: FontWeight.bold, fontSize: 12)),
-                                ),
-                              ],
-                            ),
-                          ),
-                          TextButton(
-                            onPressed: () => _action("$kBaseUrl/api/rides/decline/${r['_id']}/${widget.myEmail}", context),
-                            child: const Text("Cancel", style: TextStyle(color: Colors.red, fontWeight: FontWeight.bold)),
-                          ),
-                        ],
-                      ),
-                      const SizedBox(height: 16),
-                      _buildTimelineAddress(r['pickupLocation']?.toString(), r['destination']?.toString(), Theme.of(context).brightness == Brightness.dark),
-                    ],
-                  ),
-                ),
+                  (r) => PendingRequestTile(
+                    request: r as Map<String, dynamic>,
+                    myEmail: widget.myEmail,
+                    onCancel: _declineRider,
+                  )
               ),
               const SizedBox(height: 30),
             ],
@@ -618,7 +365,12 @@ class _ActiveRidesTabState extends State<ActiveRidesTab> {
               ),
               const SizedBox(height: 16),
               ...liveRides.map(
-                (r) => _buildRideCard(r as Map<String, dynamic>, isOngoing: true, onTap: () => _openMap(r))
+                (r) => OfferedRideCard(
+                  ride: r as Map<String, dynamic>,
+                  isOngoing: true,
+                  onTap: () => _openMap(r as Map<String, dynamic>),
+                  onOpenMap: () => _openMap(r as Map<String, dynamic>),
+                )
               ),
             ],
           ],

@@ -1,7 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:http/http.dart' as http;
-import 'dart:convert';
-import '../core/constants.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import '../services/ride_service.dart';
+import '../widgets/completion/success_icon.dart';
+import '../widgets/completion/trip_summary_card.dart';
+import '../widgets/completion/performance_card.dart';
+import '../widgets/completion/earnings_breakdown_card.dart';
+import '../widgets/completion/rating_bar.dart';
 
 class DriverCompletingScreen extends StatefulWidget {
   final String rideId;
@@ -32,15 +36,13 @@ class _DriverCompletingScreenState extends State<DriverCompletingScreen> {
 
   Future<void> _fetchRideData() async {
     try {
-      final response = await http.get(Uri.parse('$kBaseUrl/api/rides/${widget.rideId}'));
-      if (response.statusCode == 200 && mounted) {
+      final data = await RideService.getRideById(widget.rideId);
+      if (mounted) {
         setState(() {
-          rideData = jsonDecode(response.body);
+          rideData = data;
           isLoading = false;
         });
         _fetchPerformanceStats();
-      } else {
-        if (mounted) setState(() => isLoading = false);
       }
     } catch (e) {
       debugPrint("Error: $e");
@@ -50,9 +52,8 @@ class _DriverCompletingScreenState extends State<DriverCompletingScreen> {
 
   Future<void> _fetchPerformanceStats() async {
     try {
-      final response = await http.get(Uri.parse('$kBaseUrl/api/rides'));
-      if (response.statusCode == 200 && mounted) {
-        List<dynamic> allRides = jsonDecode(response.body);
+      final allRides = await RideService.getAllRides();
+      if (mounted) {
         
         int rides = 0;
         int distance = 0;
@@ -180,34 +181,7 @@ class _DriverCompletingScreenState extends State<DriverCompletingScreen> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-              // Success Icon with confetti dots
-              Stack(
-                alignment: Alignment.center,
-                children: [
-                  Container(
-                    width: 120,
-                    height: 120,
-                    decoration: BoxDecoration(
-                      shape: BoxShape.circle,
-                      color: Colors.green.withValues(alpha: 0.1),
-                    ),
-                  ),
-                  Container(
-                    width: 90,
-                    height: 90,
-                    decoration: const BoxDecoration(
-                      color: Color(0xFF4ADE80),
-                      shape: BoxShape.circle,
-                    ),
-                    child: const Icon(Icons.check, color: Colors.white, size: 50),
-                  ),
-                  // Confetti dots (simple positioning)
-                  Positioned(top: 10, left: 20, child: Container(width: 8, height: 8, color: const Color(0xFF4ADE80))),
-                  Positioned(top: 20, right: 15, child: Transform.rotate(angle: 0.5, child: Container(width: 10, height: 10, color: const Color(0xFF4ADE80)))),
-                  Positioned(bottom: 10, right: 30, child: Container(width: 6, height: 6, color: const Color(0xFF4ADE80))),
-                  Positioned(bottom: 25, left: 10, child: Transform.rotate(angle: 1, child: Container(width: 8, height: 8, color: const Color(0xFF4ADE80)))),
-                ],
-              ),
+              const SuccessIcon(),
               const SizedBox(height: 24),
               Text(
                 "Ride Completed!",
@@ -227,250 +201,30 @@ class _DriverCompletingScreenState extends State<DriverCompletingScreen> {
               ),
               const SizedBox(height: 32),
               
-              // Trip Summary Card
-              Container(
-                width: double.infinity,
-                padding: const EdgeInsets.all(20),
-                decoration: BoxDecoration(
-                  color: isDark ? const Color(0xFF1E1E1E) : Colors.white,
-                  borderRadius: BorderRadius.circular(20),
-                  border: Border.all(color: isDark ? Colors.white10 : Colors.black12),
-                  boxShadow: [
-                    if (!isDark) BoxShadow(color: Colors.black.withValues(alpha: 0.05), blurRadius: 15, offset: const Offset(0, 8)),
-                  ],
-                ),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Row(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Icon(Icons.list_alt_rounded, color: const Color(0xFF4ADE80), size: 24),
-                        const SizedBox(width: 12),
-                        Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              "Trip Summary",
-                              style: TextStyle(
-                                fontSize: 18,
-                                fontWeight: FontWeight.bold,
-                                color: isDark ? Colors.white : Colors.black,
-                              ),
-                            ),
-                            const SizedBox(height: 4),
-                            Text(
-                              dateStr.replaceAll(' at ', ' • '),
-                              style: TextStyle(color: isDark ? Colors.white54 : Colors.grey[600], fontSize: 13),
-                            ),
-                          ],
-                        ),
-                      ],
-                    ),
-                    const SizedBox(height: 24),
-                    
-                    // Timeline - From
-                    Row(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        const Icon(Icons.location_on, color: Color(0xFF4ADE80), size: 20),
-                        const SizedBox(width: 12),
-                        Expanded(
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text("From", style: TextStyle(color: isDark ? Colors.white54 : Colors.grey[600], fontSize: 12)),
-                              const SizedBox(height: 2),
-                              Text(pickup, style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14, color: isDark ? Colors.white : Colors.black), maxLines: 2, overflow: TextOverflow.ellipsis),
-                            ],
-                          ),
-                        ),
-                      ],
-                    ),
-                    // Connecting line
-                    Padding(
-                      padding: const EdgeInsets.only(left: 9),
-                      child: Container(height: 20, width: 2, color: isDark ? Colors.white24 : Colors.black12),
-                    ),
-                    // Timeline - To
-                    Row(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        const Icon(Icons.location_on, color: Colors.redAccent, size: 20),
-                        const SizedBox(width: 12),
-                        Expanded(
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text("To", style: TextStyle(color: isDark ? Colors.white54 : Colors.grey[600], fontSize: 12)),
-                              const SizedBox(height: 2),
-                              Text(dest, style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14, color: isDark ? Colors.white : Colors.black), maxLines: 2, overflow: TextOverflow.ellipsis),
-                            ],
-                          ),
-                        ),
-                      ],
-                    ),
-                    
-                    Padding(
-                      padding: const EdgeInsets.symmetric(vertical: 20),
-                      child: Divider(height: 1, color: isDark ? Colors.white10 : Colors.black12),
-                    ),
-                    
-                    // Stats Grid
-                    Row(
-                      children: [
-                        Expanded(child: _buildStatGridItem(Icons.people_outline_rounded, "Passengers", "${allInRide.length}", isDark)),
-                        Container(width: 1, height: 40, color: isDark ? Colors.white10 : Colors.black12),
-                        Expanded(child: _buildStatGridItem(Icons.monetization_on_outlined, "Earnings", "₹$totalEarnings", isDark, valueColor: const Color(0xFF4ADE80))),
-                      ],
-                    ),
-                    const SizedBox(height: 16),
-                    Row(
-                      children: [
-                        Expanded(child: _buildStatGridItem(Icons.add_road_rounded, "Distance", distance, isDark)),
-                        Container(width: 1, height: 40, color: isDark ? Colors.white10 : Colors.black12),
-                        Expanded(child: _buildStatGridItem(Icons.access_time_rounded, "Duration", duration, isDark)),
-                      ],
-                    ),
-                  ],
-                ),
+              TripSummaryCard(
+                isDark: isDark,
+                dateStr: dateStr,
+                pickup: pickup,
+                dest: dest,
+                distance: distance,
+                duration: duration,
+                passengers: "${allInRide.length}",
+                totalEarnings: "$totalEarnings",
               ),
               const SizedBox(height: 20),
 
-              // Performance Card
-              Container(
-                width: double.infinity,
-                padding: const EdgeInsets.all(20),
-                decoration: BoxDecoration(
-                  color: isDark ? const Color(0xFF1E1E1E) : Colors.white,
-                  borderRadius: BorderRadius.circular(20),
-                  border: Border.all(color: isDark ? Colors.white10 : Colors.black12),
-                  boxShadow: [
-                    if (!isDark) BoxShadow(color: Colors.black.withValues(alpha: 0.05), blurRadius: 15, offset: const Offset(0, 8)),
-                  ],
-                ),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Row(
-                      children: [
-                        Icon(Icons.trending_up_rounded, color: const Color(0xFF4ADE80), size: 24),
-                        const SizedBox(width: 12),
-                        Text(
-                          "Your Performance",
-                          style: TextStyle(
-                            fontSize: 18,
-                            fontWeight: FontWeight.bold,
-                            color: isDark ? Colors.white : Colors.black,
-                          ),
-                        ),
-                      ],
-                    ),
-                    const SizedBox(height: 24),
-                    Row(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Expanded(child: _buildPerfStat("Rides\nCompleted", "$totalRidesCompleted", Icons.directions_car_rounded, isDark, iconColor: const Color(0xFF4ADE80))),
-                        Expanded(child: _buildPerfStat("Online\nTime", "${totalOnlineTimeMins ~/ 60}h ${totalOnlineTimeMins % 60}m", Icons.access_time_filled, isDark, iconColor: Colors.deepPurpleAccent)),
-                        Expanded(child: _buildPerfStat("Distance\nDriven", "$totalDistanceDriven km", Icons.add_road, isDark, iconColor: Colors.lightBlue)),
-                      ],
-                    ),
-                  ],
-                ),
+              PerformanceCard(
+                isDark: isDark,
+                totalRidesCompleted: totalRidesCompleted,
+                totalOnlineTimeMins: totalOnlineTimeMins,
+                totalDistanceDriven: totalDistanceDriven,
               ),
               const SizedBox(height: 20),
 
-              // Earnings Breakdown Card
-              Container(
-                width: double.infinity,
-                padding: const EdgeInsets.all(20),
-                decoration: BoxDecoration(
-                  color: isDark ? const Color(0xFF1E1E1E) : Colors.white,
-                  borderRadius: BorderRadius.circular(20),
-                  border: Border.all(color: isDark ? Colors.white10 : Colors.black12),
-                  boxShadow: [
-                    if (!isDark) BoxShadow(color: Colors.black.withValues(alpha: 0.05), blurRadius: 15, offset: const Offset(0, 8)),
-                  ],
-                ),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Row(
-                      children: [
-                        Icon(Icons.account_balance_wallet_outlined, color: const Color(0xFF4ADE80), size: 24),
-                        const SizedBox(width: 12),
-                        Text(
-                          "Earnings Breakdown",
-                          style: TextStyle(
-                            fontSize: 18,
-                            fontWeight: FontWeight.bold,
-                            color: isDark ? Colors.white : Colors.black,
-                          ),
-                        ),
-                      ],
-                    ),
-                    const SizedBox(height: 24),
-                    IntrinsicHeight(
-                      child: Row(
-                        crossAxisAlignment: CrossAxisAlignment.stretch,
-                        children: [
-                          // Breakdown List
-                          Expanded(
-                            flex: 6,
-                            child: Column(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: earningsList.isEmpty 
-                                ? [Text("No passengers boarded", style: TextStyle(color: isDark ? Colors.white54 : Colors.grey[600]))]
-                                : earningsList.map((e) {
-                                    return Padding(
-                                      padding: const EdgeInsets.only(bottom: 12),
-                                      child: Row(
-                                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                        children: [
-                                          Expanded(child: Text(e['name'], style: TextStyle(color: isDark ? Colors.white70 : Colors.black87, fontSize: 14), overflow: TextOverflow.ellipsis)),
-                                          Text("₹${e['fare']}", style: TextStyle(color: isDark ? Colors.white70 : Colors.black87, fontSize: 14, fontWeight: FontWeight.bold)),
-                                        ],
-                                      ),
-                                    );
-                                  }).toList(),
-                            ),
-                          ),
-                          // Divider
-                          VerticalDivider(
-                            color: isDark ? Colors.white10 : Colors.black12,
-                            thickness: 1,
-                            width: 40,
-                          ),
-                          // Total
-                          Expanded(
-                            flex: 4,
-                            child: Column(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                Stack(
-                                  alignment: Alignment.center,
-                                  children: [
-                                    Icon(Icons.account_balance_wallet, color: Colors.brown[400], size: 40),
-                                    Positioned(
-                                      top: 0,
-                                      right: 0,
-                                      child: Icon(Icons.attach_money_rounded, color: const Color(0xFF4ADE80), size: 20),
-                                    ),
-                                  ],
-                                ),
-                                const SizedBox(height: 8),
-                                Text("Total Earnings", style: TextStyle(color: isDark ? Colors.white54 : Colors.grey[600], fontSize: 12)),
-                                const SizedBox(height: 4),
-                                Text("₹$totalEarnings", style: const TextStyle(color: Color(0xFF4ADE80), fontSize: 24, fontWeight: FontWeight.bold)),
-                              ],
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ],
-                ),
+              EarningsBreakdownCard(
+                isDark: isDark,
+                earningsList: earningsList,
+                totalEarnings: totalEarnings,
               ),
               const SizedBox(height: 32),
 
@@ -505,49 +259,5 @@ class _DriverCompletingScreenState extends State<DriverCompletingScreen> {
     ),
     );
   }
-
-  Widget _buildStatGridItem(IconData icon, String label, String value, bool isDark, {Color? valueColor}) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.center,
-      children: [
-        Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Icon(icon, size: 14, color: isDark ? Colors.white54 : Colors.grey[600]),
-            const SizedBox(width: 6),
-            Text(label, style: TextStyle(color: isDark ? Colors.white54 : Colors.grey[600], fontSize: 12)),
-          ],
-        ),
-        const SizedBox(height: 8),
-        Text(value, style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16, color: valueColor ?? (isDark ? Colors.white : Colors.black))),
-      ],
-    );
-  }
-
-
-  Widget _buildPerfStat(String title, String value, IconData icon, bool isDark, {required Color iconColor, bool showStars = false}) {
-    return Column(
-      children: [
-        Container(
-          padding: const EdgeInsets.all(12),
-          decoration: BoxDecoration(
-            color: isDark ? Colors.white.withValues(alpha: 0.03) : Colors.black.withValues(alpha: 0.03),
-            shape: BoxShape.circle,
-          ),
-          child: Icon(icon, color: iconColor, size: 24),
-        ),
-        const SizedBox(height: 12),
-        Text(title, textAlign: TextAlign.center, style: TextStyle(color: isDark ? Colors.white54 : Colors.grey[600], fontSize: 11, height: 1.2)),
-        const SizedBox(height: 8),
-        Text(value, style: TextStyle(color: isDark ? Colors.white : Colors.black, fontSize: 16, fontWeight: FontWeight.bold)),
-        if (showStars) ...[
-          const SizedBox(height: 6),
-          Row(
-            mainAxisSize: MainAxisSize.min,
-            children: List.generate(5, (index) => Icon(Icons.star, size: 10, color: index < 4 ? const Color(0xFF4ADE80) : (isDark ? Colors.white24 : Colors.black12))),
-          ),
-        ],
-      ],
-    );
-  }
 }
+

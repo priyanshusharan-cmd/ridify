@@ -12,9 +12,14 @@ import 'package:flutter_map_cancellable_tile_provider/flutter_map_cancellable_ti
 import 'package:latlong2/latlong.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:url_launcher/url_launcher.dart';
+import '../services/ride_service.dart';
+import '../services/location_service.dart';
 import '../core/constants.dart';
 import 'rider_completing_screen.dart';
 import 'driver_completing_screen.dart';
+import '../widgets/live_tracking/animated_marker.dart';
+import '../widgets/live_tracking/ride_status_panel.dart';
+import '../widgets/live_tracking/next_stop_header.dart';
 
 class LiveTrackingScreen extends StatefulWidget {
   final bool isDriver;
@@ -63,13 +68,6 @@ class _LiveTrackingScreenState extends State<LiveTrackingScreen> {
   }
 
   Future<void> _initLocationTracking() async {
-    bool serviceEnabled = await Geolocator.isLocationServiceEnabled();
-    if (!serviceEnabled) return;
-    LocationPermission permission = await Geolocator.checkPermission();
-    if (permission == LocationPermission.denied) {
-      permission = await Geolocator.requestPermission();
-      if (permission == LocationPermission.denied) return;
-    }
     void applyFallback() {
       if (mounted) {
         setState(() {
@@ -80,15 +78,20 @@ class _LiveTrackingScreenState extends State<LiveTrackingScreen> {
         });
       }
     }
-    if (permission == LocationPermission.deniedForever) { applyFallback(); return; }
+
+    final position = await LocationService.getCurrentPosition();
+    if (position == null) {
+      applyFallback();
+      return;
+    }
+
     try {
       if (widget.isDriver) {
-        Position position = await Geolocator.getCurrentPosition(locationSettings: const LocationSettings(timeLimit: Duration(seconds: 3)));
         if (mounted) {
           setState(() => driverPosition = LatLng(position.latitude, position.longitude));
           Future.delayed(const Duration(milliseconds: 100), () { mapController.move(driverPosition!, 15.0); });
           socket.emit('driver_location_update', {'rideId': widget.rideId, 'lat': position.latitude, 'lng': position.longitude});
-          positionStreamSubscription = Geolocator.getPositionStream(locationSettings: const LocationSettings(accuracy: LocationAccuracy.high, distanceFilter: 10)).listen((Position p) {
+          positionStreamSubscription = LocationService.getPositionStream(distanceFilter: 10).listen((Position p) {
             if (mounted) {
               setState(() => driverPosition = LatLng(p.latitude, p.longitude));
               _fitBounds();
@@ -97,9 +100,8 @@ class _LiveTrackingScreenState extends State<LiveTrackingScreen> {
           });
         }
       } else {
-        Position position = await Geolocator.getCurrentPosition(locationSettings: const LocationSettings(timeLimit: Duration(seconds: 3)));
         if (mounted) setState(() => myPosition = LatLng(position.latitude, position.longitude));
-        positionStreamSubscription = Geolocator.getPositionStream(locationSettings: const LocationSettings(accuracy: LocationAccuracy.high, distanceFilter: 5)).listen((Position pos) {
+        positionStreamSubscription = LocationService.getPositionStream(distanceFilter: 5).listen((Position pos) {
           if (mounted) setState(() => myPosition = LatLng(pos.latitude, pos.longitude));
         });
       }
@@ -110,14 +112,14 @@ class _LiveTrackingScreenState extends State<LiveTrackingScreen> {
     if (rideData == null || driverPosition == null) return;
     if (rideData!['destLat'] == null || rideData!['destLng'] == null) return;
     try {
-      final url = Uri.parse('http://router.project-osrm.org/route/v1/driving/${driverPosition!.longitude},${driverPosition!.latitude};${rideData!['destLng']},${rideData!['destLat']}?geometries=geojson&overview=simplified');
-      final response = await http.get(url).timeout(const Duration(seconds: 10));
-      if (response.statusCode == 200) {
-        final data = jsonDecode(response.body);
-        if (data['routes'] != null && data['routes'].isNotEmpty) {
-          final coords = data['routes'][0]['geometry']['coordinates'] as List;
-          if (mounted) setState(() => routePoints = coords.map((c) => LatLng(c[1], c[0])).toList());
-        }
+      final route = await LocationService.fetchOsrmRoute(
+        driverPosition!.longitude, driverPosition!.latitude,
+        rideData!['destLng'], rideData!['destLat'],
+        overview: 'simplified'
+      );
+      if (route != null) {
+        final coords = route['geometry']['coordinates'] as List;
+        if (mounted) setState(() => routePoints = coords.map((c) => LatLng(c[1], c[0])).toList());
       }
     } catch (e) { debugPrint("OSRM Error: $e"); }
   }
@@ -137,9 +139,8 @@ class _LiveTrackingScreenState extends State<LiveTrackingScreen> {
   Future<void> syncRideStatus() async {
     if (widget.rideId.isEmpty) return;
     try {
-      final response = await http.get(Uri.parse('$kBaseUrl/api/rides/${widget.rideId}'));
-      if (response.statusCode == 200 && mounted) {
-        final data = jsonDecode(response.body);
+      final data = await RideService.getRideById(widget.rideId);
+      if (mounted) {
         if (!widget.isDriver && !(data['passengers'] ?? []).contains(widget.myEmail) && !(data['boardedPassengers'] ?? []).contains(widget.myEmail) && !(data['droppedPassengers'] ?? []).contains(widget.myEmail)) { _kickSelfOut(); return; }
         // If rider was dropped, navigate to payment
         if (!widget.isDriver && (data['droppedPassengers'] ?? []).contains(widget.myEmail)) {
@@ -371,12 +372,7 @@ class _LiveTrackingScreenState extends State<LiveTrackingScreen> {
       }
     });
     try {
-      final response = await http.patch(Uri.parse('$kBaseUrl/api/rides/arrive/${widget.rideId}/$name'));
-      if (response.statusCode != 200 && mounted) {
-        final error = jsonDecode(response.body)['error'] ?? 'Failed';
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(error), backgroundColor: Colors.red));
-        syncRideStatus(); // Rollback/Sync
-      }
+      await RideService.markDriverArrived(widget.rideId, name);
     } catch (e) { debugPrint(e.toString()); syncRideStatus(); }
   }
   Future<void> boardRide() async {
@@ -390,11 +386,7 @@ class _LiveTrackingScreenState extends State<LiveTrackingScreen> {
       }
     });
     try {
-      final response = await http.patch(Uri.parse('$kBaseUrl/api/rides/board/${widget.rideId}/${widget.myEmail}'));
-      if (response.statusCode != 200) { 
-        if (mounted) ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(jsonDecode(response.body)['error'] ?? "Failed to board"), backgroundColor: Colors.red)); 
-        syncRideStatus();
-      }
+      await RideService.boardPassenger(widget.rideId, widget.myEmail);
     } catch (e) { debugPrint(e.toString()); syncRideStatus(); }
   }
 
@@ -433,11 +425,7 @@ class _LiveTrackingScreenState extends State<LiveTrackingScreen> {
       }
     });
     try { 
-      final response = await http.patch(Uri.parse('$kBaseUrl/api/rides/kick/${widget.rideId}/$name')); 
-      if (response.statusCode != 200) {
-        if (mounted) ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(jsonDecode(response.body)['error'] ?? "Failed to kick"), backgroundColor: Colors.red));
-        syncRideStatus();
-      }
+      await RideService.kickPassenger(widget.rideId, name);
     } catch (e) { debugPrint(e.toString()); syncRideStatus(); } 
   }
   Future<void> _executeDropOff(String name) async { 
@@ -451,7 +439,7 @@ class _LiveTrackingScreenState extends State<LiveTrackingScreen> {
         rideData!['droppedPassengers'] = dropped;
       }
     });
-    try { await http.patch(Uri.parse('$kBaseUrl/api/rides/dropoff/${widget.rideId}/$name')); } catch (e) { debugPrint(e.toString()); syncRideStatus(); } 
+    try { await RideService.dropOffPassenger(widget.rideId, name); } catch (e) { debugPrint(e.toString()); syncRideStatus(); } 
   }
 
   Future<void> dropOffPassenger(String passengerEmail) async {
@@ -514,8 +502,8 @@ class _LiveTrackingScreenState extends State<LiveTrackingScreen> {
       if (rideData != null) rideData!['status'] = 'completed';
     });
     try {
-      final res = await http.patch(Uri.parse('$kBaseUrl/api/rides/end/${widget.rideId}'));
-      if (res.statusCode == 200 && mounted) {
+      final res = await RideService.endRide(widget.rideId);
+      if (mounted) {
         _triggerCompletionScreen();
       }
     } catch (e) {
@@ -529,7 +517,7 @@ class _LiveTrackingScreenState extends State<LiveTrackingScreen> {
       isStarted = true;
       if (rideData != null) rideData!['status'] = 'started';
     });
-    try { await http.patch(Uri.parse('$kBaseUrl/api/rides/start/${widget.rideId}')); } catch (e) { debugPrint(e.toString()); syncRideStatus(); } 
+    try { await RideService.startRide(widget.rideId); } catch (e) { debugPrint(e.toString()); syncRideStatus(); } 
   }
 
   // Returns {title, address, lat, lng} for the next stop header
@@ -654,11 +642,8 @@ class _LiveTrackingScreenState extends State<LiveTrackingScreen> {
               TileLayer(urlTemplate: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png', userAgentPackageName: 'com.example.ridify', tileProvider: CancellableNetworkTileProvider()),
               if (routePoints.isNotEmpty) PolylineLayer(polylines: [Polyline(points: routePoints, strokeWidth: 5.0, color: Colors.blueAccent)]),
               MarkerLayer(markers: [
-                if (!widget.isDriver && myPosition != null) Marker(point: myPosition!, width: 20, height: 20, child: Container(decoration: BoxDecoration(color: Colors.blueAccent, shape: BoxShape.circle, border: Border.all(color: Colors.white, width: 3), boxShadow: const [BoxShadow(blurRadius: 5, color: Colors.black26)]))),
-                Marker(point: driverPosition!, width: 120, height: 80, child: Column(mainAxisSize: MainAxisSize.min, children: [
-                  Container(padding: const EdgeInsets.all(5), color: Colors.white, child: Text(driverLabel, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 10, color: Colors.black))),
-                  const Icon(Icons.directions_car, color: Colors.red, size: 30),
-                ])),
+                if (!widget.isDriver && myPosition != null) Marker(point: myPosition!, width: 20, height: 20, child: const AnimatedPassengerMarker()),
+                Marker(point: driverPosition!, width: 120, height: 80, child: AnimatedDriverMarker(driverLabel: driverLabel)),
               ]),
             ],
           ),
@@ -710,329 +695,39 @@ class _LiveTrackingScreenState extends State<LiveTrackingScreen> {
         // Next Stop header with dynamic passenger name and address
         if (widget.isDriver && isStarted) Builder(builder: (ctx) {
           final stopInfo = _getNextStopInfo();
-          return Positioned(top: 20, left: 20, right: 80, child: GestureDetector(
+          return Positioned(top: 20, left: 20, right: 80, child: NextStopHeader(
+            stopInfo: stopInfo,
+            isDark: isDark,
             onTap: () => _openInMaps(
               (stopInfo['lat'] as num?)?.toDouble(),
               (stopInfo['lng'] as num?)?.toDouble(),
               (stopInfo['address'] as String?) ?? '',
             ),
-            child: Container(
-              padding: const EdgeInsets.all(14),
-              decoration: BoxDecoration(
-                color: panelBg,
-                borderRadius: BorderRadius.circular(15),
-                boxShadow: const [BoxShadow(color: Colors.black12, blurRadius: 6, offset: Offset(0, 3))],
-                border: Border.all(color: isDark ? Colors.white24 : Colors.black12),
-              ),
-              child: Row(children: [
-                Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-                  Row(children: [
-                    Text("NEXT STOP", style: TextStyle(color: panelSub, fontSize: 11, fontWeight: FontWeight.bold, letterSpacing: 1)),
-                    const SizedBox(width: 6),
-                    Icon(Icons.open_in_new, size: 12, color: panelSub),
-                  ]),
-                  const SizedBox(height: 4),
-                  Text(stopInfo['title'] as String, style: TextStyle(color: panelText, fontSize: 14, fontWeight: FontWeight.bold), maxLines: 2, overflow: TextOverflow.ellipsis),
-                  if ((stopInfo['address'] as String).isNotEmpty) ...[const SizedBox(height: 2), Text(stopInfo['address'] as String, style: TextStyle(color: panelSub, fontSize: 11), maxLines: 1, overflow: TextOverflow.ellipsis)],
-                ])),
-                const SizedBox(width: 8),
-                Container(
-                  padding: const EdgeInsets.all(8),
-                  decoration: BoxDecoration(
-                    color: isDark ? Colors.blue.shade900.withValues(alpha: 0.4) : Colors.blue.shade50,
-                    shape: BoxShape.circle,
-                  ),
-                  child: Icon(Icons.navigation_rounded, color: isDark ? Colors.blue.shade300 : Colors.blue, size: 20),
-                ),
-              ]),
-            ),
           ));
         }),
-        Builder(
-          builder: (context) {
-            double minSize = widget.isDriver ? 0.32 : 0.25;
-            double maxSize = widget.isDriver
-                ? (minSize + (activePassengers.length * 0.13)).clamp(minSize + 0.01, 0.85)
-                : minSize + 0.01;
-
-            return DraggableScrollableSheet(
-              initialChildSize: minSize,
-              minChildSize: minSize,
-              maxChildSize: maxSize,
-              snap: true,
-              snapSizes: (widget.isDriver && activePassengers.isNotEmpty) ? [minSize, maxSize] : null,
-              builder: (BuildContext context, ScrollController scrollController) {
-                return Container(
-                  decoration: BoxDecoration(
-                    color: panelBg,
-                    borderRadius: const BorderRadius.vertical(top: Radius.circular(30)),
-                    boxShadow: const [BoxShadow(color: Colors.black12, blurRadius: 10)],
-                  ),
-                  child: ScrollConfiguration(
-                    behavior: ScrollConfiguration.of(context).copyWith(
-                      dragDevices: {
-                        PointerDeviceKind.touch,
-                        PointerDeviceKind.mouse,
-                        PointerDeviceKind.trackpad,
-                      },
-                    ).copyWith(scrollbars: false),
-                    child: ListView(
-                      controller: scrollController,
-                      padding: const EdgeInsets.fromLTRB(20, 10, 20, 20),
-                      children: [
-                        // ── Drag handle ──
-                        Center(
-                          child: Container(
-                            width: 40, height: 5,
-                            margin: const EdgeInsets.only(bottom: 16),
-                            decoration: BoxDecoration(
-                              color: isDark ? Colors.white24 : Colors.black26,
-                              borderRadius: BorderRadius.circular(10),
-                            ),
-                          ),
-                        ),
-                        // ── Header row ──
-                        Row(children: [
-                          Container(
-                            width: 56, height: 56,
-                            decoration: BoxDecoration(
-                              color: isDark ? const Color(0xFF2C2C2C) : Colors.grey.shade900,
-                              borderRadius: BorderRadius.circular(16),
-                            ),
-                            child: Center(
-                              child: Text(
-                                isAccepted ? (widget.isDriver ? "G" : widget.otherUserName.substring(0, 1).toUpperCase()) : "?",
-                                style: const TextStyle(color: Colors.white, fontSize: 24, fontWeight: FontWeight.bold),
-                              ),
-                            ),
-                          ),
-                          const SizedBox(width: 16),
-                          Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-                            Text(
-                              isAccepted ? (widget.isDriver ? "Ride Group" : widget.otherUserName) : "Finding Match...",
-                              style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: panelText),
-                              maxLines: 1, overflow: TextOverflow.ellipsis,
-                            ),
-                            const SizedBox(height: 4),
-                            Container(
-                              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                              decoration: BoxDecoration(
-                                color: isStarted ? Colors.blue.withValues(alpha: 0.1) : Colors.green.withValues(alpha: 0.1),
-                                borderRadius: BorderRadius.circular(8),
-                              ),
-                              child: Row(mainAxisSize: MainAxisSize.min, children: [
-                                Container(width: 8, height: 8, decoration: BoxDecoration(shape: BoxShape.circle, color: isStarted ? Colors.blue : Colors.green)),
-                                const SizedBox(width: 6),
-                                Text(statusText, style: TextStyle(color: isStarted ? (isDark ? Colors.blue.shade300 : Colors.blue.shade700) : (isDark ? Colors.green.shade300 : Colors.green.shade700), fontWeight: FontWeight.bold, fontSize: 12)),
-                              ]),
-                            ),
-                          ])),
-                          // Rider: Board button
-                          if (!widget.isDriver && isAccepted && !iHaveBoarded && !iAmDropped)
-                            ElevatedButton(
-                              style: ElevatedButton.styleFrom(
-                                backgroundColor: !iAmArrived ? Colors.grey.shade300 : (isDark ? const Color(0xFF1B4332) : Colors.green.shade600),
-                                foregroundColor: !iAmArrived ? Colors.grey.shade600 : Colors.white,
-                                elevation: 0,
-                                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-                                padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
-                              ),
-                              onPressed: () {
-                                if (!iAmArrived) {
-                                  ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("Wait for the driver to arrive"), backgroundColor: Colors.orange));
-                                } else {
-                                  boardRide();
-                                }
-                              },
-                              child: const Text("Board", style: TextStyle(fontWeight: FontWeight.bold, fontSize: 15)),
-                            ),
-                          // Driver: Start / End button
-                          if (widget.isDriver) ...[
-                            if (!isStarted)
-                              ElevatedButton(
-                                style: ElevatedButton.styleFrom(
-                                  backgroundColor: isDark ? const Color(0xFF1A3A5C) : Colors.blue.shade600,
-                                  foregroundColor: Colors.white,
-                                  elevation: 0,
-                                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-                                  padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 14),
-                                ),
-                                onPressed: startRide,
-                                child: const Text("Start", style: TextStyle(fontWeight: FontWeight.bold, fontSize: 15)),
-                              )
-                            else
-                              ElevatedButton(
-                                style: ElevatedButton.styleFrom(
-                                  backgroundColor: canEnd ? (isDark ? const Color(0xFF5C1A1A) : Colors.red.shade600) : Colors.grey.shade300,
-                                  foregroundColor: canEnd ? Colors.white : Colors.grey.shade600,
-                                  elevation: 0,
-                                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-                                  padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 14),
-                                ),
-                                onPressed: () {
-                                  if (!canEnd) {
-                                    ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("There are passengers still in the car"), backgroundColor: Colors.red));
-                                  } else {
-                                    endRide();
-                                  }
-                                },
-                                child: const Text("End", style: TextStyle(fontWeight: FontWeight.bold, fontSize: 15)),
-                              ),
-                          ],
-                        ]),
-                        // ── Capacity indicator ──
-                        if (widget.isDriver) ...[
-                          const SizedBox(height: 12),
-                          Container(
-                            padding: const EdgeInsets.all(12),
-                            decoration: BoxDecoration(
-                              color: isDark ? const Color(0xFF252525) : Colors.grey.shade50,
-                              borderRadius: BorderRadius.circular(12),
-                              border: Border.all(color: isDark ? Colors.white10 : Colors.black12),
-                            ),
-                            child: Row(children: [
-                              Icon(Icons.airline_seat_recline_normal, size: 20, color: Colors.blue.shade400),
-                              const SizedBox(width: 8),
-                              Text("$currentlyOccupied / $totalCap seats occupied", style: TextStyle(color: panelText, fontSize: 14, fontWeight: FontWeight.w600)),
-                            ]),
-                          ),
-                        ],
-                        // ── Passengers (revealed when dragged up) ──
-                        if (widget.isDriver && rideData != null && activePassengers.isNotEmpty) ...[
-                          const SizedBox(height: 20),
-                          Text("Passengers", style: TextStyle(fontWeight: FontWeight.bold, color: panelSub, fontSize: 14, letterSpacing: 0.5)),
-                          const SizedBox(height: 12),
-                          ...activePassengers.map<Widget>((p) {
-                            bool isBoarded = (rideData!['boardedPassengers'] ?? []).contains(p);
-                            bool isArrived = (rideData!['arrivedAt'] ?? []).contains(p);
-                            int neededSeats = ((rideData?['riderDetails']?[p]?['seats']) ?? 1) as int;
-                            bool canFit = (currentlyOccupied + neededSeats) <= totalCap;
-                            String? pickupAddr = rideData?['riderDetails']?[p]?['pickupLocation'];
-                            String? destAddr = rideData?['riderDetails']?[p]?['destination'];
-                            String subtitle = isBoarded ? "Boarded ✓" : (isArrived ? "Arrived — waiting to board" : "Picking up soon");
-                            String addrText = isBoarded ? (destAddr ?? "") : (pickupAddr ?? "");
-                            String displayName = rideData?['riderDetails']?[p]?['riderName'] ?? p.toString();
-
-                            return Container(
-                              margin: const EdgeInsets.only(bottom: 12),
-                              padding: const EdgeInsets.all(16),
-                              decoration: BoxDecoration(
-                                color: isDark ? const Color(0xFF2A2A2A) : Colors.white,
-                                borderRadius: BorderRadius.circular(16),
-                                boxShadow: [
-                                  BoxShadow(
-                                    color: isDark ? Colors.black.withValues(alpha: 0.2) : Colors.black.withValues(alpha: 0.05),
-                                    blurRadius: 10,
-                                    offset: const Offset(0, 4),
-                                  )
-                                ],
-                              ),
-                              child: Row(children: [
-                                Container(
-                                  width: 48, height: 48,
-                                  decoration: BoxDecoration(
-                                    shape: BoxShape.circle,
-                                    gradient: LinearGradient(
-                                      colors: [Colors.blue.shade400, Colors.blue.shade700],
-                                      begin: Alignment.topLeft, end: Alignment.bottomRight,
-                                    ),
-                                  ),
-                                  child: Center(
-                                    child: Text(
-                                      displayName.substring(0, 1).toUpperCase(),
-                                      style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 18),
-                                    ),
-                                  ),
-                                ),
-                                const SizedBox(width: 16),
-                                Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-                                  Text(displayName, style: TextStyle(fontWeight: FontWeight.w700, fontSize: 16, color: panelText)),
-                                  const SizedBox(height: 2),
-                                  Text(subtitle, style: TextStyle(color: isBoarded ? Colors.green.shade600 : Colors.orange.shade600, fontSize: 12, fontWeight: FontWeight.w600)),
-                                  if (addrText.isNotEmpty) ...[
-                                    const SizedBox(height: 4),
-                                    Row(children: [
-                                      Icon(Icons.location_on, size: 12, color: panelSub),
-                                      const SizedBox(width: 4),
-                                      Expanded(child: Text(addrText, style: TextStyle(color: panelSub, fontSize: 12), maxLines: 1, overflow: TextOverflow.ellipsis)),
-                                    ]),
-                                  ],
-                                ])),
-                                const SizedBox(width: 8),
-                                if (isBoarded) ...[
-                                  if (rideData?['routePreference'] != 'nonstop') ...[
-                                    TextButton(
-                                      style: TextButton.styleFrom(
-                                        backgroundColor: Colors.red.shade50,
-                                        foregroundColor: Colors.red.shade700,
-                                        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-                                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
-                                      ),
-                                      onPressed: () => dropOffPassenger(p),
-                                      child: const Text("Drop-off", style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold)),
-                                    ),
-                                    const SizedBox(width: 8),
-                                  ],
-                                  IconButton(
-                                    onPressed: () => _confirmKickPassenger(p),
-                                    icon: Icon(Icons.person_remove_rounded, color: Colors.red.shade300, size: 22),
-                                    style: IconButton.styleFrom(backgroundColor: isDark ? Colors.white10 : Colors.grey.shade100),
-                                  ),
-                                ] else ...[
-                                  if (!isArrived && rideData?['routePreference'] != 'nonstop' && rideData?['routePreference'] != 'shared_start') ...[
-                                    TextButton(
-                                      style: TextButton.styleFrom(
-                                        backgroundColor: (canFit && isStarted) ? Colors.green.shade50 : Colors.grey.shade100,
-                                        foregroundColor: (canFit && isStarted) ? Colors.green.shade700 : Colors.grey.shade600,
-                                        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-                                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
-                                      ),
-                                      onPressed: () {
-                                        if (!isStarted) {
-                                          ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("First start the ride"), backgroundColor: Colors.orange));
-                                        } else if (!canFit) {
-                                          ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("Car capacity reached"), backgroundColor: Colors.red));
-                                        } else {
-                                          driverArriveForPassenger(p);
-                                        }
-                                      },
-                                      child: Text((canFit && isStarted) ? "Arrived" : (isStarted ? "Full" : "Arrived"), style: const TextStyle(fontSize: 12, fontWeight: FontWeight.bold)),
-                                    ),
-                                    const SizedBox(width: 8),
-                                  ],
-                                  IconButton(
-                                    onPressed: () => _confirmKickPassenger(p),
-                                    icon: Icon(Icons.person_remove_rounded, color: Colors.red.shade300, size: 22),
-                                    style: IconButton.styleFrom(backgroundColor: isDark ? Colors.white10 : Colors.grey.shade100),
-                                  ),
-                                ],
-                              ]),
-                            );
-                          }),
-                        ],
-                        // ── Chat button (always at bottom of list) ──
-                        const SizedBox(height: 16),
-                        SizedBox(
-                          width: double.infinity,
-                          height: 52,
-                          child: ElevatedButton.icon(
-                            style: ElevatedButton.styleFrom(
-                              backgroundColor: isDark ? const Color(0xFF333333) : Colors.black,
-                              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-                              elevation: 0,
-                            ),
-                            onPressed: () => Navigator.push(context, MaterialPageRoute(builder: (_) => ChatScreen(myName: widget.myName, myEmail: widget.myEmail, otherName: widget.isDriver ? "Group" : widget.otherUserName, rideId: widget.rideId))),
-                            icon: const Icon(Icons.chat_bubble_outline_rounded, color: Colors.white),
-                            label: const Text("Chat", style: TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.w600)),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                );
-              },
-            );
-          },
+        RideStatusPanel(
+          isDriver: widget.isDriver,
+          isAccepted: isAccepted,
+          isStarted: isStarted,
+          iHaveBoarded: iHaveBoarded,
+          iAmArrived: iAmArrived,
+          iAmDropped: iAmDropped,
+          canEnd: canEnd,
+          otherUserName: widget.otherUserName,
+          statusText: statusText,
+          currentlyOccupied: currentlyOccupied,
+          totalCap: totalCap,
+          rideData: rideData,
+          activePassengers: activePassengers,
+          myName: widget.myName,
+          myEmail: widget.myEmail,
+          rideId: widget.rideId,
+          onBoardRide: boardRide,
+          onStartRide: startRide,
+          onEndRide: endRide,
+          onDropOffPassenger: dropOffPassenger,
+          onConfirmKickPassenger: _confirmKickPassenger,
+          onDriverArriveForPassenger: driverArriveForPassenger,
         ),
       ]),
     );

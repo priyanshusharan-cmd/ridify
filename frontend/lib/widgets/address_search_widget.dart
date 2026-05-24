@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:http/http.dart' as http;
-import 'dart:convert';
+import 'dart:async';
+import '../services/nominatim_service.dart';
 import 'dart:async';
 
 class AddressSearchWidget extends StatefulWidget {
@@ -44,28 +44,14 @@ class _AddressSearchWidgetState extends State<AddressSearchWidget> {
     setState(() => _isLoading = true);
 
     try {
-      final url = Uri.parse(
-          'https://nominatim.openstreetmap.org/search?q=$query&format=json&limit=5&countrycodes=in');
-      final response = await http.get(url, headers: {
-        'User-Agent': 'ridify_app/1.0',
+      final suggestions = await NominatimService.searchAddress(query);
+      setState(() {
+        _suggestions = suggestions;
       });
-
-      if (response.statusCode == 200) {
-        final List data = jsonDecode(response.body);
-        setState(() {
-          _suggestions = data
-              .map((e) => {
-                    'display_name': e['display_name'],
-                    'lat': double.parse(e['lat']),
-                    'lon': double.parse(e['lon']),
-                  })
-              .toList();
-        });
-        if (_suggestions.isNotEmpty) {
-          _showOverlay();
-        } else {
-          _removeOverlay();
-        }
+      if (_suggestions.isNotEmpty) {
+        _showOverlay();
+      } else {
+        _removeOverlay();
       }
     } catch (e) {
       debugPrint("Search error: $e");

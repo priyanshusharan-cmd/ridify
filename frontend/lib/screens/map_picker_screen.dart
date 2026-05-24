@@ -1,9 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:latlong2/latlong.dart';
-import 'package:geolocator/geolocator.dart';
-import 'package:http/http.dart' as http;
 import 'dart:convert';
+import '../services/location_service.dart';
 import 'package:flutter_map_cancellable_tile_provider/flutter_map_cancellable_tile_provider.dart';
 import 'dart:math' as math;
 import '../widgets/address_search_widget.dart';
@@ -37,42 +36,13 @@ class _MapPickerScreenState extends State<MapPickerScreen> {
 
   Future<void> _determinePosition() async {
     try {
-      LocationPermission permission = await Geolocator.checkPermission();
-      if (permission == LocationPermission.denied) {
-        permission = await Geolocator.requestPermission();
-      }
-      if (permission == LocationPermission.whileInUse || permission == LocationPermission.always) {
-        // Try to get last known position first as it's faster and less prone to "Position update is unavailable"
-        Position? position = await Geolocator.getLastKnownPosition();
-        
-        if (position != null) {
-          setState(() {
-            _centerPosition = LatLng(position.latitude, position.longitude);
-            _isLocating = false;
-          });
-          _mapController.move(_centerPosition, 15.0);
-        }
-        
-        // Attempt to get fresh position with a timeout
-        try {
-          Position freshPosition = await Geolocator.getCurrentPosition(
-            locationSettings: const LocationSettings(
-              accuracy: LocationAccuracy.high,
-              timeLimit: Duration(seconds: 5),
-            ),
-          );
-          setState(() {
-            _centerPosition = LatLng(freshPosition.latitude, freshPosition.longitude);
-            _isLocating = false;
-          });
-          _mapController.move(_centerPosition, 15.0);
-        } catch (e) {
-          debugPrint("Failed to get fresh position: $e");
-          // If we didn't even get last known position, stop loading
-          if (position == null) {
-            setState(() => _isLocating = false);
-          }
-        }
+      final position = await LocationService.getCurrentPosition();
+      if (position != null) {
+        setState(() {
+          _centerPosition = LatLng(position.latitude, position.longitude);
+          _isLocating = false;
+        });
+        _mapController.move(_centerPosition, 15.0);
       } else {
         setState(() => _isLocating = false);
       }
@@ -87,12 +57,8 @@ class _MapPickerScreenState extends State<MapPickerScreen> {
     try {
       final lat = _centerPosition.latitude;
       final lng = _centerPosition.longitude;
-      final url = Uri.parse('https://nominatim.openstreetmap.org/reverse?lat=$lat&lon=$lng&format=json');
-      final response = await http.get(url, headers: {'User-Agent': 'ridify_app/1.0'});
-      
-      if (response.statusCode == 200) {
-        final data = jsonDecode(response.body);
-        String displayName = data['display_name'] ?? 'Selected Location';
+      final displayName = await LocationService.reverseGeocode(lat, lng);
+      if (displayName != null) {
         if (mounted) {
           Navigator.pop(context, {
             'name': displayName,

@@ -4,7 +4,7 @@ import 'dart:convert';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'home_screen.dart';
 import '../core/constants.dart';
-
+import '../services/auth_service.dart';
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
   @override
@@ -84,28 +84,19 @@ class _LoginScreenState extends State<LoginScreen> {
 
     setState(() => isLoading = true);
     try {
-      final url = isLoginMode ? "$serverUrl/login" : "$serverUrl/register";
-      final body = isLoginMode
-          ? {
-              "email": emailController.text.trim(),
-              "password": passwordController.text.trim(),
-            }
-          : {
-              "name": nameController.text.trim(),
-              "age": ageController.text.trim(),
-              "email": emailController.text.trim(),
-              "password": passwordController.text.trim(),
-            };
+      final data = isLoginMode
+          ? await AuthService.login(
+              emailController.text.trim(),
+              passwordController.text.trim(),
+            )
+          : await AuthService.register(
+              nameController.text.trim(),
+              ageController.text.trim(),
+              emailController.text.trim(),
+              passwordController.text.trim(),
+            );
 
-      final response = await http.post(
-        Uri.parse(url),
-        headers: {"Content-Type": "application/json"},
-        body: jsonEncode(body),
-      );
-
-      if (response.statusCode == 200 || response.statusCode == 201) {
-        final data = jsonDecode(response.body);
-        final user = data['user'];
+      final user = data['user'];
 
         // Persist session
         final prefs = await SharedPreferences.getInstance();
@@ -125,11 +116,6 @@ class _LoginScreenState extends State<LoginScreen> {
             ),
           );
         }
-      } else {
-        final err =
-            jsonDecode(response.body)['error'] ?? "Authentication failed";
-        _showSnack(err, Colors.red);
-      }
     } catch (e) {
       _showSnack("Error: ${e.toString()}", Colors.red);
     } finally {

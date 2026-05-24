@@ -6,6 +6,8 @@ import 'package:latlong2/latlong.dart';
 import '../widgets/address_search_widget.dart';
 import '../core/constants.dart';
 import 'map_picker_screen.dart';
+import '../services/ride_service.dart';
+import '../services/location_service.dart';
 
 class OfferRideScreen extends StatefulWidget {
   final String userName;
@@ -83,31 +85,21 @@ class _OfferRideScreenState extends State<OfferRideScreen> {
       // Short trips get a detailed route; long trips get a simplified one
       // so the OSRM response stays small.
       final overview = straightLineDistance > 50 ? 'simplified' : 'full';
-      final url =
-          "https://router.project-osrm.org/route/v1/driving/"
-          "$pickupLng,$pickupLat;$destLng,$destLat"
-          "?geometries=geojson&overview=$overview";
-      final response = await http
-          .get(Uri.parse(url))
-          .timeout(const Duration(seconds: 15));
-      if (response.statusCode == 200) {
-        final data = json.decode(response.body);
-        if (data['routes'] != null && data['routes'].isNotEmpty) {
-          final route = data['routes'][0];
-          setState(() {
-            totalDistance = route['distance'] / 1000.0; // in km
-            final coordinates = route['geometry']['coordinates'] as List;
-            final raw = coordinates
-                .map<Map<String, dynamic>>(
-                    (c) => {"lng": c[0], "lat": c[1]})
-                .toList();
-            // Downsample to keep the payload well within MongoDB / Render
-            // limits regardless of trip length.
-            routePath = _downsample(raw, _maxRoutePoints);
-          });
-        }
+      final route = await LocationService.fetchOsrmRoute(
+        pickupLng!, pickupLat!, destLng!, destLat!, overview: overview
+      );
+      
+      if (route != null) {
+        setState(() {
+          totalDistance = route['distance'] / 1000.0; // in km
+          final coordinates = route['geometry']['coordinates'] as List;
+          final raw = coordinates
+              .map<Map<String, dynamic>>(
+                  (c) => {"lng": c[0], "lat": c[1]})
+              .toList();
+          routePath = _downsample(raw, _maxRoutePoints);
+        });
       } else {
-        debugPrint("OSRM returned status ${response.statusCode}");
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
             const SnackBar(
@@ -219,44 +211,33 @@ class _OfferRideScreenState extends State<OfferRideScreen> {
     int expiresAtEpoch = dt.millisecondsSinceEpoch + (15 * 60 * 1000);
 
     try {
-      final response = await http.post(
-        Uri.parse(serverUrl),
-        headers: {"Content-Type": "application/json"},
-        body: jsonEncode({
-          "riderName": widget.userName,
-          "riderEmail": widget.userEmail,
-          "pickupLocation": pickupController.text,
-          "pickupLat": pickupLat,
-          "pickupLng": pickupLng,
-          "destination": destinationController.text,
-          "destLat": destLat,
-          "destLng": destLng,
-          "departureTime": timeString,
-          "expiresAt": expiresAtEpoch,
-          "fare": int.parse(priceController.text),
-          "status": "available",
-          "vehicleType": selectedVehicle,
-          "totalSeats": selectedSeats,
-          "availableSeats": selectedSeats,
-          "routePath": routePath,
-          "totalDistance": totalDistance,
-          "routePreference": routePreference
-        }),
-      ).timeout(const Duration(seconds: 20));
+      final rideData = {
+        "riderName": widget.userName,
+        "riderEmail": widget.userEmail,
+        "pickupLocation": pickupController.text,
+        "pickupLat": pickupLat,
+        "pickupLng": pickupLng,
+        "destination": destinationController.text,
+        "destLat": destLat,
+        "destLng": destLng,
+        "departureTime": timeString,
+        "expiresAt": expiresAtEpoch,
+        "fare": int.parse(priceController.text),
+        "status": "available",
+        "vehicleType": selectedVehicle,
+        "totalSeats": selectedSeats,
+        "availableSeats": selectedSeats,
+        "routePath": routePath,
+        "totalDistance": totalDistance,
+        "routePreference": routePreference
+      };
 
-      if (response.statusCode == 201 && mounted) {
+      await RideService.createRide(rideData);
+
+      if (mounted) {
         Navigator.pop(context, 'ride_posted');
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(content: Text("Ride offered successfully!"), backgroundColor: Colors.green),
-        );
-      } else if (mounted) {
-        String errorMsg = "Server rejected the ride.";
-        try {
-          final errData = jsonDecode(response.body);
-          if (errData['error'] != null) errorMsg = errData['error'];
-        } catch (_) {}
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(errorMsg), backgroundColor: Colors.red),
         );
       }
     } on TimeoutException {
