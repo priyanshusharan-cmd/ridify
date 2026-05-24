@@ -140,6 +140,9 @@ class _RideHistoryScreenState extends State<RideHistoryScreen> {
     bool wasDeclined = ride['declined'] != null && (ride['declined'] as List).contains(uemail);
     bool wasKicked = ride['kicked'] != null && (ride['kicked'] as List).contains(uemail);
 
+    // Did the ride actually start?
+    bool rideWasStarted = ride['startedAt'] != null;
+
     String statusText = "Completed";
     Color statusColor = const Color(0xFF4ADE80);
     IconData statusIcon = Icons.check_circle_outline_rounded;
@@ -159,8 +162,16 @@ class _RideHistoryScreenState extends State<RideHistoryScreen> {
       statusIcon = Icons.remove_circle_outline_rounded;
     }
 
-    String pickup = formatAddress(ride['pickupLocation']?.toString());
-    String dest = formatAddress(ride['destination']?.toString());
+    // For riders (not drivers): show THEIR pickup/dest from riderDetails
+    String pickup;
+    String dest;
+    if (!wasIDriver && ride['riderDetails']?[uemail] != null) {
+      pickup = formatAddress(ride['riderDetails'][uemail]['pickupLocation']?.toString() ?? ride['pickupLocation']?.toString());
+      dest = formatAddress(ride['riderDetails'][uemail]['destination']?.toString() ?? ride['destination']?.toString());
+    } else {
+      pickup = formatAddress(ride['pickupLocation']?.toString());
+      dest = formatAddress(ride['destination']?.toString());
+    }
     
     // Attempt to split date/time nicely
     String rawDate = ride['departureTime']?.toString() ?? "Unknown";
@@ -177,10 +188,39 @@ class _RideHistoryScreenState extends State<RideHistoryScreen> {
     String distance = "0.0 km";
     String duration = "0 mins";
 
-    if (isCancelled) {
+    // DECLINED: passenger never travelled → all zeros
+    // KICKED: passenger was removed → distance=0, duration=boardedAt→kickedAt (if boarded)
+    // CANCELLED (before start): nobody travelled → all zeros
+    // CANCELLED (after start, driver): use startedAt→completedAt
+    if (wasDeclined) {
       distance = "0.0 km";
       duration = "0 mins";
+    } else if (wasKicked) {
+      distance = "0.0 km";
+      // If the kicked passenger had boarded, calculate duration as boardedAt → kickedAt
+      String? boardedAt = ride['riderDetails']?[uemail]?['boardedAt'];
+      String? kickedAt = ride['riderDetails']?[uemail]?['kickedAt'];
+      if (boardedAt != null && kickedAt != null) {
+        try {
+          DateTime start = DateTime.parse(boardedAt);
+          DateTime end = DateTime.parse(kickedAt);
+          int diff = end.difference(start).inMinutes;
+          duration = "${diff < 0 ? 0 : diff} mins";
+        } catch (_) {}
+      }
+    } else if (isCancelled) {
+      distance = "0.0 km";
+      // If the ride was started before cancellation (driver view), show startedAt → completedAt
+      if (wasIDriver && rideWasStarted && ride['completedAt'] != null) {
+        try {
+          DateTime start = DateTime.parse(ride['startedAt']);
+          DateTime end = DateTime.parse(ride['completedAt']);
+          int diff = end.difference(start).inMinutes;
+          duration = "${diff < 0 ? 0 : diff} mins";
+        } catch (_) {}
+      }
     } else {
+      // Normal completed ride
       if (wasIDriver) {
         String d = (ride['totalDistance'] ?? ride['distance'] ?? "0.0").toString();
         double distValue = double.tryParse(d.replaceAll(RegExp(r'[^0-9.]'), '')) ?? 0.0;
@@ -213,21 +253,36 @@ class _RideHistoryScreenState extends State<RideHistoryScreen> {
       }
     }
 
-    // Passengers count
+    // Passengers count — exclude kicked users
+    Set<String> kickedSet = {};
+    for (var p in (ride['kicked'] ?? [])) {
+      kickedSet.add(p.toString());
+    }
     Set<String> allInRide = {};
     for (var p in (ride['boardedPassengers'] ?? [])) {
-      allInRide.add(p.toString());
+      if (!kickedSet.contains(p.toString())) allInRide.add(p.toString());
     }
     for (var p in (ride['droppedPassengers'] ?? [])) {
-      allInRide.add(p.toString());
+      if (!kickedSet.contains(p.toString())) allInRide.add(p.toString());
     }
     for (var p in (ride['passengers'] ?? [])) {
-      allInRide.add(p.toString());
+      if (!kickedSet.contains(p.toString())) allInRide.add(p.toString());
     }
     int paxCount = allInRide.length;
-    if (paxCount == 0 && (ride['requests'] != null && ride['requests'].isNotEmpty)) paxCount = 1;
 
-    String fare = ride['fare']?.toString() ?? '0';
+    // Fare: show ₹0 for declined, kicked, and cancelled rides
+    String fare;
+    if (wasDeclined || wasKicked) {
+      fare = "0";
+    } else if (isCancelled) {
+      // For cancelled rides: driver gets 0 too since nobody paid
+      fare = "0";
+    } else if (!wasIDriver && ride['riderDetails']?[uemail]?['fare'] != null) {
+      // For riders: show THEIR computed fare, not the ride's global fare
+      fare = ride['riderDetails'][uemail]['fare'].toString();
+    } else {
+      fare = ride['fare']?.toString() ?? '0';
+    }
 
     return Container(
       margin: const EdgeInsets.only(bottom: 20),
@@ -445,20 +500,34 @@ class _RideHistoryScreenState extends State<RideHistoryScreen> {
   }
 
   void _showRideGroupPopup(BuildContext context, dynamic ride, Set<String> allInRide, bool isDark) {
+    // Build kicked set
+    Set<String> kickedSet = {};
+    for (var p in (ride['kicked'] ?? [])) {
+      kickedSet.add(p.toString());
+    }
+
     // Collect passenger names from riderDetails if available, otherwise just use emails
     List<String> passengerNames = [];
+    List<String> kickedNames = [];
     if (ride['riderDetails'] != null) {
       for (var email in allInRide) {
         String name = ride['riderDetails'][email]?['riderName'] ?? email.split('@')[0];
         int fare = (ride['riderDetails'][email]?['fare'] as num?)?.toInt() ?? 0;
         passengerNames.add("$name (₹$fare)");
       }
+      // Also show kicked passengers separately
+      for (var email in kickedSet) {
+        String name = ride['riderDetails'][email]?['riderName'] ?? email.split('@')[0];
+        kickedNames.add("$name (Removed)");
+      }
     } else {
       passengerNames = allInRide.map((e) => e.split('@')[0]).toList();
+      kickedNames = kickedSet.map((e) => "${e.split('@')[0]} (Removed)").toList();
     }
 
-    if (passengerNames.isEmpty) {
-      passengerNames = ["No passengers boarded"];
+    List<String> allNames = [...passengerNames, ...kickedNames];
+    if (allNames.isEmpty) {
+      allNames = ["No passengers boarded"];
     }
 
     showModalBottomSheet(
@@ -481,20 +550,23 @@ class _RideHistoryScreenState extends State<RideHistoryScreen> {
               const SizedBox(height: 24),
               Text("Passengers Travelled", style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: isDark ? Colors.white : Colors.black)),
               const SizedBox(height: 16),
-              ...passengerNames.map((name) => Padding(
-                padding: const EdgeInsets.only(bottom: 12),
-                child: Row(
-                  children: [
-                    CircleAvatar(
-                      radius: 16,
-                      backgroundColor: isDark ? Colors.white10 : Colors.black12,
-                      child: Text(name.substring(0, 1).toUpperCase(), style: TextStyle(color: isDark ? Colors.white : Colors.black, fontSize: 12, fontWeight: FontWeight.bold)),
-                    ),
-                    const SizedBox(width: 12),
-                    Text(name, style: TextStyle(fontSize: 15, color: isDark ? Colors.white70 : Colors.black87)),
-                  ],
-                ),
-              )),
+              ...allNames.map((name) {
+                final isRemoved = name.contains("(Removed)");
+                return Padding(
+                  padding: const EdgeInsets.only(bottom: 12),
+                  child: Row(
+                    children: [
+                      CircleAvatar(
+                        radius: 16,
+                        backgroundColor: isRemoved ? Colors.redAccent.withValues(alpha: 0.15) : (isDark ? Colors.white10 : Colors.black12),
+                        child: Text(name.substring(0, 1).toUpperCase(), style: TextStyle(color: isRemoved ? Colors.redAccent : (isDark ? Colors.white : Colors.black), fontSize: 12, fontWeight: FontWeight.bold)),
+                      ),
+                      const SizedBox(width: 12),
+                      Text(name, style: TextStyle(fontSize: 15, color: isRemoved ? Colors.redAccent : (isDark ? Colors.white70 : Colors.black87))),
+                    ],
+                  ),
+                );
+              }),
               const SizedBox(height: 20),
             ],
           ),

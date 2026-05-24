@@ -40,7 +40,8 @@ const RideSchema = new mongoose.Schema({
       paid: { type: Boolean, default: false },
       riderName: String,
       boardedAt: Date,
-      droppedAt: Date
+      droppedAt: Date,
+      kickedAt: Date
     }),
     default: {}
   },

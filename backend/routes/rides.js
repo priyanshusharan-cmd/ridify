@@ -651,6 +651,14 @@ router.patch('/kick/:id/:riderName', async (req, res) => {
     ride.arrivedAt = ride.arrivedAt.filter(p => p !== req.params.riderName);
     ride.kicked.push(req.params.riderName);
 
+    // Save kickedAt timestamp in riderDetails for duration calculation
+    const riderDetail = getRiderDetail(ride, req.params.riderName);
+    if (riderDetail) {
+      riderDetail.kickedAt = new Date();
+      const safeName = req.params.riderName.replace(/\./g, '_dot_');
+      ride.riderDetails.set(safeName, riderDetail);
+    }
+
     // If kicking freed capacity, update status appropriately, but only if the ride hasn't started or completed
     if (ride.status !== 'started' && ride.status !== 'completed' && ride.status !== 'cancelled') {
       if (ride.passengers.length === 0) {

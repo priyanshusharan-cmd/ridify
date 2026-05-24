@@ -105,14 +105,21 @@ class _DriverCompletingScreenState extends State<DriverCompletingScreen> {
     // Extracting data
     List boardedPassengers = rideData?['boardedPassengers'] ?? [];
     List droppedPassengers = rideData?['droppedPassengers'] ?? [];
+    List kickedPassengers = rideData?['kicked'] ?? [];
     
-    // People who were actually in the ride (boarded or dropped)
+    // Build kicked set to exclude from earnings
+    Set<String> kickedSet = {};
+    for (var p in kickedPassengers) {
+      kickedSet.add(p.toString());
+    }
+
+    // People who were actually in the ride (boarded or dropped) — exclude kicked
     Set<String> allInRide = {};
     for (var p in boardedPassengers) {
-      allInRide.add(p.toString());
+      if (!kickedSet.contains(p.toString())) allInRide.add(p.toString());
     }
     for (var p in droppedPassengers) {
-      allInRide.add(p.toString());
+      if (!kickedSet.contains(p.toString())) allInRide.add(p.toString());
     }
 
     List<String> inRideNames = [];
@@ -126,7 +133,6 @@ class _DriverCompletingScreenState extends State<DriverCompletingScreen> {
     
     // Format date properly if it exists, otherwise just today
     String dateStr = rideData?['departureTime'] ?? "Today";
-    // We can also use current time as completion time if dateStr is not great
     
     int totalEarnings = 0;
     List<Map<String, dynamic>> earningsList = [];
