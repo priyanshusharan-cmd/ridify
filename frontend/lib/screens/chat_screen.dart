@@ -239,6 +239,7 @@ class _ChatScreenState extends State<ChatScreen> {
                     style: TextStyle(color: inputTextColor),
                     maxLength: kMaxMessageLength,
                     decoration: InputDecoration(
+                      counterText: "",
                       hintText: "Type a message...",
                       hintStyle: TextStyle(color: inputTextColor.withValues(alpha: 0.5)),
                       filled: true,

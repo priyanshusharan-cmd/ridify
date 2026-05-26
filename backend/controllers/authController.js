@@ -1,4 +1,4 @@
-const bcrypt = require('bcryptjs');
+const bcrypt = require('bcrypt');
 const User = require('../models/user');
 const { isValidEmail, MAX_FIELD_LENGTH } = require('../utils/validators');
 

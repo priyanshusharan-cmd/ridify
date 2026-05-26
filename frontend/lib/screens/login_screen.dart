@@ -278,6 +278,7 @@ class _LoginScreenState extends State<LoginScreen> {
       keyboardType: TextInputType.visiblePassword,
       maxLength: kMaxFieldLength,
       decoration: InputDecoration(
+        counterText: "",
         hintText: "Password",
         hintStyle: TextStyle(color: Theme.of(context).brightness == Brightness.dark ? Colors.white54 : Colors.black54),
         prefixIcon: const Icon(Icons.lock_outline, color: Colors.grey),
@@ -311,6 +312,7 @@ class _LoginScreenState extends State<LoginScreen> {
       keyboardType: isNumber ? TextInputType.number : TextInputType.text,
       maxLength: kMaxFieldLength,
       decoration: InputDecoration(
+        counterText: "",
         hintText: hint,
         hintStyle: TextStyle(color: Theme.of(context).brightness == Brightness.dark ? Colors.white54 : Colors.black54),
         prefixIcon: Icon(icon, color: Colors.grey),

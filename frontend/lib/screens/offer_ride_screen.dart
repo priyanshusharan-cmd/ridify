@@ -612,6 +612,7 @@ class _OfferRideScreenState extends State<OfferRideScreen> {
               maxLength: 6,
               style: TextStyle(color: Theme.of(context).textTheme.bodyLarge?.color),
               decoration: InputDecoration(
+                counterText: "",
                 prefixText: "₹ ",
                 prefixStyle: TextStyle(color: Theme.of(context).textTheme.bodyLarge?.color),
                 hintText: "Enter base price",
