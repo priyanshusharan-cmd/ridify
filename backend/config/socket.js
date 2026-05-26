@@ -3,9 +3,9 @@ const Ride = require('../models/ride');
 
 function initSocket(server, app) {
   const io = new Server(server, {
-    cors: { origin: "*" },
-    pingInterval: 10000,
-    pingTimeout: 5000,
+    cors: { origin: process.env.ALLOWED_ORIGIN || '*' },
+    pingInterval: parseInt(process.env.SOCKET_PING_INTERVAL) || 10000,
+    pingTimeout: parseInt(process.env.SOCKET_PING_TIMEOUT) || 5000,
   });
 
   // =============================================
@@ -49,6 +49,21 @@ function initSocket(server, app) {
   });
 
   // =============================================
+  // SOCKET AUTH MIDDLEWARE
+  // =============================================
+  // Clients must supply a non-empty userEmail in the handshake auth object.
+  // This is not cryptographic auth; it prevents accidental misuse.
+  // A production app would verify a signed JWT here.
+  io.use((socket, next) => {
+    const email = socket.handshake.auth?.userEmail;
+    if (!email || typeof email !== 'string' || email.trim() === '') {
+      return next(new Error('Authentication required: supply userEmail in handshake auth'));
+    }
+    socket.userEmail = email.trim().toLowerCase();
+    next();
+  });
+
+  // =============================================
   // SOCKET.IO — Room-based architecture
   // =============================================
 
@@ -56,13 +71,11 @@ function initSocket(server, app) {
     console.log(`📡 Device connected: ${socket.id}`);
 
     // ── Register user identity ─────────────────────────────────────────
-    // Client sends { userEmail } right after connecting.
-    // Server maps the socket and auto-joins all active ride rooms.
-    socket.on('register_user', async (data) => {
-      const userEmail = data?.userEmail;
+    // userEmail is already set by middleware — ignore any claimed email
+    // from the event body to prevent hijacking another user's events.
+    socket.on('register_user', async () => {
+      const userEmail = socket.userEmail;
       if (!userEmail) return;
-
-      socket.userEmail = userEmail;
 
       if (!userSockets.has(userEmail)) {
         userSockets.set(userEmail, new Set());
@@ -103,13 +116,14 @@ function initSocket(server, app) {
       }
     });
 
-    // ── Driver location — scoped to ride room ──────────────────────────
-    socket.on('driver_location_update', (data) => {
-      if (!socket.userEmail) return; // Must register first
-      if (data?.rideId) {
-        // Broadcast to everyone in the room EXCEPT the sender
+    // ── Driver location — verify the emitter is actually the driver ────
+    socket.on('driver_location_update', async (data) => {
+      if (!socket.userEmail || !data?.rideId) return;
+      try {
+        const ride = await Ride.findById(data.rideId, 'riderEmail').lean();
+        if (!ride || ride.riderEmail !== socket.userEmail) return; // not the driver
         socket.to(data.rideId).emit('driver_location_update', data);
-      }
+      } catch (_) {}
     });
 
     // ── Cleanup on disconnect ──────────────────────────────────────────

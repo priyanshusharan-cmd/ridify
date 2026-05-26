@@ -97,7 +97,7 @@ class _ActiveRidesTabState extends State<ActiveRidesTab> {
 
   Future<void> _cancelOfferedRide(String id, BuildContext context) async {
     try {
-      await RideService.cancelRide(id);
+      await RideService.cancelRide(id, callerEmail: widget.myEmail);
       if (!context.mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(

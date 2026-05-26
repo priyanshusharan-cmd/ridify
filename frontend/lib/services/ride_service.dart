@@ -4,7 +4,7 @@ import '../core/constants.dart';
 
 class RideService {
   static Future<List<dynamic>> getAllRides() async {
-    final response = await http.get(Uri.parse('$kBaseUrl/api/rides'));
+    final response = await http.get(Uri.parse('$kBaseUrl/api/rides')).timeout(kHttpTimeout);
     if (response.statusCode == 200) {
       return jsonDecode(response.body);
     } else {
@@ -41,7 +41,7 @@ class RideService {
       url += "&searchTimeEpoch=$timeEpoch";
     }
 
-    final response = await http.get(Uri.parse(url));
+    final response = await http.get(Uri.parse(url)).timeout(kHttpTimeout);
     if (response.statusCode == 200) {
       return jsonDecode(response.body);
     } else {
@@ -50,7 +50,7 @@ class RideService {
   }
 
   static Future<Map<String, dynamic>> getRideById(String rideId) async {
-    final response = await http.get(Uri.parse('$kBaseUrl/api/rides/$rideId'));
+    final response = await http.get(Uri.parse('$kBaseUrl/api/rides/$rideId')).timeout(kHttpTimeout);
     if (response.statusCode == 200) {
       return jsonDecode(response.body);
     } else {
@@ -63,7 +63,7 @@ class RideService {
       Uri.parse('$kBaseUrl/api/rides'),
       headers: {"Content-Type": "application/json"},
       body: jsonEncode(rideData),
-    );
+    ).timeout(kHttpTimeout);
     if (response.statusCode == 201) {
       return jsonDecode(response.body);
     } else {
@@ -71,8 +71,12 @@ class RideService {
     }
   }
 
-  static Future<void> cancelRide(String rideId) async {
-    final response = await http.delete(Uri.parse('$kBaseUrl/api/rides/$rideId'));
+  static Future<void> cancelRide(String rideId, {required String callerEmail}) async {
+    final response = await http.patch(
+      Uri.parse('$kBaseUrl/api/rides/cancel/$rideId'),
+      headers: {"Content-Type": "application/json"},
+      body: jsonEncode({"callerEmail": callerEmail, "status": "cancelled"}),
+    ).timeout(kHttpTimeout);
     if (response.statusCode != 200) {
       throw Exception(jsonDecode(response.body)['error'] ?? 'Could not cancel the ride.');
     }
@@ -83,14 +87,14 @@ class RideService {
       Uri.parse('$kBaseUrl/api/rides/request/$rideId'),
       headers: {"Content-Type": "application/json"},
       body: jsonEncode(requestBody),
-    );
+    ).timeout(kHttpTimeout);
     if (response.statusCode != 200) {
       throw Exception(jsonDecode(response.body)['error'] ?? 'Failed to request ride.');
     }
   }
 
   static Future<Map<String, dynamic>> acceptRider(String rideId, String riderName) async {
-    final response = await http.patch(Uri.parse('$kBaseUrl/api/rides/accept/$rideId/${Uri.encodeComponent(riderName)}'));
+    final response = await http.patch(Uri.parse('$kBaseUrl/api/rides/accept/$rideId/${Uri.encodeComponent(riderName)}')).timeout(kHttpTimeout);
     if (response.statusCode == 200) {
       return jsonDecode(response.body);
     } else {
@@ -99,7 +103,7 @@ class RideService {
   }
 
   static Future<Map<String, dynamic>> declineRider(String rideId, String riderName) async {
-    final response = await http.patch(Uri.parse('$kBaseUrl/api/rides/decline/$rideId/${Uri.encodeComponent(riderName)}'));
+    final response = await http.patch(Uri.parse('$kBaseUrl/api/rides/decline/$rideId/${Uri.encodeComponent(riderName)}')).timeout(kHttpTimeout);
     if (response.statusCode == 200) {
       return jsonDecode(response.body);
     } else {
@@ -108,7 +112,7 @@ class RideService {
   }
 
   static Future<Map<String, dynamic>> kickPassenger(String rideId, String riderName) async {
-    final response = await http.patch(Uri.parse('$kBaseUrl/api/rides/kick/$rideId/${Uri.encodeComponent(riderName)}'));
+    final response = await http.patch(Uri.parse('$kBaseUrl/api/rides/kick/$rideId/${Uri.encodeComponent(riderName)}')).timeout(kHttpTimeout);
     if (response.statusCode == 200) {
       return jsonDecode(response.body);
     } else {
@@ -117,35 +121,35 @@ class RideService {
   }
 
   static Future<void> markDriverArrived(String rideId, String riderName) async {
-    final response = await http.patch(Uri.parse('$kBaseUrl/api/rides/arrive/$rideId/${Uri.encodeComponent(riderName)}'));
+    final response = await http.patch(Uri.parse('$kBaseUrl/api/rides/arrive/$rideId/${Uri.encodeComponent(riderName)}')).timeout(kHttpTimeout);
     if (response.statusCode != 200) {
       throw Exception(jsonDecode(response.body)['error'] ?? 'Could not mark arrival.');
     }
   }
 
   static Future<void> boardPassenger(String rideId, String riderEmail) async {
-    final response = await http.patch(Uri.parse('$kBaseUrl/api/rides/board/$rideId/${Uri.encodeComponent(riderEmail)}'));
+    final response = await http.patch(Uri.parse('$kBaseUrl/api/rides/board/$rideId/${Uri.encodeComponent(riderEmail)}')).timeout(kHttpTimeout);
     if (response.statusCode != 200) {
       throw Exception(jsonDecode(response.body)['error'] ?? 'Could not mark boarded.');
     }
   }
 
   static Future<void> dropOffPassenger(String rideId, String riderEmail) async {
-    final response = await http.patch(Uri.parse('$kBaseUrl/api/rides/dropoff/$rideId/${Uri.encodeComponent(riderEmail)}'));
+    final response = await http.patch(Uri.parse('$kBaseUrl/api/rides/dropoff/$rideId/${Uri.encodeComponent(riderEmail)}')).timeout(kHttpTimeout);
     if (response.statusCode != 200) {
       throw Exception(jsonDecode(response.body)['error'] ?? 'Could not mark dropped off.');
     }
   }
 
   static Future<void> markPaid(String rideId, String riderEmail) async {
-    final response = await http.patch(Uri.parse('$kBaseUrl/api/rides/pay/$rideId/${Uri.encodeComponent(riderEmail)}'));
+    final response = await http.patch(Uri.parse('$kBaseUrl/api/rides/pay/$rideId/${Uri.encodeComponent(riderEmail)}')).timeout(kHttpTimeout);
     if (response.statusCode != 200) {
       throw Exception(jsonDecode(response.body)['error'] ?? 'Could not mark paid.');
     }
   }
 
   static Future<Map<String, dynamic>> startRide(String rideId) async {
-    final response = await http.patch(Uri.parse('$kBaseUrl/api/rides/start/$rideId'));
+    final response = await http.patch(Uri.parse('$kBaseUrl/api/rides/start/$rideId')).timeout(kHttpTimeout);
     if (response.statusCode == 200) {
       return jsonDecode(response.body);
     } else {
@@ -154,7 +158,7 @@ class RideService {
   }
 
   static Future<Map<String, dynamic>> endRide(String rideId, {bool force = false}) async {
-    final response = await http.patch(Uri.parse('$kBaseUrl/api/rides/end/$rideId?force=$force'));
+    final response = await http.patch(Uri.parse('$kBaseUrl/api/rides/end/$rideId?force=$force')).timeout(kHttpTimeout);
     if (response.statusCode == 200) {
       return jsonDecode(response.body);
     } else {
@@ -166,7 +170,7 @@ class RideService {
     final response = await http.delete(
       Uri.parse('$kBaseUrl/api/rides'),
       headers: {'x-admin-email': adminEmail},
-    );
+    ).timeout(kHttpTimeout);
     if (response.statusCode != 200) {
       throw Exception('Failed to delete all rides');
     }

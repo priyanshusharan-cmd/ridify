@@ -1,11 +1,13 @@
 /**
  * Get the departure time in epoch milliseconds.
- * Prefers expiresAt (minus 15 mins) as it is a timezone-independent timestamp
- * created on the client side. Falls back to parsing departureTime string.
+ * Prefers expiresAt (minus the expiry buffer) as it is a timezone-independent
+ * timestamp created on the client side. Falls back to parsing departureTime string.
  */
+const EXPIRY_BUFFER_MS = 15 * 60 * 1000; // 15 minutes buffer added on ride creation
+
 function getDepartureTimeEpoch(ride) {
   if (ride.expiresAt) {
-    return ride.expiresAt - 15 * 60 * 1000;
+    return ride.expiresAt - EXPIRY_BUFFER_MS;
   }
   if (!ride.departureTime) return null;
   try {

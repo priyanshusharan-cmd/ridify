@@ -1,7 +1,38 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 
-/// The base URL for backend API calls, pulled securely from .env
-String get kBaseUrl => dotenv.env['BACKEND_URL'] ?? "http://localhost:5001";
+/// The base URL for backend API calls, pulled securely from .env.
+/// Falls back to localhost only in debug mode; release builds must set BACKEND_URL.
+String get kBaseUrl {
+  final url = dotenv.env['BACKEND_URL'];
+  if (url != null && url.isNotEmpty) return url;
+  assert(kDebugMode, 'BACKEND_URL must be set in .env for release builds.');
+  return 'http://localhost:5001';
+}
 
 /// Emails that have admin privileges, pulled securely from .env
 List<String> get kAdminEmails => [dotenv.env['ADMIN_EMAIL'] ?? ''];
+
+// ── Shared constants ────────────────────────────────────────────────────────
+// These mirror the backend env defaults so frontend validation stays in sync.
+
+/// Maximum length for text input fields (name, email, addresses)
+const int kMaxFieldLength = 500;
+
+/// Maximum length for chat messages
+const int kMaxMessageLength = 1000;
+
+/// Maximum price in rupees (prevents absurd fare entry)
+const int kMaxPriceRupees = 99999;
+
+/// Minimum ride distance in km
+const double kMinRideDistanceKm = 1.5;
+
+/// Maximum route points to send to backend
+const int kMaxRoutePoints = 500;
+
+/// Default search radius in meters
+const double kDefaultSearchRadiusM = 1000;
+
+/// Standard HTTP request timeout
+const Duration kHttpTimeout = Duration(seconds: 15);

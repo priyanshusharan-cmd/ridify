@@ -26,6 +26,7 @@ class SocketService {
       'transports': ['websocket'],
       'autoConnect': true,
       'forceNew': false,
+      'auth': {'userEmail': _userEmail ?? ''}, // Required by backend middleware
     });
 
     s.onConnect((_) {
@@ -42,6 +43,7 @@ class SocketService {
 
     s.onDisconnect((_) => debugPrint('🔌 Socket disconnected'));
     s.onReconnect((_) => debugPrint('🔌 Socket reconnected'));
+    s.onError((e) => debugPrint('❌ Socket Error: $e'));
 
     return s;
   }
@@ -49,6 +51,12 @@ class SocketService {
   /// Register this user identity. Call once after login.
   void registerUser(String userEmail) {
     _userEmail = userEmail;
+    if (_socket != null) {
+      _socket!.io.options?['auth'] = {'userEmail': userEmail};
+      if (_socket!.disconnected) {
+        _socket!.connect();
+      }
+    }
     socket.emit('register_user', {'userEmail': userEmail});
   }
 

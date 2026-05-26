@@ -1,5 +1,6 @@
 const Ride = require('../models/ride');
 const turf = require('@turf/turf');
+const { isValidEmail, isValidObjectId } = require('../utils/validators');
 const { 
   getDepartureTimeEpoch, 
   getRiderDetail, 
@@ -8,12 +9,19 @@ const {
   checkCapacity 
 } = require('../utils/rideHelpers');
 
+// ── Environment-configurable constants ──────────────────────────────────────
+const MAX_ROUTE_POINTS = parseInt(process.env.MAX_ROUTE_POINTS) || 500;
+const MIN_RIDE_DISTANCE_KM = parseFloat(process.env.MIN_RIDE_DISTANCE_KM) || 1.5;
+const DEFAULT_RADIUS = parseInt(process.env.SEARCH_RADIUS_DEFAULT_M) || 2000;
+const SEARCH_TIME_WINDOW = parseInt(process.env.SEARCH_TIME_WINDOW_MS) || 60 * 60 * 1000;
+const CHAT_MAX_LENGTH = parseInt(process.env.CHAT_MAX_LENGTH) || 1000;
+
 // ── Search rides ─────────────────────────────────────────────────────────────
 exports.searchRides = async (req, res) => {
   try {
     const { pickup, destination, seats, vehicle, lat, lng, destLat, destLng, radius, date, searchTimeEpoch } = req.query;
     const currentTime = Date.now();
-    const searchRadius = parseInt(radius) || 2000;
+    const searchRadius = parseInt(radius) || DEFAULT_RADIUS;
     const reqSeats = parseInt(seats) || 1;
     const targetEpoch = searchTimeEpoch ? parseInt(searchTimeEpoch) : null;
 
@@ -58,7 +66,7 @@ exports.searchRides = async (req, res) => {
           const rideDepEpoch = getDepartureTimeEpoch(ride);
           if (rideDepEpoch) {
             const diff = Math.abs(rideDepEpoch - targetEpoch);
-            if (diff > 60 * 60 * 1000) {
+            if (diff > SEARCH_TIME_WINDOW) {
               continue;
             }
           }
@@ -119,7 +127,7 @@ exports.searchRides = async (req, res) => {
             );
           }
 
-          if (tripDistance < 1.5) continue; // Minimum distance check
+          if (tripDistance < MIN_RIDE_DISTANCE_KM) continue; // Minimum distance check
 
           // Preferences check
           const isStartClose = startIndex < (ride.routePath.length * 0.1);
@@ -180,14 +188,26 @@ exports.getAllRides = async (req, res) => {
 };
 
 exports.getRideById = async (req, res) => {
-  try { res.status(200).json(await Ride.findById(req.params.id)); } catch (err) { res.status(500).json({ error: err.message }); }
+  try {
+    if (!isValidObjectId(req.params.id)) {
+      return res.status(400).json({ error: 'Invalid ride ID format.' });
+    }
+    const ride = await Ride.findById(req.params.id);
+    if (!ride) return res.status(404).json({ error: 'Ride not found.' });
+    res.status(200).json(ride);
+  } catch (err) { res.status(500).json({ error: err.message }); }
 };
 
 // ── Create ride — join driver into room ──────────────────────────────────────
-const MAX_ROUTE_POINTS = 500;
+// MAX_ROUTE_POINTS defined at top of file from env
 exports.createRide = async (req, res) => {
   try {
     const data = req.body;
+    // Validate riderEmail
+    if (!data.riderEmail || !isValidEmail(data.riderEmail)) {
+      return res.status(400).json({ error: "A valid rider email is required." });
+    }
+    data.riderEmail = data.riderEmail.trim().toLowerCase();
     if (data.totalSeats != null && (isNaN(parseInt(data.totalSeats)) || parseInt(data.totalSeats) <= 0)) {
       return res.status(400).json({ error: "Total seats must be a positive integer." });
     }
@@ -225,8 +245,19 @@ exports.createRide = async (req, res) => {
 // ── Cancel ride — scoped to room ─────────────────────────────────────────────
 exports.cancelRide = async (req, res) => {
   try {
+    if (!isValidObjectId(req.params.id)) {
+      return res.status(400).json({ error: 'Invalid ride ID.' });
+    }
     const ride = await Ride.findById(req.params.id);
     if (!ride) return res.status(404).json({ error: "Ride not found" });
+
+    // Ownership check: only the driver (or admin) can cancel
+    const callerEmail = (req.body?.callerEmail || '').trim().toLowerCase();
+    const ADMIN_EMAILS = (process.env.ADMIN_EMAILS || '').split(',').map(e => e.trim().toLowerCase()).filter(Boolean);
+    if (callerEmail !== ride.riderEmail && !ADMIN_EMAILS.includes(callerEmail)) {
+      return res.status(403).json({ error: 'Only the ride driver can cancel this ride.' });
+    }
+
     if (['completed', 'cancelled'].includes(ride.status)) {
       return res.status(400).json({ error: `Ride is already ${ride.status}.` });
     }
@@ -268,12 +299,18 @@ exports.requestRide = async (req, res) => {
     }
     
     const seatCount = parseInt(seats);
-    if (isNaN(seatCount) || seatCount <= 0) {
-      return res.status(400).json({ error: "Seats must be a positive integer." });
+    if (isNaN(seatCount) || seatCount <= 0 || seatCount > 10) {
+      return res.status(400).json({ error: "Seats must be a positive integer (max 10)." });
     }
 
     if (startIndex == null || endIndex == null || startIndex >= endIndex) {
       return res.status(400).json({ error: "Invalid pickup/destination segment indices." });
+    }
+    // Bounds check: indices must be within the route
+    const parsedStart = parseInt(startIndex);
+    const parsedEnd = parseInt(endIndex);
+    if (isNaN(parsedStart) || isNaN(parsedEnd) || parsedStart < 0) {
+      return res.status(400).json({ error: "Invalid segment indices." });
     }
 
     const ride = await Ride.findById(req.params.id);
@@ -311,10 +348,29 @@ exports.requestRide = async (req, res) => {
     ride.requests.push(riderEmail);
     if (!ride.riderDetails) ride.riderDetails = new Map();
     const safeEmail = riderEmail.replace(/\./g, '_dot_');
+    // Server-side fare recalculation to prevent client-side manipulation
+    let serverFare = computedFare;
+    if (ride.routePath && ride.routePath.length >= 2 && parsedEnd <= ride.routePath.length) {
+      let tripDist = 0;
+      const sampleCount = 100;
+      const distStep = Math.max(1, Math.floor((parsedEnd - parsedStart) / sampleCount));
+      for (let i = parsedStart; i < parsedEnd; i += distStep) {
+        const nextIdx = Math.min(i + distStep, parsedEnd);
+        tripDist += turf.distance(
+          turf.point([ride.routePath[i].lng, ride.routePath[i].lat]),
+          turf.point([ride.routePath[nextIdx].lng, ride.routePath[nextIdx].lat]),
+          { units: 'kilometers' }
+        );
+      }
+      let percentage = tripDist / (ride.totalDistance || tripDist || 1);
+      if (percentage > 1) percentage = 1;
+      serverFare = percentage >= 0.99 ? ride.fare : Math.round(ride.fare * percentage);
+    }
+
     ride.riderDetails.set(safeEmail, {
       pickupLat, pickupLng, destLat, destLng, pickupLocation, destination,
-      fare: computedFare, distance: computedDistance, seats,
-      startIndex, endIndex, paid: false, riderName: riderName || ''
+      fare: serverFare, distance: computedDistance, seats: seatCount,
+      startIndex: parsedStart, endIndex: parsedEnd, paid: false, riderName: riderName || ''
     });
     
     await ride.save();
@@ -834,14 +890,30 @@ exports.sendChatMessage = async (req, res) => {
     if (!sender || !sender.trim() || !text || !text.trim()) {
       return res.status(400).json({ error: "Sender and text are required." });
     }
+    // Message length limit
+    const trimmedText = text.trim();
+    if (trimmedText.length > CHAT_MAX_LENGTH) {
+      return res.status(400).json({ error: `Message too long. Max ${CHAT_MAX_LENGTH} characters.` });
+    }
+    if (!isValidObjectId(req.params.id)) {
+      return res.status(400).json({ error: 'Invalid ride ID.' });
+    }
     const ride = await Ride.findById(req.params.id);
     if (!ride) return res.status(404).json({ error: "Ride not found" });
     if (['completed', 'cancelled'].includes(ride.status)) {
       return res.status(400).json({ error: `Cannot chat on a ${ride.status} ride.` });
     }
-    ride.chatMessages.push({ sender, senderEmail: senderEmail || '', text, timestamp });
+    // Participant check: sender must be the driver or a passenger/boardedPassenger
+    const normalizedEmail = (senderEmail || '').trim().toLowerCase();
+    const isDriver = ride.riderEmail === normalizedEmail;
+    const isPassenger = (ride.passengers || []).includes(normalizedEmail);
+    const isBoarded = (ride.boardedPassengers || []).includes(normalizedEmail);
+    if (!isDriver && !isPassenger && !isBoarded) {
+      return res.status(403).json({ error: 'Only ride participants can send messages.' });
+    }
+    ride.chatMessages.push({ sender: sender.trim(), senderEmail: normalizedEmail, text: trimmedText, timestamp });
     await ride.save();
-    req.io.to(req.params.id).emit('receive_message', { rideId: req.params.id, sender, senderEmail: senderEmail || '', text, timestamp });
+    req.io.to(req.params.id).emit('receive_message', { rideId: req.params.id, sender: sender.trim(), senderEmail: normalizedEmail, text: trimmedText, timestamp });
     res.status(200).json({ success: true });
   } catch (err) { res.status(500).json({ error: err.message }); }
 };

@@ -1,5 +1,7 @@
 const mongoose = require('mongoose');
 
+const CHAT_MAX_LENGTH = parseInt(process.env.CHAT_MAX_LENGTH) || 1000;
+
 const RideSchema = new mongoose.Schema({
   riderName: String,
   riderEmail: String,
@@ -16,7 +18,11 @@ const RideSchema = new mongoose.Schema({
   departureTime: String,
   expiresAt: Number,
   fare: Number,
-  status: String,
+  status: {
+    type: String,
+    enum: ['available', 'accepted', 'full', 'started', 'completed', 'cancelled'],
+    default: 'available',
+  },
   vehicleType: String,
   totalSeats: Number,
   availableSeats: Number,
@@ -54,10 +60,19 @@ const RideSchema = new mongoose.Schema({
   declined: { type: [String], default: [] },
   kicked: { type: [String], default: [] },
   seatAllocations: { type: Map, of: Number, default: {} },
-  chatMessages: [{ sender: String, senderEmail: String, text: String, timestamp: String }],
+  chatMessages: {
+    type: [{
+      sender: { type: String, maxlength: 200 },
+      senderEmail: { type: String, maxlength: 200 },
+      text: { type: String, maxlength: CHAT_MAX_LENGTH },
+      timestamp: String,
+    }],
+    validate: [arr => arr.length <= 500, 'Chat history limit reached (max 500 messages)'],
+  },
   startedAt: Date,
   completedAt: Date
 }, {
+  timestamps: true,
   toJSON: {
     transform: (doc, ret) => {
       if (ret.riderDetails) {

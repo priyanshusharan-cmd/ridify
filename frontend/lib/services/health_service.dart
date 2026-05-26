@@ -7,7 +7,7 @@ class HealthService {
   Future<void> pingServer() async {
     try {
       final uri = Uri.parse('$kBaseUrl/');
-      await http.get(uri).catchError((_) {
+      await http.get(uri).timeout(kHttpTimeout).catchError((_) {
         return http.Response('', 500);
       });
     } catch (_) {

@@ -276,6 +276,7 @@ class _LoginScreenState extends State<LoginScreen> {
       focusNode: _passwordFocus,
       obscureText: _obscurePassword,
       keyboardType: TextInputType.visiblePassword,
+      maxLength: kMaxFieldLength,
       decoration: InputDecoration(
         hintText: "Password",
         hintStyle: TextStyle(color: Theme.of(context).brightness == Brightness.dark ? Colors.white54 : Colors.black54),
@@ -308,6 +309,7 @@ class _LoginScreenState extends State<LoginScreen> {
       controller: controller,
       focusNode: focusNode,
       keyboardType: isNumber ? TextInputType.number : TextInputType.text,
+      maxLength: kMaxFieldLength,
       decoration: InputDecoration(
         hintText: hint,
         hintStyle: TextStyle(color: Theme.of(context).brightness == Brightness.dark ? Colors.white54 : Colors.black54),

@@ -8,7 +8,7 @@ class AuthService {
       Uri.parse('$kBaseUrl/api/auth/login'),
       headers: {'Content-Type': 'application/json'},
       body: jsonEncode({'email': email, 'password': password}),
-    );
+    ).timeout(kHttpTimeout);
     if (response.statusCode == 200) {
       return jsonDecode(response.body);
     } else {
@@ -26,7 +26,7 @@ class AuthService {
         'email': email,
         'password': password,
       }),
-    );
+    ).timeout(kHttpTimeout);
     if (response.statusCode == 201) {
       return jsonDecode(response.body);
     } else {
@@ -34,10 +34,14 @@ class AuthService {
     }
   }
 
+  /// Deletes the user's own account. Passes callerEmail in the body for
+  /// backend ownership verification.
   static Future<void> deleteAccount(String email) async {
     final response = await http.delete(
       Uri.parse('$kBaseUrl/api/auth/user/$email'),
-    );
+      headers: {'Content-Type': 'application/json'},
+      body: jsonEncode({'callerEmail': email}),
+    ).timeout(kHttpTimeout);
     if (response.statusCode != 200) {
       throw Exception('Failed to delete account');
     }
@@ -47,7 +51,7 @@ class AuthService {
     final response = await http.delete(
       Uri.parse('$kBaseUrl/api/auth/users'),
       headers: {'x-admin-email': adminEmail},
-    );
+    ).timeout(kHttpTimeout);
     if (response.statusCode != 200) {
       throw Exception('Failed to wipe users. Are you an admin?');
     }

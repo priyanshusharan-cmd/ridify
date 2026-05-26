@@ -30,8 +30,8 @@ router.get('/:id', getRideById);
 // ── Create ride — join driver into room ──────────────────────────────────────
 router.post('/', createRide);
 
-// ── Cancel ride — scoped to room ─────────────────────────────────────────────
-router.delete('/:id', cancelRide);
+// ── Cancel ride — PATCH with body (callerEmail + status) ─────────────────────
+router.patch('/cancel/:id', cancelRide);
 
 // ── Wipe all — global broadcast (admin only) ────────────────────────────────
 router.delete('/', adminOnly, deleteAllRides);

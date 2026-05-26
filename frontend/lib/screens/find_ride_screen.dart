@@ -129,6 +129,16 @@ class _FindRideScreenState extends State<FindRideScreen> {
       return;
     }
 
+    if (pickupLat == destLat && pickupLng == destLng) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text("Pickup and destination cannot be the same!"),
+          backgroundColor: Colors.redAccent,
+        ),
+      );
+      return;
+    }
+
     setState(() => isSearching = true);
 
     try {

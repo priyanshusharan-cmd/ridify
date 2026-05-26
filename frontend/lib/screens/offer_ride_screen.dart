@@ -178,11 +178,32 @@ class _OfferRideScreenState extends State<OfferRideScreen> {
       return;
     }
 
-    if (totalDistance < 1.5) {
+    if (totalDistance < kMinRideDistanceKm) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text("Ride must be at least $kMinRideDistanceKm km long."),
+          backgroundColor: Colors.orange,
+        ),
+      );
+      return;
+    }
+
+    if (pickupLat == destLat && pickupLng == destLng) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
-          content: Text("Ride must be at least 1.5 km long."),
-          backgroundColor: Colors.orange,
+          content: Text("Pickup and destination cannot be the same!"),
+          backgroundColor: Colors.red,
+        ),
+      );
+      return;
+    }
+
+    final int? parsedPrice = int.tryParse(priceController.text);
+    if (parsedPrice == null || parsedPrice <= 0 || parsedPrice > kMaxPriceRupees) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text("Please enter a valid price (max ₹$kMaxPriceRupees)."),
+          backgroundColor: Colors.red,
         ),
       );
       return;
@@ -220,7 +241,7 @@ class _OfferRideScreenState extends State<OfferRideScreen> {
         "destLng": destLng,
         "departureTime": timeString,
         "expiresAt": expiresAtEpoch,
-        "fare": int.parse(priceController.text),
+        "fare": parsedPrice,
         "status": "available",
         "vehicleType": selectedVehicle,
         "totalSeats": selectedSeats,
@@ -588,6 +609,7 @@ class _OfferRideScreenState extends State<OfferRideScreen> {
             TextField(
               controller: priceController,
               keyboardType: TextInputType.number,
+              maxLength: 6,
               style: TextStyle(color: Theme.of(context).textTheme.bodyLarge?.color),
               decoration: InputDecoration(
                 prefixText: "₹ ",

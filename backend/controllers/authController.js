@@ -1,137 +1,120 @@
-const bcrypt = require('bcrypt');
+const bcrypt = require('bcryptjs');
 const User = require('../models/user');
-const Ride = require('../models/ride');
+const { isValidEmail, MAX_FIELD_LENGTH } = require('../utils/validators');
 
-function isValidEmail(email) {
-  return /^[^\s@]+@[^\s@]+\.[a-zA-Z]{2,}$/.test(String(email).trim());
-}
+const BCRYPT_ROUNDS = parseInt(process.env.BCRYPT_ROUNDS) || 12;
+const ADMIN_EMAILS = (process.env.ADMIN_EMAILS || '').split(',').map(e => e.trim().toLowerCase()).filter(Boolean);
 
-exports.register = async (req, res) => {
+// ── Register ────────────────────────────────────────────────────────────────
+const register = async (req, res) => {
   try {
-    const { name, age, email, password } = req.body;
+    let { name, age, email, password } = req.body;
     if (!name || !email || !password) {
       return res.status(400).json({ error: 'Name, email, and password are required.' });
     }
-    const existingUser = await User.findOne({ email });
-    if (existingUser) {
-      return res.status(400).json({ error: 'An account with this email already exists.' });
+
+    name = String(name).trim();
+    email = String(email).trim().toLowerCase();
+    password = String(password);
+    age = age ? String(age).trim() : undefined;
+
+    // Field length limits — also prevents bcrypt DoS from 1 MB passwords
+    if (name.length > MAX_FIELD_LENGTH || email.length > MAX_FIELD_LENGTH || password.length > 200) {
+      return res.status(400).json({ error: 'One or more fields exceed maximum length.' });
     }
+    if (age && age.length > 3) {
+      return res.status(400).json({ error: 'Invalid age.' });
+    }
+
     if (!isValidEmail(email)) {
-      return res.status(400).json({ error: 'Please enter a valid email address.' });
-    }
-    if (password.length < 8) {
-      return res.status(400).json({ error: 'Password must be at least 8 characters.' });
-    }
-    const hashedPassword = await bcrypt.hash(password, 10);
-    const newUser = new User({ name, age, email, password: hashedPassword });
-    await newUser.save();
-    res.status(201).json({ success: true, user: { name: newUser.name, age: newUser.age, email: newUser.email, _id: newUser._id } });
-  } catch (err) {
-    res.status(500).json({ error: err.message });
-  }
-};
-
-exports.login = async (req, res) => {
-  try {
-    const { email, password } = req.body;
-    if (!email || !password) return res.status(400).json({ error: 'Email and password are required.' });
-    if (!isValidEmail(email)) {
-      return res.status(400).json({ error: 'Please enter a valid email address.' });
-    }
-    const user = await User.findOne({ email });
-    if (!user) return res.status(401).json({ error: 'Invalid credentials' });
-
-    let isMatch = false;
-    const isBcryptHash = typeof user.password === 'string' && user.password.startsWith('$2');
-
-    if (isBcryptHash) {
-      isMatch = await bcrypt.compare(password, user.password);
-    } else {
-      isMatch = (password === user.password);
-      if (isMatch) {
-        const hashed = await bcrypt.hash(password, 10);
-        await User.updateOne({ _id: user._id }, { password: hashed });
-        console.log(`🔐 Migrated plain-text password to bcrypt for: ${email}`);
-      }
+      return res.status(400).json({ error: 'Invalid email format.' });
     }
 
-    if (!isMatch) return res.status(401).json({ error: 'Invalid credentials' });
+    const existing = await User.findOne({ email });
+    if (existing) {
+      return res.status(409).json({ error: 'Email already registered.' });
+    }
 
-    res.status(200).json({
-      success: true,
-      user: { name: user.name, age: user.age, email: user.email, _id: user._id },
+    const hashedPassword = await bcrypt.hash(password, BCRYPT_ROUNDS);
+    const user = await User.create({ name, age, email, password: hashedPassword });
+
+    res.status(201).json({
+      user: { id: user._id, name: user.name, age: user.age, email: user.email },
     });
   } catch (err) {
-    res.status(500).json({ error: err.message });
+    console.error('Register Error:', err.message);
+    res.status(500).json({ error: 'Server error during registration.' });
   }
 };
 
-exports.deleteUser = async (req, res) => {
+// ── Login ───────────────────────────────────────────────────────────────────
+const login = async (req, res) => {
   try {
-    const user = await User.findOne({ email: req.params.email });
+    let { email, password } = req.body;
+    if (!email || !password) {
+      return res.status(400).json({ error: 'Email and password are required.' });
+    }
+
+    email = String(email).trim().toLowerCase();
+    password = String(password);
+
+    // Length limits
+    if (email.length > MAX_FIELD_LENGTH || password.length > 200) {
+      return res.status(400).json({ error: 'Invalid credentials.' });
+    }
+
+    // Must explicitly select password since User model has select:false
+    const user = await User.findOne({ email }).select('+password');
     if (!user) {
       return res.status(404).json({ error: 'User not found.' });
     }
 
-    const userEmail = user.email;
-
-    // 1. Cancel all rides this user is hosting and notify rooms
-    const hostedRides = await Ride.find({ riderEmail: userEmail, status: { $nin: ['completed', 'cancelled'] } });
-    for (const ride of hostedRides) {
-      ride.status = 'cancelled';
-      await ride.save();
-      const rideId = ride._id.toString();
-      req.io.to(rideId).emit('ride_cancelled', { rideId, ride: ride.toJSON() });
+    const isMatch = await bcrypt.compare(password, user.password);
+    if (!isMatch) {
+      return res.status(401).json({ error: 'Invalid password.' });
     }
 
-    // 2. Remove user from all ride arrays they appear in (arrays now store emails)
-    const affectedRides = await Ride.find({
-      $or: [
-        { passengers: userEmail },
-        { requests: userEmail },
-        { boardedPassengers: userEmail },
-        { arrivedAt: userEmail },
-      ]
+    res.json({
+      user: { id: user._id, name: user.name, age: user.age, email: user.email },
     });
-
-    for (const ride of affectedRides) {
-      ride.passengers = ride.passengers.filter(p => p !== userEmail);
-      ride.requests = ride.requests.filter(p => p !== userEmail);
-      ride.boardedPassengers = ride.boardedPassengers.filter(p => p !== userEmail);
-      ride.arrivedAt = (ride.arrivedAt || []).filter(p => p !== userEmail);
-
-      // Remove from riderDetails Map (keyed by email)
-      if (ride.riderDetails && typeof ride.riderDetails.delete === 'function') {
-        const safeEmail = userEmail.replace(/\./g, '_dot_');
-        ride.riderDetails.delete(safeEmail);
-      }
-
-      // Update status if capacity was freed
-      if (ride.status !== 'started' && ride.status !== 'completed' && ride.status !== 'cancelled') {
-        if (ride.passengers.length === 0 && ride.requests.length === 0) {
-          ride.status = 'available';
-        } else if (ride.status === 'full') {
-          ride.status = 'accepted';
-        }
-      }
-
-      await ride.save();
-      const rideId = ride._id.toString();
-      req.io.to(rideId).emit('ride_accepted', { rideId, ride: ride.toJSON() });
-    }
-
-    // 3. Delete the user
-    await User.findOneAndDelete({ email: req.params.email });
-
-    res.status(200).json({ success: true });
-  } catch (err) { res.status(500).json({ error: err.message }); }
+  } catch (err) {
+    console.error('Login Error:', err.message);
+    res.status(500).json({ error: 'Server error during login.' });
+  }
 };
 
-exports.deleteAllUsers = async (req, res) => {
+// ── Delete User ─────────────────────────────────────────────────────────────
+// Requires callerEmail in body. Only the user themselves or an admin can delete.
+const deleteUser = async (req, res) => {
+  try {
+    const targetEmail = req.params.email?.trim().toLowerCase();
+    const callerEmail = req.body?.callerEmail?.trim().toLowerCase();
+
+    if (!callerEmail) {
+      return res.status(400).json({ error: 'callerEmail is required in the request body.' });
+    }
+
+    const isAdmin = ADMIN_EMAILS.includes(callerEmail);
+    if (callerEmail !== targetEmail && !isAdmin) {
+      return res.status(403).json({ error: 'You can only delete your own account.' });
+    }
+
+    const user = await User.findOneAndDelete({ email: targetEmail });
+    if (!user) return res.status(404).json({ error: 'User not found.' });
+    res.json({ message: `User ${targetEmail} deleted.` });
+  } catch (err) {
+    res.status(500).json({ error: 'Server error during user deletion.' });
+  }
+};
+
+// ── Delete All Users (admin only) ───────────────────────────────────────────
+const deleteAllUsers = async (req, res) => {
   try {
     await User.deleteMany({});
-    await Ride.deleteMany({});
-    req.io.emit('database_wiped');
-    res.status(200).json({ success: true });
-  } catch (err) { res.status(500).json({ error: err.message }); }
+    res.json({ message: 'All users deleted.' });
+  } catch (err) {
+    res.status(500).json({ error: 'Server error.' });
+  }
 };
+
+module.exports = { register, login, deleteUser, deleteAllUsers };

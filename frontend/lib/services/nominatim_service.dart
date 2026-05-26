@@ -6,8 +6,11 @@ class NominatimService {
     if (query.isEmpty) return [];
     
     try {
-      final url = "https://nominatim.openstreetmap.org/search?q=${Uri.encodeComponent(query)}&format=json&addressdetails=1&limit=5&countrycodes=in";
-      final response = await http.get(Uri.parse(url)).timeout(const Duration(seconds: 10));
+      final url = "https://nominatim.openstreetmap.org/search?q=${Uri.encodeComponent(query)}&format=json&addressdetails=1&limit=5";
+      final response = await http.get(
+        Uri.parse(url),
+        headers: {'User-Agent': 'Ridify-App/1.0'},
+      ).timeout(const Duration(seconds: 10));
 
       if (response.statusCode == 200) {
         final data = json.decode(response.body) as List;

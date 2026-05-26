@@ -4,7 +4,7 @@ import '../core/constants.dart';
 
 class ChatService {
   static Future<Map<String, dynamic>> fetchChatData(String rideId) async {
-    final response = await http.get(Uri.parse('$kBaseUrl/api/rides/$rideId'));
+    final response = await http.get(Uri.parse('$kBaseUrl/api/rides/$rideId')).timeout(kHttpTimeout);
     if (response.statusCode == 200) {
       return jsonDecode(response.body);
     } else {
@@ -22,7 +22,7 @@ class ChatService {
         'text': text,
         'timestamp': timestamp,
       }),
-    );
+    ).timeout(kHttpTimeout);
     if (response.statusCode != 200) {
       throw Exception(jsonDecode(response.body)['error'] ?? 'Failed to send message');
     }

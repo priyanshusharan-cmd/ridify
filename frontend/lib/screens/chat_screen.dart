@@ -3,6 +3,7 @@ import 'package:socket_io_client/socket_io_client.dart' as io;
 import '../services/chat_service.dart';
 import '../services/ride_service.dart';
 import '../core/socket_service.dart';
+import '../core/constants.dart';
 
 class ChatScreen extends StatefulWidget {
   final String myName;
@@ -91,8 +92,8 @@ class _ChatScreenState extends State<ChatScreen> {
   }
 
   Future<void> sendMessage() async {
-    if (_controller.text.isEmpty) return;
-    final text = _controller.text;
+    final text = _controller.text.trim();
+    if (text.isEmpty) return;
     _controller.clear();
 
     final timeString = TimeOfDay.now().format(context);
@@ -236,6 +237,7 @@ class _ChatScreenState extends State<ChatScreen> {
                   child: TextField(
                     controller: _controller,
                     style: TextStyle(color: inputTextColor),
+                    maxLength: kMaxMessageLength,
                     decoration: InputDecoration(
                       hintText: "Type a message...",
                       hintStyle: TextStyle(color: inputTextColor.withValues(alpha: 0.5)),

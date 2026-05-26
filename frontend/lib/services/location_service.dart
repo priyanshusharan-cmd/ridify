@@ -44,7 +44,10 @@ class LocationService {
   static Future<String?> reverseGeocode(double lat, double lng) async {
     try {
       final url = "https://nominatim.openstreetmap.org/reverse?format=json&lat=$lat&lon=$lng";
-      final response = await http.get(Uri.parse(url)).timeout(const Duration(seconds: 10));
+      final response = await http.get(
+        Uri.parse(url),
+        headers: {'User-Agent': 'Ridify-App/1.0'},
+      ).timeout(const Duration(seconds: 10));
       if (response.statusCode == 200) {
         final data = json.decode(response.body);
         return data['display_name'];
@@ -62,6 +65,8 @@ class LocationService {
     double destLat, 
     {String overview = 'full'}
   ) async {
+    // Note: This uses the public OSRM demo server which has usage limits.
+    // In production, you should host your own OSRM instance.
     try {
       final url = "https://router.project-osrm.org/route/v1/driving/"
           "$pickupLng,$pickupLat;$destLng,$destLat"

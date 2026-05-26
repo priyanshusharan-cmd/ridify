@@ -131,8 +131,11 @@ class _LiveTrackingScreenState extends State<LiveTrackingScreen> {
     } else { mapController.move(driverPosition!, 15.0); }
   }
 
+  bool _syncInProgress = false;
+
   Future<void> syncRideStatus() async {
-    if (widget.rideId.isEmpty) return;
+    if (widget.rideId.isEmpty || _syncInProgress) return;
+    _syncInProgress = true;
     try {
       final data = await RideService.getRideById(widget.rideId);
       if (mounted) {
@@ -154,7 +157,9 @@ class _LiveTrackingScreenState extends State<LiveTrackingScreen> {
           if (isFirstLoad) _fetchRoute();
         });
       }
-    } catch (e) { debugPrint(e.toString()); }
+    } catch (e) { debugPrint(e.toString()); } finally {
+      _syncInProgress = false;
+    }
   }
 
   /// Register a socket listener with automatic cleanup tracking.
