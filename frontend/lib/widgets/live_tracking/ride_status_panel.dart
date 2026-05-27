@@ -173,14 +173,18 @@ class RideStatusPanel extends StatelessWidget {
                     else
                       ElevatedButton(
                         style: ElevatedButton.styleFrom(
-                          backgroundColor: isDark ? const Color(0xFF5C1A1A) : Colors.red.shade600,
-                          foregroundColor: Colors.white,
+                          backgroundColor: canEnd ? (isDark ? const Color(0xFF5C1A1A) : Colors.red.shade600) : Colors.grey.shade300,
+                          foregroundColor: canEnd ? Colors.white : Colors.grey.shade600,
                           elevation: 0,
                           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
                           padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 14),
                         ),
                         onPressed: () {
-                          onEndRide();
+                          if (!canEnd) {
+                            ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("There are passengers still in the car"), backgroundColor: Colors.red));
+                          } else {
+                            onEndRide();
+                          }
                         },
                         child: const Text("End", style: TextStyle(fontWeight: FontWeight.bold, fontSize: 15)),
                       ),
