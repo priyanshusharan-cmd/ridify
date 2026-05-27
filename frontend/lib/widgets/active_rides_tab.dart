@@ -168,7 +168,8 @@ class _ActiveRidesTabState extends State<ActiveRidesTab> {
       return r['riderEmail'] == widget.myEmail &&
           (r['status'] == 'available' ||
               r['status'] == 'accepted' ||
-              r['status'] == 'full');
+              r['status'] == 'full' ||
+              r['status'] == 'started');
     }).toList();
 
     final List<dynamic> myPendingRequests = activeRidesOnly
