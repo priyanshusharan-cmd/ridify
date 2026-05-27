@@ -1,6 +1,7 @@
 const bcrypt = require('bcrypt');
 const User = require('../models/user');
 const { isValidEmail, MAX_FIELD_LENGTH } = require('../utils/validators');
+const { signAccessToken, signRefreshToken } = require('../utils/jwt');
 
 const BCRYPT_ROUNDS = parseInt(process.env.BCRYPT_ROUNDS) || 12;
 const ADMIN_EMAILS = (process.env.ADMIN_EMAILS || '').split(',').map(e => e.trim().toLowerCase()).filter(Boolean);
@@ -38,8 +39,12 @@ const register = async (req, res) => {
     const hashedPassword = await bcrypt.hash(password, BCRYPT_ROUNDS);
     const user = await User.create({ name, age, email, password: hashedPassword });
 
+    const accessToken = signAccessToken({ id: user._id, email: user.email });
+    const refreshToken = signRefreshToken({ id: user._id, email: user.email });
     res.status(201).json({
       user: { id: user._id, name: user.name, age: user.age, email: user.email },
+      accessToken,
+      refreshToken,
     });
   } catch (err) {
     console.error('Register Error:', err.message);
@@ -74,8 +79,12 @@ const login = async (req, res) => {
       return res.status(401).json({ error: 'Invalid password.' });
     }
 
+    const accessToken = signAccessToken({ id: user._id, email: user.email });
+    const refreshToken = signRefreshToken({ id: user._id, email: user.email });
     res.json({
       user: { id: user._id, name: user.name, age: user.age, email: user.email },
+      accessToken,
+      refreshToken,
     });
   } catch (err) {
     console.error('Login Error:', err.message);
@@ -87,13 +96,9 @@ const login = async (req, res) => {
 // Requires callerEmail in body. Only the user themselves or an admin can delete.
 const deleteUser = async (req, res) => {
   try {
+    // Caller is identified from JWT — not from request body
+    const callerEmail = req.user.email; // set by authenticate middleware
     const targetEmail = req.params.email?.trim().toLowerCase();
-    const callerEmail = req.body?.callerEmail?.trim().toLowerCase();
-
-    if (!callerEmail) {
-      return res.status(400).json({ error: 'callerEmail is required in the request body.' });
-    }
-
     const isAdmin = ADMIN_EMAILS.includes(callerEmail);
     if (callerEmail !== targetEmail && !isAdmin) {
       return res.status(403).json({ error: 'You can only delete your own account.' });
@@ -117,4 +122,19 @@ const deleteAllUsers = async (req, res) => {
   }
 };
 
-module.exports = { register, login, deleteUser, deleteAllUsers };
+const refreshToken = async (req, res) => {
+  const { refreshToken: token } = req.body;
+  if (!token) return res.status(400).json({ error: 'Refresh token required.' });
+  try {
+    const { verifyRefreshToken, signAccessToken } = require('../utils/jwt');
+    const payload = verifyRefreshToken(token);
+    const user = await User.findById(payload.id);
+    if (!user) return res.status(404).json({ error: 'User not found.' });
+    const newAccessToken = signAccessToken({ id: user._id, email: user.email });
+    res.json({ accessToken: newAccessToken });
+  } catch (err) {
+    res.status(401).json({ error: 'Invalid or expired refresh token.' });
+  }
+};
+
+module.exports = { register, login, deleteUser, deleteAllUsers, refreshToken };

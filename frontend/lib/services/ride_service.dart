@@ -1,10 +1,9 @@
 import 'dart:convert';
-import 'package:http/http.dart' as http;
-import '../core/constants.dart';
+import 'api_client.dart';
 
 class RideService {
   static Future<List<dynamic>> getAllRides() async {
-    final response = await http.get(Uri.parse('$kBaseUrl/api/rides')).timeout(kHttpTimeout);
+    final response = await ApiClient.get('/api/rides');
     if (response.statusCode == 200) {
       return jsonDecode(response.body);
     } else {
@@ -26,7 +25,8 @@ class RideService {
     required int radius,
     required String userEmail,
   }) async {
-    String url = "$kBaseUrl/api/rides/search"
+    // Identity is sent via token, but we might still have userEmail param for legacy reasons
+    String url = "/api/rides/search"
         "?pickup=${Uri.encodeComponent(pickup)}"
         "&destination=${Uri.encodeComponent(destination)}"
         "&seats=$seats"
@@ -34,14 +34,13 @@ class RideService {
         "&date=${Uri.encodeComponent(date)}"
         "&lat=$lat&lng=$lng"
         "&destLat=$destLat&destLng=$destLng"
-        "&radius=$radius"
-        "&userEmail=${Uri.encodeComponent(userEmail)}";
+        "&radius=$radius";
 
     if (timeEpoch != null) {
       url += "&searchTimeEpoch=$timeEpoch";
     }
 
-    final response = await http.get(Uri.parse(url)).timeout(kHttpTimeout);
+    final response = await ApiClient.get(url);
     if (response.statusCode == 200) {
       return jsonDecode(response.body);
     } else {
@@ -50,7 +49,7 @@ class RideService {
   }
 
   static Future<Map<String, dynamic>> getRideById(String rideId) async {
-    final response = await http.get(Uri.parse('$kBaseUrl/api/rides/$rideId')).timeout(kHttpTimeout);
+    final response = await ApiClient.get('/api/rides/$rideId');
     if (response.statusCode == 200) {
       return jsonDecode(response.body);
     } else {
@@ -59,11 +58,7 @@ class RideService {
   }
 
   static Future<Map<String, dynamic>> createRide(Map<String, dynamic> rideData) async {
-    final response = await http.post(
-      Uri.parse('$kBaseUrl/api/rides'),
-      headers: {"Content-Type": "application/json"},
-      body: jsonEncode(rideData),
-    ).timeout(kHttpTimeout);
+    final response = await ApiClient.post('/api/rides', rideData);
     if (response.statusCode == 201) {
       return jsonDecode(response.body);
     } else {
@@ -72,29 +67,23 @@ class RideService {
   }
 
   static Future<void> cancelRide(String rideId, {required String callerEmail}) async {
-    final response = await http.patch(
-      Uri.parse('$kBaseUrl/api/rides/cancel/$rideId'),
-      headers: {"Content-Type": "application/json"},
-      body: jsonEncode({"callerEmail": callerEmail, "status": "cancelled"}),
-    ).timeout(kHttpTimeout);
+    final response = await ApiClient.patch('/api/rides/cancel/$rideId', {"status": "cancelled"});
     if (response.statusCode != 200) {
       throw Exception(jsonDecode(response.body)['error'] ?? 'Could not cancel the ride.');
     }
   }
 
   static Future<void> requestRide(String rideId, Map<String, dynamic> requestBody) async {
-    final response = await http.patch(
-      Uri.parse('$kBaseUrl/api/rides/request/$rideId'),
-      headers: {"Content-Type": "application/json"},
-      body: jsonEncode(requestBody),
-    ).timeout(kHttpTimeout);
+    final body = Map<String, dynamic>.from(requestBody);
+    body.remove('callerEmail'); // Ensure it's stripped if still passed
+    final response = await ApiClient.patch('/api/rides/request/$rideId', body);
     if (response.statusCode != 200) {
       throw Exception(jsonDecode(response.body)['error'] ?? 'Failed to request ride.');
     }
   }
 
   static Future<Map<String, dynamic>> acceptRider(String rideId, String riderName) async {
-    final response = await http.patch(Uri.parse('$kBaseUrl/api/rides/accept/$rideId/${Uri.encodeComponent(riderName)}')).timeout(kHttpTimeout);
+    final response = await ApiClient.patch('/api/rides/accept/$rideId/${Uri.encodeComponent(riderName)}', {});
     if (response.statusCode == 200) {
       return jsonDecode(response.body);
     } else {
@@ -103,7 +92,7 @@ class RideService {
   }
 
   static Future<Map<String, dynamic>> declineRider(String rideId, String riderName) async {
-    final response = await http.patch(Uri.parse('$kBaseUrl/api/rides/decline/$rideId/${Uri.encodeComponent(riderName)}')).timeout(kHttpTimeout);
+    final response = await ApiClient.patch('/api/rides/decline/$rideId/${Uri.encodeComponent(riderName)}', {});
     if (response.statusCode == 200) {
       return jsonDecode(response.body);
     } else {
@@ -112,7 +101,7 @@ class RideService {
   }
 
   static Future<Map<String, dynamic>> kickPassenger(String rideId, String riderName) async {
-    final response = await http.patch(Uri.parse('$kBaseUrl/api/rides/kick/$rideId/${Uri.encodeComponent(riderName)}')).timeout(kHttpTimeout);
+    final response = await ApiClient.patch('/api/rides/kick/$rideId/${Uri.encodeComponent(riderName)}', {});
     if (response.statusCode == 200) {
       return jsonDecode(response.body);
     } else {
@@ -121,35 +110,35 @@ class RideService {
   }
 
   static Future<void> markDriverArrived(String rideId, String riderName) async {
-    final response = await http.patch(Uri.parse('$kBaseUrl/api/rides/arrive/$rideId/${Uri.encodeComponent(riderName)}')).timeout(kHttpTimeout);
+    final response = await ApiClient.patch('/api/rides/arrive/$rideId/${Uri.encodeComponent(riderName)}', {});
     if (response.statusCode != 200) {
       throw Exception(jsonDecode(response.body)['error'] ?? 'Could not mark arrival.');
     }
   }
 
   static Future<void> boardPassenger(String rideId, String riderEmail) async {
-    final response = await http.patch(Uri.parse('$kBaseUrl/api/rides/board/$rideId/${Uri.encodeComponent(riderEmail)}')).timeout(kHttpTimeout);
+    final response = await ApiClient.patch('/api/rides/board/$rideId/${Uri.encodeComponent(riderEmail)}', {});
     if (response.statusCode != 200) {
       throw Exception(jsonDecode(response.body)['error'] ?? 'Could not mark boarded.');
     }
   }
 
   static Future<void> dropOffPassenger(String rideId, String riderEmail) async {
-    final response = await http.patch(Uri.parse('$kBaseUrl/api/rides/dropoff/$rideId/${Uri.encodeComponent(riderEmail)}')).timeout(kHttpTimeout);
+    final response = await ApiClient.patch('/api/rides/dropoff/$rideId/${Uri.encodeComponent(riderEmail)}', {});
     if (response.statusCode != 200) {
       throw Exception(jsonDecode(response.body)['error'] ?? 'Could not mark dropped off.');
     }
   }
 
   static Future<void> markPaid(String rideId, String riderEmail) async {
-    final response = await http.patch(Uri.parse('$kBaseUrl/api/rides/pay/$rideId/${Uri.encodeComponent(riderEmail)}')).timeout(kHttpTimeout);
+    final response = await ApiClient.patch('/api/rides/pay/$rideId/${Uri.encodeComponent(riderEmail)}', {});
     if (response.statusCode != 200) {
       throw Exception(jsonDecode(response.body)['error'] ?? 'Could not mark paid.');
     }
   }
 
   static Future<Map<String, dynamic>> startRide(String rideId) async {
-    final response = await http.patch(Uri.parse('$kBaseUrl/api/rides/start/$rideId')).timeout(kHttpTimeout);
+    final response = await ApiClient.patch('/api/rides/start/$rideId', {});
     if (response.statusCode == 200) {
       return jsonDecode(response.body);
     } else {
@@ -158,7 +147,7 @@ class RideService {
   }
 
   static Future<Map<String, dynamic>> endRide(String rideId, {bool force = false}) async {
-    final response = await http.patch(Uri.parse('$kBaseUrl/api/rides/end/$rideId?force=$force')).timeout(kHttpTimeout);
+    final response = await ApiClient.patch('/api/rides/end/$rideId?force=$force', {});
     if (response.statusCode == 200) {
       return jsonDecode(response.body);
     } else {
@@ -167,12 +156,7 @@ class RideService {
   }
 
   static Future<void> adminDeleteAllRides(String adminEmail) async {
-    final response = await http.delete(
-      Uri.parse('$kBaseUrl/api/rides'),
-      headers: {'x-admin-email': adminEmail},
-    ).timeout(kHttpTimeout);
-    if (response.statusCode != 200) {
-      throw Exception('Failed to delete all rides');
-    }
+    // Unimplemented in ApiClient structure for now
+    throw UnimplementedError("Use ApiClient");
   }
 }

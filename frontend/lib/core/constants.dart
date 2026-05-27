@@ -4,10 +4,20 @@ import 'package:flutter_dotenv/flutter_dotenv.dart';
 /// The base URL for backend API calls, pulled securely from .env.
 /// Falls back to localhost only in debug mode; release builds must set BACKEND_URL.
 String get kBaseUrl {
-  final url = dotenv.env['BACKEND_URL'];
-  if (url != null && url.isNotEmpty) return url;
-  assert(kDebugMode, 'BACKEND_URL must be set in .env for release builds.');
-  return 'http://localhost:5001';
+  final url = dotenv.env['BACKEND_URL']?.trim();
+  if (url == null || url.isEmpty) {
+    if (kDebugMode) {
+      debugPrint('WARNING: BACKEND_URL not set, using localhost fallback.');
+      return 'http://localhost:5001';
+    }
+    throw StateError('BACKEND_URL must be set in .env for release builds.');
+  }
+  if (!kDebugMode && url.startsWith('http://') && !url.contains('localhost')) {
+    throw StateError(
+      'SECURITY: Production BACKEND_URL must use HTTPS. Got: $url'
+    );
+  }
+  return url;
 }
 
 /// Emails that have admin privileges, pulled securely from .env

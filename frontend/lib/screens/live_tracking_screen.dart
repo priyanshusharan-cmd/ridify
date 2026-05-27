@@ -42,6 +42,9 @@ class _LiveTrackingScreenState extends State<LiveTrackingScreen> {
   StreamSubscription<Position>? positionStreamSubscription;
   bool _isNavigatingToCompletion = false;
   final List<MapEntry<String, void Function(dynamic)>> _socketListeners = [];
+  
+  bool _locationTimedOut = false;
+  Timer? _locationTimeoutTimer;
 
   @override
   void initState() {
@@ -51,6 +54,13 @@ class _LiveTrackingScreenState extends State<LiveTrackingScreen> {
     syncRideStatus();
     _routeTimer = Timer.periodic(const Duration(seconds: 30), (_) => _fetchRoute());
     _initLocationTracking();
+    
+    _locationTimeoutTimer = Timer(const Duration(seconds: 15), () {
+      if (mounted && driverPosition == null) {
+        setState(() => _locationTimedOut = true);
+      }
+    });
+
     Future.delayed(const Duration(seconds: 5), () {
       if (mounted && driverPosition == null) {
         syncRideStatus();
@@ -96,9 +106,8 @@ class _LiveTrackingScreenState extends State<LiveTrackingScreen> {
         }
       } else {
         if (mounted) setState(() => myPosition = LatLng(position.latitude, position.longitude));
-        positionStreamSubscription = LocationService.getPositionStream(distanceFilter: 5).listen((Position pos) {
-          if (mounted) setState(() => myPosition = LatLng(pos.latitude, pos.longitude));
-        });
+        // Cancel the stream subscription setup for passengers
+        return; // Don't set up positionStreamSubscription for passengers
       }
     } catch (e) { debugPrint("GPS Error: $e"); applyFallback(); }
   }
@@ -134,31 +143,45 @@ class _LiveTrackingScreenState extends State<LiveTrackingScreen> {
   bool _syncInProgress = false;
 
   Future<void> syncRideStatus() async {
-    if (widget.rideId.isEmpty || _syncInProgress) return;
+    if (_syncInProgress) return;
     _syncInProgress = true;
     try {
+      if (widget.rideId.isEmpty) return;
       final data = await RideService.getRideById(widget.rideId);
-      if (mounted) {
-        if (!widget.isDriver && !(data['passengers'] ?? []).contains(widget.myEmail) && !(data['boardedPassengers'] ?? []).contains(widget.myEmail) && !(data['droppedPassengers'] ?? []).contains(widget.myEmail)) { _kickSelfOut(); return; }
-        // If rider was dropped, navigate to payment
-        if (!widget.isDriver && (data['droppedPassengers'] ?? []).contains(widget.myEmail)) {
-          int fare = 0;
-          final details = data['riderDetails'];
-          if (details != null && details[widget.myEmail] != null) fare = details[widget.myEmail]['fare'] ?? 0;
-          _triggerPaymentScreen(fare);
+      if (!mounted) return;
+      
+      if (!widget.isDriver &&
+          !(data['passengers'] ?? []).contains(widget.myEmail) &&
+          !(data['boardedPassengers'] ?? []).contains(widget.myEmail) &&
+          !(data['droppedPassengers'] ?? []).contains(widget.myEmail)) {
+        _kickSelfOut();
+        return;
+      }
+      if (!widget.isDriver &&
+          (data['droppedPassengers'] ?? []).contains(widget.myEmail)) {
+        int fare = 0;
+        final details = data['riderDetails'];
+        if (details != null && details[widget.myEmail] != null) {
+          fare = (details[widget.myEmail]['fare'] as num?)?.toInt() ?? 0;
+        }
+        _triggerPaymentScreen(fare);
+        return;
+      }
+      setState(() {
+        final bool isFirstLoad = rideData == null;
+        rideData = data;
+        if (data['status'] == 'completed' && widget.isDriver) {
+          _triggerCompletionScreen();
           return;
         }
-        setState(() {
-          bool isFirstLoad = rideData == null;
-          rideData = data;
-          // Only driver sees completion on status=completed
-          if (data['status'] == 'completed' && widget.isDriver) { _triggerCompletionScreen(); return; }
-          if (data['status'] == 'started' && !isStarted) isStarted = true;
-          if (isFirstLoad) _fetchRoute();
-        });
-      }
-    } catch (e) { debugPrint(e.toString()); } finally {
-      _syncInProgress = false;
+        if (data['status'] == 'started' && !isStarted) isStarted = true;
+        if (isFirstLoad) _fetchRoute();
+      });
+    } catch (e) {
+      debugPrint('syncRideStatus error: $e');
+      // Don't rethrow — sync failures should not crash the screen
+    } finally {
+      _syncInProgress = false; // ALWAYS reset, even on exception
     }
   }
 
@@ -176,6 +199,7 @@ class _LiveTrackingScreenState extends State<LiveTrackingScreen> {
   }
 
   void initSocket() {
+    _removeAllListeners();
     final socketService = SocketService();
     socket = socketService.socket;
     socketService.joinRide(widget.rideId);
@@ -604,6 +628,7 @@ class _LiveTrackingScreenState extends State<LiveTrackingScreen> {
 
   @override
   void dispose() {
+    _locationTimeoutTimer?.cancel();
     _routeTimer?.cancel();
     positionStreamSubscription?.cancel();
     _removeAllListeners();
@@ -648,7 +673,22 @@ class _LiveTrackingScreenState extends State<LiveTrackingScreen> {
       appBar: AppBar(backgroundColor: Colors.black, title: const Text("Live Ride Map", style: TextStyle(color: Colors.white)), iconTheme: const IconThemeData(color: Colors.white)),
       body: Stack(children: [
         Positioned.fill(
-          child: driverPosition == null ? Center(child: CircularProgressIndicator(color: isDark ? Colors.white : Colors.black)) : FlutterMap(
+          child: driverPosition == null
+              ? Center(child: _locationTimedOut
+                  ? Column(mainAxisAlignment: MainAxisAlignment.center, children: [
+                      const Icon(Icons.location_off, size: 48, color: Colors.grey),
+                      const SizedBox(height: 16),
+                      const Text('Could not get location.\nCheck GPS permissions.',
+                        textAlign: TextAlign.center,
+                        style: TextStyle(color: Colors.grey)),
+                      const SizedBox(height: 16),
+                      ElevatedButton(
+                        onPressed: _initLocationTracking,
+                        child: const Text('Retry'),
+                      ),
+                    ])
+                  : CircularProgressIndicator(color: isDark ? Colors.white : Colors.black))
+              : FlutterMap(
             mapController: mapController, options: MapOptions(initialCenter: driverPosition!, initialZoom: 15.0),
             children: [
               TileLayer(urlTemplate: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png', userAgentPackageName: 'com.example.ridify', tileProvider: CancellableNetworkTileProvider()),

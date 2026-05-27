@@ -69,7 +69,7 @@ class _ActiveRidesTabState extends State<ActiveRidesTab> {
       await RideService.declineRider(rideId, requester);
       widget.onRefresh();
     } catch (e) {
-      debugPrint("$e");
+      debugPrint(e.toString());
     }
   }
 
@@ -88,8 +88,8 @@ class _ActiveRidesTabState extends State<ActiveRidesTab> {
           SnackBar(content: Text(e.toString().replaceAll('Exception: ', '')), backgroundColor: Colors.red),
         );
       }
-      debugPrint("$e");
-      debugPrint("$e");
+      debugPrint(e.toString());
+      debugPrint(e.toString());
     } finally {
       if (mounted) setState(() => _processingAccepts.remove(key));
     }
@@ -108,7 +108,7 @@ class _ActiveRidesTabState extends State<ActiveRidesTab> {
       setState(() => _selectedRideId = null);
       widget.onRefresh();
     } catch (e) {
-      debugPrint("$e");
+      debugPrint(e.toString());
     }
   }
 
@@ -330,8 +330,10 @@ class _ActiveRidesTabState extends State<ActiveRidesTab> {
                 style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
               ),
               const SizedBox(height: 16),
-              ...myOfferedRides.map((r) => OfferedRideCard(
-                ride: r as Map<String, dynamic>,
+              ...myOfferedRides
+                .whereType<Map<String, dynamic>>()
+                .map((r) => OfferedRideCard(
+                ride: r,
                 onTap: () => setState(() => _selectedRideId = r['_id'].toString()),
                 onCancelOffer: () => _confirmCancelOffer(r['_id'].toString()),
                 onOpenMap: () => _openMap(r),
@@ -346,9 +348,11 @@ class _ActiveRidesTabState extends State<ActiveRidesTab> {
                 style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
               ),
               const SizedBox(height: 16),
-              ...myPendingRequests.map(
+              ...myPendingRequests
+                .whereType<Map<String, dynamic>>()
+                .map(
                   (r) => PendingRequestTile(
-                    request: r as Map<String, dynamic>,
+                    request: r,
                     myEmail: widget.myEmail,
                     onCancel: _declineRider,
                   )
@@ -363,9 +367,11 @@ class _ActiveRidesTabState extends State<ActiveRidesTab> {
                 style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
               ),
               const SizedBox(height: 16),
-              ...liveRides.map(
+              ...liveRides
+                .whereType<Map<String, dynamic>>()
+                .map(
                 (r) => OfferedRideCard(
-                  ride: r as Map<String, dynamic>,
+                  ride: r,
                   isOngoing: true,
                   onTap: () => _openMap(r),
                   onOpenMap: () => _openMap(r),

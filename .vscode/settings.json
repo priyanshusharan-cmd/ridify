@@ -1,3 +1,8 @@
 {
-    "cmake.sourceDirectory": "/Users/priyanshusharan/Documents/mad lab/ridify/frontend/linux/runner"
+  "cmake.sourceDirectory": "${workspaceFolder}/frontend/linux/runner",
+  "editor.formatOnSave": true,
+  "dart.flutterSdkPath": null,
+  "[dart]": {
+    "editor.defaultFormatter": "Dart-Code.dart-code"
+  }
 }

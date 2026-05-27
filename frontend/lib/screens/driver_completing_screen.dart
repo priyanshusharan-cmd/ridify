@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'dart:convert';
 import '../services/ride_service.dart';
+import '../services/api_client.dart';
 import '../widgets/completion/success_icon.dart';
 import '../widgets/completion/trip_summary_card.dart';
 import '../widgets/completion/performance_card.dart';
@@ -50,43 +52,18 @@ class _DriverCompletingScreenState extends State<DriverCompletingScreen> {
 
   Future<void> _fetchPerformanceStats() async {
     try {
-      final allRides = await RideService.getAllRides();
-      if (mounted) {
-        
-        int rides = 0;
-        int distance = 0;
-        int time = 0;
-        
-        String myEmail = rideData?['riderEmail'] ?? "";
-        if (myEmail.isEmpty) return;
-
-        for (var r in allRides) {
-          if (r['riderEmail'] == myEmail && r['status'] == 'completed') {
-            rides++;
-            if (r['distance'] != null) {
-              distance += (double.tryParse(r['distance'].toString().replaceAll(RegExp(r'[^0-9.]'), '')) ?? 0).toInt();
-            } else if (r['totalDistance'] != null) {
-              distance += (double.tryParse(r['totalDistance'].toString().replaceAll(RegExp(r'[^0-9.]'), '')) ?? 0).toInt();
-            }
-
-            if (r['startedAt'] != null && r['completedAt'] != null) {
-              try {
-                DateTime start = DateTime.parse(r['startedAt']);
-                DateTime end = DateTime.parse(r['completedAt']);
-                time += end.difference(start).inMinutes;
-              } catch (_) {}
-            }
-          }
-        }
-        
+      final response = await ApiClient.get('/api/rides/stats/driver');
+      if (!mounted) return;
+      if (response.statusCode == 200) {
+        final data = jsonDecode(response.body);
         setState(() {
-          totalRidesCompleted = rides;
-          totalDistanceDriven = distance;
-          totalOnlineTimeMins = time;
+          totalRidesCompleted = data['totalRides'] ?? 0;
+          totalDistanceDriven = data['totalDistanceKm'] ?? 0;
+          totalOnlineTimeMins = data['totalOnlineTimeMins'] ?? 0;
         });
       }
     } catch (e) {
-      debugPrint("Error fetching stats: $e");
+      debugPrint('Error fetching driver stats: $e');
     }
   }
 

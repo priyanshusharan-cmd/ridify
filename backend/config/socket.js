@@ -1,5 +1,6 @@
 const { Server } = require('socket.io');
 const Ride = require('../models/ride');
+const { verifyAccessToken } = require('../utils/jwt');
 
 function initSocket(server, app) {
   const io = new Server(server, {
@@ -51,56 +52,51 @@ function initSocket(server, app) {
   // =============================================
   // SOCKET AUTH MIDDLEWARE
   // =============================================
-  // Clients must supply a non-empty userEmail in the handshake auth object.
-  // This is not cryptographic auth; it prevents accidental misuse.
-  // A production app would verify a signed JWT here.
   io.use((socket, next) => {
-    const email = socket.handshake.auth?.userEmail;
-    if (!email || typeof email !== 'string' || email.trim() === '') {
-      return next(new Error('Authentication required: supply userEmail in handshake auth'));
+    const token = socket.handshake.auth?.token;
+    if (!token || typeof token !== 'string' || token.trim() === '') {
+      return next(new Error('Authentication required: provide a JWT token in handshake auth.token'));
     }
-    socket.userEmail = email.trim().toLowerCase();
-    next();
+    try {
+      const payload = verifyAccessToken(token);
+      socket.userEmail = payload.email.trim().toLowerCase();
+      socket.userId = payload.id;
+      next();
+    } catch (err) {
+      return next(new Error('Invalid or expired token. Please re-authenticate.'));
+    }
   });
 
   // =============================================
   // SOCKET.IO — Room-based architecture
   // =============================================
 
-  io.on('connection', (socket) => {
+  io.on('connection', async (socket) => {
     console.log(`📡 Device connected: ${socket.id}`);
 
-    // ── Register user identity ─────────────────────────────────────────
-    // userEmail is already set by middleware — ignore any claimed email
-    // from the event body to prevent hijacking another user's events.
-    socket.on('register_user', async () => {
-      const userEmail = socket.userEmail;
-      if (!userEmail) return;
+    // userEmail is now guaranteed by middleware — no event needed
+    const userEmail = socket.userEmail;
+    if (!userSockets.has(userEmail)) userSockets.set(userEmail, new Set());
+    userSockets.get(userEmail).add(socket.id);
 
-      if (!userSockets.has(userEmail)) {
-        userSockets.set(userEmail, new Set());
+    // Auto-join rooms for every ride this user is involved in
+    try {
+      const rides = await Ride.find({
+        status: { $in: ['available', 'accepted', 'full', 'started'] },
+        $or: [
+          { riderEmail: userEmail },
+          { passengers: userEmail },
+          { requests: userEmail },
+        ],
+      }, '_id');
+
+      for (const ride of rides) {
+        socket.join(ride._id.toString());
       }
-      userSockets.get(userEmail).add(socket.id);
-
-      // Auto-join rooms for every ride this user is involved in
-      try {
-        const rides = await Ride.find({
-          status: { $in: ['available', 'accepted', 'full', 'started'] },
-          $or: [
-            { riderEmail: userEmail },
-            { passengers: userEmail },
-            { requests: userEmail },
-          ],
-        }, '_id');
-
-        for (const ride of rides) {
-          socket.join(ride._id.toString());
-        }
-        console.log(`👤 ${userEmail} registered, joined ${rides.length} rooms`);
-      } catch (e) {
-        console.error('Auto-join error:', e.message);
-      }
-    });
+      console.log(`👤 ${userEmail} registered, joined ${rides.length} rooms`);
+    } catch (e) {
+      console.error('Auto-join error:', e.message);
+    }
 
     // ── Explicit room management ───────────────────────────────────────
     socket.on('join_ride', (data) => {

@@ -2,8 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:provider/provider.dart';
 import 'login_screen.dart';
+import 'home_screen.dart';
 import '../services/auth_service.dart';
 import '../core/constants.dart';
+import '../core/socket_service.dart';
 import '../core/theme_provider.dart';
 
 class ProfileScreen extends StatefulWidget {
@@ -37,8 +39,18 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
   // ── LOGOUT ────────────────────────────────────────────────────────────────
   Future<void> _logout() async {
+    // Clear JWT tokens from secure storage
+    await AuthService.logout(); // calls TokenService.clearTokens()
+    
+    // Clear SharedPreferences session data
     final prefs = await SharedPreferences.getInstance();
-    await prefs.clear(); // Clear the saved session
+    await prefs.clear();
+    
+    // Dispose socket connection
+    SocketService().dispose();
+    
+    HomeScreen.resetStartupAnimation();
+    
     if (mounted) {
       Navigator.pushAndRemoveUntil(
         context,
@@ -52,8 +64,14 @@ class _ProfileScreenState extends State<ProfileScreen> {
   Future<void> _deleteAccount() async {
     try {
       await AuthService.deleteAccount(email);
+      await AuthService.logout();
+      
       final prefs = await SharedPreferences.getInstance();
       await prefs.clear();
+      
+      SocketService().dispose();
+      HomeScreen.resetStartupAnimation();
+      
       if (!mounted) return;
       Navigator.pushAndRemoveUntil(
         context,

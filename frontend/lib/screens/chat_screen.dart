@@ -26,6 +26,7 @@ class ChatScreen extends StatefulWidget {
 class _ChatScreenState extends State<ChatScreen> {
   late io.Socket socket;
   final TextEditingController _controller = TextEditingController();
+  final ScrollController _scrollController = ScrollController();
   final List<Map<String, dynamic>> messages = [];
   final List<MapEntry<String, void Function(dynamic)>> _socketListeners = [];
 
@@ -66,7 +67,12 @@ class _ChatScreenState extends State<ChatScreen> {
 
           messages.clear();
           if (data['chatMessages'] != null) {
-            for (var msg in data['chatMessages']) {
+            final allMessages = data['chatMessages'] as List? ?? [];
+            final recentMessages = allMessages.length > 50
+                ? allMessages.sublist(allMessages.length - 50)
+                : allMessages;
+            
+            for (var msg in recentMessages) {
               messages.add({
                 'sender': msg['sender'],
                 'senderEmail': msg['senderEmail'] ?? '',
@@ -87,6 +93,15 @@ class _ChatScreenState extends State<ChatScreen> {
     _on('receive_message', (data) {
       if (mounted && data['rideId'] == widget.rideId) {
         setState(() => messages.add(data));
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          if (_scrollController.hasClients) {
+            _scrollController.animateTo(
+              _scrollController.position.maxScrollExtent,
+              duration: const Duration(milliseconds: 300),
+              curve: Curves.easeOut,
+            );
+          }
+        });
       }
     });
   }
@@ -111,6 +126,7 @@ class _ChatScreenState extends State<ChatScreen> {
       socket.off(entry.key, entry.value);
     }
     _socketListeners.clear();
+    _scrollController.dispose();
     super.dispose();
   }
 
@@ -170,6 +186,7 @@ class _ChatScreenState extends State<ChatScreen> {
         children: [
           Expanded(
             child: ListView.builder(
+              controller: _scrollController,
               padding: const EdgeInsets.all(20),
               itemCount: messages.length,
               itemBuilder: (context, index) {

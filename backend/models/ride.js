@@ -17,6 +17,7 @@ const RideSchema = new mongoose.Schema({
   },
   departureTime: String,
   expiresAt: Number,
+  optimisticLock: { type: Number, default: 0 },
   fare: Number,
   status: {
     type: String,
@@ -75,17 +76,18 @@ const RideSchema = new mongoose.Schema({
   timestamps: true,
   toJSON: {
     transform: (doc, ret) => {
+      const { keyToEmail } = require('../utils/emailKey');
       if (ret.riderDetails) {
         const decodedDetails = {};
         for (const [key, value] of Object.entries(ret.riderDetails)) {
-          decodedDetails[key.replace(/_dot_/g, '.')] = value;
+          decodedDetails[keyToEmail(key)] = value;
         }
         ret.riderDetails = decodedDetails;
       }
       if (ret.seatAllocations) {
         const decodedAllocations = {};
         for (const [key, value] of Object.entries(ret.seatAllocations)) {
-          decodedAllocations[key.replace(/_dot_/g, '.')] = value;
+          decodedAllocations[keyToEmail(key)] = value;
         }
         ret.seatAllocations = decodedAllocations;
       }
@@ -93,6 +95,17 @@ const RideSchema = new mongoose.Schema({
     }
   }
 });
+
 RideSchema.index({ pickupCoords: "2dsphere" });
+RideSchema.index({ riderEmail: 1, status: 1 });
+RideSchema.index({ passengers: 1 });
+RideSchema.index({ requests: 1 });
+RideSchema.index({ droppedPassengers: 1 });
+RideSchema.index({ status: 1, expiresAt: 1 });
+RideSchema.index({ status: 1, vehicleType: 1, departureTime: 1 });
+RideSchema.index({ updatedAt: 1 }, {
+  expireAfterSeconds: 30 * 24 * 3600,
+  partialFilterExpression: { status: { $in: ['cancelled', 'completed'] } }
+});
 
 module.exports = mongoose.model('Ride', RideSchema);

@@ -209,6 +209,31 @@ We believe security shouldn't compromise simplicity:
 
 ## ⚙️ Installation & Setup
 
+## ⚠️ Security Configuration
+
+Before running this application, you MUST:
+
+1. **Generate a strong JWT secret:**
+```bash
+   node -e "console.log(require('crypto').randomBytes(64).toString('hex'))"
+```
+   Set this as `JWT_SECRET` in `backend/.env`.
+
+2. **Generate a strong admin secret:**
+```bash
+   node -e "console.log(require('crypto').randomBytes(32).toString('hex'))"
+```
+   Set this as `ADMIN_SECRET` in `backend/.env`.
+
+3. **Set a real `ADMIN_EMAILS`** — do not use `admin@example.com`.
+
+4. **Never commit `.env` files** — they are gitignored by default.
+
+5. **Use HTTPS** for the backend URL in production.
+
+> ⚠️ The application will refuse to start if placeholder values are detected
+> in required environment variables.
+
 ### 📦 Prerequisites
 * **Flutter SDK** (`^3.x`)
 * **Node.js** (`^18.x`)

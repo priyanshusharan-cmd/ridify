@@ -12,6 +12,13 @@
 .swiftpm/
 migrate_working_dir/
 
+# Generated analysis outputs
+analysis.txt
+*.g.dart
+
+# Python scripts (shouldn't be here)
+*.py
+
 # IntelliJ related
 *.iml
 *.ipr

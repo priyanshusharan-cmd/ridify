@@ -1,6 +1,8 @@
 const Ride = require('../models/ride');
 const turf = require('@turf/turf');
 const { isValidEmail, isValidObjectId } = require('../utils/validators');
+const { emailToKey, keyToEmail } = require('../utils/emailKey');
+const asyncHandler = require('../utils/asyncHandler');
 const { 
   getDepartureTimeEpoch, 
   getRiderDetail, 
@@ -25,7 +27,7 @@ exports.searchRides = async (req, res) => {
     const reqSeats = parseInt(seats) || 1;
     const targetEpoch = searchTimeEpoch ? parseInt(searchTimeEpoch) : null;
 
-    const userEmail = req.query.userEmail;
+    const userEmail = req.user?.email;
     const matchQuery = {
       status: { $in: ['available', 'accepted'] },
       $or: [{ expiresAt: { $gt: currentTime } }, { expiresAt: null }, { expiresAt: { $exists: false } }]
@@ -40,7 +42,7 @@ exports.searchRides = async (req, res) => {
       if (ride.riderDetails) {
         const decoded = {};
         for (const [key, value] of Object.entries(ride.riderDetails)) {
-          decoded[key.replace(/_dot_/g, '.')] = value;
+          decoded[keyToEmail(key)] = value;
         }
         ride.riderDetails = decoded;
       }
@@ -162,28 +164,44 @@ exports.searchRides = async (req, res) => {
 
 exports.getAllRides = async (req, res) => {
   try {
-    const currentTime = Date.now();
-    const rides = await Ride.find({
+    const userEmail = req.user?.email;
+    const ADMIN_EMAILS = (process.env.ADMIN_EMAILS || '').split(',').map(e => e.trim().toLowerCase()).filter(Boolean);
+    const query = ADMIN_EMAILS.includes(userEmail) ? {} : {
       $or: [
-        { expiresAt: { $gt: currentTime } },
-        { expiresAt: null },
-        { expiresAt: { $exists: false } },
-        { status: { $in: ['accepted', 'full', 'started', 'completed', 'cancelled'] } }
+        { riderEmail: userEmail },
+        { passengers: userEmail },
+        { requests: userEmail },
+        { droppedPassengers: userEmail },
+        { declined: userEmail },
+        { kicked: userEmail },
       ]
-    }, { routePath: 0, chatMessages: 0 }).lean();
+    };
+
+    const page = Math.max(1, parseInt(req.query.page) || 1);
+    const limit = Math.min(50, parseInt(req.query.limit) || 20);
+    const skip = (page - 1) * limit;
+
+    const [rides, total] = await Promise.all([
+      Ride.find(query, { routePath: 0, chatMessages: 0 })
+        .sort({ createdAt: -1 }).skip(skip).limit(limit).lean(),
+      Ride.countDocuments(query)
+    ]);
 
     // Decode map keys
     rides.forEach(ride => {
       if (ride.riderDetails) {
         const decoded = {};
         for (const [key, value] of Object.entries(ride.riderDetails)) {
-          decoded[key.replace(/_dot_/g, '.')] = value;
+          decoded[keyToEmail(key)] = value;
         }
         ride.riderDetails = decoded;
       }
     });
 
-    res.status(200).json(rides);
+    res.status(200).json({
+      rides,
+      pagination: { page, limit, total, pages: Math.ceil(total / limit) }
+    });
   } catch (err) { res.status(500).json({ error: err.message }); }
 };
 
@@ -203,17 +221,46 @@ exports.getRideById = async (req, res) => {
 exports.createRide = async (req, res) => {
   try {
     const data = req.body;
-    // Validate riderEmail
-    if (!data.riderEmail || !isValidEmail(data.riderEmail)) {
-      return res.status(400).json({ error: "A valid rider email is required." });
+    data.riderEmail = req.user.email;
+    
+    if (data.riderName) {
+      data.riderName = String(data.riderName).trim().replace(/<[^>]*>/g, '').substring(0, 200);
     }
-    data.riderEmail = data.riderEmail.trim().toLowerCase();
-    if (data.totalSeats != null && (isNaN(parseInt(data.totalSeats)) || parseInt(data.totalSeats) <= 0)) {
-      return res.status(400).json({ error: "Total seats must be a positive integer." });
+
+    if (!data.routePath || !Array.isArray(data.routePath) || data.routePath.length < 2) {
+      return res.status(400).json({ error: "Invalid routePath." });
     }
-    if (data.fare != null && (isNaN(parseFloat(data.fare)) || parseFloat(data.fare) < 0)) {
-      return res.status(400).json({ error: "Fare must be a non-negative number." });
+    
+    const isValidCoord = (lat, lng) => isFinite(lat) && isFinite(lng) && lat >= -90 && lat <= 90 && lng >= -180 && lng <= 180;
+    if (!isValidCoord(data.pickupLat, data.pickupLng) || !isValidCoord(data.destLat, data.destLng)) {
+      return res.status(400).json({ error: "Invalid coordinates." });
     }
+
+    if (data.totalSeats != null && (!Number.isInteger(Number(data.totalSeats)) || data.totalSeats < 1 || data.totalSeats > 8)) {
+      return res.status(400).json({ error: "Total seats must be an integer between 1 and 8." });
+    }
+    
+    if (!['Bike', 'Sedan', 'SUV'].includes(data.vehicleType)) {
+      return res.status(400).json({ error: "Invalid vehicle type." });
+    }
+    
+    if (!['flexible', 'shared_start', 'nonstop'].includes(data.routePreference)) {
+      return res.status(400).json({ error: "Invalid route preference." });
+    }
+
+    const fare = parseInt(data.fare);
+    if (isNaN(fare) || fare < 1 || fare > parseInt(process.env.MAX_FARE || 9999)) {
+      return res.status(400).json({ error: `Fare must be between ₹1 and ₹${process.env.MAX_FARE || 9999}.` });
+    }
+    data.fare = fare;
+
+    const departureEpoch = data.expiresAt; // keep for reference if provided
+    let depEpoch = departureEpoch && typeof departureEpoch === 'number'
+      ? departureEpoch : Date.now() + (2 * 60 * 60 * 1000);
+    const now = Date.now();
+    depEpoch = Math.max(depEpoch, now + 5 * 60 * 1000);
+    depEpoch = Math.min(depEpoch, now + 7 * 24 * 60 * 60 * 1000);
+    data.expiresAt = depEpoch + (15 * 60 * 1000);
     if (data.pickupLng != null && data.pickupLat != null) {
       data.pickupCoords = {
         type: 'Point',
@@ -252,9 +299,8 @@ exports.cancelRide = async (req, res) => {
     if (!ride) return res.status(404).json({ error: "Ride not found" });
 
     // Ownership check: only the driver (or admin) can cancel
-    const callerEmail = (req.body?.callerEmail || '').trim().toLowerCase();
     const ADMIN_EMAILS = (process.env.ADMIN_EMAILS || '').split(',').map(e => e.trim().toLowerCase()).filter(Boolean);
-    if (callerEmail !== ride.riderEmail && !ADMIN_EMAILS.includes(callerEmail)) {
+    if (req.user.email !== ride.riderEmail && !ADMIN_EMAILS.includes(req.user.email)) {
       return res.status(403).json({ error: 'Only the ride driver can cancel this ride.' });
     }
 
@@ -292,15 +338,12 @@ exports.deleteAllRides = async (req, res) => {
 // ── Request a ride — join requester + scoped emit ────────────────────────────
 exports.requestRide = async (req, res) => {
   try {
-    const { riderName, riderEmail, seats, computedFare, computedDistance, startIndex, endIndex, pickupLat, pickupLng, destLat, destLng, pickupLocation, destination } = req.body;
-
-    if (!riderEmail || !riderEmail.trim()) {
-      return res.status(400).json({ error: "Rider email is required." });
-    }
+    const { riderName, seats, computedFare, computedDistance, startIndex, endIndex, pickupLat, pickupLng, destLat, destLng, pickupLocation, destination } = req.body;
+    const riderEmail = req.user.email;
     
     const seatCount = parseInt(seats);
-    if (isNaN(seatCount) || seatCount <= 0 || seatCount > 10) {
-      return res.status(400).json({ error: "Seats must be a positive integer (max 10)." });
+    if (isNaN(seatCount) || seatCount <= 0 || seatCount > 8) {
+      return res.status(400).json({ error: "Seats must be an integer between 1 and 8." });
     }
 
     if (startIndex == null || endIndex == null || startIndex >= endIndex) {
@@ -347,7 +390,7 @@ exports.requestRide = async (req, res) => {
 
     ride.requests.push(riderEmail);
     if (!ride.riderDetails) ride.riderDetails = new Map();
-    const safeEmail = riderEmail.replace(/\./g, '_dot_');
+    const safeEmail = emailToKey(riderEmail);
     // Server-side fare recalculation to prevent client-side manipulation
     let serverFare = computedFare;
     if (ride.routePath && ride.routePath.length >= 2 && parsedEnd <= ride.routePath.length) {
@@ -373,11 +416,28 @@ exports.requestRide = async (req, res) => {
       startIndex: parsedStart, endIndex: parsedEnd, paid: false, riderName: riderName || ''
     });
     
-    await ride.save();
+    const updateResult = await Ride.findOneAndUpdate(
+      { _id: ride._id, optimisticLock: ride.optimisticLock },
+      {
+        $set: {
+          requests: ride.requests,
+          riderDetails: ride.riderDetails
+        },
+        $inc: { optimisticLock: 1 }
+      },
+      { new: true }
+    );
 
-    const rideId = ride._id.toString();
+    if (!updateResult) {
+      return res.status(409).json({
+        error: 'Concurrent modification detected. Please retry.',
+        code: 'OPTIMISTIC_LOCK_CONFLICT'
+      });
+    }
+
+    const rideId = updateResult._id.toString();
     req.joinUserToRide(riderEmail, rideId);
-    req.io.to(rideId).emit('new_ride_request', { rideId, ride: ride.toJSON() });
+    req.io.to(rideId).emit('new_ride_request', { rideId, ride: updateResult.toJSON() });
 
     res.status(200).json({ success: true });
   } catch (err) { res.status(500).json({ error: err.message }); }
@@ -386,19 +446,21 @@ exports.requestRide = async (req, res) => {
 // ── Accept a rider — scoped emit ─────────────────────────────────────────────
 exports.acceptRider = async (req, res) => {
   try {
+    const passengerEmail = decodeURIComponent(req.params.passengerEmail || '').toLowerCase().trim();
     let ride = await Ride.findById(req.params.id);
     if (!ride) return res.status(404).json({ error: "Ride not found" });
+    if (req.user.email !== ride.riderEmail) return res.status(403).json({ error: 'Only the ride driver can perform this action.' });
 
     // Prevent duplicate acceptance
-    if (ride.passengers.includes(req.params.riderName)) {
+    if (ride.passengers.includes(passengerEmail)) {
       return res.status(400).json({ error: "Already accepted" });
     }
     // Must still be in requests
-    if (!ride.requests.includes(req.params.riderName)) {
+    if (!ride.requests.includes(passengerEmail)) {
       return res.status(400).json({ error: "Request not found" });
     }
 
-    const riderDetail = getRiderDetail(ride, req.params.riderName);
+    const riderDetail = getRiderDetail(ride, passengerEmail);
     if (!riderDetail) return res.status(400).json({ error: "Rider details not found" });
 
     // Enforce capacity check at the moment of acceptance
@@ -406,8 +468,8 @@ exports.acceptRider = async (req, res) => {
       return res.status(400).json({ error: "Cannot accept. Capacity exceeded for this segment." });
     }
 
-    ride.requests = ride.requests.filter(r => r !== req.params.riderName);
-    ride.passengers.push(req.params.riderName);
+    ride.requests = ride.requests.filter(r => r !== passengerEmail);
+    ride.passengers.push(passengerEmail);
 
     if (ride.status === 'available') ride.status = 'accepted';
 
@@ -512,29 +574,56 @@ exports.acceptRider = async (req, res) => {
       }
     }
 
-    await ride.save();
-    const rideId = ride._id.toString();
-    req.io.to(rideId).emit('ride_accepted', { rideId, ride: ride.toJSON() });
-    res.status(200).json(ride);
+    const updateResult = await Ride.findOneAndUpdate(
+      {
+        _id: ride._id,
+        optimisticLock: ride.optimisticLock,
+        requests: passengerEmail
+      },
+      {
+        $set: {
+          status: ride.status,
+          passengers: ride.passengers,
+          requests: ride.requests,
+          declined: ride.declined,
+          riderDetails: ride.riderDetails,
+        },
+        $inc: { optimisticLock: 1 }
+      },
+      { new: true }
+    );
+
+    if (!updateResult) {
+      return res.status(409).json({
+        error: 'Concurrent modification detected. The ride state changed. Please retry.',
+        code: 'OPTIMISTIC_LOCK_CONFLICT'
+      });
+    }
+
+    const rideId = updateResult._id.toString();
+    req.io.to(rideId).emit('ride_accepted', { rideId, ride: updateResult.toJSON() });
+    res.status(200).json(updateResult);
   } catch (err) { res.status(500).json({ error: err.message }); }
 };
 
 // ── Decline — scoped emit ────────────────────────────────────────────────────
 exports.declineRider = async (req, res) => {
   try {
+    const passengerEmail = decodeURIComponent(req.params.passengerEmail || '').toLowerCase().trim();
     let ride = await Ride.findById(req.params.id);
     if (!ride) return res.status(404).json({ error: "Ride not found" });
+    if (req.user.email !== ride.riderEmail) return res.status(403).json({ error: 'Only the ride driver can perform this action.' });
 
-    if (ride.declined.includes(req.params.riderName)) {
+    if (ride.declined.includes(passengerEmail)) {
       return res.status(400).json({ error: "User has already been declined." });
     }
-    if (!ride.requests.includes(req.params.riderName)) {
+    if (!ride.requests.includes(passengerEmail)) {
       return res.status(400).json({ error: "User is not in the pending requests." });
     }
 
-    ride.requests = ride.requests.filter(r => r !== req.params.riderName);
-    if (!ride.declined.includes(req.params.riderName)) {
-      ride.declined.push(req.params.riderName);
+    ride.requests = ride.requests.filter(r => r !== passengerEmail);
+    if (!ride.declined.includes(passengerEmail)) {
+      ride.declined.push(passengerEmail);
     }
     
     if (ride.requests.length === 0 && ride.passengers.length === 0 && ride.status !== 'started') {
@@ -544,7 +633,7 @@ exports.declineRider = async (req, res) => {
     await ride.save();
     const rideId = ride._id.toString();
     req.io.to(rideId).emit('ride_accepted', { rideId, ride: ride.toJSON() });
-    req.emitToUser(req.params.riderName, 'ride_cancelled', { rideId, ride: ride.toJSON() });
+    req.emitToUser(passengerEmail, 'ride_cancelled', { rideId, ride: ride.toJSON() });
     res.status(200).json(ride);
   } catch (err) { res.status(500).json({ error: err.message }); }
 };
@@ -552,34 +641,36 @@ exports.declineRider = async (req, res) => {
 // ── Kick passenger — scoped emit + targeted notify ──────────────────────────
 exports.kickPassenger = async (req, res) => {
   try {
+    const passengerEmail = decodeURIComponent(req.params.passengerEmail || '').toLowerCase().trim();
     let ride = await Ride.findById(req.params.id);
     if (!ride) return res.status(404).json({ error: "Ride not found" });
+    if (req.user.email !== ride.riderEmail) return res.status(403).json({ error: 'Only the ride driver can perform this action.' });
 
     // Cannot kick yourself (the driver)
-    if (ride.riderName === req.params.riderName) {
+    if (ride.riderName === passengerEmail) {
       return res.status(400).json({ error: "Driver cannot kick themselves." });
     }
     // Must be a passenger or requester to be kicked
-    const isPassenger = ride.passengers.includes(req.params.riderName);
-    const isRequester = ride.requests.includes(req.params.riderName);
+    const isPassenger = ride.passengers.includes(passengerEmail);
+    const isRequester = ride.requests.includes(passengerEmail);
     if (!isPassenger && !isRequester) {
       return res.status(400).json({ error: "User is not a passenger or requester on this ride." });
     }
-    if (ride.kicked.includes(req.params.riderName)) {
+    if (ride.kicked.includes(passengerEmail)) {
       return res.status(400).json({ error: "User has already been kicked." });
     }
 
-    ride.passengers = ride.passengers.filter(p => p !== req.params.riderName);
-    ride.requests = ride.requests.filter(p => p !== req.params.riderName);
-    ride.boardedPassengers = ride.boardedPassengers.filter(p => p !== req.params.riderName);
-    ride.arrivedAt = ride.arrivedAt.filter(p => p !== req.params.riderName);
-    ride.kicked.push(req.params.riderName);
+    ride.passengers = ride.passengers.filter(p => p !== passengerEmail);
+    ride.requests = ride.requests.filter(p => p !== passengerEmail);
+    ride.boardedPassengers = ride.boardedPassengers.filter(p => p !== passengerEmail);
+    ride.arrivedAt = ride.arrivedAt.filter(p => p !== passengerEmail);
+    ride.kicked.push(passengerEmail);
 
     // Save kickedAt timestamp in riderDetails for duration calculation
-    const riderDetail = getRiderDetail(ride, req.params.riderName);
+    const riderDetail = getRiderDetail(ride, passengerEmail);
     if (riderDetail) {
       riderDetail.kickedAt = new Date();
-      const safeName = req.params.riderName.replace(/\./g, '_dot_');
+      const safeName = emailToKey(passengerEmail);
       ride.riderDetails.set(safeName, riderDetail);
     }
 
@@ -594,10 +685,10 @@ exports.kickPassenger = async (req, res) => {
 
     await ride.save();
     const rideId = ride._id.toString();
-    const payload = { rideId, kickedUser: req.params.riderName, ride: ride.toJSON() };
+    const payload = { rideId, kickedUser: passengerEmail, ride: ride.toJSON() };
     req.io.to(rideId).emit('passenger_kicked', payload);
     // Also target the kicked user directly (they may have left the room)
-    req.emitToUser(req.params.riderName, 'passenger_kicked', payload);
+    req.emitToUser(passengerEmail, 'passenger_kicked', payload);
     res.status(200).json(ride);
   } catch (err) { res.status(500).json({ error: err.message }); }
 };
@@ -605,8 +696,10 @@ exports.kickPassenger = async (req, res) => {
 // ── Driver arrived — scoped emit ─────────────────────────────────────────────
 exports.driverArrived = async (req, res) => {
   try {
+    const passengerEmail = decodeURIComponent(req.params.passengerEmail || '').toLowerCase().trim();
     let ride = await Ride.findById(req.params.id);
     if (!ride) return res.status(404).json({ error: "Ride not found" });
+    if (req.user.email !== ride.riderEmail) return res.status(403).json({ error: 'Only the ride driver can perform this action.' });
 
     if (ride.status !== 'started') {
       return res.status(400).json({ error: "First start the ride" });
@@ -616,13 +709,13 @@ exports.driverArrived = async (req, res) => {
 
     if (ride.routePreference === 'flexible') {
       // Must be an accepted passenger to be marked as arrived
-      if (!ride.passengers.includes(req.params.riderName)) {
+      if (!ride.passengers.includes(passengerEmail)) {
         return res.status(400).json({ error: "User is not an accepted passenger on this ride." });
       }
-      if (ride.droppedPassengers && ride.droppedPassengers.includes(req.params.riderName)) {
+      if (ride.droppedPassengers && ride.droppedPassengers.includes(passengerEmail)) {
         return res.status(400).json({ error: "Passenger has already been dropped off." });
       }
-      const riderDetail = getRiderDetail(ride, req.params.riderName);
+      const riderDetail = getRiderDetail(ride, passengerEmail);
       const neededSeats = riderDetail?.seats || 1;
       let currentlyOccupied = 0;
       for (const pName of ride.boardedPassengers) {
@@ -631,8 +724,8 @@ exports.driverArrived = async (req, res) => {
       if (currentlyOccupied + neededSeats > ride.totalSeats) {
         return res.status(400).json({ error: "Car capacity reached" });
       }
-      if (!ride.arrivedAt.includes(req.params.riderName)) {
-        ride.arrivedAt.push(req.params.riderName);
+      if (!ride.arrivedAt.includes(passengerEmail)) {
+        ride.arrivedAt.push(passengerEmail);
       }
     } else if (ride.routePreference === 'nonstop' || ride.routePreference === 'shared_start') {
       for (const pName of ride.passengers) {
@@ -646,7 +739,7 @@ exports.driverArrived = async (req, res) => {
     
     await ride.save();
     const rideId = ride._id.toString();
-    req.io.to(rideId).emit('driver_arrived', { rideId, riderName: req.params.riderName, ride: ride.toJSON() });
+    req.io.to(rideId).emit('driver_arrived', { rideId, riderName: passengerEmail, ride: ride.toJSON() });
     res.status(200).json(ride);
   } catch (err) { res.status(500).json({ error: err.message }); }
 };
@@ -654,13 +747,16 @@ exports.driverArrived = async (req, res) => {
 // ── Board passenger — scoped emit ────────────────────────────────────────────
 exports.boardPassenger = async (req, res) => {
   try {
+    const passengerEmail = decodeURIComponent(req.params.passengerEmail || '').toLowerCase().trim();
     let ride = await Ride.findById(req.params.id);
     if (!ride) return res.status(404).json({ error: "Ride not found" });
+    if (req.user.email !== ride.riderEmail) return res.status(403).json({ error: 'Only the ride driver can perform this action.' });
+    if (!['accepted', 'full', 'started'].includes(ride.status)) return res.status(400).json({ error: 'Ride must be accepted or started before boarding.' });
 
-    if (!ride.passengers.includes(req.params.riderName)) {
+    if (!ride.passengers.includes(passengerEmail)) {
       return res.status(400).json({ error: "Passenger must be accepted before boarding." });
     }
-    if (ride.kicked.includes(req.params.riderName) || ride.declined.includes(req.params.riderName)) {
+    if (ride.kicked.includes(passengerEmail) || ride.declined.includes(passengerEmail)) {
       return res.status(400).json({ error: "User is kicked or declined from this ride." });
     }
 
@@ -668,23 +764,23 @@ exports.boardPassenger = async (req, res) => {
     for (const pName of ride.boardedPassengers) {
       currentlyOccupied += getRiderDetail(ride, pName)?.seats || 1;
     }
-    const toBoard = getRiderDetail(ride, req.params.riderName)?.seats || 1;
+    const toBoard = getRiderDetail(ride, passengerEmail)?.seats || 1;
 
     if (currentlyOccupied + toBoard > ride.totalSeats) {
        return res.status(400).json({ error: "Physical car is full!" });
     }
 
-    if (!ride.boardedPassengers.includes(req.params.riderName)) {
-      ride.boardedPassengers.push(req.params.riderName);
+    if (!ride.boardedPassengers.includes(passengerEmail)) {
+      ride.boardedPassengers.push(passengerEmail);
     }
-    const riderDetailBoard = getRiderDetail(ride, req.params.riderName);
+    const riderDetailBoard = getRiderDetail(ride, passengerEmail);
     if (riderDetailBoard) {
       riderDetailBoard.boardedAt = new Date();
-      const safeName = req.params.riderName.replace(/\./g, '_dot_');
+      const safeName = emailToKey(passengerEmail);
       ride.riderDetails.set(safeName, riderDetailBoard);
     }
     // Remove from arrivedAt — they've progressed past the "arrived" stage
-    ride.arrivedAt = ride.arrivedAt.filter(p => p !== req.params.riderName);
+    ride.arrivedAt = ride.arrivedAt.filter(p => p !== passengerEmail);
 
     await ride.save();
     const rideId = ride._id.toString();
@@ -696,30 +792,32 @@ exports.boardPassenger = async (req, res) => {
 // ── Drop-off passenger — scoped emit ─────────────────────────────────────────
 exports.dropOffPassenger = async (req, res) => {
   try {
+    const passengerEmail = decodeURIComponent(req.params.passengerEmail || '').toLowerCase().trim();
     let ride = await Ride.findById(req.params.id);
     if (!ride) return res.status(404).json({ error: "Ride not found" });
+    if (req.user.email !== ride.riderEmail) return res.status(403).json({ error: 'Only the ride driver can perform this action.' });
 
     if (ride.status !== 'started') {
       return res.status(400).json({ error: "Ride must be started before dropping off passengers." });
     }
-    if (!ride.boardedPassengers.includes(req.params.riderName)) {
+    if (!ride.boardedPassengers.includes(passengerEmail)) {
       return res.status(400).json({ error: "Passenger is not currently boarded." });
     }
-    if (ride.droppedPassengers && ride.droppedPassengers.includes(req.params.riderName)) {
+    if (ride.droppedPassengers && ride.droppedPassengers.includes(passengerEmail)) {
       return res.status(400).json({ error: "Passenger has already been dropped off." });
     }
 
-    ride.boardedPassengers = ride.boardedPassengers.filter(p => p !== req.params.riderName);
-    ride.passengers = ride.passengers.filter(p => p !== req.params.riderName);
+    ride.boardedPassengers = ride.boardedPassengers.filter(p => p !== passengerEmail);
+    ride.passengers = ride.passengers.filter(p => p !== passengerEmail);
     
     if (!ride.droppedPassengers) ride.droppedPassengers = [];
-    if (!ride.droppedPassengers.includes(req.params.riderName)) {
-      ride.droppedPassengers.push(req.params.riderName);
+    if (!ride.droppedPassengers.includes(passengerEmail)) {
+      ride.droppedPassengers.push(passengerEmail);
     }
-    const riderDetailDrop = getRiderDetail(ride, req.params.riderName);
+    const riderDetailDrop = getRiderDetail(ride, passengerEmail);
     if (riderDetailDrop) {
       riderDetailDrop.droppedAt = new Date();
-      const safeName = req.params.riderName.replace(/\./g, '_dot_');
+      const safeName = emailToKey(passengerEmail);
       ride.riderDetails.set(safeName, riderDetailDrop);
     }
 
@@ -727,8 +825,8 @@ exports.dropOffPassenger = async (req, res) => {
     const rideId = ride._id.toString();
     const payload = { 
       rideId, 
-      riderName: req.params.riderName, 
-      fare: getRiderDetail(ride, req.params.riderName)?.fare,
+      riderName: passengerEmail, 
+      fare: getRiderDetail(ride, passengerEmail)?.fare,
       ride: ride.toJSON()
     };
     req.io.to(rideId).emit('passenger_dropped', payload);
@@ -739,10 +837,12 @@ exports.dropOffPassenger = async (req, res) => {
 // ── Passenger pays — scoped emit ─────────────────────────────────────────────
 exports.passengerPays = async (req, res) => {
   try {
+    const passengerEmail = decodeURIComponent(req.params.passengerEmail || '').toLowerCase().trim();
     let ride = await Ride.findById(req.params.id);
     if (!ride) return res.status(404).json({ error: "Ride not found" });
+    if (req.user.email !== passengerEmail) return res.status(403).json({ error: 'You can only mark yourself as paid.' });
 
-    const detail = getRiderDetail(ride, req.params.riderName);
+    const detail = getRiderDetail(ride, passengerEmail);
     if (!detail) {
       return res.status(400).json({ error: "Rider details not found for this passenger." });
     }
@@ -751,17 +851,17 @@ exports.passengerPays = async (req, res) => {
     }
 
     detail.paid = true;
-    const safeName = req.params.riderName.replace(/\./g, '_dot_');
+    const safeName = emailToKey(passengerEmail);
     ride.riderDetails.set(safeName, detail);
     
     if (!ride.paidPassengers) ride.paidPassengers = [];
-    if (!ride.paidPassengers.includes(req.params.riderName)) {
-      ride.paidPassengers.push(req.params.riderName);
+    if (!ride.paidPassengers.includes(passengerEmail)) {
+      ride.paidPassengers.push(passengerEmail);
     }
 
     await ride.save();
     const rideId = ride._id.toString();
-    req.io.to(rideId).emit('passenger_paid', { rideId, riderName: req.params.riderName, ride: ride.toJSON() });
+    req.io.to(rideId).emit('passenger_paid', { rideId, riderName: passengerEmail, ride: ride.toJSON() });
     res.status(200).json(ride);
   } catch (err) { res.status(500).json({ error: err.message }); }
 };
@@ -771,6 +871,7 @@ exports.startRide = async (req, res) => {
   try {
     let ride = await Ride.findById(req.params.id);
     if (!ride) return res.status(404).json({ error: "Ride not found" });
+    if (req.user.email !== ride.riderEmail) return res.status(403).json({ error: 'Only the ride driver can perform this action.' });
 
     if (['started', 'completed', 'cancelled'].includes(ride.status)) {
       return res.status(400).json({ error: `Cannot start a ride that is already ${ride.status}.` });
@@ -815,6 +916,7 @@ exports.endRide = async (req, res) => {
   try {
     let ride = await Ride.findById(req.params.id);
     if (!ride) return res.status(404).json({ error: "Ride not found" });
+    if (req.user.email !== ride.riderEmail) return res.status(403).json({ error: 'Only the ride driver can perform this action.' });
 
     if (ride.status !== 'started') {
       return res.status(400).json({ error: "Cannot end a ride that has not started." });
@@ -834,7 +936,7 @@ exports.endRide = async (req, res) => {
         if (pd) {
           if (!pd.boardedAt) pd.boardedAt = ride.startedAt || new Date();
           pd.droppedAt = new Date();
-          const safeName = pName.replace(/\./g, '_dot_');
+          const safeName = emailToKey(pName);
           ride.riderDetails.set(safeName, pd);
         }
       }
@@ -857,7 +959,7 @@ exports.endRide = async (req, res) => {
           if (pd) {
             if (!pd.boardedAt) pd.boardedAt = ride.startedAt || new Date();
             pd.droppedAt = new Date();
-            const safeName = pName.replace(/\./g, '_dot_');
+            const safeName = emailToKey(pName);
             ride.riderDetails.set(safeName, pd);
           }
         }
@@ -871,13 +973,22 @@ exports.endRide = async (req, res) => {
     await ride.save();
 
     const rideId = ride._id.toString();
+    const unpaid = (ride.droppedPassengers || []).filter(p => {
+      const detail = getRiderDetail(ride, p);
+      return detail && !detail.paid;
+    });
+    if (unpaid.length > 0) {
+      console.warn(`Ride ${ride._id} ended with ${unpaid.length} unpaid passenger(s):`, unpaid);
+    }
+
     req.io.to(rideId).emit('ride_ended', {
         rideId,
         ride: ride.toJSON(),
         passengers: ride.droppedPassengers,
         riderName: ride.riderName,
         riderEmail: ride.riderEmail,
-        boardedPassengers: ride.boardedPassengers
+        boardedPassengers: ride.boardedPassengers,
+        unpaidPassengers: unpaid
     });
     res.status(200).json(ride);
   } catch (err) { res.status(500).json({ error: err.message }); }
@@ -886,12 +997,18 @@ exports.endRide = async (req, res) => {
 // ── Chat — scoped emit ──────────────────────────────────────────────────────
 exports.sendChatMessage = async (req, res) => {
   try {
-    const { sender, senderEmail, text, timestamp } = req.body;
-    if (!sender || !sender.trim() || !text || !text.trim()) {
-      return res.status(400).json({ error: "Sender and text are required." });
+    const { text, timestamp } = req.body;
+    if (!text || !text.trim()) {
+      return res.status(400).json({ error: "Text is required." });
     }
-    // Message length limit
-    const trimmedText = text.trim();
+    
+    const User = require('../models/user');
+    const senderUser = await User.findOne({ email: req.user.email }, 'name').lean();
+    const sender = senderUser?.name || req.user.email.split('@')[0];
+    const senderEmail = req.user.email;
+    
+    // Message length limit and HTML stripping
+    const trimmedText = text.trim().replace(/<[^>]*>/g, '');
     if (trimmedText.length > CHAT_MAX_LENGTH) {
       return res.status(400).json({ error: `Message too long. Max ${CHAT_MAX_LENGTH} characters.` });
     }
@@ -918,3 +1035,43 @@ exports.sendChatMessage = async (req, res) => {
   } catch (err) { res.status(500).json({ error: err.message }); }
 };
 
+
+exports.getDriverStats = async (req, res) => {
+  try {
+    const driverEmail = req.user.email;
+    const stats = await Ride.aggregate([
+      { $match: { riderEmail: driverEmail, status: 'completed' } },
+      {
+        $group: {
+          _id: null,
+          totalRides: { $sum: 1 },
+          totalDistanceKm: { $sum: '$totalDistance' },
+          totalDurationMs: {
+            $sum: {
+              $cond: [
+                { $and: ['$startedAt', '$completedAt'] },
+                { $subtract: ['$completedAt', '$startedAt'] },
+                0
+              ]
+            }
+          }
+        }
+      }
+    ]);
+    const result = stats[0] || { totalRides: 0, totalDistanceKm: 0, totalDurationMs: 0 };
+    res.json({
+      totalRides: result.totalRides,
+      totalDistanceKm: Math.round(result.totalDistanceKm),
+      totalOnlineTimeMins: Math.floor(result.totalDurationMs / 60000),
+    });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+};
+
+// Wrap all controllers with asyncHandler
+Object.keys(exports).forEach(key => {
+  if (typeof exports[key] === 'function') {
+    exports[key] = asyncHandler(exports[key]);
+  }
+});

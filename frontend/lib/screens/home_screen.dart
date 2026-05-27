@@ -8,6 +8,7 @@ import 'ride_history_screen.dart';
 import '../widgets/active_rides_tab.dart';
 import '../core/constants.dart';
 import '../services/ride_service.dart';
+import '../services/token_service.dart';
 import '../widgets/home/action_card.dart';
 import '../widgets/home/earnings_display.dart';
 import '../widgets/home/safety_banner.dart';
@@ -57,6 +58,10 @@ class HomeScreen extends StatefulWidget {
     this.userEmail = "email@example.com",
   });
 
+  static void resetStartupAnimation() {
+    _HomeScreenState._hasPlayedStartupAnimation = false;
+  }
+
   @override
   State<HomeScreen> createState() => _HomeScreenState();
 }
@@ -77,6 +82,13 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
   /// True while the victory lap car is in motion.
   /// Extra taps are ignored while this is true (anti-spam guard).
   bool _isVictoryLapRunning = false;
+  
+  final List<MapEntry<String, void Function(dynamic)>> _socketListeners = [];
+  
+  void _onSocket(dynamic socket, String event, void Function(dynamic) handler) {
+    socket.on(event, handler);
+    _socketListeners.add(MapEntry(event, handler));
+  }
 
   /// Exact pixel width of the "Ridify" label, measured once at startup via
   /// TextPainter using the identical TextStyle as the real Text widget.
@@ -171,47 +183,50 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
     }
   }
 
-  void _initSocket() {
+  Future<void> _initSocket() async {
+    final accessToken = await TokenService.getAccessToken();
+    if (accessToken == null) return; // Not logged in
+    
     final socketService = SocketService();
-    socketService.registerUser(widget.userEmail);
+    socketService.registerUser(widget.userEmail, accessToken); // Pass token
     final socket = socketService.socket;
 
     // Direct state updates — no re-fetch needed
-    socket.on('new_ride_request', (data) {
+    _onSocket(socket, 'new_ride_request', (data) {
       if (data != null && data['ride'] != null) _upsertRide(Map<String, dynamic>.from(data['ride']));
     });
-    socket.on('ride_accepted', (data) {
+    _onSocket(socket, 'ride_accepted', (data) {
       if (data != null && data['ride'] != null) _upsertRide(Map<String, dynamic>.from(data['ride']));
     });
-    socket.on('ride_cancelled', (data) {
+    _onSocket(socket, 'ride_cancelled', (data) {
       if (data != null && data['ride'] != null) _upsertRide(Map<String, dynamic>.from(data['ride']));
     });
-    socket.on('driver_arrived', (data) {
+    _onSocket(socket, 'driver_arrived', (data) {
       if (data != null && data['ride'] != null) _upsertRide(Map<String, dynamic>.from(data['ride']));
     });
-    socket.on('passenger_boarded', (data) {
+    _onSocket(socket, 'passenger_boarded', (data) {
       if (data != null && data['ride'] != null) _upsertRide(Map<String, dynamic>.from(data['ride']));
     });
-    socket.on('passenger_dropped', (data) {
+    _onSocket(socket, 'passenger_dropped', (data) {
       if (data != null && data['ride'] != null) _upsertRide(Map<String, dynamic>.from(data['ride']));
     });
-    socket.on('passenger_kicked', (data) {
+    _onSocket(socket, 'passenger_kicked', (data) {
       if (data != null && data['ride'] != null) _upsertRide(Map<String, dynamic>.from(data['ride']));
     });
-    socket.on('passenger_paid', (data) {
+    _onSocket(socket, 'passenger_paid', (data) {
       if (data != null && data['ride'] != null) _upsertRide(Map<String, dynamic>.from(data['ride']));
     });
-    socket.on('ride_started', (data) {
+    _onSocket(socket, 'ride_started', (data) {
       if (data != null && data['ride'] != null) _upsertRide(Map<String, dynamic>.from(data['ride']));
     });
 
     // ride_ended: only the DRIVER sees the green completion screen
     // Riders are handled via passenger_dropped in live_tracking_screen
-    socket.on('ride_ended', (data) {
+    _onSocket(socket, 'ride_ended', (data) {
       fetchRides();
     });
 
-    socket.on('database_wiped', (_) {
+    _onSocket(socket, 'database_wiped', (_) {
       if (mounted) {
         setState(() => allRides = []);
         Navigator.popUntil(context, (route) => route.isFirst);
@@ -221,6 +236,10 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
 
   @override
   void dispose() {
+    for (final entry in _socketListeners) {
+      SocketService().socket.off(entry.key, entry.value);
+    }
+    _socketListeners.clear();
     // Socket is shared singleton — don't dispose it
     _startupController.dispose();
     _victoryController.dispose();

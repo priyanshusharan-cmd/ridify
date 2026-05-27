@@ -1,0 +1,44 @@
+name: Security & Quality Checks
+
+on:
+  push:
+    branches: [ main, develop ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  backend-security:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: backend
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      - run: npm ci
+      - run: npm audit --audit-level=high
+      - name: Check for hardcoded secrets
+        run: |
+          if grep -r "mongodb+srv://[^<]" . --include="*.js" --exclude-dir=node_modules; then
+            echo "FAIL: Hardcoded MongoDB URI found"; exit 1
+          fi
+          if grep -rn "JWT_SECRET\s*=" . --include="*.js" | grep -v "process.env"; then
+            echo "FAIL: Hardcoded JWT_SECRET found"; exit 1
+          fi
+
+  frontend-quality:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: subosito/flutter-action@v2
+        with:
+          flutter-version: '3.x'
+          channel: 'stable'
+      - name: Flutter pub get
+        working-directory: frontend
+        run: flutter pub get
+      - name: Flutter analyze
+        working-directory: frontend
+        run: flutter analyze --fatal-infos --fatal-warnings

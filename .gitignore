@@ -18,6 +18,8 @@ backend/node_modules/
 backend/npm-debug.log*
 backend/yarn-debug.log*
 backend/yarn-error.log*
+backend/coverage/
+backend/logs/
 
 # ─────────────── FRONTEND ───────────────
 # Flutter / Dart
@@ -27,6 +29,10 @@ frontend/.flutter-plugins-dependencies
 frontend/.packages
 frontend/build/
 frontend/.fvm/
+frontend/analysis.txt
+frontend/fix_buttons.py
+frontend/.metadata
+frontend/coverage/
 
 # Android generated
 frontend/android/.gradle/

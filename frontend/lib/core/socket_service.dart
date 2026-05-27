@@ -11,6 +11,7 @@ class SocketService {
 
   io.Socket? _socket;
   String? _userEmail;
+  String? _accessToken;
   final Map<String, int> _joinedRidesCount = {};
 
   /// The single shared socket. Created lazily on first access.
@@ -22,11 +23,12 @@ class SocketService {
   bool get isConnected => _socket?.connected ?? false;
 
   io.Socket _createSocket() {
+    final accessToken = _accessToken ?? '';
     final s = io.io(kBaseUrl, <String, dynamic>{
       'transports': ['websocket'],
-      'autoConnect': true,
+      'autoConnect': false, // Don't auto-connect until token is set
       'forceNew': false,
-      'auth': {'userEmail': _userEmail ?? ''}, // Required by backend middleware
+      'auth': {'token': accessToken},
     });
 
     s.onConnect((_) {
@@ -49,15 +51,21 @@ class SocketService {
   }
 
   /// Register this user identity. Call once after login.
-  void registerUser(String userEmail) {
+  void registerUser(String userEmail, String accessToken) {
+    final isNewUser = _userEmail != userEmail;
     _userEmail = userEmail;
-    if (_socket != null) {
-      _socket!.io.options?['auth'] = {'userEmail': userEmail};
-      if (_socket!.disconnected) {
-        _socket!.connect();
-      }
+    _accessToken = accessToken;
+    
+    if (_socket != null && isNewUser) {
+      // Different user — must disconnect and reconnect with new identity
+      _socket!.disconnect();
+      _socket = null;
     }
-    socket.emit('register_user', {'userEmail': userEmail});
+    
+    // Update auth on socket options
+    _socket?.io.options?['auth'] = {'token': accessToken};
+    
+    if (!socket.connected) socket.connect();
   }
 
   /// Join a ride room for targeted events.
@@ -87,9 +95,14 @@ class SocketService {
 
   /// Full cleanup (e.g., on logout).
   void dispose() {
+    for (final rideId in List.from(_joinedRidesCount.keys)) {
+      _socket?.emit('leave_ride', {'rideId': rideId});
+    }
+    _socket?.disconnect();
     _socket?.dispose();
     _socket = null;
     _joinedRidesCount.clear();
     _userEmail = null;
+    _accessToken = null;
   }
 }

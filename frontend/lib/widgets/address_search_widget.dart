@@ -33,6 +33,7 @@ class _AddressSearchWidgetState extends State<AddressSearchWidget> {
 
   Future<void> _searchAddress(String query) async {
     if (query.isEmpty) {
+      if (!mounted) return;
       setState(() {
         _suggestions = [];
       });
@@ -40,10 +41,12 @@ class _AddressSearchWidgetState extends State<AddressSearchWidget> {
       return;
     }
 
+    if (!mounted) return;
     setState(() => _isLoading = true);
 
     try {
       final suggestions = await NominatimService.searchAddress(query);
+      if (!mounted) return;
       setState(() {
         _suggestions = suggestions;
       });
@@ -55,7 +58,9 @@ class _AddressSearchWidgetState extends State<AddressSearchWidget> {
     } catch (e) {
       debugPrint("Search error: $e");
     } finally {
-      setState(() => _isLoading = false);
+      if (mounted) {
+        setState(() => _isLoading = false);
+      }
     }
   }
 
@@ -67,6 +72,7 @@ class _AddressSearchWidgetState extends State<AddressSearchWidget> {
   }
 
   void _showOverlay() {
+    if (!mounted) return;
     if (_overlayEntry != null) {
       _overlayEntry!.markNeedsBuild();
       return;
@@ -141,6 +147,7 @@ class _AddressSearchWidgetState extends State<AddressSearchWidget> {
   @override
   void dispose() {
     _debounce?.cancel();
+    _debounce = null;
     _removeOverlay();
     super.dispose();
   }

@@ -1,18 +1,15 @@
 const adminEmails = (process.env.ADMIN_EMAILS || '')
-  .split(',')
-  .map(e => e.trim().toLowerCase())
-  .filter(Boolean);
+  .split(',').map(e => e.trim().toLowerCase()).filter(Boolean);
 
 function adminOnly(req, res, next) {
-  const callerEmail = (req.headers['x-admin-email'] || '').trim().toLowerCase();
-  if (!callerEmail || !adminEmails.includes(callerEmail)) {
+  // req.user is guaranteed by authenticate middleware running first
+  if (!req.user || !adminEmails.includes(req.user.email)) {
     return res.status(403).json({ error: 'Forbidden: Admin access required.' });
   }
-  if (process.env.ADMIN_SECRET) {
-    const callerSecret = req.headers['x-admin-secret'];
-    if (callerSecret !== process.env.ADMIN_SECRET) {
-      return res.status(403).json({ error: 'Forbidden: Invalid Admin Secret.' });
-    }
+  // ADMIN_SECRET is now REQUIRED — no optional behavior
+  const secret = req.headers['x-admin-secret'];
+  if (!secret || secret !== process.env.ADMIN_SECRET) {
+    return res.status(403).json({ error: 'Forbidden: Invalid Admin Secret.' });
   }
   next();
 }

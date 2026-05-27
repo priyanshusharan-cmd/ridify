@@ -3,6 +3,8 @@
  * Prefers expiresAt (minus the expiry buffer) as it is a timezone-independent
  * timestamp created on the client side. Falls back to parsing departureTime string.
  */
+const { emailToKey } = require('./emailKey');
+
 const EXPIRY_BUFFER_MS = 15 * 60 * 1000; // 15 minutes buffer added on ride creation
 
 function getDepartureTimeEpoch(ride) {
@@ -39,7 +41,7 @@ function getDepartureTimeEpoch(ride) {
  */
 function getRiderDetail(ride, name) {
   if (!ride.riderDetails) return null;
-  const safeName = name.replace(/\./g, '_dot_');
+  const safeName = emailToKey(name);
   if (typeof ride.riderDetails.get === 'function') {
     return ride.riderDetails.get(safeName) || null;
   }

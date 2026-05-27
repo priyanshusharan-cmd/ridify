@@ -1,10 +1,9 @@
 import 'dart:convert';
-import 'package:http/http.dart' as http;
-import '../core/constants.dart';
+import 'api_client.dart';
 
 class ChatService {
   static Future<Map<String, dynamic>> fetchChatData(String rideId) async {
-    final response = await http.get(Uri.parse('$kBaseUrl/api/rides/$rideId')).timeout(kHttpTimeout);
+    final response = await ApiClient.get('/api/rides/$rideId');
     if (response.statusCode == 200) {
       return jsonDecode(response.body);
     } else {
@@ -13,16 +12,10 @@ class ChatService {
   }
 
   static Future<void> sendMessage(String rideId, String sender, String senderEmail, String text, String timestamp) async {
-    final response = await http.post(
-      Uri.parse('$kBaseUrl/api/rides/$rideId/chat'),
-      headers: {'Content-Type': 'application/json'},
-      body: jsonEncode({
-        'sender': sender,
-        'senderEmail': senderEmail,
-        'text': text,
-        'timestamp': timestamp,
-      }),
-    ).timeout(kHttpTimeout);
+    final response = await ApiClient.post('/api/rides/$rideId/chat', {
+      'text': text,
+      'timestamp': timestamp,
+    });
     if (response.statusCode != 200) {
       throw Exception(jsonDecode(response.body)['error'] ?? 'Failed to send message');
     }

@@ -15,4 +15,7 @@ const UserSchema = new mongoose.Schema({
   password: { type: String, select: false, required: true },
 }, { timestamps: true });
 
+UserSchema.index({ email: 1 }, { unique: true });
+UserSchema.index({ createdAt: 1 });
+
 module.exports = mongoose.model('User', UserSchema);

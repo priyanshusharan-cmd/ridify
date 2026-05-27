@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../services/health_service.dart';
+import '../services/token_service.dart';
 import 'home_screen.dart';
 import 'login_screen.dart';
 
@@ -185,8 +186,13 @@ class _SplashScreenState extends State<SplashScreen>
     final savedAge = prefs.getString('user_age');
     final savedEmail = prefs.getString('user_email');
 
-    final bool hasSession =
-        savedName != null && savedEmail != null && savedAge != null;
+    // Check for valid token using TokenService
+    final hasToken = await TokenService.hasValidToken();
+
+    final bool hasSession = savedName != null &&
+        savedEmail != null &&
+        savedAge != null &&
+        hasToken;
 
     if (!mounted) return;
 
