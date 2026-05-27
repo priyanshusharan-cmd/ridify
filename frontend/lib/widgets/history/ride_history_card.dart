@@ -256,7 +256,18 @@ class RideHistoryCard extends StatelessWidget {
                     ),
                     Padding(
                       padding: const EdgeInsets.only(left: 7),
-                      child: Container(height: 12, width: 2, color: isDark ? Colors.white24 : Colors.black12),
+                      child: SizedBox(
+                        height: 6,
+                        width: 2,
+                        child: OverflowBox(
+                          minHeight: 18,
+                          maxHeight: 18,
+                          child: Container(
+                            width: 2,
+                            color: isDark ? Colors.white24 : Colors.black12,
+                          ),
+                        ),
+                      ),
                     ),
                     Row(
                       crossAxisAlignment: CrossAxisAlignment.start,

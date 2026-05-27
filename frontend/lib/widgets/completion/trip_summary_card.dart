@@ -101,7 +101,18 @@ class TripSummaryCard extends StatelessWidget {
           ),
           Padding(
             padding: const EdgeInsets.only(left: 9),
-            child: Container(height: 20, width: 2, color: isDark ? Colors.white24 : Colors.black12),
+            child: SizedBox(
+              height: 12,
+              width: 2,
+              child: OverflowBox(
+                minHeight: 26,
+                maxHeight: 26,
+                child: Container(
+                  width: 2,
+                  color: isDark ? Colors.white24 : Colors.black12,
+                ),
+              ),
+            ),
           ),
           Row(
             crossAxisAlignment: CrossAxisAlignment.start,
