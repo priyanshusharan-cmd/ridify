@@ -62,11 +62,8 @@ class RideHistoryScreen extends StatelessWidget {
                 ],
               ),
             ),
-            const SizedBox(height: 16),
             Expanded(
-              child: isLoading
-                  ? Center(child: CircularProgressIndicator(color: Theme.of(context).primaryColor))
-                  : myCompletedRides.isEmpty
+              child: myCompletedRides.isEmpty
                   ? Center(
                       child: Column(
                         mainAxisAlignment: MainAxisAlignment.center,
@@ -82,7 +79,7 @@ class RideHistoryScreen extends StatelessWidget {
                       itemCount: myCompletedRides.length,
                       itemBuilder: (context, index) {
                         final ride = myCompletedRides[index];
-                        return RideHistoryCard(ride: ride, isDark: isDark, userEmail: widget.userEmail);
+                        return RideHistoryCard(ride: ride, isDark: isDark, userEmail: userEmail);
                       },
                     ),
             ),
