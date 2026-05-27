@@ -8,7 +8,9 @@ class RideService {
     if (response.statusCode == 200) {
       final decoded = jsonDecode(response.body);
       if (decoded is List) return decoded;
-      if (decoded is Map && decoded.containsKey('rides')) return decoded['rides'] as List<dynamic>;
+      if (decoded is Map && decoded.containsKey('rides')) {
+        return List<dynamic>.from(decoded['rides']);
+      }
       return [];
     } else {
       throw Exception('Failed to load rides');
@@ -46,7 +48,10 @@ class RideService {
 
     final response = await ApiClient.get(url);
     if (response.statusCode == 200) {
-      return jsonDecode(response.body);
+      final decoded = jsonDecode(response.body);
+      if (decoded is List) return decoded;
+      if (decoded is Map && decoded.containsKey('rides')) return decoded['rides'] as List<dynamic>;
+      return [];
     } else {
       throw Exception('Failed to search rides');
     }
