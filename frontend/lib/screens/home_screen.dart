@@ -16,7 +16,6 @@ import '../widgets/home/ridify_app_bar_title.dart';
 import '../main.dart';
 import 'rider_completing_screen.dart';
 import 'driver_completing_screen.dart';
-import '../widgets/completion/performance_card.dart';
 
 // ─────────────────────────────────────────────────────────────────────────────
 //  Animation constants
@@ -75,6 +74,10 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
   int _currentIndex = 0;
   List<dynamic> allRides = [];
 
+
+  // ── Easter Egg state ───────────────────────────────────────────────────────
+  int _homeTapCount = 0;
+  DateTime _lastHomeTapTime = DateTime.now();
 
   // ── Startup animation ──────────────────────────────────────────────────────
   late AnimationController _startupController;
@@ -409,10 +412,21 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
         currentIndex: _currentIndex,
         onTap: (index) {
           // ── Easter Egg ───────────────────────────────────────────────────
-          // If the user is already on the Home tab and taps Home again,
-          // trigger the Victory Lap instead of a normal nav switch.
+          // If the user is already on the Home tab and taps Home rapidly 3 times,
+          // trigger the Victory Lap.
           if (index == 0 && _currentIndex == 0) {
-            _triggerVictoryLap();
+            final now = DateTime.now();
+            if (now.difference(_lastHomeTapTime).inMilliseconds < 500) {
+              _homeTapCount++;
+            } else {
+              _homeTapCount = 1;
+            }
+            _lastHomeTapTime = now;
+            
+            if (_homeTapCount >= 3) {
+              _triggerVictoryLap();
+              _homeTapCount = 0;
+            }
             return; // don't call setState – we're already on index 0
           }
           setState(() => _currentIndex = index);
@@ -448,10 +462,6 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
     double totalEarnings = 0;
     double totalSpending = 0;
 
-    int totalRidesCompleted = 0;
-    int totalOnlineTimeMins = 0;
-    double totalDistanceDriven = 0.0;
-
     final lowerUserEmail = widget.userEmail.trim().toLowerCase();
     
     for (final ride in allRides) {
@@ -461,22 +471,6 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
         final double baseFare = double.tryParse(ride['fare'].toString()) ?? 0.0;
 
         if (ride['riderEmail']?.toString().toLowerCase().trim() == lowerUserEmail || ride['riderEmail'] == widget.userEmail) {
-          // Driver stats
-          totalRidesCompleted++;
-          
-          String d = (ride['totalDistance'] ?? ride['distance'] ?? "0.0").toString();
-          double distValue = double.tryParse(d.replaceAll(RegExp(r'[^0-9.]'), '')) ?? 0.0;
-          totalDistanceDriven += distValue;
-          
-          if (ride['startedAt'] != null && ride['completedAt'] != null) {
-            try {
-              DateTime start = DateTime.parse(ride['startedAt']);
-              DateTime end = DateTime.parse(ride['completedAt']);
-              int diffMins = end.difference(start).inMinutes;
-              totalOnlineTimeMins += (diffMins < 0 ? 0 : diffMins);
-            } catch (_) {}
-          }
-
           // Driver earnings
           for (final p in dropped) {
             if (riderDetails != null && riderDetails[p] != null) {
@@ -550,13 +544,6 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
             EarningsDisplay(
               totalEarnings: totalEarnings,
               totalSpending: totalSpending,
-            ),
-            const SizedBox(height: 16),
-            PerformanceCard(
-              isDark: Theme.of(context).brightness == Brightness.dark,
-              totalRidesCompleted: totalRidesCompleted,
-              totalOnlineTimeMins: totalOnlineTimeMins,
-              totalDistanceDriven: totalDistanceDriven,
             ),
             const SizedBox(height: 16),
             const SafetyBanner(),
