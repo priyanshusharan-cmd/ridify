@@ -148,11 +148,19 @@ class RideHistoryCard extends StatelessWidget {
       paxCount = 0;
     } else if (wasIDriver) {
       Set<String> kickedSet = {};
-      for (var p in (ride['kicked'] ?? [])) kickedSet.add(p.toString().toLowerCase());
+      for (var p in (ride['kicked'] ?? [])) {
+        kickedSet.add(p.toString().toLowerCase());
+      }
       
-      for (var p in (ride['boardedPassengers'] ?? [])) if (!kickedSet.contains(p.toString().toLowerCase())) allInRide.add(p.toString().toLowerCase());
-      for (var p in (ride['droppedPassengers'] ?? [])) if (!kickedSet.contains(p.toString().toLowerCase())) allInRide.add(p.toString().toLowerCase());
-      for (var p in (ride['passengers'] ?? [])) if (!kickedSet.contains(p.toString().toLowerCase())) allInRide.add(p.toString().toLowerCase());
+      for (var p in (ride['boardedPassengers'] ?? [])) {
+        if (!kickedSet.contains(p.toString().toLowerCase())) allInRide.add(p.toString().toLowerCase());
+      }
+      for (var p in (ride['droppedPassengers'] ?? [])) {
+        if (!kickedSet.contains(p.toString().toLowerCase())) allInRide.add(p.toString().toLowerCase());
+      }
+      for (var p in (ride['passengers'] ?? [])) {
+        if (!kickedSet.contains(p.toString().toLowerCase())) allInRide.add(p.toString().toLowerCase());
+      }
       
       paxCount = allInRide.length;
     } else {
@@ -169,9 +177,15 @@ class RideHistoryCard extends StatelessWidget {
     } else if (wasIDriver) {
       double driverTotalEarned = 0;
       Set<String> validPassengers = {};
-      for (var p in (ride['passengers'] ?? [])) validPassengers.add(p.toString().toLowerCase());
-      for (var p in (ride['boardedPassengers'] ?? [])) validPassengers.add(p.toString().toLowerCase());
-      for (var p in (ride['droppedPassengers'] ?? [])) validPassengers.add(p.toString().toLowerCase());
+      for (var p in (ride['passengers'] ?? [])) {
+        validPassengers.add(p.toString().toLowerCase());
+      }
+      for (var p in (ride['boardedPassengers'] ?? [])) {
+        validPassengers.add(p.toString().toLowerCase());
+      }
+      for (var p in (ride['droppedPassengers'] ?? [])) {
+        validPassengers.add(p.toString().toLowerCase());
+      }
       
       Map<String, dynamic> rDetails = ride['riderDetails'] ?? {};
       for (String pEmail in rDetails.keys) {

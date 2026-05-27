@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'package:flutter/foundation.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
 class TokenService {
@@ -42,7 +43,9 @@ class TokenService {
         _storage.delete(key: _accessKey),
         _storage.delete(key: _refreshKey),
       ]).timeout(const Duration(seconds: 2));
-    } catch (e) {}
+    } catch (e) {
+      debugPrint('Error clearing tokens: $e');
+    }
   }
 
   static Future<bool> hasValidToken() async {

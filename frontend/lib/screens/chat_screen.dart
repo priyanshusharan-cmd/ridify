@@ -51,16 +51,14 @@ class _ChatScreenState extends State<ChatScreen> {
       final String myEmailLower = widget.myEmail.trim().toLowerCase();
       
       List<String> allParticipants = [];
-      if (data != null) {
-        if (data['riderName'] != null && data['riderEmail']?.toString().toLowerCase().trim() != myEmailLower) {
-          allParticipants.add(data['riderName']);
-        }
-        for (var p in (data['passengers'] ?? [])) {
-          if (p?.toString().toLowerCase().trim() != myEmailLower) {
-            // Try to get display name from riderDetails
-            String displayName = data['riderDetails']?[p]?['riderName'] ?? p;
-            allParticipants.add(displayName);
-          }
+      if (data['riderName'] != null && data['riderEmail']?.toString().toLowerCase().trim() != myEmailLower) {
+        allParticipants.add(data['riderName']);
+      }
+      for (var p in (data['passengers'] ?? [])) {
+        if (p?.toString().toLowerCase().trim() != myEmailLower) {
+          // Try to get display name from riderDetails
+          String displayName = data['riderDetails']?[p]?['riderName'] ?? p;
+          allParticipants.add(displayName);
         }
       }
         
