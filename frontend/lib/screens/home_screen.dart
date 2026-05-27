@@ -16,6 +16,7 @@ import '../widgets/home/ridify_app_bar_title.dart';
 import '../main.dart';
 import 'rider_completing_screen.dart';
 import 'driver_completing_screen.dart';
+import '../widgets/completion/performance_card.dart';
 
 // ─────────────────────────────────────────────────────────────────────────────
 //  Animation constants
@@ -215,7 +216,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
       if (data != null && data['ride'] != null) {
         final ride = Map<String, dynamic>.from(data['ride']);
         _upsertRide(ride);
-        final droppedUser = data['droppedUser']?.toString().toLowerCase().trim();
+        final droppedUser = data['riderName']?.toString().toLowerCase().trim();
         final myEmailLower = widget.userEmail.toLowerCase().trim();
         if (droppedUser == myEmailLower) {
           final rideId = ride['rideId'] ?? ride['_id'];
@@ -447,6 +448,10 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
     double totalEarnings = 0;
     double totalSpending = 0;
 
+    int totalRidesCompleted = 0;
+    int totalOnlineTimeMins = 0;
+    double totalDistanceDriven = 0.0;
+
     final lowerUserEmail = widget.userEmail.trim().toLowerCase();
     
     for (final ride in allRides) {
@@ -456,6 +461,23 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
         final double baseFare = double.tryParse(ride['fare'].toString()) ?? 0.0;
 
         if (ride['riderEmail']?.toString().toLowerCase().trim() == lowerUserEmail || ride['riderEmail'] == widget.userEmail) {
+          // Driver stats
+          totalRidesCompleted++;
+          
+          String d = (ride['totalDistance'] ?? ride['distance'] ?? "0.0").toString();
+          double distValue = double.tryParse(d.replaceAll(RegExp(r'[^0-9.]'), '')) ?? 0.0;
+          totalDistanceDriven += distValue;
+          
+          if (ride['startedAt'] != null && ride['completedAt'] != null) {
+            try {
+              DateTime start = DateTime.parse(ride['startedAt']);
+              DateTime end = DateTime.parse(ride['completedAt']);
+              int diffMins = end.difference(start).inMinutes;
+              totalOnlineTimeMins += (diffMins < 0 ? 0 : diffMins);
+            } catch (_) {}
+          }
+
+          // Driver earnings
           for (final p in dropped) {
             if (riderDetails != null && riderDetails[p] != null) {
               totalEarnings += (riderDetails[p]['fare'] as num?)?.toDouble() ?? 0.0;
@@ -466,6 +488,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
             }
           }
         } else if (dropped.contains(lowerUserEmail)) {
+          // Passenger spending
           final uemailDot = lowerUserEmail.replaceAll('.', '_dot_');
           final details = riderDetails?[lowerUserEmail] ?? riderDetails?[uemailDot];
           
@@ -527,6 +550,13 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
             EarningsDisplay(
               totalEarnings: totalEarnings,
               totalSpending: totalSpending,
+            ),
+            const SizedBox(height: 16),
+            PerformanceCard(
+              isDark: Theme.of(context).brightness == Brightness.dark,
+              totalRidesCompleted: totalRidesCompleted,
+              totalOnlineTimeMins: totalOnlineTimeMins,
+              totalDistanceDriven: totalDistanceDriven,
             ),
             const SizedBox(height: 16),
             const SafetyBanner(),
