@@ -613,7 +613,9 @@ exports.declineRider = async (req, res) => {
     const passengerEmail = decodeURIComponent(req.params.passengerEmail || '').toLowerCase().trim();
     let ride = await Ride.findById(req.params.id);
     if (!ride) return res.status(404).json({ error: "Ride not found" });
-    if (req.user.email !== ride.riderEmail) return res.status(403).json({ error: 'Only the ride driver can perform this action.' });
+    if (req.user.email !== ride.riderEmail && req.user.email !== passengerEmail) {
+      return res.status(403).json({ error: 'Only the driver or the requester can perform this action.' });
+    }
 
     if (ride.declined.includes(passengerEmail)) {
       return res.status(400).json({ error: "User has already been declined." });
