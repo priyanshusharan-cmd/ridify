@@ -159,7 +159,9 @@ class RideService {
   }
 
   static Future<void> adminDeleteAllRides(String adminEmail) async {
-    // Unimplemented in ApiClient structure for now
-    throw UnimplementedError("Use ApiClient");
+    final response = await ApiClient.delete('/api/rides/all');
+    if (response.statusCode != 200) {
+      throw Exception(jsonDecode(response.body)['error'] ?? 'Could not wipe database.');
+    }
   }
 }
