@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import '../services/ride_service.dart';
+
 import '../widgets/history/ride_history_card.dart';
 
 class RideHistoryScreen extends StatelessWidget {
