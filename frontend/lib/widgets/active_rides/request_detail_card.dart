@@ -18,9 +18,10 @@ class RequestDetailCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final riderDetail = (ride['riderDetails'] as Map?)?[requester] as Map?;
+    final String requesterLower = requester.toLowerCase().trim();
+    final riderDetail = (ride['riderDetails'] as Map?)?[requesterLower] as Map?;
     final String displayName = (riderDetail?['riderName'] ?? requester).toString();
-    final int requestedSeats = (riderDetail?['seats'] as num?)?.toInt() ?? ((ride['seatAllocations'] as Map?)?[requester] as num?)?.toInt() ?? 1;
+    final int requestedSeats = (riderDetail?['seats'] as num?)?.toInt() ?? ((ride['seatAllocations'] as Map?)?[requesterLower] as num?)?.toInt() ?? 1;
     final num fare = riderDetail?['fare'] ?? ride['fare'] ?? 0;
     final num distance = riderDetail?['distance'] ?? 0;
     final String pickupAddr = (riderDetail?['pickupLocation'] ?? '').toString();

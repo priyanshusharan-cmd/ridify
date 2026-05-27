@@ -6,6 +6,7 @@ import '../widgets/completion/success_icon.dart';
 import '../widgets/completion/trip_summary_card.dart';
 import '../widgets/completion/performance_card.dart';
 import '../widgets/completion/earnings_breakdown_card.dart';
+import '../widgets/completion/fare_summary.dart';
 
 class DriverCompletingScreen extends StatefulWidget {
   final String rideId;
@@ -104,8 +105,9 @@ class _DriverCompletingScreenState extends State<DriverCompletingScreen> {
       inRideNames.add(name);
     }
 
-    String pickup = rideData?['pickupLocation'] ?? "Pickup Location";
-    String dest = rideData?['destination'] ?? "Destination";
+    String driverName = rideData?['riderName'] ?? "Driver";
+    String pickup = rideData?['pickupLocation']?.toString().isNotEmpty == true ? rideData!['pickupLocation'] : "Pickup Location";
+    String dest = rideData?['destination']?.toString().isNotEmpty == true ? rideData!['destination'] : "Destination";
     
     // Format date properly if it exists, otherwise just today
     String dateStr = rideData?['departureTime'] ?? "Today";
@@ -175,6 +177,12 @@ class _DriverCompletingScreenState extends State<DriverCompletingScreen> {
                 ),
               ),
               const SizedBox(height: 32),
+              
+              FareSummary(
+                isDark: isDark,
+                driverName: driverName,
+                fareAmount: totalEarnings,
+              ),
               
               TripSummaryCard(
                 isDark: isDark,

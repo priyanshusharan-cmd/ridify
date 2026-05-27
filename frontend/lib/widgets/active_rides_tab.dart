@@ -164,20 +164,22 @@ class _ActiveRidesTabState extends State<ActiveRidesTab> {
         .where((r) => r['status'] != 'cancelled' && r['status'] != 'completed')
         .toList();
 
+    final String myEmailLower = widget.myEmail.trim().toLowerCase();
+
     final List<dynamic> myOfferedRides = activeRidesOnly.where((r) {
-      return r['riderEmail'] == widget.myEmail &&
+      return (r['riderEmail']?.toString().toLowerCase().trim() == myEmailLower) &&
           (r['status'] == 'available' ||
               r['status'] == 'accepted' ||
               r['status'] == 'full');
     }).toList();
 
     final List<dynamic> myPendingRequests = activeRidesOnly
-        .where((r) => (r['requests'] as List?)?.contains(widget.myEmail) ?? false)
+        .where((r) => (r['requests'] as List?)?.map((e) => e.toString().toLowerCase().trim()).contains(myEmailLower) ?? false)
         .toList();
 
     final List<dynamic> liveRides = activeRidesOnly.where((r) {
-      final bool isDriver = r['riderEmail'] == widget.myEmail;
-      final bool isPassenger = (r['passengers'] as List?)?.contains(widget.myEmail) ?? false;
+      final bool isDriver = r['riderEmail']?.toString().toLowerCase().trim() == myEmailLower;
+      final bool isPassenger = (r['passengers'] as List?)?.map((e) => e.toString().toLowerCase().trim()).contains(myEmailLower) ?? false;
 
       if (isDriver) {
         return r['status'] == 'started';

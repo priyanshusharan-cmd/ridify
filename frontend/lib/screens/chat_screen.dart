@@ -47,19 +47,22 @@ class _ChatScreenState extends State<ChatScreen> {
   Future<void> fetchChatHistory() async {
     try {
       final data = await RideService.getRideById(widget.rideId);
-      if (mounted) {
-        
-        List<String> allParticipants = [];
-        if (data['riderName'] != null && data['riderEmail'] != widget.myEmail) {
+      if (!mounted) return;
+      final String myEmailLower = widget.myEmail.trim().toLowerCase();
+      
+      List<String> allParticipants = [];
+      if (data != null) {
+        if (data['riderName'] != null && data['riderEmail']?.toString().toLowerCase().trim() != myEmailLower) {
           allParticipants.add(data['riderName']);
         }
         for (var p in (data['passengers'] ?? [])) {
-          if (p != widget.myEmail) {
+          if (p?.toString().toLowerCase().trim() != myEmailLower) {
             // Try to get display name from riderDetails
             String displayName = data['riderDetails']?[p]?['riderName'] ?? p;
             allParticipants.add(displayName);
           }
         }
+      }
         
         setState(() {
           participantsStr = allParticipants.join(', ');
@@ -82,7 +85,6 @@ class _ChatScreenState extends State<ChatScreen> {
             }
           }
         });
-      }
     } catch (e) {
       debugPrint(e.toString());
     }

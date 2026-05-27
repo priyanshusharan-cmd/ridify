@@ -15,52 +15,50 @@ class TimelineAddress extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Column(
+    return Row(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Row(
+        Column(
           children: [
             const Icon(Icons.circle, color: Colors.green, size: 14),
-            const SizedBox(width: 12),
-            Expanded(
-              child: Text(
+            Container(
+              height: 24,
+              width: 2,
+              color: isDark ? Colors.white24 : Colors.black12,
+            ),
+            const Icon(Icons.circle, color: Colors.red, size: 14),
+          ],
+        ),
+        const SizedBox(width: 12),
+        Expanded(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
                 formatAddress(pickup),
                 maxLines: 1,
                 overflow: TextOverflow.ellipsis,
                 style: TextStyle(
                   fontWeight: FontWeight.w600,
                   fontSize: 14,
+                  height: 1.0,
                   color: isDark ? Colors.white : Colors.black,
                 ),
               ),
-            ),
-          ],
-        ),
-        Padding(
-          padding: const EdgeInsets.only(left: 6, top: 4, bottom: 4),
-          child: Container(
-            height: 15,
-            width: 2,
-            color: isDark ? Colors.white24 : Colors.black12,
-          ),
-        ),
-        Row(
-          children: [
-            const Icon(Icons.circle, color: Colors.red, size: 14),
-            const SizedBox(width: 12),
-            Expanded(
-              child: Text(
+              const SizedBox(height: 24),
+              Text(
                 formatAddress(destination),
                 maxLines: 1,
                 overflow: TextOverflow.ellipsis,
                 style: TextStyle(
                   fontWeight: FontWeight.w600,
                   fontSize: 14,
+                  height: 1.0,
                   color: isDark ? Colors.white : Colors.black,
                 ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       ],
     );
@@ -137,24 +135,24 @@ class OfferedRideCard extends StatelessWidget {
                       Row(
                         mainAxisSize: MainAxisSize.min,
                         children: [
-                          if (passengers.isEmpty)
-                            if (isDetail)
-                              GestureDetector(
-                                onTap: onCancelOffer,
-                                child: const Icon(Icons.close, color: Colors.grey, size: 28),
-                              )
-                            else
-                              Container(
-                                padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
-                                decoration: BoxDecoration(
-                                  color: Colors.green.withValues(alpha: 0.1),
-                                  borderRadius: BorderRadius.circular(20),
-                                ),
-                                child: Text(
-                                  "$reqCount Request${reqCount == 1 ? '' : 's'}",
-                                  style: const TextStyle(color: Colors.green, fontWeight: FontWeight.bold, fontSize: 13),
-                                ),
-                              )
+                          if (!isDetail && reqCount > 0)
+                            Container(
+                              margin: const EdgeInsets.only(right: 12),
+                              padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
+                              decoration: BoxDecoration(
+                                color: Colors.green.withValues(alpha: 0.1),
+                                borderRadius: BorderRadius.circular(20),
+                              ),
+                              child: Text(
+                                "$reqCount Request${reqCount == 1 ? '' : 's'}",
+                                style: const TextStyle(color: Colors.green, fontWeight: FontWeight.bold, fontSize: 13),
+                              ),
+                            ),
+                          if (passengers.isEmpty && isDetail)
+                            GestureDetector(
+                              onTap: onCancelOffer,
+                              child: const Icon(Icons.close, color: Colors.grey, size: 28),
+                            )
                           else if (!isOngoing)
                             Material(
                               color: isDark ? Colors.grey[800] : Colors.grey[200],

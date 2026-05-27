@@ -29,6 +29,8 @@ class LiveTrackingScreen extends StatefulWidget {
 }
 
 class _LiveTrackingScreenState extends State<LiveTrackingScreen> {
+  String get myEmailLower => widget.myEmail.trim().toLowerCase();
+  
   late io.Socket socket;
   late bool isAccepted;
   bool isStarted = false;
@@ -163,18 +165,18 @@ class _LiveTrackingScreenState extends State<LiveTrackingScreen> {
       if (!mounted) return;
       
       if (!widget.isDriver &&
-          !(data['passengers'] ?? []).contains(widget.myEmail) &&
-          !(data['boardedPassengers'] ?? []).contains(widget.myEmail) &&
-          !(data['droppedPassengers'] ?? []).contains(widget.myEmail)) {
+          !(data['passengers'] ?? []).contains(myEmailLower) &&
+          !(data['boardedPassengers'] ?? []).contains(myEmailLower) &&
+          !(data['droppedPassengers'] ?? []).contains(myEmailLower)) {
         _kickSelfOut();
         return;
       }
       if (!widget.isDriver &&
-          (data['droppedPassengers'] ?? []).contains(widget.myEmail)) {
+          (data['droppedPassengers'] ?? []).contains(myEmailLower)) {
         int fare = 0;
         final details = data['riderDetails'];
-        if (details != null && details[widget.myEmail] != null) {
-          fare = (details[widget.myEmail]['fare'] as num?)?.toInt() ?? 0;
+        if (details != null && details[myEmailLower] != null) {
+          fare = (details[myEmailLower]['fare'] as num?)?.toInt() ?? 0;
         }
         _triggerPaymentScreen(fare);
         return;
@@ -233,7 +235,7 @@ class _LiveTrackingScreenState extends State<LiveTrackingScreen> {
       if (data == null) return;
       final map = Map<String, dynamic>.from(data);
       if (mounted && map['rideId'].toString() == widget.rideId) {
-        if (!widget.isDriver && map['riderName'] == widget.myEmail) {
+        if (!widget.isDriver && map['riderName'] == myEmailLower) {
           _triggerPaymentScreen(map['fare'] ?? 0);
         } else if (map['ride'] != null) {
           setState(() {
@@ -252,9 +254,9 @@ class _LiveTrackingScreenState extends State<LiveTrackingScreen> {
           setState(() {
             rideData = Map<String, dynamic>.from(map['ride']);
             // Proactively mark as arrived for instantaneous UI update
-            if (map['riderName'] == widget.myEmail) {
+            if (map['riderName'] == myEmailLower) {
               List arrived = List.from(rideData!['arrivedAt'] ?? []);
-              if (!arrived.contains(widget.myEmail)) arrived.add(widget.myEmail);
+              if (!arrived.contains(myEmailLower)) arrived.add(myEmailLower);
               rideData!['arrivedAt'] = arrived;
             }
           });
@@ -263,8 +265,8 @@ class _LiveTrackingScreenState extends State<LiveTrackingScreen> {
         // Only show the banner if this event is specifically for this passenger
         // AND they haven't already boarded (prevents stale re-notifications)
         if (!widget.isDriver &&
-            map['riderName'] == widget.myEmail &&
-            !(rideData?['boardedPassengers'] ?? []).contains(widget.myEmail)) {
+            map['riderName'] == myEmailLower &&
+            !(rideData?['boardedPassengers'] ?? []).contains(myEmailLower)) {
           ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("Driver has arrived! Please board."), backgroundColor: Colors.green));
         }
       }
@@ -292,7 +294,7 @@ class _LiveTrackingScreenState extends State<LiveTrackingScreen> {
             rideData = Map<String, dynamic>.from(map['ride']);
           });
         }
-        if (map['kickedUser'] == widget.myEmail) {
+        if (map['kickedUser'] == myEmailLower) {
           _kickSelfOut();
         }
       }
@@ -343,7 +345,7 @@ class _LiveTrackingScreenState extends State<LiveTrackingScreen> {
               List passengers = List.from(rideMap['passengers'] ?? []);
               List boarded = List.from(rideMap['boardedPassengers'] ?? []);
               List dropped = List.from(rideMap['droppedPassengers'] ?? []);
-              if (kicked.contains(widget.myEmail) || declined.contains(widget.myEmail) || (!passengers.contains(widget.myEmail) && !boarded.contains(widget.myEmail) && !dropped.contains(widget.myEmail))) {
+              if (kicked.contains(myEmailLower) || declined.contains(myEmailLower) || (!passengers.contains(myEmailLower) && !boarded.contains(myEmailLower) && !dropped.contains(myEmailLower))) {
                 _kickSelfOut();
                 return;
               }
@@ -352,8 +354,8 @@ class _LiveTrackingScreenState extends State<LiveTrackingScreen> {
             int fare = 0;
             if (rideMap != null) {
               final details = rideMap['riderDetails'];
-              if (details != null && details[widget.myEmail] != null) {
-                fare = (details[widget.myEmail]['fare'] as num?)?.toInt() ?? 0;
+              if (details != null && details[myEmailLower] != null) {
+                fare = (details[myEmailLower]['fare'] as num?)?.toInt() ?? 0;
               }
             }
             _triggerPaymentScreen(fare);
@@ -425,12 +427,13 @@ class _LiveTrackingScreenState extends State<LiveTrackingScreen> {
     setState(() {
       if (rideData != null) {
         List boarded = List.from(rideData!['boardedPassengers'] ?? []);
-        if (!boarded.contains(widget.myEmail)) boarded.add(widget.myEmail);
+        if (!boarded.contains(myEmailLower)) boarded.add(myEmailLower);
         rideData!['boardedPassengers'] = boarded;
       }
     });
+
     try {
-      await RideService.boardPassenger(widget.rideId, widget.myEmail);
+      await RideService.boardPassenger(widget.rideId, myEmailLower);
     } catch (e) { debugPrint(e.toString()); syncRideStatus(); }
   }
 
@@ -661,9 +664,9 @@ class _LiveTrackingScreenState extends State<LiveTrackingScreen> {
     final isDark = Theme.of(context).brightness == Brightness.dark;
     String driverLabel = widget.isDriver ? "Me (Driver)" : "${widget.otherUserName} (Driver)";
 
-    bool iHaveBoarded = (rideData?['boardedPassengers'] ?? []).contains(widget.myEmail);
-    bool iAmArrived = (rideData?['arrivedAt'] ?? []).contains(widget.myEmail);
-    bool iAmDropped = (rideData?['droppedPassengers'] ?? []).contains(widget.myEmail);
+    bool iHaveBoarded = (rideData?['boardedPassengers'] ?? []).contains(myEmailLower);
+    bool iAmArrived = (rideData?['arrivedAt'] ?? []).contains(myEmailLower);
+    bool iAmDropped = (rideData?['droppedPassengers'] ?? []).contains(myEmailLower);
 
     String statusText;
     if (isStarted) {

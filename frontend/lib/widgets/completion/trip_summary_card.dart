@@ -85,7 +85,17 @@ class TripSummaryCard extends StatelessWidget {
           Row(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              const Icon(Icons.location_on, color: Color(0xFF4ADE80), size: 20),
+              Column(
+                children: [
+                  const Icon(Icons.location_on, color: Color(0xFF4ADE80), size: 20),
+                  Container(
+                    height: 28,
+                    width: 2,
+                    color: isDark ? Colors.white24 : Colors.black12,
+                  ),
+                  const Icon(Icons.location_on, color: Colors.redAccent, size: 20),
+                ],
+              ),
               const SizedBox(width: 12),
               Expanded(
                 child: Column(
@@ -93,39 +103,11 @@ class TripSummaryCard extends StatelessWidget {
                   children: [
                     Text("From", style: TextStyle(color: isDark ? Colors.white54 : Colors.grey[600], fontSize: 12)),
                     const SizedBox(height: 2),
-                    Text(pickup, style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14, color: isDark ? Colors.white : Colors.black), maxLines: 2, overflow: TextOverflow.ellipsis),
-                  ],
-                ),
-              ),
-            ],
-          ),
-          Padding(
-            padding: const EdgeInsets.only(left: 9),
-            child: SizedBox(
-              height: 12,
-              width: 2,
-              child: OverflowBox(
-                minHeight: 26,
-                maxHeight: 26,
-                child: Container(
-                  width: 2,
-                  color: isDark ? Colors.white24 : Colors.black12,
-                ),
-              ),
-            ),
-          ),
-          Row(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              const Icon(Icons.location_on, color: Colors.redAccent, size: 20),
-              const SizedBox(width: 12),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
+                    Text(pickup, style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14, color: isDark ? Colors.white : Colors.black), maxLines: 1, overflow: TextOverflow.ellipsis),
+                    const SizedBox(height: 20),
                     Text("To", style: TextStyle(color: isDark ? Colors.white54 : Colors.grey[600], fontSize: 12)),
                     const SizedBox(height: 2),
-                    Text(dest, style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14, color: isDark ? Colors.white : Colors.black), maxLines: 2, overflow: TextOverflow.ellipsis),
+                    Text(dest, style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14, color: isDark ? Colors.white : Colors.black), maxLines: 1, overflow: TextOverflow.ellipsis),
                   ],
                 ),
               ),

@@ -88,8 +88,15 @@ class _RiderCompletingScreenState extends State<RiderCompletingScreen> {
     }
 
     String driverName = rideData?['riderName'] ?? "Driver";
-    String pickup = rideData?['riderDetails']?[widget.myEmail]?['pickupLocation'] ?? rideData?['pickupLocation'] ?? "Pickup Location";
-    String dest = rideData?['riderDetails']?[widget.myEmail]?['destination'] ?? rideData?['destination'] ?? "Destination";
+    final String myEmailLower = widget.myEmail.trim().toLowerCase();
+    
+    String pickup = rideData?['riderDetails']?[myEmailLower]?['pickupLocation']?.toString().isNotEmpty == true 
+      ? rideData!['riderDetails']![myEmailLower]!['pickupLocation'] 
+      : (rideData?['pickupLocation']?.toString().isNotEmpty == true ? rideData!['pickupLocation'] : "Pickup Location");
+      
+    String dest = rideData?['riderDetails']?[myEmailLower]?['destination']?.toString().isNotEmpty == true 
+      ? rideData!['riderDetails']![myEmailLower]!['destination'] 
+      : (rideData?['destination']?.toString().isNotEmpty == true ? rideData!['destination'] : "Destination");
     
     // Format date properly if it exists, otherwise just today
     String dateStr = rideData?['departureTime'] ?? "Today";
@@ -101,13 +108,12 @@ class _RiderCompletingScreenState extends State<RiderCompletingScreen> {
       distance = "0.0 km";
       duration = "0 mins";
     } else {
-      String d = (rideData?['riderDetails']?[widget.myEmail.replaceAll('.', '_dot_')]?['distance'] ?? 
-                 rideData?['riderDetails']?[widget.myEmail]?['distance'] ?? "0.0").toString();
+      String d = (rideData?['riderDetails']?[myEmailLower]?['distance'] ?? "0.0").toString();
       double distValue = double.tryParse(d.replaceAll(RegExp(r'[^0-9.]'), '')) ?? 0.0;
       distance = "${distValue.toStringAsFixed(1)} km";
       
-      String? boardedAt = rideData?['riderDetails']?[widget.myEmail]?['boardedAt'];
-      String? droppedAt = rideData?['riderDetails']?[widget.myEmail]?['droppedAt'];
+      String? boardedAt = rideData?['riderDetails']?[myEmailLower]?['boardedAt'];
+      String? droppedAt = rideData?['riderDetails']?[myEmailLower]?['droppedAt'];
       if (boardedAt != null && droppedAt != null) {
         try {
           DateTime start = DateTime.parse(boardedAt);
