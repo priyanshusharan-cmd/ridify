@@ -11,6 +11,7 @@ class RiderCompletingScreen extends StatefulWidget {
   final String myName;
   final String myEmail;
   final int fareAmount;
+  final Map<String, dynamic>? initialRideData;
 
   const RiderCompletingScreen({
     super.key,
@@ -19,6 +20,7 @@ class RiderCompletingScreen extends StatefulWidget {
     this.myName = "",
     this.myEmail = "",
     this.fareAmount = 0,
+    this.initialRideData,
   });
 
   @override
@@ -33,7 +35,11 @@ class _RiderCompletingScreenState extends State<RiderCompletingScreen> {
   @override
   void initState() {
     super.initState();
-    if (widget.rideId.isNotEmpty) {
+    if (widget.initialRideData != null) {
+      rideData = widget.initialRideData;
+      isLoading = false;
+      SocketService().joinRide(widget.rideId);
+    } else if (widget.rideId.isNotEmpty) {
       SocketService().joinRide(widget.rideId);
       _fetchRideData();
     } else {

@@ -384,7 +384,7 @@ class _LiveTrackingScreenState extends State<LiveTrackingScreen> {
       if (!mounted) {
         return;
       }
-      Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (context) => DriverCompletingScreen(rideId: widget.rideId)));
+      Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (context) => DriverCompletingScreen(rideId: widget.rideId, initialRideData: rideData)));
     });
   }
 
@@ -392,11 +392,9 @@ class _LiveTrackingScreenState extends State<LiveTrackingScreen> {
   void _triggerPaymentScreen(int fareAmount) {
     if (_isNavigatingToCompletion || !mounted) return;
     _isNavigatingToCompletion = true;
-
-    WidgetsBinding.instance.addPostFrameCallback((_) {
+    Future.delayed(const Duration(milliseconds: 100), () {
       if (!mounted) return;
-      Navigator.of(context).popUntil((route) => route.isFirst);
-      Navigator.of(context).push(MaterialPageRoute(builder: (_) => RiderCompletingScreen(isDriver: false, rideId: widget.rideId, myName: widget.myName, myEmail: widget.myEmail, fareAmount: fareAmount)));
+      Navigator.of(context).push(MaterialPageRoute(builder: (_) => RiderCompletingScreen(isDriver: false, rideId: widget.rideId, myName: widget.myName, myEmail: widget.myEmail, fareAmount: fareAmount, initialRideData: rideData)));
     });
   }
 

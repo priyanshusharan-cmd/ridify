@@ -10,10 +10,12 @@ import '../widgets/completion/fare_summary.dart';
 
 class DriverCompletingScreen extends StatefulWidget {
   final String rideId;
+  final Map<String, dynamic>? initialRideData;
 
   const DriverCompletingScreen({
     super.key,
     required this.rideId,
+    this.initialRideData,
   });
 
   @override
@@ -32,7 +34,13 @@ class _DriverCompletingScreenState extends State<DriverCompletingScreen> {
   @override
   void initState() {
     super.initState();
-    _fetchRideData();
+    if (widget.initialRideData != null) {
+      rideData = widget.initialRideData;
+      isLoading = false;
+      _fetchPerformanceStats();
+    } else {
+      _fetchRideData();
+    }
   }
 
   Future<void> _fetchRideData() async {
@@ -243,4 +251,3 @@ class _DriverCompletingScreenState extends State<DriverCompletingScreen> {
     );
   }
 }
-
