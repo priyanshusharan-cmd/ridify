@@ -16,16 +16,20 @@ class RideHistoryScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    String uemail = userEmail.trim();
+    String uemail = userEmail.trim().toLowerCase();
     List<dynamic> myCompletedRides = allRides.where((r) {
-      bool isDeclined = r['declined'] != null && (r['declined'] as List).contains(uemail);
-      bool isKicked = r['kicked'] != null && (r['kicked'] as List).contains(uemail);
+      List<String> getLowerList(String key) {
+        return (r[key] as List?)?.map((e) => e.toString().toLowerCase()).toList() ?? [];
+      }
+      
+      bool isDeclined = getLowerList('declined').contains(uemail);
+      bool isKicked = getLowerList('kicked').contains(uemail);
       bool isFinished = r['status'] == 'completed' || r['status'] == 'cancelled' || isDeclined || isKicked;
 
-      bool amIDriver = r['riderEmail'] != null && r['riderEmail'].toString().trim() == uemail;
-      bool amIRider = (r['passengers'] != null && (r['passengers'] as List).contains(uemail)) ||
-          (r['boardedPassengers'] != null && (r['boardedPassengers'] as List).contains(uemail)) ||
-          (r['droppedPassengers'] != null && (r['droppedPassengers'] as List).contains(uemail)) ||
+      bool amIDriver = r['riderEmail'] != null && r['riderEmail'].toString().trim().toLowerCase() == uemail;
+      bool amIRider = getLowerList('passengers').contains(uemail) ||
+          getLowerList('boardedPassengers').contains(uemail) ||
+          getLowerList('droppedPassengers').contains(uemail) ||
           isDeclined || isKicked;
 
       return isFinished && (amIDriver || amIRider);

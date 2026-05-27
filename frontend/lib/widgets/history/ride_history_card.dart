@@ -16,11 +16,16 @@ class RideHistoryCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    String uemail = userEmail.trim();
-    bool wasIDriver = ride['riderEmail'] != null && ride['riderEmail'].toString().trim() == uemail;
+    String uemail = userEmail.trim().toLowerCase();
+    
+    List<String> getLowerList(String key) {
+      return (ride[key] as List?)?.map((e) => e.toString().toLowerCase()).toList() ?? [];
+    }
+
+    bool wasIDriver = ride['riderEmail'] != null && ride['riderEmail'].toString().trim().toLowerCase() == uemail;
     bool isCancelled = ride['status'] == 'cancelled';
-    bool wasDeclined = ride['declined'] != null && (ride['declined'] as List).contains(uemail);
-    bool wasKicked = ride['kicked'] != null && (ride['kicked'] as List).contains(uemail);
+    bool wasDeclined = getLowerList('declined').contains(uemail);
+    bool wasKicked = getLowerList('kicked').contains(uemail);
 
     // Did the ride actually start?
     bool rideWasStarted = ride['startedAt'] != null;
@@ -47,9 +52,11 @@ class RideHistoryCard extends StatelessWidget {
     // For riders (not drivers): show THEIR pickup/dest from riderDetails
     String pickup;
     String dest;
-    if (!wasIDriver && ride['riderDetails']?[uemail] != null) {
-      pickup = formatAddress(ride['riderDetails'][uemail]['pickupLocation']?.toString() ?? ride['pickupLocation']?.toString());
-      dest = formatAddress(ride['riderDetails'][uemail]['destination']?.toString() ?? ride['destination']?.toString());
+    final uemailDot = uemail.replaceAll('.', '_dot_');
+    if (!wasIDriver && (ride['riderDetails']?[uemail] != null || ride['riderDetails']?[uemailDot] != null)) {
+      final details = ride['riderDetails']?[uemail] ?? ride['riderDetails']?[uemailDot];
+      pickup = formatAddress(details['pickupLocation']?.toString() ?? ride['pickupLocation']?.toString());
+      dest = formatAddress(details['destination']?.toString() ?? ride['destination']?.toString());
     } else {
       pickup = formatAddress(ride['pickupLocation']?.toString());
       dest = formatAddress(ride['destination']?.toString());
@@ -159,9 +166,10 @@ class RideHistoryCard extends StatelessWidget {
     } else if (isCancelled) {
       // For cancelled rides: driver gets 0 too since nobody paid
       fare = "0";
-    } else if (!wasIDriver && ride['riderDetails']?[uemail]?['fare'] != null) {
+    } else if (!wasIDriver && (ride['riderDetails']?[uemail]?['fare'] != null || ride['riderDetails']?[uemailDot]?['fare'] != null)) {
       // For riders: show THEIR computed fare, not the ride's global fare
-      fare = ride['riderDetails'][uemail]['fare'].toString();
+      final details = ride['riderDetails']?[uemail] ?? ride['riderDetails']?[uemailDot];
+      fare = details['fare'].toString();
     } else {
       fare = ride['fare']?.toString() ?? '0';
     }
