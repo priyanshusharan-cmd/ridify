@@ -142,22 +142,23 @@ class RideHistoryCard extends StatelessWidget {
       }
     }
 
-    // Passengers count — exclude kicked users
-    Set<String> kickedSet = {};
-    for (var p in (ride['kicked'] ?? [])) {
-      kickedSet.add(p.toString());
+    int paxCount = 0;
+    if (wasDeclined || wasKicked || isCancelled) {
+      paxCount = 0;
+    } else if (wasIDriver) {
+      Set<String> kickedSet = {};
+      for (var p in (ride['kicked'] ?? [])) kickedSet.add(p.toString().toLowerCase());
+      
+      Set<String> allInRide = {};
+      for (var p in (ride['boardedPassengers'] ?? [])) if (!kickedSet.contains(p.toString().toLowerCase())) allInRide.add(p.toString().toLowerCase());
+      for (var p in (ride['droppedPassengers'] ?? [])) if (!kickedSet.contains(p.toString().toLowerCase())) allInRide.add(p.toString().toLowerCase());
+      for (var p in (ride['passengers'] ?? [])) if (!kickedSet.contains(p.toString().toLowerCase())) allInRide.add(p.toString().toLowerCase());
+      
+      paxCount = allInRide.length;
+    } else {
+      final details = ride['riderDetails']?[uemail] ?? ride['riderDetails']?[uemailDot];
+      paxCount = int.tryParse(details?['seats']?.toString() ?? '1') ?? 1;
     }
-    Set<String> allInRide = {};
-    for (var p in (ride['boardedPassengers'] ?? [])) {
-      if (!kickedSet.contains(p.toString())) allInRide.add(p.toString());
-    }
-    for (var p in (ride['droppedPassengers'] ?? [])) {
-      if (!kickedSet.contains(p.toString())) allInRide.add(p.toString());
-    }
-    for (var p in (ride['passengers'] ?? [])) {
-      if (!kickedSet.contains(p.toString())) allInRide.add(p.toString());
-    }
-    int paxCount = allInRide.length;
 
     // Fare: show ₹0 for declined, kicked, and cancelled rides
     String fare;
