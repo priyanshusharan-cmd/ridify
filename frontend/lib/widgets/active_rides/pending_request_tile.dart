@@ -75,7 +75,7 @@ class PendingRequestTile extends StatelessWidget {
             builder: (context) {
               final String myEmailLower = myEmail.trim().toLowerCase();
               final Map<String, dynamic>? myDetails = request['riderDetails']?[myEmailLower];
-              final String pickup = myDetails?['pickup']?.toString() ?? request['pickupLocation']?.toString() ?? '';
+              final String pickup = myDetails?['pickupLocation']?.toString() ?? request['pickupLocation']?.toString() ?? '';
               final String destination = myDetails?['destination']?.toString() ?? request['destination']?.toString() ?? '';
 
               return TimelineAddress(

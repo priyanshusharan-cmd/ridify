@@ -182,7 +182,7 @@ class OfferedRideCard extends StatelessWidget {
                         String emailLower = userEmail!.trim().toLowerCase();
                         Map<String, dynamic>? details = ride['riderDetails']?[emailLower];
                         if (details != null) {
-                          pickup = details['pickup']?.toString() ?? pickup;
+                          pickup = details['pickupLocation']?.toString() ?? pickup;
                           destination = details['destination']?.toString() ?? destination;
                         }
                       }
