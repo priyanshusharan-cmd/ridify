@@ -118,26 +118,39 @@ class _LiveTrackingScreenState extends State<LiveTrackingScreen> {
     try {
       final route = await LocationService.fetchOsrmRoute(
         driverPosition!.longitude, driverPosition!.latitude,
-        rideData!['destLng'], rideData!['destLat'],
+        (rideData!['destLng'] as num).toDouble(), (rideData!['destLat'] as num).toDouble(),
         overview: 'simplified'
       );
       if (route != null) {
         final coords = route['geometry']['coordinates'] as List;
-        if (mounted) setState(() => routePoints = coords.map((c) => LatLng(c[1], c[0])).toList());
+        if (mounted) setState(() => routePoints = coords.map((c) => LatLng((c[1] as num).toDouble(), (c[0] as num).toDouble())).toList());
       }
     } catch (e) { debugPrint("OSRM Error: $e"); }
   }
 
   void _fitBounds() {
     if (driverPosition == null) return;
-    LatLng? target;
-    if (widget.isDriver && rideData != null && rideData!['destLat'] != null) {
-      target = LatLng(rideData!['destLat'], rideData!['destLng']);
-    } else { target = myPosition; }
-    if (target != null) {
-      if (driverPosition!.latitude == target.latitude && driverPosition!.longitude == target.longitude) { mapController.move(driverPosition!, 15.0); return; }
-      try { mapController.fitCamera(CameraFit.bounds(bounds: LatLngBounds.fromPoints([driverPosition!, target]), padding: const EdgeInsets.all(80.0))); } catch (_) { mapController.move(driverPosition!, 15.0); }
-    } else { mapController.move(driverPosition!, 15.0); }
+    List<LatLng> points = [driverPosition!];
+    
+    // Always add destination to bounds so the map isn't zoomed in too close
+    if (rideData != null && rideData!['destLat'] != null) {
+      points.add(LatLng((rideData!['destLat'] as num).toDouble(), (rideData!['destLng'] as num).toDouble()));
+    }
+    
+    if (myPosition != null) {
+      points.add(myPosition!);
+    }
+    
+    if (points.length == 1) {
+      mapController.move(driverPosition!, 15.0);
+      return;
+    }
+    
+    try {
+      mapController.fitCamera(CameraFit.bounds(bounds: LatLngBounds.fromPoints(points), padding: const EdgeInsets.all(80.0)));
+    } catch (_) {
+      mapController.move(driverPosition!, 15.0);
+    }
   }
 
   bool _syncInProgress = false;
@@ -289,10 +302,18 @@ class _LiveTrackingScreenState extends State<LiveTrackingScreen> {
       if (data == null) return;
       final map = Map<String, dynamic>.from(data);
       if (mounted && !widget.isDriver && map['rideId'].toString() == widget.rideId) {
-        setState(() => driverPosition = LatLng(map['lat'], map['lng']));
-        try {
-          _fitBounds();
-        } catch (_) {}
+        bool wasNull = driverPosition == null;
+        setState(() => driverPosition = LatLng((map['lat'] as num).toDouble(), (map['lng'] as num).toDouble()));
+        if (wasNull) {
+          Future.delayed(const Duration(milliseconds: 100), () {
+            _fetchRoute();
+            _fitBounds();
+          });
+        } else {
+          try {
+            _fitBounds();
+          } catch (_) {}
+        }
       }
     });
     _on('passenger_paid', (data) {
