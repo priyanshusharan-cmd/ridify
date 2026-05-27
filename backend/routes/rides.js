@@ -25,10 +25,10 @@ const {
 const router = express.Router();
 
 // ── Search rides ─────────────────────────────────────────────────────────────
-router.get('/search', searchRides);         // Public: needed to browse
+router.get('/search', authenticate, searchRides);
 router.get('/stats/driver', authenticate, getDriverStats);
-router.get('/', authenticate, getAllRides);               // Will be scoped in controller
-router.get('/:id', getRideById);            // Public read is acceptable
+router.get('/', authenticate, getAllRides);
+router.get('/:id', authenticate, getRideById);
 
 // ── Create ride — join driver into room ──────────────────────────────────────
 router.post('/', authenticate, createRide);

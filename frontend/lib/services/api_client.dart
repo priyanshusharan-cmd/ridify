@@ -29,7 +29,7 @@ class ApiClient {
       headers: headers,
       body: jsonEncode(body),
     ).timeout(kHttpTimeout);
-    return _handleResponse(response, path, 'POST');
+    return _handleResponse(response, path, 'POST', body);
   }
 
   static Future<http.Response> patch(String path, [Map<String, dynamic>? body]) async {
@@ -39,7 +39,7 @@ class ApiClient {
       headers: headers,
       body: body != null ? jsonEncode(body) : null,
     ).timeout(kHttpTimeout);
-    return _handleResponse(response, path, 'PATCH');
+    return _handleResponse(response, path, 'PATCH', body);
   }
 
   static Future<http.Response> delete(String path, [Map<String, dynamic>? body]) async {
@@ -49,24 +49,36 @@ class ApiClient {
       headers: headers,
       body: body != null ? jsonEncode(body) : null,
     ).timeout(kHttpTimeout);
-    return _handleResponse(response, path, 'DELETE');
+    return _handleResponse(response, path, 'DELETE', body);
   }
 
   static Future<http.Response> _handleResponse(
-    http.Response response, String path, String method) async {
-    if (response.statusCode == 401) {
-      // Try token refresh
+    http.Response response, String path, String method, [Map<String, dynamic>? body]) async {
+    if (response.statusCode == 401 && !path.contains('/auth/refresh')) {
       final refreshed = await _attemptRefresh();
       if (refreshed) {
-        // Retry the request once with new token
-        // Recursion guard: only retry if this wasn't already a refresh attempt
-        if (!path.contains('/auth/refresh')) {
-          // Re-call appropriate method — use a retry flag pattern
-          debugPrint('Token refreshed, caller should retry: $method $path');
-        }
+        debugPrint('Token refreshed, retrying: $method $path');
+        return _retryRequest(path, method, body);
       }
     }
     return response;
+  }
+
+  static Future<http.Response> _retryRequest(String path, String method, [Map<String, dynamic>? body]) async {
+    final headers = await _authHeaders();
+    final uri = Uri.parse('$kBaseUrl$path');
+    switch (method) {
+      case 'GET':
+        return await http.get(uri, headers: headers).timeout(kHttpTimeout);
+      case 'POST':
+        return await http.post(uri, headers: headers, body: jsonEncode(body)).timeout(kHttpTimeout);
+      case 'PATCH':
+        return await http.patch(uri, headers: headers, body: body != null ? jsonEncode(body) : null).timeout(kHttpTimeout);
+      case 'DELETE':
+        return await http.delete(uri, headers: headers, body: body != null ? jsonEncode(body) : null).timeout(kHttpTimeout);
+      default:
+        throw UnsupportedError('Method $method not supported for retry');
+    }
   }
 
   static Future<bool> _attemptRefresh() async {

@@ -5,7 +5,10 @@ class RideService {
   static Future<List<dynamic>> getAllRides() async {
     final response = await ApiClient.get('/api/rides');
     if (response.statusCode == 200) {
-      return jsonDecode(response.body);
+      final decoded = jsonDecode(response.body);
+      if (decoded is List) return decoded;
+      if (decoded is Map && decoded.containsKey('rides')) return decoded['rides'] as List<dynamic>;
+      return [];
     } else {
       throw Exception('Failed to load rides');
     }

@@ -10,23 +10,39 @@ class TokenService {
     required String accessToken,
     required String refreshToken,
   }) async {
-    await Future.wait([
-      _storage.write(key: _accessKey, value: accessToken),
-      _storage.write(key: _refreshKey, value: refreshToken),
-    ]);
+    try {
+      await Future.wait([
+        _storage.write(key: _accessKey, value: accessToken),
+        _storage.write(key: _refreshKey, value: refreshToken),
+      ]).timeout(const Duration(seconds: 2));
+    } catch (e) {
+      // Web hot restart occasionally throws here
+    }
   }
 
-  static Future<String?> getAccessToken() =>
-      _storage.read(key: _accessKey);
+  static Future<String?> getAccessToken() async {
+    try {
+      return await _storage.read(key: _accessKey).timeout(const Duration(seconds: 2));
+    } catch (e) {
+      return null;
+    }
+  }
 
-  static Future<String?> getRefreshToken() =>
-      _storage.read(key: _refreshKey);
+  static Future<String?> getRefreshToken() async {
+    try {
+      return await _storage.read(key: _refreshKey).timeout(const Duration(seconds: 2));
+    } catch (e) {
+      return null;
+    }
+  }
 
   static Future<void> clearTokens() async {
-    await Future.wait([
-      _storage.delete(key: _accessKey),
-      _storage.delete(key: _refreshKey),
-    ]);
+    try {
+      await Future.wait([
+        _storage.delete(key: _accessKey),
+        _storage.delete(key: _refreshKey),
+      ]).timeout(const Duration(seconds: 2));
+    } catch (e) {}
   }
 
   static Future<bool> hasValidToken() async {

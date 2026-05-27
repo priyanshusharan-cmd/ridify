@@ -94,8 +94,7 @@ class _LoginScreenState extends State<LoginScreen> {
               passwordController.text.trim(),
             );
 
-      final user = data['user'];
-
+      final user = data;
         // Persist session
         final prefs = await SharedPreferences.getInstance();
         await prefs.setString('user_name', user['name'] ?? "Unknown");
