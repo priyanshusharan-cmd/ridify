@@ -240,10 +240,9 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
           final rideId = ride['rideId'] ?? ride['_id'];
           if (rideId != null && !navigatedRides.contains(rideId)) {
             navigatedRides.add(rideId);
-            final ctx = navigatorKey.currentContext;
-            if (ctx != null) {
+            if (navigatorKey.currentState != null) {
               int fare = (data['fare'] as num?)?.toInt() ?? 0;
-              Navigator.of(ctx).push(MaterialPageRoute(
+              navigatorKey.currentState!.push(MaterialPageRoute(
                 builder: (_) => RiderCompletingScreen(
                   isDriver: false, rideId: rideId, myName: widget.userName, myEmail: widget.userEmail, fareAmount: fare, initialRideData: ride
                 )
@@ -293,9 +292,8 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
           final rideId = ride['rideId'] ?? ride['_id'];
           if (rideId != null && !navigatedRides.contains(rideId)) {
             navigatedRides.add(rideId);
-            final ctx = navigatorKey.currentContext;
-            if (ctx != null) {
-              Navigator.of(ctx).push(MaterialPageRoute(
+            if (navigatorKey.currentState != null) {
+              navigatorKey.currentState!.push(MaterialPageRoute(
                 builder: (_) => DriverCompletingScreen(rideId: rideId, initialRideData: ride)
               ));
             }

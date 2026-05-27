@@ -513,11 +513,27 @@ class _LiveTrackingScreenState extends State<LiveTrackingScreen> {
     } else {
       canEnd = activePassengers.isEmpty && boardedPassengers.isEmpty;
     }
-    
+    bool force = false;
     if (!canEnd) { 
-      if (mounted) ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("Cannot end trip. Passengers still active."), backgroundColor: Colors.red)); 
-      return; 
+      bool? confirmForce = await showDialog<bool>(
+        context: context, 
+        builder: (_) => AlertDialog(
+          title: const Text("End Ride Early?"), 
+          content: const Text("There are still active passengers. Ending the ride now will automatically drop them off. Continue?"),
+          actions: [
+            TextButton(onPressed: () => Navigator.pop(context, false), child: const Text("Cancel")),
+            TextButton(
+              onPressed: () => Navigator.pop(context, true), 
+              child: const Text("End Ride", style: TextStyle(color: Colors.red))
+            )
+          ],
+        )
+      );
+      if (confirmForce != true) return;
+      force = true;
     }
+    
+    if (!mounted) return;
 
     if (boardedPassengers.isNotEmpty) {
       int totalFare = 0;
@@ -552,7 +568,7 @@ class _LiveTrackingScreenState extends State<LiveTrackingScreen> {
       if (rideData != null) rideData!['status'] = 'completed';
     });
     try {
-      await RideService.endRide(widget.rideId);
+      await RideService.endRide(widget.rideId, force: force);
       if (mounted) {
         _triggerCompletionScreen();
       }
