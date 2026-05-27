@@ -81,12 +81,14 @@ function initSocket(server, app) {
 
     // Auto-join rooms for every ride this user is involved in
     try {
+      const lowerUserEmail = userEmail ? userEmail.toLowerCase() : '';
       const rides = await Ride.find({
         status: { $in: ['available', 'accepted', 'full', 'started'] },
         $or: [
           { riderEmail: userEmail },
-          { passengers: userEmail },
-          { requests: userEmail },
+          { riderEmail: lowerUserEmail },
+          { passengers: lowerUserEmail },
+          { requests: lowerUserEmail },
         ],
       }, '_id');
 

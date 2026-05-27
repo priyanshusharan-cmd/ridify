@@ -167,14 +167,16 @@ exports.getAllRides = async (req, res) => {
   try {
     const userEmail = req.user?.email;
     const ADMIN_EMAILS = (process.env.ADMIN_EMAILS || '').split(',').map(e => e.trim().toLowerCase()).filter(Boolean);
-    const query = ADMIN_EMAILS.includes(userEmail) ? {} : {
+    const lowerUserEmail = userEmail ? userEmail.toLowerCase() : '';
+    const query = ADMIN_EMAILS.includes(lowerUserEmail) ? {} : {
       $or: [
-        { riderEmail: userEmail },
-        { passengers: userEmail },
-        { requests: userEmail },
-        { droppedPassengers: userEmail },
-        { declined: userEmail },
-        { kicked: userEmail },
+        { riderEmail: userEmail }, // Drivers are saved with original case from token
+        { riderEmail: lowerUserEmail }, // Fallback just in case
+        { passengers: lowerUserEmail },
+        { requests: lowerUserEmail },
+        { droppedPassengers: lowerUserEmail },
+        { declined: lowerUserEmail },
+        { kicked: lowerUserEmail },
       ]
     };
 

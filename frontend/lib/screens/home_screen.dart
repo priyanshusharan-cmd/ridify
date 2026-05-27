@@ -388,13 +388,15 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
     double totalEarnings = 0;
     double totalSpending = 0;
 
+    final lowerUserEmail = widget.userEmail.trim().toLowerCase();
+    
     for (final ride in allRides) {
       if (ride['status'] == 'completed') {
-        final List dropped = ride['droppedPassengers'] as List? ?? [];
+        final List dropped = (ride['droppedPassengers'] as List?)?.map((e) => e.toString().toLowerCase()).toList() ?? [];
         final Map? riderDetails = ride['riderDetails'] as Map?;
         final double baseFare = double.tryParse(ride['fare'].toString()) ?? 0.0;
 
-        if (ride['riderEmail'] == widget.userEmail) {
+        if (ride['riderEmail']?.toString().toLowerCase().trim() == lowerUserEmail || ride['riderEmail'] == widget.userEmail) {
           for (final p in dropped) {
             if (riderDetails != null && riderDetails[p] != null) {
               totalEarnings += (riderDetails[p]['fare'] as num?)?.toDouble() ?? 0.0;
@@ -404,12 +406,15 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
               totalEarnings += baseFare * seats;
             }
           }
-        } else if (dropped.contains(widget.userEmail)) {
-          if (riderDetails != null && riderDetails[widget.userEmail] != null) {
-            totalSpending += (riderDetails[widget.userEmail]['fare'] as num?)?.toDouble() ?? 0.0;
+        } else if (dropped.contains(lowerUserEmail)) {
+          final uemailDot = lowerUserEmail.replaceAll('.', '_dot_');
+          final details = riderDetails?[lowerUserEmail] ?? riderDetails?[uemailDot];
+          
+          if (details != null && details['fare'] != null) {
+            totalSpending += (details['fare'] as num?)?.toDouble() ?? 0.0;
           } else {
             final Map? allocations = ride['seatAllocations'] as Map?;
-            final int mySeats = (allocations?[widget.userEmail] as num?)?.toInt() ?? 1;
+            final int mySeats = (allocations?[lowerUserEmail] as num?)?.toInt() ?? 1;
             totalSpending += baseFare * mySeats;
           }
         }
