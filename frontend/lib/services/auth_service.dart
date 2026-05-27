@@ -7,9 +7,12 @@ class AuthService {
     final response = await ApiClient.post('/api/auth/login', {'email': email, 'password': password});
     if (response.statusCode == 200) {
       final data = jsonDecode(response.body);
+      if (data['accessToken'] == null) {
+        throw Exception("Server did not return a JWT. Are you connected to the new backend?");
+      }
       await TokenService.saveTokens(
         accessToken: data['accessToken'],
-        refreshToken: data['refreshToken'],
+        refreshToken: data['refreshToken'] ?? '',
       );
       return data['user'];
     } else {
@@ -26,9 +29,12 @@ class AuthService {
     });
     if (response.statusCode == 201) {
       final data = jsonDecode(response.body);
+      if (data['accessToken'] == null) {
+        throw Exception("Server did not return a JWT. Are you connected to the new backend?");
+      }
       await TokenService.saveTokens(
         accessToken: data['accessToken'],
-        refreshToken: data['refreshToken'],
+        refreshToken: data['refreshToken'] ?? '',
       );
       return data['user'];
     } else {
