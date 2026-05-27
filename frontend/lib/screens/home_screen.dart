@@ -13,6 +13,9 @@ import '../widgets/home/action_card.dart';
 import '../widgets/home/earnings_display.dart';
 import '../widgets/home/safety_banner.dart';
 import '../widgets/home/ridify_app_bar_title.dart';
+import '../main.dart';
+import 'rider_completing_screen.dart';
+import 'driver_completing_screen.dart';
 
 // ─────────────────────────────────────────────────────────────────────────────
 //  Animation constants
@@ -209,10 +212,50 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
       if (data != null && data['ride'] != null) _upsertRide(Map<String, dynamic>.from(data['ride']));
     });
     _onSocket(socket, 'passenger_dropped', (data) {
-      if (data != null && data['ride'] != null) _upsertRide(Map<String, dynamic>.from(data['ride']));
+      if (data != null && data['ride'] != null) {
+        final ride = Map<String, dynamic>.from(data['ride']);
+        _upsertRide(ride);
+        final droppedUser = data['droppedUser']?.toString().toLowerCase().trim();
+        final myEmailLower = widget.userEmail.toLowerCase().trim();
+        if (droppedUser == myEmailLower) {
+          final rideId = ride['rideId'] ?? ride['_id'];
+          if (rideId != null && !navigatedRides.contains(rideId)) {
+            navigatedRides.add(rideId);
+            final ctx = navigatorKey.currentContext;
+            if (ctx != null) {
+              int fare = (data['fare'] as num?)?.toInt() ?? 0;
+              Navigator.of(ctx).push(MaterialPageRoute(
+                builder: (_) => RiderCompletingScreen(
+                  isDriver: false, rideId: rideId, myName: widget.userName, myEmail: widget.userEmail, fareAmount: fare, initialRideData: ride
+                )
+              ));
+            }
+          }
+        }
+      }
     });
     _onSocket(socket, 'passenger_kicked', (data) {
-      if (data != null && data['ride'] != null) _upsertRide(Map<String, dynamic>.from(data['ride']));
+      if (data != null && data['ride'] != null) {
+        final ride = Map<String, dynamic>.from(data['ride']);
+        _upsertRide(ride);
+        final kickedUser = data['kickedUser']?.toString().toLowerCase().trim();
+        final myEmailLower = widget.userEmail.toLowerCase().trim();
+        if (kickedUser == myEmailLower) {
+          final rideId = ride['rideId'] ?? ride['_id'];
+          if (rideId != null && !navigatedRides.contains(rideId)) {
+            navigatedRides.add(rideId);
+            final ctx = navigatorKey.currentContext;
+            if (ctx != null) {
+              showDialog(
+                context: ctx, barrierDismissible: false, builder: (_) => AlertDialog(
+                  title: const Text("Removed from Ride"), content: const Text("The driver has removed you from this ride."),
+                  actions: [TextButton(onPressed: () { Navigator.pop(ctx); Navigator.popUntil(ctx, (route) => route.isFirst); }, child: const Text("OK", style: TextStyle(color: Colors.red, fontWeight: FontWeight.bold)))],
+                )
+              );
+            }
+          }
+        }
+      }
     });
     _onSocket(socket, 'passenger_paid', (data) {
       if (data != null && data['ride'] != null) _upsertRide(Map<String, dynamic>.from(data['ride']));
@@ -221,9 +264,25 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
       if (data != null && data['ride'] != null) _upsertRide(Map<String, dynamic>.from(data['ride']));
     });
 
-    // ride_ended: only the DRIVER sees the green completion screen
-    // Riders are handled via passenger_dropped in live_tracking_screen
     _onSocket(socket, 'ride_ended', (data) {
+      if (data != null && data['ride'] != null) {
+        final ride = Map<String, dynamic>.from(data['ride']);
+        _upsertRide(ride);
+        final driverEmail = ride['riderEmail']?.toString().toLowerCase().trim();
+        final myEmailLower = widget.userEmail.toLowerCase().trim();
+        if (driverEmail == myEmailLower) {
+          final rideId = ride['rideId'] ?? ride['_id'];
+          if (rideId != null && !navigatedRides.contains(rideId)) {
+            navigatedRides.add(rideId);
+            final ctx = navigatorKey.currentContext;
+            if (ctx != null) {
+              Navigator.of(ctx).push(MaterialPageRoute(
+                builder: (_) => DriverCompletingScreen(rideId: rideId, initialRideData: ride)
+              ));
+            }
+          }
+        }
+      }
       fetchRides();
     });
 

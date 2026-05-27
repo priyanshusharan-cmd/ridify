@@ -12,6 +12,7 @@ import '../services/ride_service.dart';
 import '../services/location_service.dart';
 import 'rider_completing_screen.dart';
 import 'driver_completing_screen.dart';
+import '../main.dart';
 import '../widgets/live_tracking/animated_marker.dart';
 import '../widgets/live_tracking/ride_status_panel.dart';
 import '../widgets/live_tracking/next_stop_header.dart';
@@ -378,6 +379,8 @@ class _LiveTrackingScreenState extends State<LiveTrackingScreen> {
     if (_isNavigatingToCompletion || !mounted) {
       return;
     }
+    if (navigatedRides.contains(widget.rideId)) return;
+    navigatedRides.add(widget.rideId);
     _isNavigatingToCompletion = true;
     // Delay to ensure dialog is fully closed and context is stable
     Future.delayed(const Duration(milliseconds: 100), () {
@@ -391,6 +394,8 @@ class _LiveTrackingScreenState extends State<LiveTrackingScreen> {
   // Rider payment screen after drop-off
   void _triggerPaymentScreen(int fareAmount) {
     if (_isNavigatingToCompletion || !mounted) return;
+    if (navigatedRides.contains(widget.rideId)) return;
+    navigatedRides.add(widget.rideId);
     _isNavigatingToCompletion = true;
     Future.delayed(const Duration(milliseconds: 100), () {
       if (!mounted) return;
