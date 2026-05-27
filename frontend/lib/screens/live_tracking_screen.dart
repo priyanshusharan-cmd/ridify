@@ -141,15 +141,14 @@ class _LiveTrackingScreenState extends State<LiveTrackingScreen> {
       points.add(myPosition!);
     }
     
-    if (points.length == 1) {
-      mapController.move(driverPosition!, 15.0);
-      return;
-    }
-    
     try {
+      if (points.length == 1) {
+        mapController.move(driverPosition!, 15.0);
+        return;
+      }
       mapController.fitCamera(CameraFit.bounds(bounds: LatLngBounds.fromPoints(points), padding: const EdgeInsets.all(80.0)));
     } catch (_) {
-      mapController.move(driverPosition!, 15.0);
+      try { mapController.move(driverPosition!, 15.0); } catch (_) {}
     }
   }
 

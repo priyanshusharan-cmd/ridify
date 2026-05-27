@@ -143,13 +143,13 @@ class RideHistoryCard extends StatelessWidget {
     }
 
     int paxCount = 0;
+    Set<String> allInRide = {};
     if (wasDeclined || wasKicked || isCancelled) {
       paxCount = 0;
     } else if (wasIDriver) {
       Set<String> kickedSet = {};
       for (var p in (ride['kicked'] ?? [])) kickedSet.add(p.toString().toLowerCase());
       
-      Set<String> allInRide = {};
       for (var p in (ride['boardedPassengers'] ?? [])) if (!kickedSet.contains(p.toString().toLowerCase())) allInRide.add(p.toString().toLowerCase());
       for (var p in (ride['droppedPassengers'] ?? [])) if (!kickedSet.contains(p.toString().toLowerCase())) allInRide.add(p.toString().toLowerCase());
       for (var p in (ride['passengers'] ?? [])) if (!kickedSet.contains(p.toString().toLowerCase())) allInRide.add(p.toString().toLowerCase());
