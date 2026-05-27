@@ -173,10 +173,26 @@ class OfferedRideCard extends StatelessWidget {
                     ],
                   ),
                   const SizedBox(height: 20),
-                  TimelineAddress(
-                    pickup: ride['pickupLocation']?.toString(),
-                    destination: ride['destination']?.toString(),
-                    isDark: isDark,
+                  Builder(
+                    builder: (context) {
+                      String pickup = ride['pickupLocation']?.toString() ?? '';
+                      String destination = ride['destination']?.toString() ?? '';
+                      
+                      if (userEmail != null) {
+                        String emailLower = userEmail!.trim().toLowerCase();
+                        Map<String, dynamic>? details = ride['riderDetails']?[emailLower];
+                        if (details != null) {
+                          pickup = details['pickup']?.toString() ?? pickup;
+                          destination = details['destination']?.toString() ?? destination;
+                        }
+                      }
+                      
+                      return TimelineAddress(
+                        pickup: pickup,
+                        destination: destination,
+                        isDark: isDark,
+                      );
+                    },
                   ),
                 ],
               ),

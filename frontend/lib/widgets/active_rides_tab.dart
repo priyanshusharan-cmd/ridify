@@ -373,6 +373,7 @@ class _ActiveRidesTabState extends State<ActiveRidesTab> {
                 (r) => OfferedRideCard(
                   ride: r,
                   isOngoing: true,
+                  userEmail: widget.myEmail,
                   onTap: () => _openMap(r),
                   onOpenMap: () => _openMap(r),
                 )
