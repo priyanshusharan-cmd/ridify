@@ -164,12 +164,36 @@ class RideHistoryCard extends StatelessWidget {
     if (wasDeclined || wasKicked) {
       fare = "0";
     } else if (isCancelled) {
-      // For cancelled rides: driver gets 0 too since nobody paid
       fare = "0";
-    } else if (!wasIDriver && (ride['riderDetails']?[uemail]?['fare'] != null || ride['riderDetails']?[uemailDot]?['fare'] != null)) {
-      // For riders: show THEIR computed fare, not the ride's global fare
+    } else if (wasIDriver) {
+      double driverTotalEarned = 0;
+      Set<String> validPassengers = {};
+      for (var p in (ride['passengers'] ?? [])) validPassengers.add(p.toString().toLowerCase());
+      for (var p in (ride['boardedPassengers'] ?? [])) validPassengers.add(p.toString().toLowerCase());
+      for (var p in (ride['droppedPassengers'] ?? [])) validPassengers.add(p.toString().toLowerCase());
+      
+      Map<String, dynamic> rDetails = ride['riderDetails'] ?? {};
+      for (String pEmail in rDetails.keys) {
+        String pEmailLower = pEmail.toLowerCase();
+        if (validPassengers.contains(pEmailLower) && !wasKicked) {
+           bool isPKicked = getLowerList('kicked').contains(pEmailLower);
+           if (!isPKicked) {
+             double pFarePerSeat = double.tryParse(rDetails[pEmail]['fare']?.toString() ?? '0') ?? 0;
+             if (pFarePerSeat == 0) {
+               pFarePerSeat = double.tryParse(ride['fare']?.toString() ?? '0') ?? 0;
+             }
+             int seats = int.tryParse(rDetails[pEmail]['seats']?.toString() ?? '1') ?? 1;
+             driverTotalEarned += (pFarePerSeat * seats);
+           }
+        }
+      }
+      fare = driverTotalEarned.toInt().toString();
+    } else if (ride['riderDetails']?[uemail]?['fare'] != null || ride['riderDetails']?[uemailDot]?['fare'] != null) {
+      // For riders: show THEIR computed fare, multiplied by seats they booked
       final details = ride['riderDetails']?[uemail] ?? ride['riderDetails']?[uemailDot];
-      fare = details['fare'].toString();
+      double pFarePerSeat = double.tryParse(details['fare'].toString()) ?? 0.0;
+      int seats = int.tryParse(details['seats']?.toString() ?? '1') ?? 1;
+      fare = (pFarePerSeat * seats).toInt().toString();
     } else {
       fare = ride['fare']?.toString() ?? '0';
     }

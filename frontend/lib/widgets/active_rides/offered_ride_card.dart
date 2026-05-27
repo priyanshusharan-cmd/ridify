@@ -71,6 +71,7 @@ class OfferedRideCard extends StatelessWidget {
   final Map<String, dynamic> ride;
   final bool isDetail;
   final bool isOngoing;
+  final String? userEmail;
   final VoidCallback? onTap;
   final VoidCallback? onCancelOffer;
   final VoidCallback? onOpenMap;
@@ -80,6 +81,7 @@ class OfferedRideCard extends StatelessWidget {
     required this.ride,
     this.isDetail = false,
     this.isOngoing = false,
+    this.userEmail,
     this.onTap,
     this.onCancelOffer,
     this.onOpenMap,

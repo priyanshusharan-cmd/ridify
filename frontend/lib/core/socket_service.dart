@@ -25,7 +25,7 @@ class SocketService {
   io.Socket _createSocket() {
     final accessToken = _accessToken ?? '';
     final s = io.io(kBaseUrl, <String, dynamic>{
-      'transports': ['websocket'],
+      'transports': ['websocket', 'polling'],
       'autoConnect': false, // Don't auto-connect until token is set
       'forceNew': false,
       'auth': {'token': accessToken},

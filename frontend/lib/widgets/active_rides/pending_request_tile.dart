@@ -71,11 +71,19 @@ class PendingRequestTile extends StatelessWidget {
               ),
             ],
           ),
-          const SizedBox(height: 16),
-          TimelineAddress(
-            pickup: request['pickupLocation']?.toString(),
-            destination: request['destination']?.toString(),
-            isDark: isDark,
+          Builder(
+            builder: (context) {
+              final String myEmailLower = myEmail.trim().toLowerCase();
+              final Map<String, dynamic>? myDetails = request['riderDetails']?[myEmailLower];
+              final String pickup = myDetails?['pickup']?.toString() ?? request['pickupLocation']?.toString() ?? '';
+              final String destination = myDetails?['destination']?.toString() ?? request['destination']?.toString() ?? '';
+
+              return TimelineAddress(
+                pickup: pickup,
+                destination: destination,
+                isDark: isDark,
+              );
+            }
           ),
         ],
       ),
