@@ -110,8 +110,9 @@ exports.searchRides = async (req, res) => {
         const effectiveRadius = searchRadius + pointSpacing;
 
         if (minPickupDist <= effectiveRadius && minDestDist <= effectiveRadius && startIndex < endIndex) {
-          // Skip rides where the searching user has already been declined, kicked, or is already a passenger/requester
+          // Skip rides where the searching user is the driver, or has been declined, kicked, or is already a passenger/requester
           if (userEmail) {
+            if (ride.riderEmail === userEmail) continue;
             if ((ride.declined || []).includes(userEmail)) continue;
             if ((ride.kicked || []).includes(userEmail)) continue;
             if ((ride.passengers || []).includes(userEmail)) continue;
