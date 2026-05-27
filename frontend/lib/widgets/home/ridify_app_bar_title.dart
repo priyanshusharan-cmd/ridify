@@ -16,6 +16,7 @@ class RidifyAppBarTitle extends StatelessWidget {
   final bool isVictoryLapRunning;
   final double ridifyTextWidth;
   final double parkingX;
+  final VoidCallback? onCarTapped;
 
   const RidifyAppBarTitle({
     super.key,
@@ -24,6 +25,7 @@ class RidifyAppBarTitle extends StatelessWidget {
     required this.isVictoryLapRunning,
     required this.ridifyTextWidth,
     required this.parkingX,
+    this.onCarTapped,
   });
 
   static double _carX(double progress, double screenWidth, double parkingX) {
@@ -103,13 +105,16 @@ class RidifyAppBarTitle extends StatelessWidget {
                 ),
                 Transform.translate(
                   offset: Offset(carX, 0),
-                  child: ClipRRect(
-                    borderRadius: BorderRadius.circular(10),
-                    child: Image.asset(
-                      'assets/iconWithoutBackground.png',
-                      width: _kCarW,
-                      height: _kCarH,
-                      fit: BoxFit.cover,
+                  child: GestureDetector(
+                    onTap: onCarTapped,
+                    child: ClipRRect(
+                      borderRadius: BorderRadius.circular(10),
+                      child: Image.asset(
+                        'assets/iconWithoutBackground.png',
+                        width: _kCarW,
+                        height: _kCarH,
+                        fit: BoxFit.cover,
+                      ),
                     ),
                   ),
                 ),

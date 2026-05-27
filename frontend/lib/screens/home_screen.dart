@@ -153,6 +153,21 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
 
   // ── Victory Lap trigger ────────────────────────────────────────────────────
 
+  void _handleEasterEggTap() {
+    final now = DateTime.now();
+    if (now.difference(_lastHomeTapTime).inMilliseconds < 500) {
+      _homeTapCount++;
+    } else {
+      _homeTapCount = 1;
+    }
+    _lastHomeTapTime = now;
+    
+    if (_homeTapCount >= 3) {
+      _triggerVictoryLap();
+      _homeTapCount = 0;
+    }
+  }
+
   /// Starts the victory lap.  Silently ignored if:
   ///   • The startup animation is still playing (car is busy).
   ///   • A victory lap is already in progress (anti-spam guard).
@@ -353,6 +368,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
           isVictoryLapRunning: _isVictoryLapRunning,
           ridifyTextWidth: _ridifyTextWidth,
           parkingX: _parkingX,
+          onCarTapped: _handleEasterEggTap,
         ),
         actions: [
           if (kAdminEmails.contains(widget.userEmail.toLowerCase()))
@@ -415,18 +431,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
           // If the user is already on the Home tab and taps Home rapidly 3 times,
           // trigger the Victory Lap.
           if (index == 0 && _currentIndex == 0) {
-            final now = DateTime.now();
-            if (now.difference(_lastHomeTapTime).inMilliseconds < 500) {
-              _homeTapCount++;
-            } else {
-              _homeTapCount = 1;
-            }
-            _lastHomeTapTime = now;
-            
-            if (_homeTapCount >= 3) {
-              _triggerVictoryLap();
-              _homeTapCount = 0;
-            }
+            _handleEasterEggTap();
             return; // don't call setState – we're already on index 0
           }
           setState(() => _currentIndex = index);
