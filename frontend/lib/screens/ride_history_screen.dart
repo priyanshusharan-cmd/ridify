@@ -33,7 +33,7 @@ class RideHistoryScreen extends StatelessWidget {
           isDeclined || isKicked;
 
       return isFinished && (amIDriver || amIRider);
-    }).toList().reversed.toList();
+    }).toList();
 
     final isDark = Theme.of(context).brightness == Brightness.dark;
     return Scaffold(

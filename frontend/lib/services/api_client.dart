@@ -42,8 +42,11 @@ class ApiClient {
     return _handleResponse(response, path, 'PATCH', body);
   }
 
-  static Future<http.Response> delete(String path, [Map<String, dynamic>? body]) async {
+  static Future<http.Response> delete(String path, {Map<String, dynamic>? body, Map<String, String>? customHeaders}) async {
     final headers = await _authHeaders();
+    if (customHeaders != null) {
+      headers.addAll(customHeaders);
+    }
     final response = await http.delete(
       Uri.parse('$kBaseUrl$path'),
       headers: headers,

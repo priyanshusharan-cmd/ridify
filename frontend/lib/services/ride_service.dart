@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'api_client.dart';
 
 class RideService {
@@ -159,7 +160,11 @@ class RideService {
   }
 
   static Future<void> adminDeleteAllRides(String adminEmail) async {
-    final response = await ApiClient.delete('/api/rides/all');
+    final secret = dotenv.env['ADMIN_SECRET'] ?? '';
+    final response = await ApiClient.delete(
+      '/api/rides',
+      customHeaders: {'x-admin-secret': secret},
+    );
     if (response.statusCode != 200) {
       throw Exception(jsonDecode(response.body)['error'] ?? 'Could not wipe database.');
     }
