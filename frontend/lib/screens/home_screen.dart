@@ -161,16 +161,17 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
   }
 
   // ── Data fetching ──────────────────────────────────────────────────────────
-  /// Update a single ride in the local list (avoids re-fetching ALL rides)
   void _upsertRide(Map<String, dynamic> rideData) {
     if (!mounted) return;
     setState(() {
-      final idx = allRides.indexWhere((r) => r['_id'].toString() == rideData['_id'].toString());
+      final newList = List<dynamic>.from(allRides);
+      final idx = newList.indexWhere((r) => r['_id'].toString() == rideData['_id'].toString());
       if (idx >= 0) {
-        allRides[idx] = rideData;
+        newList[idx] = rideData;
       } else {
-        allRides.add(rideData);
+        newList.add(rideData);
       }
+      allRides = newList;
     });
   }
 
@@ -268,7 +269,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
         onRefresh: fetchRides,
         onGoHome: () => setState(() => _currentIndex = 0),
       ),
-      RideHistoryScreen(userName: widget.userName, userEmail: widget.userEmail),
+      RideHistoryScreen(userName: widget.userName, userEmail: widget.userEmail, allRides: allRides),
       ProfileScreen(
         userName: widget.userName,
         userAge: widget.userAge,

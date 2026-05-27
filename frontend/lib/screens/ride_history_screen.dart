@@ -2,71 +2,35 @@ import 'package:flutter/material.dart';
 import '../services/ride_service.dart';
 import '../widgets/history/ride_history_card.dart';
 
-class RideHistoryScreen extends StatefulWidget {
+class RideHistoryScreen extends StatelessWidget {
   final String userName;
   final String userEmail;
-  const RideHistoryScreen({super.key, required this.userName, required this.userEmail});
+  final List<dynamic> allRides;
 
-  @override
-  State<RideHistoryScreen> createState() => _RideHistoryScreenState();
-}
-
-class _RideHistoryScreenState extends State<RideHistoryScreen> {
-  List<dynamic> myCompletedRides = [];
-  bool isLoading = true;
-
-  @override
-  void initState() {
-    super.initState();
-    fetchRideHistory();
-  }
-
-  Future<void> fetchRideHistory() async {
-    try {
-      final allRides = await RideService.getAllRides();
-      if (mounted) {
-        setState(() {
-          myCompletedRides = allRides
-              .where((r) {
-                String uemail = widget.userEmail.trim();
-                bool isDeclined =
-                    r['declined'] != null &&
-                    (r['declined'] as List).contains(uemail);
-                bool isKicked =
-                    r['kicked'] != null &&
-                    (r['kicked'] as List).contains(uemail);
-                bool isFinished =
-                    r['status'] == 'completed' ||
-                    r['status'] == 'cancelled' ||
-                    isDeclined ||
-                    isKicked;
-
-                bool amIDriver =
-                    r['riderEmail'] != null &&
-                    r['riderEmail'].toString().trim() == uemail;
-                bool amIRider =
-                    (r['passengers'] != null && (r['passengers'] as List).contains(uemail)) ||
-                    (r['boardedPassengers'] != null && (r['boardedPassengers'] as List).contains(uemail)) ||
-                    (r['droppedPassengers'] != null && (r['droppedPassengers'] as List).contains(uemail)) ||
-                    isDeclined ||
-                    isKicked;
-
-                return isFinished && (amIDriver || amIRider);
-              })
-              .toList()
-              .reversed
-              .toList();
-        });
-      }
-    } catch (e) {
-      debugPrint("Error fetching history: $e");
-    } finally {
-      if (mounted) setState(() => isLoading = false);
-    }
-  }
+  const RideHistoryScreen({
+    super.key, 
+    required this.userName, 
+    required this.userEmail,
+    required this.allRides,
+  });
 
   @override
   Widget build(BuildContext context) {
+    String uemail = userEmail.trim();
+    List<dynamic> myCompletedRides = allRides.where((r) {
+      bool isDeclined = r['declined'] != null && (r['declined'] as List).contains(uemail);
+      bool isKicked = r['kicked'] != null && (r['kicked'] as List).contains(uemail);
+      bool isFinished = r['status'] == 'completed' || r['status'] == 'cancelled' || isDeclined || isKicked;
+
+      bool amIDriver = r['riderEmail'] != null && r['riderEmail'].toString().trim() == uemail;
+      bool amIRider = (r['passengers'] != null && (r['passengers'] as List).contains(uemail)) ||
+          (r['boardedPassengers'] != null && (r['boardedPassengers'] as List).contains(uemail)) ||
+          (r['droppedPassengers'] != null && (r['droppedPassengers'] as List).contains(uemail)) ||
+          isDeclined || isKicked;
+
+      return isFinished && (amIDriver || amIRider);
+    }).toList().reversed.toList();
+
     final isDark = Theme.of(context).brightness == Brightness.dark;
     return Scaffold(
       backgroundColor: isDark ? const Color(0xFF111111) : const Color(0xFFF5F5F5),

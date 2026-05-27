@@ -190,7 +190,8 @@ class _ChatScreenState extends State<ChatScreen> {
               padding: const EdgeInsets.all(20),
               itemCount: messages.length,
               itemBuilder: (context, index) {
-                bool isMe = messages[index]['senderEmail'] == widget.myEmail;
+                final msg = messages[index];
+                final bool isMe = (msg['senderEmail']?.toString().toLowerCase().trim() ?? '') == widget.myEmail.toLowerCase().trim();
                 return Align(
                   alignment: isMe
                       ? Alignment.centerRight
