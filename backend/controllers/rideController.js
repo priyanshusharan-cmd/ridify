@@ -555,22 +555,34 @@ exports.acceptRider = async (req, res) => {
       // Build occupancy at every event boundary:
       let isFull = false;
       if (ride.passengers.length > 0 && segChanges.length > 0) {
-        // Track occupancy at every transition.  The ride is "full" only if
-        // occupancy >= totalSeats at EVERY point between the first start and last end.
-        let occ = 0;
-        let allFull = true;
-        for (let i = 0; i < segChanges.length; i++) {
-          occ += segChanges[i].change;
-          // Check between this event and the next one (or end)
-          if (i < segChanges.length - 1 && segChanges[i + 1].index > segChanges[i].index) {
-            // There's a span between this index and the next — check if full
-            if (occ < ride.totalSeats) {
-              allFull = false;
-              break;
+        const routeLength = (ride.routePath || []).length;
+        // The first event is the earliest passenger pickup index.
+        // If it's > 0, the segment [0, firstEvent) has 0 occupancy → not full.
+        const firstEventIndex = segChanges[0].index;
+        // After processing all events, occupancy returns to 0.
+        // The last event is the latest drop-off. If it's before the route end,
+        // the segment [lastEvent, routeEnd) has 0 occupancy → not full.
+        const lastEventIndex = segChanges[segChanges.length - 1].index;
+
+        if (firstEventIndex > 0 || lastEventIndex < routeLength - 1) {
+          // There are uncovered segments at the start/end of the route
+          // where occupancy is 0, so the ride is NOT full.
+          isFull = false;
+        } else {
+          // All events span the entire route — check each segment between events
+          let occ = 0;
+          let allFull = true;
+          for (let i = 0; i < segChanges.length; i++) {
+            occ += segChanges[i].change;
+            if (i < segChanges.length - 1 && segChanges[i + 1].index > segChanges[i].index) {
+              if (occ < ride.totalSeats) {
+                allFull = false;
+                break;
+              }
             }
           }
+          isFull = allFull && maxOccupancy >= ride.totalSeats;
         }
-        isFull = allFull && maxOccupancy >= ride.totalSeats;
       }
       if (isFull) {
         ride.status = 'full';
