@@ -6,7 +6,7 @@ import 'offer_ride_screen.dart';
 import 'profile_screen.dart';
 import 'ride_history_screen.dart';
 import '../widgets/active_rides_tab.dart';
-import '../core/constants.dart';
+
 import '../services/ride_service.dart';
 import '../services/token_service.dart';
 import '../widgets/home/action_card.dart';
