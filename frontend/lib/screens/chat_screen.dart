@@ -504,23 +504,31 @@ class _ChatScreenState extends State<ChatScreen> {
                   ),
                 ),
                 const SizedBox(width: 10),
-                IconButton(
-                  onPressed: _sendLocation,
-                  icon: const Icon(Icons.location_on, color: Colors.white),
-                  style: IconButton.styleFrom(
-                    backgroundColor: sendButtonColor,
-                    minimumSize: const Size(50, 50),
-                    shape: const CircleBorder(),
+                Material(
+                  color: sendButtonColor,
+                  shape: const CircleBorder(),
+                  clipBehavior: Clip.hardEdge,
+                  child: InkWell(
+                    onTap: _sendLocation,
+                    child: const SizedBox(
+                      width: 50,
+                      height: 50,
+                      child: Icon(Icons.location_on, color: Colors.white),
+                    ),
                   ),
                 ),
                 const SizedBox(width: 10),
-                IconButton(
-                  onPressed: sendMessage,
-                  icon: const Icon(Icons.send, color: Colors.white),
-                  style: IconButton.styleFrom(
-                    backgroundColor: sendButtonColor,
-                    minimumSize: const Size(50, 50),
-                    shape: const CircleBorder(),
+                Material(
+                  color: sendButtonColor,
+                  shape: const CircleBorder(),
+                  clipBehavior: Clip.hardEdge,
+                  child: InkWell(
+                    onTap: sendMessage,
+                    child: const SizedBox(
+                      width: 50,
+                      height: 50,
+                      child: Icon(Icons.send, color: Colors.white),
+                    ),
                   ),
                 ),
               ],
