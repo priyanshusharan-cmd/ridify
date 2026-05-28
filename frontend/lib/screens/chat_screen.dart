@@ -32,6 +32,7 @@ class _ChatScreenState extends State<ChatScreen> {
   final ScrollController _scrollController = ScrollController();
   final List<Map<String, dynamic>> messages = [];
   final List<MapEntry<String, void Function(dynamic)>> _socketListeners = [];
+  Map<String, dynamic>? replyToMessage;
 
   void _on(String event, void Function(dynamic) handler) {
     socket.on(event, handler);
@@ -115,9 +116,11 @@ class _ChatScreenState extends State<ChatScreen> {
     _controller.clear();
 
     final timeString = TimeOfDay.now().format(context);
+    final replyTo = replyToMessage;
+    setState(() => replyToMessage = null);
 
     try {
-      await ChatService.sendMessage(widget.rideId, widget.myName, widget.myEmail, text, timeString);
+      await ChatService.sendMessage(widget.rideId, widget.myName, widget.myEmail, text, timeString, replyTo: replyTo);
     } catch (e) {
       debugPrint(e.toString());
     }
@@ -139,7 +142,10 @@ class _ChatScreenState extends State<ChatScreen> {
       
       final text = "LOCATION:${position.latitude},${position.longitude}";
       final timeString = TimeOfDay.now().format(context);
-      await ChatService.sendMessage(widget.rideId, widget.myName, widget.myEmail, text, timeString);
+      final replyTo = replyToMessage;
+      setState(() => replyToMessage = null);
+      
+      await ChatService.sendMessage(widget.rideId, widget.myName, widget.myEmail, text, timeString, replyTo: replyTo);
     } catch (e) {
       debugPrint(e.toString());
     }
@@ -217,7 +223,19 @@ class _ChatScreenState extends State<ChatScreen> {
               itemBuilder: (context, index) {
                 final msg = messages[index];
                 final bool isMe = (msg['senderEmail']?.toString().toLowerCase().trim() ?? '') == widget.myEmail.toLowerCase().trim();
-                return Align(
+                return Dismissible(
+                  key: ValueKey(msg['timestamp'] ?? index.toString()),
+                  direction: DismissDirection.startToEnd,
+                  confirmDismiss: (_) async {
+                    setState(() {
+                      replyToMessage = {
+                        'sender': msg['sender'],
+                        'text': msg['text'],
+                      };
+                    });
+                    return false;
+                  },
+                  child: Align(
                   alignment: isMe
                       ? Alignment.centerRight
                       : Alignment.centerLeft,
@@ -247,6 +265,32 @@ class _ChatScreenState extends State<ChatScreen> {
                                 fontSize: 12,
                                 fontWeight: FontWeight.bold,
                               ),
+                            ),
+                          ),
+                        if (msg['replyTo'] != null)
+                          Container(
+                            margin: const EdgeInsets.only(bottom: 6),
+                            padding: const EdgeInsets.all(8),
+                            decoration: BoxDecoration(
+                              color: isDark ? Colors.black26 : Colors.black12,
+                              borderRadius: BorderRadius.circular(8),
+                              border: Border(left: BorderSide(color: isMe ? Colors.white54 : Colors.blueAccent, width: 4)),
+                            ),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  msg['replyTo']['sender'] ?? 'Unknown',
+                                  style: TextStyle(color: isMe ? Colors.white70 : Colors.blue[800], fontSize: 11, fontWeight: FontWeight.bold),
+                                ),
+                                const SizedBox(height: 2),
+                                Text(
+                                  msg['replyTo']['text']?.toString().startsWith('LOCATION:') == true ? '📍 Location' : (msg['replyTo']['text'] ?? ''),
+                                  maxLines: 1,
+                                  overflow: TextOverflow.ellipsis,
+                                  style: TextStyle(color: isMe ? Colors.white60 : Colors.black54, fontSize: 11),
+                                ),
+                              ],
                             ),
                           ),
                         Builder(
@@ -348,11 +392,40 @@ class _ChatScreenState extends State<ChatScreen> {
                         ),
                       ],
                     ),
+                    ),
                   ),
                 );
               },
             ),
           ),
+          if (replyToMessage != null)
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+              color: isDark ? const Color(0xFF2C2C2C) : Colors.grey[200],
+              child: Row(
+                children: [
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text("Replying to ${replyToMessage!['sender']}", style: TextStyle(color: isDark ? Colors.blue[300] : Colors.blue[800], fontSize: 12, fontWeight: FontWeight.bold)),
+                        const SizedBox(height: 2),
+                        Text(
+                          replyToMessage!['text']?.toString().startsWith('LOCATION:') == true ? '📍 Location' : (replyToMessage!['text'] ?? ''),
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                          style: TextStyle(color: isDark ? Colors.white70 : Colors.black87, fontSize: 13),
+                        ),
+                      ],
+                    ),
+                  ),
+                  IconButton(
+                    icon: Icon(Icons.close, color: isDark ? Colors.white54 : Colors.black54, size: 20),
+                    onPressed: () => setState(() => replyToMessage = null),
+                  ),
+                ],
+              ),
+            ),
           Container(
             padding: const EdgeInsets.all(15),
             color: inputBgColor,

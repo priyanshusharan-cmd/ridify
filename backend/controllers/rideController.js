@@ -1004,7 +1004,7 @@ exports.endRide = async (req, res) => {
 // ── Chat — scoped emit ──────────────────────────────────────────────────────
 exports.sendChatMessage = async (req, res) => {
   try {
-    const { text, timestamp } = req.body;
+    const { text, timestamp, replyTo } = req.body;
     if (!text || !text.trim()) {
       return res.status(400).json({ error: "Text is required." });
     }
@@ -1035,9 +1035,9 @@ exports.sendChatMessage = async (req, res) => {
     if (!isDriver && !isPassenger && !isBoarded) {
       return res.status(403).json({ error: 'Only ride participants can send messages.' });
     }
-    ride.chatMessages.push({ sender: sender.trim(), senderEmail: normalizedEmail, text: trimmedText, timestamp });
+    ride.chatMessages.push({ sender: sender.trim(), senderEmail: normalizedEmail, text: trimmedText, timestamp, replyTo });
     await ride.save();
-    req.io.to(req.params.id).emit('receive_message', { rideId: req.params.id, sender: sender.trim(), senderEmail: normalizedEmail, text: trimmedText, timestamp });
+    req.io.to(req.params.id).emit('receive_message', { rideId: req.params.id, sender: sender.trim(), senderEmail: normalizedEmail, text: trimmedText, timestamp, replyTo });
     res.status(200).json({ success: true });
   } catch (err) { res.status(500).json({ error: err.message }); }
 };

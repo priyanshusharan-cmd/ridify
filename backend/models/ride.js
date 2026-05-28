@@ -67,6 +67,10 @@ const RideSchema = new mongoose.Schema({
       senderEmail: { type: String, maxlength: 200 },
       text: { type: String, maxlength: CHAT_MAX_LENGTH },
       timestamp: String,
+      replyTo: {
+        sender: String,
+        text: String
+      }
     }],
     validate: [arr => arr.length <= 500, 'Chat history limit reached (max 500 messages)'],
   },
