@@ -511,6 +511,8 @@ class _ChatScreenState extends State<ChatScreen> {
                   clipBehavior: Clip.hardEdge,
                   child: InkWell(
                     onTap: _sendLocation,
+                    splashColor: Colors.white.withValues(alpha: 0.3),
+                    highlightColor: Colors.white.withValues(alpha: 0.1),
                     child: const SizedBox(
                       width: 50,
                       height: 50,
@@ -525,6 +527,8 @@ class _ChatScreenState extends State<ChatScreen> {
                   clipBehavior: Clip.hardEdge,
                   child: InkWell(
                     onTap: sendMessage,
+                    splashColor: Colors.white.withValues(alpha: 0.3),
+                    highlightColor: Colors.white.withValues(alpha: 0.1),
                     child: const SizedBox(
                       width: 50,
                       height: 50,
