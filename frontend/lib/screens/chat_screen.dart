@@ -336,6 +336,7 @@ class _ChatScreenState extends State<ChatScreen> {
                                   return Align(
                                     alignment: isMe ? Alignment.centerRight : Alignment.centerLeft,
                                     child: GestureDetector(
+                                      behavior: HitTestBehavior.opaque,
                                       onTap: () async {
                                         final url = Uri.parse("https://www.google.com/maps/search/?api=1&query=$lat,$lng");
                                         if (await canLaunchUrl(url)) {
