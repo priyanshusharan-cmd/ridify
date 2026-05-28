@@ -496,21 +496,23 @@ class _ChatScreenState extends State<ChatScreen> {
                   ),
                 ),
                 const SizedBox(width: 10),
-                GestureDetector(
-                  onTap: _sendLocation,
-                  child: CircleAvatar(
-                    radius: 25,
+                IconButton(
+                  onPressed: _sendLocation,
+                  icon: const Icon(Icons.location_on, color: Colors.white),
+                  style: IconButton.styleFrom(
                     backgroundColor: sendButtonColor,
-                    child: const Icon(Icons.location_on, color: Colors.white),
+                    minimumSize: const Size(50, 50),
+                    shape: const CircleBorder(),
                   ),
                 ),
                 const SizedBox(width: 10),
-                GestureDetector(
-                  onTap: sendMessage,
-                  child: CircleAvatar(
-                    radius: 25,
+                IconButton(
+                  onPressed: sendMessage,
+                  icon: const Icon(Icons.send, color: Colors.white),
+                  style: IconButton.styleFrom(
                     backgroundColor: sendButtonColor,
-                    child: const Icon(Icons.send, color: Colors.white),
+                    minimumSize: const Size(50, 50),
+                    shape: const CircleBorder(),
                   ),
                 ),
               ],
