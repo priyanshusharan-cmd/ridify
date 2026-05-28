@@ -6,7 +6,8 @@ import '../core/socket_service.dart';
 import '../core/constants.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:geolocator/geolocator.dart';
-
+import 'package:flutter_map/flutter_map.dart';
+import 'package:latlong2/latlong.dart';
 class ChatScreen extends StatefulWidget {
   final String myName;
   final String myEmail;
@@ -252,37 +253,81 @@ class _ChatScreenState extends State<ChatScreen> {
                           builder: (context) {
                             final text = messages[index]['text'] ?? "";
                             if (text.startsWith("LOCATION:")) {
-                              return GestureDetector(
-                                onTap: () async {
-                                  final coords = text.substring(9).split(',');
-                                  if (coords.length == 2) {
-                                    final url = Uri.parse("https://www.google.com/maps/search/?api=1&query=${coords[0]},${coords[1]}");
-                                    if (await canLaunchUrl(url)) {
-                                      await launchUrl(url, mode: LaunchMode.externalApplication);
-                                    }
-                                  }
-                                },
-                                child: Padding(
-                                  padding: const EdgeInsets.symmetric(vertical: 4.0),
-                                  child: Row(
-                                    mainAxisSize: MainAxisSize.min,
-                                    children: [
-                                      Icon(Icons.location_on, color: isMe ? myTextColor : otherTextColor, size: 20),
-                                      const SizedBox(width: 6),
-                                      Text(
-                                        "Shared Location",
-                                        style: TextStyle(
-                                          color: isMe ? myTextColor : otherTextColor,
-                                          fontSize: 15,
-                                          fontWeight: FontWeight.w600,
-                                          decoration: TextDecoration.underline,
-                                          decorationColor: isMe ? myTextColor : otherTextColor,
-                                        ),
+                              final coords = text.substring(9).split(',');
+                              if (coords.length == 2) {
+                                final lat = double.tryParse(coords[0]);
+                                final lng = double.tryParse(coords[1]);
+                                if (lat != null && lng != null) {
+                                  return GestureDetector(
+                                    onTap: () async {
+                                      final url = Uri.parse("https://www.google.com/maps/search/?api=1&query=$lat,$lng");
+                                      if (await canLaunchUrl(url)) {
+                                        await launchUrl(url, mode: LaunchMode.externalApplication);
+                                      }
+                                    },
+                                    child: Container(
+                                      height: 150,
+                                      width: 250,
+                                      margin: const EdgeInsets.only(top: 4.0, bottom: 4.0),
+                                      clipBehavior: Clip.hardEdge,
+                                      decoration: BoxDecoration(
+                                        borderRadius: BorderRadius.circular(12),
                                       ),
-                                    ],
-                                  ),
-                                ),
-                              );
+                                      child: Stack(
+                                        children: [
+                                          IgnorePointer(
+                                            child: FlutterMap(
+                                              options: MapOptions(
+                                                initialCenter: LatLng(lat, lng),
+                                                initialZoom: 15.0,
+                                                interactionOptions: const InteractionOptions(flags: InteractiveFlag.none),
+                                              ),
+                                              children: [
+                                                TileLayer(
+                                                  urlTemplate: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
+                                                  userAgentPackageName: 'com.example.ridify',
+                                                ),
+                                                MarkerLayer(
+                                                  markers: [
+                                                    Marker(
+                                                      point: LatLng(lat, lng),
+                                                      width: 40,
+                                                      height: 40,
+                                                      child: const Icon(Icons.location_on, color: Colors.red, size: 40),
+                                                    ),
+                                                  ],
+                                                ),
+                                              ],
+                                            ),
+                                          ),
+                                          Positioned(
+                                            bottom: 0,
+                                            left: 0,
+                                            right: 0,
+                                            child: Container(
+                                              padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 10),
+                                              decoration: BoxDecoration(
+                                                gradient: LinearGradient(
+                                                  begin: Alignment.bottomCenter,
+                                                  end: Alignment.topCenter,
+                                                  colors: [Colors.black.withValues(alpha: 0.7), Colors.transparent],
+                                                ),
+                                              ),
+                                              child: const Row(
+                                                children: [
+                                                  Icon(Icons.location_on, color: Colors.white, size: 16),
+                                                  SizedBox(width: 4),
+                                                  Text("Shared Location", style: TextStyle(color: Colors.white, fontSize: 13, fontWeight: FontWeight.bold)),
+                                                ],
+                                              ),
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                  );
+                                }
+                              }
                             }
                             return Text(
                               text,
@@ -336,8 +381,8 @@ class _ChatScreenState extends State<ChatScreen> {
                   onTap: _sendLocation,
                   child: CircleAvatar(
                     radius: 25,
-                    backgroundColor: inputFieldColor,
-                    child: Icon(Icons.location_on, color: isDark ? Colors.white70 : Colors.black54),
+                    backgroundColor: sendButtonColor,
+                    child: const Icon(Icons.location_on, color: Colors.white),
                   ),
                 ),
                 const SizedBox(width: 10),
