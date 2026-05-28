@@ -24,7 +24,8 @@ class RideHistoryScreen extends StatelessWidget {
       
       bool isDeclined = getLowerList('declined').contains(uemail);
       bool isKicked = getLowerList('kicked').contains(uemail);
-      bool isFinished = r['status'] == 'completed' || r['status'] == 'cancelled' || isDeclined || isKicked;
+      bool isDropped = getLowerList('droppedPassengers').contains(uemail);
+      bool isFinished = r['status'] == 'completed' || r['status'] == 'cancelled' || isDeclined || isKicked || isDropped;
 
       bool amIDriver = r['riderEmail'] != null && r['riderEmail'].toString().trim().toLowerCase() == uemail;
       bool amIRider = getLowerList('passengers').contains(uemail) ||

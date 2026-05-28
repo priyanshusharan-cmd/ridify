@@ -133,8 +133,8 @@ class _RiderCompletingScreenState extends State<RiderCompletingScreen> {
         try {
           DateTime start = DateTime.parse(boardedAt);
           DateTime end = DateTime.parse(endStr);
-          int diffMins = end.difference(start).inMinutes;
-          duration = "${diffMins < 0 ? 0 : diffMins} mins";
+          int diffMins = (end.difference(start).inSeconds / 60).ceil();
+          duration = "${diffMins <= 0 ? 1 : diffMins} mins";
         } catch (e) {
           debugPrint("Error parsing dates: $e");
         }
