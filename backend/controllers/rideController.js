@@ -29,7 +29,7 @@ exports.searchRides = async (req, res) => {
 
     const userEmail = req.user?.email;
     const matchQuery = {
-      status: { $in: ['available', 'accepted'] },
+      status: { $in: ['available', 'accepted', 'full'] },
       $or: [{ expiresAt: { $gt: currentTime } }, { expiresAt: null }, { expiresAt: { $exists: false } }]
     };
     if (vehicle && vehicle !== 'Any') matchQuery.vehicleType = vehicle;
