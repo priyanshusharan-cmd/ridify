@@ -12,7 +12,7 @@ class ChatService {
   }
 
   static Future<void> sendMessage(String rideId, String sender, String senderEmail, String text, String timestamp, {Map<String, dynamic>? replyTo}) async {
-    final body = {
+    final Map<String, dynamic> body = {
       'text': text,
       'timestamp': timestamp,
     };
