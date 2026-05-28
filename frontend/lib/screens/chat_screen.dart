@@ -4,6 +4,8 @@ import '../services/chat_service.dart';
 import '../services/ride_service.dart';
 import '../core/socket_service.dart';
 import '../core/constants.dart';
+import 'package:url_launcher/url_launcher.dart';
+import 'package:geolocator/geolocator.dart';
 
 class ChatScreen extends StatefulWidget {
   final String myName;
@@ -120,6 +122,28 @@ class _ChatScreenState extends State<ChatScreen> {
     }
   }
 
+  Future<void> _sendLocation() async {
+    try {
+      bool serviceEnabled = await Geolocator.isLocationServiceEnabled();
+      if (!serviceEnabled) return;
+      LocationPermission permission = await Geolocator.checkPermission();
+      if (permission == LocationPermission.denied) {
+        permission = await Geolocator.requestPermission();
+        if (permission == LocationPermission.denied) return;
+      }
+      if (permission == LocationPermission.deniedForever) return;
+
+      Position position = await Geolocator.getCurrentPosition();
+      if (!mounted) return;
+      
+      final text = "LOCATION:${position.latitude},${position.longitude}";
+      final timeString = TimeOfDay.now().format(context);
+      await ChatService.sendMessage(widget.rideId, widget.myName, widget.myEmail, text, timeString);
+    } catch (e) {
+      debugPrint(e.toString());
+    }
+  }
+
   @override
   void dispose() {
     for (final entry in _socketListeners) {
@@ -224,12 +248,50 @@ class _ChatScreenState extends State<ChatScreen> {
                               ),
                             ),
                           ),
-                        Text(
-                          messages[index]['text'] ?? "",
-                          style: TextStyle(
-                            color: isMe ? myTextColor : otherTextColor,
-                            fontSize: 15,
-                          ),
+                        Builder(
+                          builder: (context) {
+                            final text = messages[index]['text'] ?? "";
+                            if (text.startsWith("LOCATION:")) {
+                              return GestureDetector(
+                                onTap: () async {
+                                  final coords = text.substring(9).split(',');
+                                  if (coords.length == 2) {
+                                    final url = Uri.parse("https://www.google.com/maps/search/?api=1&query=${coords[0]},${coords[1]}");
+                                    if (await canLaunchUrl(url)) {
+                                      await launchUrl(url, mode: LaunchMode.externalApplication);
+                                    }
+                                  }
+                                },
+                                child: Padding(
+                                  padding: const EdgeInsets.symmetric(vertical: 4.0),
+                                  child: Row(
+                                    mainAxisSize: MainAxisSize.min,
+                                    children: [
+                                      Icon(Icons.location_on, color: isMe ? myTextColor : otherTextColor, size: 20),
+                                      const SizedBox(width: 6),
+                                      Text(
+                                        "Shared Location",
+                                        style: TextStyle(
+                                          color: isMe ? myTextColor : otherTextColor,
+                                          fontSize: 15,
+                                          fontWeight: FontWeight.w600,
+                                          decoration: TextDecoration.underline,
+                                          decorationColor: isMe ? myTextColor : otherTextColor,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              );
+                            }
+                            return Text(
+                              text,
+                              style: TextStyle(
+                                color: isMe ? myTextColor : otherTextColor,
+                                fontSize: 15,
+                              ),
+                            );
+                          }
                         ),
                         const SizedBox(height: 4),
                         Text(
@@ -267,6 +329,15 @@ class _ChatScreenState extends State<ChatScreen> {
                         borderSide: BorderSide.none,
                       ),
                     ),
+                  ),
+                ),
+                const SizedBox(width: 10),
+                GestureDetector(
+                  onTap: _sendLocation,
+                  child: CircleAvatar(
+                    radius: 25,
+                    backgroundColor: inputFieldColor,
+                    child: Icon(Icons.location_on, color: isDark ? Colors.white70 : Colors.black54),
                   ),
                 ),
                 const SizedBox(width: 10),
