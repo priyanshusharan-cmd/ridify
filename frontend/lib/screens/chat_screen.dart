@@ -85,9 +85,16 @@ class _ChatScreenState extends State<ChatScreen> {
                 'sender': msg['sender'],
                 'senderEmail': msg['senderEmail'] ?? '',
                 'text': msg['text'],
-                'timestamp': msg['timestamp']
+                'timestamp': msg['timestamp'],
+                'replyTo': msg['replyTo'],
               });
             }
+          }
+        });
+        
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          if (_scrollController.hasClients) {
+            _scrollController.jumpTo(_scrollController.position.maxScrollExtent);
           }
         });
     } catch (e) {
