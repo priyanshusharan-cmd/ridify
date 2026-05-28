@@ -484,7 +484,8 @@ class _ChatScreenState extends State<ChatScreen> {
                     },
                     child: TextField(
                       controller: _controller,
-                      maxLines: null,
+                      minLines: 1,
+                      maxLines: 5,
                       keyboardType: TextInputType.multiline,
                       textInputAction: TextInputAction.newline,
                       style: TextStyle(color: inputTextColor),
@@ -496,7 +497,7 @@ class _ChatScreenState extends State<ChatScreen> {
                       filled: true,
                       fillColor: inputFieldColor,
                       border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(30),
+                        borderRadius: BorderRadius.circular(20),
                         borderSide: BorderSide.none,
                       ),
                     ),
