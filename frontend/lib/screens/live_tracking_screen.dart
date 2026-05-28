@@ -458,7 +458,16 @@ class _LiveTrackingScreenState extends State<LiveTrackingScreen> {
 
     try {
       await RideService.boardPassenger(widget.rideId, myEmailLower);
-    } catch (e) { debugPrint(e.toString()); syncRideStatus(); }
+    } catch (e) {
+      debugPrint(e.toString());
+      if (mounted) {
+        String msg = e.toString().replaceAll('Exception: ', '');
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(msg), backgroundColor: Colors.red),
+        );
+      }
+      syncRideStatus();
+    }
   }
 
   void _confirmKickPassenger(String passengerEmail) {
