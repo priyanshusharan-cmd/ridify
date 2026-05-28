@@ -156,7 +156,12 @@ class _ChatScreenState extends State<ChatScreen> {
         return;
       }
 
-      Position position = await Geolocator.getCurrentPosition();
+      Position position = await Geolocator.getCurrentPosition(
+        locationSettings: const LocationSettings(
+          accuracy: LocationAccuracy.medium,
+          timeLimit: Duration(seconds: 10),
+        ),
+      );
       if (!mounted) return;
       
       final text = "LOCATION:${position.latitude},${position.longitude}";
@@ -167,6 +172,7 @@ class _ChatScreenState extends State<ChatScreen> {
       await ChatService.sendMessage(widget.rideId, widget.myName, widget.myEmail, text, timeString, replyTo: replyTo);
     } catch (e) {
       debugPrint(e.toString());
+      if (mounted) ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Failed to get location. Try again.')));
     }
   }
 
@@ -244,7 +250,7 @@ class _ChatScreenState extends State<ChatScreen> {
                 final msg = messages[messages.length - 1 - index];
                 final bool isMe = (msg['senderEmail']?.toString().toLowerCase().trim() ?? '') == widget.myEmail.toLowerCase().trim();
                 return SwipeTo(
-                  key: ValueKey(msg['timestamp'] ?? index.toString()),
+                  key: ValueKey('msg_${messages.length - 1 - index}'),
                   onRightSwipe: (details) {
                     setState(() {
                       replyToMessage = {
@@ -278,7 +284,7 @@ class _ChatScreenState extends State<ChatScreen> {
                           Padding(
                             padding: const EdgeInsets.only(bottom: 4),
                             child: Text(
-                              messages[index]['sender'] ?? "Unknown",
+                              msg['sender'] ?? "Unknown",
                               textAlign: TextAlign.start,
                               style: TextStyle(
                                 color: otherNameColor,
