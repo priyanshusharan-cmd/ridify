@@ -185,19 +185,19 @@ class _ChatScreenState extends State<ChatScreen> {
     final isDark = Theme.of(context).brightness == Brightness.dark;
 
     // Chat bubble colors
-    final myBubbleColor = isDark ? const Color(0xFF2C2C2C) : const Color(0xFF5A5A5A);
+    final myBubbleColor = isDark ? const Color(0xFF2C2C2C) : Colors.grey[300]!;
     final otherBubbleColor = isDark ? const Color(0xFF1E1E1E) : Colors.white;
-    final myTextColor = Colors.white;
+    final myTextColor = isDark ? Colors.white : Colors.black87;
     final otherTextColor = isDark ? Colors.white : Colors.black87;
     final otherNameColor = isDark ? Colors.blue.shade300 : Colors.blue[800]!;
-    final timestampMyColor = Colors.white70;
+    final timestampMyColor = isDark ? Colors.white70 : Colors.black54;
     final timestampOtherColor = isDark ? Colors.white70 : Colors.black54;
 
     // Input area
     final inputBgColor = isDark ? const Color(0xFF1E1E1E) : Colors.grey[200]!;
     final inputFieldColor = isDark ? const Color(0xFF2C2C2C) : Colors.white;
     final inputTextColor = isDark ? Colors.white : Colors.black87;
-    final sendButtonColor = isDark ? const Color(0xFF2C2C2C) : const Color(0xFF5A5A5A);
+    final sendButtonColor = isDark ? const Color(0xFF2C2C2C) : Colors.black;
 
     return Scaffold(
       backgroundColor: Theme.of(context).scaffoldBackgroundColor,
@@ -292,7 +292,7 @@ class _ChatScreenState extends State<ChatScreen> {
                             margin: const EdgeInsets.only(bottom: 6),
                             clipBehavior: Clip.hardEdge,
                             decoration: BoxDecoration(
-                              color: isDark ? Colors.black.withValues(alpha: 0.2) : (isMe ? Colors.white.withValues(alpha: 0.15) : Colors.black.withValues(alpha: 0.05)),
+                              color: isDark ? Colors.black.withValues(alpha: 0.2) : Colors.black.withValues(alpha: 0.05),
                               borderRadius: BorderRadius.circular(8),
                             ),
                             child: IntrinsicHeight(
@@ -310,14 +310,14 @@ class _ChatScreenState extends State<ChatScreen> {
                                         children: [
                                           Text(
                                             msg['replyTo']['sender'] ?? 'Unknown',
-                                            style: TextStyle(color: isDark ? Colors.blue[300] : (isMe ? Colors.blue[300] : Colors.blue[800]), fontSize: 12, fontWeight: FontWeight.bold),
+                                            style: TextStyle(color: isDark ? Colors.blue[300] : Colors.blue[800], fontSize: 12, fontWeight: FontWeight.bold),
                                           ),
                                           const SizedBox(height: 2),
                                           Text(
                                             msg['replyTo']['text']?.toString().startsWith('LOCATION:') == true ? '📍 Location' : (msg['replyTo']['text'] ?? ''),
                                             maxLines: 2,
                                             overflow: TextOverflow.ellipsis,
-                                            style: TextStyle(color: isDark ? Colors.white70 : (isMe ? Colors.white70 : Colors.black87), fontSize: 12),
+                                            style: TextStyle(color: isDark ? Colors.white70 : Colors.black87, fontSize: 12),
                                           ),
                                         ],
                                       ),
