@@ -8,6 +8,8 @@ import 'package:url_launcher/url_launcher.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:latlong2/latlong.dart';
+import 'package:swipe_to/swipe_to.dart';
+
 class ChatScreen extends StatefulWidget {
   final String myName;
   final String myEmail;
@@ -223,17 +225,15 @@ class _ChatScreenState extends State<ChatScreen> {
               itemBuilder: (context, index) {
                 final msg = messages[index];
                 final bool isMe = (msg['senderEmail']?.toString().toLowerCase().trim() ?? '') == widget.myEmail.toLowerCase().trim();
-                return Dismissible(
+                return SwipeTo(
                   key: ValueKey(msg['timestamp'] ?? index.toString()),
-                  direction: DismissDirection.startToEnd,
-                  confirmDismiss: (_) async {
+                  onRightSwipe: (details) {
                     setState(() {
                       replyToMessage = {
                         'sender': msg['sender'],
                         'text': msg['text'],
                       };
                     });
-                    return false;
                   },
                   child: Align(
                   alignment: isMe
@@ -270,27 +270,42 @@ class _ChatScreenState extends State<ChatScreen> {
                         if (msg['replyTo'] != null)
                           Container(
                             margin: const EdgeInsets.only(bottom: 6),
-                            padding: const EdgeInsets.all(8),
+                            clipBehavior: Clip.hardEdge,
                             decoration: BoxDecoration(
-                              color: isDark ? Colors.black26 : Colors.black12,
+                              color: isDark ? Colors.black.withValues(alpha: 0.2) : Colors.black.withValues(alpha: 0.05),
                               borderRadius: BorderRadius.circular(8),
-                              border: Border(left: BorderSide(color: isMe ? Colors.white54 : Colors.blueAccent, width: 4)),
                             ),
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text(
-                                  msg['replyTo']['sender'] ?? 'Unknown',
-                                  style: TextStyle(color: isMe ? Colors.white70 : Colors.blue[800], fontSize: 11, fontWeight: FontWeight.bold),
-                                ),
-                                const SizedBox(height: 2),
-                                Text(
-                                  msg['replyTo']['text']?.toString().startsWith('LOCATION:') == true ? '📍 Location' : (msg['replyTo']['text'] ?? ''),
-                                  maxLines: 1,
-                                  overflow: TextOverflow.ellipsis,
-                                  style: TextStyle(color: isMe ? Colors.white60 : Colors.black54, fontSize: 11),
-                                ),
-                              ],
+                            child: IntrinsicHeight(
+                              child: Row(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  Container(
+                                    width: 4,
+                                    color: isMe ? Colors.white70 : Colors.blueAccent,
+                                  ),
+                                  Flexible(
+                                    child: Padding(
+                                      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 6),
+                                      child: Column(
+                                        crossAxisAlignment: CrossAxisAlignment.start,
+                                        children: [
+                                          Text(
+                                            msg['replyTo']['sender'] ?? 'Unknown',
+                                            style: TextStyle(color: isMe ? Colors.white : Colors.blue[800], fontSize: 12, fontWeight: FontWeight.bold),
+                                          ),
+                                          const SizedBox(height: 2),
+                                          Text(
+                                            msg['replyTo']['text']?.toString().startsWith('LOCATION:') == true ? '📍 Location' : (msg['replyTo']['text'] ?? ''),
+                                            maxLines: 2,
+                                            overflow: TextOverflow.ellipsis,
+                                            style: TextStyle(color: isMe ? Colors.white.withValues(alpha: 0.8) : Colors.black87, fontSize: 12),
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              ),
                             ),
                           ),
                         Builder(
