@@ -295,33 +295,30 @@ class _ChatScreenState extends State<ChatScreen> {
                               color: isDark ? Colors.black.withValues(alpha: 0.2) : (isMe ? Colors.white.withValues(alpha: 0.5) : Colors.black.withValues(alpha: 0.05)),
                               borderRadius: BorderRadius.circular(8),
                             ),
-                            child: IntrinsicHeight(
-                              child: Row(
-                                children: [
-                                  Container(
+                            child: Container(
+                              decoration: BoxDecoration(
+                                border: Border(
+                                  left: BorderSide(
                                     width: 4,
-                                    color: isDark ? (isMe ? Colors.white70 : Colors.blueAccent) : Colors.blue[800],
+                                    color: isDark ? (isMe ? Colors.white70 : Colors.blueAccent) : Colors.blue[800]!,
                                   ),
-                                  Flexible(
-                                    child: Padding(
-                                      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 6),
-                                      child: Column(
-                                        crossAxisAlignment: CrossAxisAlignment.start,
-                                        children: [
-                                          Text(
-                                            msg['replyTo']['sender'] ?? 'Unknown',
-                                            style: TextStyle(color: isDark ? Colors.blue[300] : Colors.blue[800], fontSize: 12, fontWeight: FontWeight.bold),
-                                          ),
-                                          const SizedBox(height: 2),
-                                          Text(
-                                            msg['replyTo']['text']?.toString().startsWith('LOCATION:') == true ? '📍 Location' : (msg['replyTo']['text'] ?? ''),
-                                            maxLines: 2,
-                                            overflow: TextOverflow.ellipsis,
-                                            style: TextStyle(color: isDark ? Colors.white70 : Colors.black87, fontSize: 12),
-                                          ),
-                                        ],
-                                      ),
-                                    ),
+                                ),
+                              ),
+                              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 6),
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  Text(
+                                    msg['replyTo']['sender'] ?? 'Unknown',
+                                    style: TextStyle(color: isDark ? Colors.blue[300] : Colors.blue[800], fontSize: 12, fontWeight: FontWeight.bold),
+                                  ),
+                                  const SizedBox(height: 2),
+                                  Text(
+                                    msg['replyTo']['text']?.toString().startsWith('LOCATION:') == true ? '📍 Location' : (msg['replyTo']['text'] ?? ''),
+                                    maxLines: 2,
+                                    overflow: TextOverflow.ellipsis,
+                                    style: TextStyle(color: isDark ? Colors.white70 : Colors.black87, fontSize: 12),
                                   ),
                                 ],
                               ),
