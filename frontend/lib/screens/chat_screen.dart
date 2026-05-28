@@ -9,6 +9,7 @@ import 'package:geolocator/geolocator.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:latlong2/latlong.dart';
 import 'package:swipe_to/swipe_to.dart';
+import 'package:flutter/services.dart';
 
 class ChatScreen extends StatefulWidget {
   final String myName;
@@ -131,13 +132,22 @@ class _ChatScreenState extends State<ChatScreen> {
   Future<void> _sendLocation() async {
     try {
       bool serviceEnabled = await Geolocator.isLocationServiceEnabled();
-      if (!serviceEnabled) return;
+      if (!serviceEnabled) {
+        if (mounted) ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Location services are disabled.')));
+        return;
+      }
       LocationPermission permission = await Geolocator.checkPermission();
       if (permission == LocationPermission.denied) {
         permission = await Geolocator.requestPermission();
-        if (permission == LocationPermission.denied) return;
+        if (permission == LocationPermission.denied) {
+          if (mounted) ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Location permissions are denied.')));
+          return;
+        }
       }
-      if (permission == LocationPermission.deniedForever) return;
+      if (permission == LocationPermission.deniedForever) {
+        if (mounted) ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Location permissions are permanently denied.')));
+        return;
+      }
 
       Position position = await Geolocator.getCurrentPosition();
       if (!mounted) return;
@@ -252,14 +262,16 @@ class _ChatScreenState extends State<ChatScreen> {
                       color: isMe ? myBubbleColor : otherBubbleColor,
                       borderRadius: BorderRadius.circular(20),
                     ),
-                    child: Column(
-                      crossAxisAlignment: isMe ? CrossAxisAlignment.end : CrossAxisAlignment.start,
+                    child: IntrinsicWidth(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.stretch,
                       children: [
                         if (!isMe)
                           Padding(
                             padding: const EdgeInsets.only(bottom: 4),
                             child: Text(
                               messages[index]['sender'] ?? "Unknown",
+                              textAlign: TextAlign.start,
                               style: TextStyle(
                                 color: otherNameColor,
                                 fontSize: 12,
@@ -277,7 +289,6 @@ class _ChatScreenState extends State<ChatScreen> {
                             ),
                             child: IntrinsicHeight(
                               child: Row(
-                                mainAxisSize: MainAxisSize.min,
                                 children: [
                                   Container(
                                     width: 4,
@@ -291,14 +302,14 @@ class _ChatScreenState extends State<ChatScreen> {
                                         children: [
                                           Text(
                                             msg['replyTo']['sender'] ?? 'Unknown',
-                                            style: TextStyle(color: isMe ? Colors.white : Colors.blue[800], fontSize: 12, fontWeight: FontWeight.bold),
+                                            style: TextStyle(color: isDark ? Colors.blue[300] : Colors.blue[800], fontSize: 12, fontWeight: FontWeight.bold),
                                           ),
                                           const SizedBox(height: 2),
                                           Text(
                                             msg['replyTo']['text']?.toString().startsWith('LOCATION:') == true ? '📍 Location' : (msg['replyTo']['text'] ?? ''),
                                             maxLines: 2,
                                             overflow: TextOverflow.ellipsis,
-                                            style: TextStyle(color: isMe ? Colors.white.withValues(alpha: 0.8) : Colors.black87, fontSize: 12),
+                                            style: TextStyle(color: isDark ? Colors.white70 : Colors.black87, fontSize: 12),
                                           ),
                                         ],
                                       ),
@@ -317,71 +328,74 @@ class _ChatScreenState extends State<ChatScreen> {
                                 final lat = double.tryParse(coords[0]);
                                 final lng = double.tryParse(coords[1]);
                                 if (lat != null && lng != null) {
-                                  return GestureDetector(
-                                    onTap: () async {
-                                      final url = Uri.parse("https://www.google.com/maps/search/?api=1&query=$lat,$lng");
-                                      if (await canLaunchUrl(url)) {
-                                        await launchUrl(url, mode: LaunchMode.externalApplication);
-                                      }
-                                    },
-                                    child: Container(
-                                      height: 150,
-                                      width: 250,
-                                      margin: const EdgeInsets.only(top: 4.0, bottom: 4.0),
-                                      clipBehavior: Clip.hardEdge,
-                                      decoration: BoxDecoration(
-                                        borderRadius: BorderRadius.circular(12),
-                                      ),
-                                      child: Stack(
-                                        children: [
-                                          IgnorePointer(
-                                            child: FlutterMap(
-                                              options: MapOptions(
-                                                initialCenter: LatLng(lat, lng),
-                                                initialZoom: 15.0,
-                                                interactionOptions: const InteractionOptions(flags: InteractiveFlag.none),
-                                              ),
-                                              children: [
-                                                TileLayer(
-                                                  urlTemplate: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
-                                                  userAgentPackageName: 'com.example.ridify',
+                                  return Align(
+                                    alignment: isMe ? Alignment.centerRight : Alignment.centerLeft,
+                                    child: GestureDetector(
+                                      onTap: () async {
+                                        final url = Uri.parse("https://www.google.com/maps/search/?api=1&query=$lat,$lng");
+                                        if (await canLaunchUrl(url)) {
+                                          await launchUrl(url, mode: LaunchMode.externalApplication);
+                                        }
+                                      },
+                                      child: Container(
+                                        height: 150,
+                                        width: 250,
+                                        margin: const EdgeInsets.only(top: 4.0, bottom: 4.0),
+                                        clipBehavior: Clip.hardEdge,
+                                        decoration: BoxDecoration(
+                                          borderRadius: BorderRadius.circular(12),
+                                        ),
+                                        child: Stack(
+                                          children: [
+                                            IgnorePointer(
+                                              child: FlutterMap(
+                                                options: MapOptions(
+                                                  initialCenter: LatLng(lat, lng),
+                                                  initialZoom: 15.0,
+                                                  interactionOptions: const InteractionOptions(flags: InteractiveFlag.none),
                                                 ),
-                                                MarkerLayer(
-                                                  markers: [
-                                                    Marker(
-                                                      point: LatLng(lat, lng),
-                                                      width: 40,
-                                                      height: 40,
-                                                      child: const Icon(Icons.location_on, color: Colors.red, size: 40),
-                                                    ),
-                                                  ],
-                                                ),
-                                              ],
-                                            ),
-                                          ),
-                                          Positioned(
-                                            bottom: 0,
-                                            left: 0,
-                                            right: 0,
-                                            child: Container(
-                                              padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 10),
-                                              decoration: BoxDecoration(
-                                                gradient: LinearGradient(
-                                                  begin: Alignment.bottomCenter,
-                                                  end: Alignment.topCenter,
-                                                  colors: [Colors.black.withValues(alpha: 0.7), Colors.transparent],
-                                                ),
-                                              ),
-                                              child: const Row(
                                                 children: [
-                                                  Icon(Icons.location_on, color: Colors.white, size: 16),
-                                                  SizedBox(width: 4),
-                                                  Text("Shared Location", style: TextStyle(color: Colors.white, fontSize: 13, fontWeight: FontWeight.bold)),
+                                                  TileLayer(
+                                                    urlTemplate: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
+                                                    userAgentPackageName: 'com.example.ridify',
+                                                  ),
+                                                  MarkerLayer(
+                                                    markers: [
+                                                      Marker(
+                                                        point: LatLng(lat, lng),
+                                                        width: 40,
+                                                        height: 40,
+                                                        child: const Icon(Icons.location_on, color: Colors.red, size: 40),
+                                                      ),
+                                                    ],
+                                                  ),
                                                 ],
                                               ),
                                             ),
-                                          ),
-                                        ],
+                                            Positioned(
+                                              bottom: 0,
+                                              left: 0,
+                                              right: 0,
+                                              child: Container(
+                                                padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 10),
+                                                decoration: BoxDecoration(
+                                                  gradient: LinearGradient(
+                                                    begin: Alignment.bottomCenter,
+                                                    end: Alignment.topCenter,
+                                                    colors: [Colors.black.withValues(alpha: 0.7), Colors.transparent],
+                                                  ),
+                                                ),
+                                                child: const Row(
+                                                  children: [
+                                                    Icon(Icons.location_on, color: Colors.white, size: 16),
+                                                    SizedBox(width: 4),
+                                                    Text("Shared Location", style: TextStyle(color: Colors.white, fontSize: 13, fontWeight: FontWeight.bold)),
+                                                  ],
+                                                ),
+                                              ),
+                                            ),
+                                          ],
+                                        ),
                                       ),
                                     ),
                                   );
@@ -390,6 +404,7 @@ class _ChatScreenState extends State<ChatScreen> {
                             }
                             return Text(
                               text,
+                              textAlign: isMe ? TextAlign.end : TextAlign.start,
                               style: TextStyle(
                                 color: isMe ? myTextColor : otherTextColor,
                                 fontSize: 15,
@@ -400,12 +415,14 @@ class _ChatScreenState extends State<ChatScreen> {
                         const SizedBox(height: 4),
                         Text(
                           messages[index]['timestamp'] ?? "",
+                          textAlign: isMe ? TextAlign.end : TextAlign.start,
                           style: TextStyle(
                             color: isMe ? timestampMyColor : timestampOtherColor,
                             fontSize: 10,
                           ),
                         ),
                       ],
+                    ),
                     ),
                     ),
                   ),
@@ -447,10 +464,23 @@ class _ChatScreenState extends State<ChatScreen> {
             child: Row(
               children: [
                 Expanded(
-                  child: TextField(
-                    controller: _controller,
-                    style: TextStyle(color: inputTextColor),
-                    maxLength: kMaxMessageLength,
+                  child: Focus(
+                    onKeyEvent: (FocusNode node, KeyEvent event) {
+                      if (event is KeyDownEvent && event.logicalKey == LogicalKeyboardKey.enter) {
+                        if (!HardwareKeyboard.instance.isShiftPressed) {
+                          sendMessage();
+                          return KeyEventResult.handled;
+                        }
+                      }
+                      return KeyEventResult.ignored;
+                    },
+                    child: TextField(
+                      controller: _controller,
+                      maxLines: null,
+                      keyboardType: TextInputType.multiline,
+                      textInputAction: TextInputAction.newline,
+                      style: TextStyle(color: inputTextColor),
+                      maxLength: kMaxMessageLength,
                     decoration: InputDecoration(
                       counterText: "",
                       hintText: "Type a message...",
@@ -461,6 +491,7 @@ class _ChatScreenState extends State<ChatScreen> {
                         borderRadius: BorderRadius.circular(30),
                         borderSide: BorderSide.none,
                       ),
+                    ),
                     ),
                   ),
                 ),
