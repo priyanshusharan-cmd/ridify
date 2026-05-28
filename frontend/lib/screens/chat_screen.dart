@@ -185,7 +185,7 @@ class _ChatScreenState extends State<ChatScreen> {
     final isDark = Theme.of(context).brightness == Brightness.dark;
 
     // Chat bubble colors
-    final myBubbleColor = isDark ? const Color(0xFF2C2C2C) : Colors.black;
+    final myBubbleColor = isDark ? const Color(0xFF2C2C2C) : const Color(0xFF2C2C2C);
     final otherBubbleColor = isDark ? const Color(0xFF1E1E1E) : Colors.white;
     final myTextColor = Colors.white;
     final otherTextColor = isDark ? Colors.white : Colors.black87;
@@ -197,7 +197,7 @@ class _ChatScreenState extends State<ChatScreen> {
     final inputBgColor = isDark ? const Color(0xFF1E1E1E) : Colors.grey[200]!;
     final inputFieldColor = isDark ? const Color(0xFF2C2C2C) : Colors.white;
     final inputTextColor = isDark ? Colors.white : Colors.black87;
-    final sendButtonColor = isDark ? const Color(0xFF2C2C2C) : Colors.black;
+    final sendButtonColor = isDark ? const Color(0xFF2C2C2C) : const Color(0xFF2C2C2C);
 
     return Scaffold(
       backgroundColor: Theme.of(context).scaffoldBackgroundColor,
