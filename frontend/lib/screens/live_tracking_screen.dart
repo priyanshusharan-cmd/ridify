@@ -352,10 +352,15 @@ class _LiveTrackingScreenState extends State<LiveTrackingScreen> {
       if (mounted) {
         String id = (map['rideId'] ?? map['_id'] ?? '').toString();
         if (id == widget.rideId) {
+          final rideMap = map['ride'] as Map<String, dynamic>?;
+          if (rideMap != null) {
+            setState(() {
+              rideData = rideMap;
+            });
+          }
           if (widget.isDriver) {
             _triggerCompletionScreen();
           } else {
-            final rideMap = map['ride'] as Map<String, dynamic>?;
             if (rideMap != null) {
               List kicked = List.from(rideMap['kicked'] ?? []);
               List declined = List.from(rideMap['declined'] ?? []);
