@@ -132,12 +132,15 @@ class OfferedRideCard extends StatelessWidget {
                           ),
                         ],
                       ),
-                      Row(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          if (!isDetail && reqCount > 0)
-                            Container(
-                              margin: const EdgeInsets.only(right: 12),
+                      Builder(
+                        builder: (context) {
+                          bool hasRightIcon = (passengers.isEmpty && isDetail) || (!isOngoing && passengers.isNotEmpty);
+                          return Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              if (!isDetail && reqCount > 0)
+                                Container(
+                                  margin: EdgeInsets.only(right: hasRightIcon ? 12 : 0),
                               padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
                               decoration: BoxDecoration(
                                 color: Colors.green.withValues(alpha: 0.1),
@@ -167,7 +170,9 @@ class OfferedRideCard extends StatelessWidget {
                               ),
                             ),
                         ],
-                      ),
+                      );
+                     }
+                   ),
                     ],
                   ),
                   const SizedBox(height: 20),
