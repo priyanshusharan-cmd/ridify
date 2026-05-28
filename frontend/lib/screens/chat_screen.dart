@@ -292,7 +292,7 @@ class _ChatScreenState extends State<ChatScreen> {
                             margin: const EdgeInsets.only(bottom: 6),
                             clipBehavior: Clip.hardEdge,
                             decoration: BoxDecoration(
-                              color: isDark ? Colors.black.withValues(alpha: 0.2) : (isMe ? Colors.white.withValues(alpha: 0.15) : Colors.black.withValues(alpha: 0.05)),
+                              color: isDark ? Colors.black.withValues(alpha: 0.2) : (isMe ? Colors.white.withValues(alpha: 0.5) : Colors.black.withValues(alpha: 0.05)),
                               borderRadius: BorderRadius.circular(8),
                             ),
                             child: IntrinsicHeight(
@@ -300,7 +300,7 @@ class _ChatScreenState extends State<ChatScreen> {
                                 children: [
                                   Container(
                                     width: 4,
-                                    color: isMe ? Colors.white70 : Colors.blueAccent,
+                                    color: isDark ? (isMe ? Colors.white70 : Colors.blueAccent) : Colors.blue[800],
                                   ),
                                   Flexible(
                                     child: Padding(
@@ -310,14 +310,14 @@ class _ChatScreenState extends State<ChatScreen> {
                                         children: [
                                           Text(
                                             msg['replyTo']['sender'] ?? 'Unknown',
-                                            style: TextStyle(color: isDark ? Colors.blue[300] : (isMe ? Colors.blue[300] : Colors.blue[800]), fontSize: 12, fontWeight: FontWeight.bold),
+                                            style: TextStyle(color: isDark ? Colors.blue[300] : Colors.blue[800], fontSize: 12, fontWeight: FontWeight.bold),
                                           ),
                                           const SizedBox(height: 2),
                                           Text(
                                             msg['replyTo']['text']?.toString().startsWith('LOCATION:') == true ? '📍 Location' : (msg['replyTo']['text'] ?? ''),
                                             maxLines: 2,
                                             overflow: TextOverflow.ellipsis,
-                                            style: TextStyle(color: isDark ? Colors.white70 : (isMe ? Colors.white70 : Colors.black87), fontSize: 12),
+                                            style: TextStyle(color: isDark ? Colors.white70 : Colors.black87, fontSize: 12),
                                           ),
                                         ],
                                       ),
