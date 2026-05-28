@@ -124,10 +124,15 @@ class _RiderCompletingScreenState extends State<RiderCompletingScreen> {
       
       String? boardedAt = rideData?['riderDetails']?[myEmailLower]?['boardedAt'];
       String? droppedAt = rideData?['riderDetails']?[myEmailLower]?['droppedAt'];
-      if (boardedAt != null && droppedAt != null) {
+      String? kickedAt = rideData?['riderDetails']?[myEmailLower]?['kickedAt'];
+      
+      if (boardedAt == null) {
+        duration = "0 mins";
+      } else {
+        String endStr = droppedAt ?? kickedAt ?? rideData?['completedAt'] ?? DateTime.now().toIso8601String();
         try {
           DateTime start = DateTime.parse(boardedAt);
-          DateTime end = DateTime.parse(droppedAt);
+          DateTime end = DateTime.parse(endStr);
           int diffMins = end.difference(start).inMinutes;
           duration = "${diffMins < 0 ? 0 : diffMins} mins";
         } catch (e) {

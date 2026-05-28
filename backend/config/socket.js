@@ -124,6 +124,11 @@ function initSocket(server, app) {
       } catch (_) {}
     });
 
+    socket.on('request_driver_location', (data) => {
+      if (!data?.rideId) return;
+      socket.to(data.rideId).emit('request_driver_location', data);
+    });
+
     // ── Cleanup on disconnect ──────────────────────────────────────────
     socket.on('disconnect', () => {
       if (socket.userEmail && userSockets.has(socket.userEmail)) {

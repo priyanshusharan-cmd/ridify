@@ -219,6 +219,16 @@ class _LiveTrackingScreenState extends State<LiveTrackingScreen> {
     socket = socketService.socket;
     socketService.joinRide(widget.rideId);
 
+    if (!widget.isDriver) {
+      socket.emit('request_driver_location', {'rideId': widget.rideId});
+    }
+
+    _on('request_driver_location', (data) {
+      if (widget.isDriver && driverPosition != null) {
+        socket.emit('driver_location_update', {'rideId': widget.rideId, 'lat': driverPosition!.latitude, 'lng': driverPosition!.longitude});
+      }
+    });
+
     _on('passenger_boarded', (data) {
       if (data == null) return;
       final map = Map<String, dynamic>.from(data);
@@ -694,6 +704,20 @@ class _LiveTrackingScreenState extends State<LiveTrackingScreen> {
       canEnd = activePassengers.isEmpty && boardedPassengers.isEmpty;
     }
 
+    LatLng? riderPickupPosition;
+    LatLng? riderDestPosition;
+    if (!widget.isDriver && rideData != null) {
+      final details = rideData!['riderDetails']?[myEmailLower];
+      if (details != null) {
+        if (details['pickupLat'] != null && details['pickupLng'] != null) {
+          riderPickupPosition = LatLng((details['pickupLat'] as num).toDouble(), (details['pickupLng'] as num).toDouble());
+        }
+        if (details['destLat'] != null && details['destLng'] != null) {
+          riderDestPosition = LatLng((details['destLat'] as num).toDouble(), (details['destLng'] as num).toDouble());
+        }
+      }
+    }
+
     return Scaffold(
       appBar: AppBar(backgroundColor: Colors.black, title: const Text("Live Ride Map", style: TextStyle(color: Colors.white)), iconTheme: const IconThemeData(color: Colors.white)),
       body: Stack(children: [
@@ -720,6 +744,8 @@ class _LiveTrackingScreenState extends State<LiveTrackingScreen> {
               if (routePoints.isNotEmpty) PolylineLayer(polylines: [Polyline(points: routePoints, strokeWidth: 5.0, color: Colors.blueAccent)]),
               MarkerLayer(markers: [
                 if (!widget.isDriver && myPosition != null) Marker(point: myPosition!, width: 20, height: 20, child: const AnimatedPassengerMarker()),
+                if (riderPickupPosition != null) Marker(point: riderPickupPosition!, width: 40, height: 40, child: const Icon(Icons.location_on, color: Colors.green, size: 40)),
+                if (riderDestPosition != null) Marker(point: riderDestPosition!, width: 40, height: 40, child: const Icon(Icons.location_on, color: Colors.red, size: 40)),
                 Marker(point: driverPosition!, width: 120, height: 80, child: AnimatedDriverMarker(driverLabel: driverLabel)),
               ]),
             ],

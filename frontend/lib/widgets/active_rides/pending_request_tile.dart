@@ -71,6 +71,7 @@ class PendingRequestTile extends StatelessWidget {
               ),
             ],
           ),
+          const SizedBox(height: 8),
           Builder(
             builder: (context) {
               final String myEmailLower = myEmail.trim().toLowerCase();

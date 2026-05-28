@@ -1046,8 +1046,13 @@ exports.sendChatMessage = async (req, res) => {
 exports.getDriverStats = async (req, res) => {
   try {
     const driverEmail = req.user.email;
+    const lowerDriverEmail = driverEmail ? driverEmail.toLowerCase() : '';
     const stats = await Ride.aggregate([
-      { $match: { riderEmail: driverEmail, status: 'completed' } },
+      { $match: { 
+          $or: [{ riderEmail: driverEmail }, { riderEmail: lowerDriverEmail }],
+          status: 'completed' 
+        } 
+      },
       {
         $group: {
           _id: null,
@@ -1056,7 +1061,7 @@ exports.getDriverStats = async (req, res) => {
           totalDurationMs: {
             $sum: {
               $cond: [
-                { $and: ['$startedAt', '$completedAt'] },
+                { $and: [ { $gt: ['$startedAt', null] }, { $gt: ['$completedAt', null] } ] },
                 { $subtract: ['$completedAt', '$startedAt'] },
                 0
               ]
