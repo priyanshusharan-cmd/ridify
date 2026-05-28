@@ -12,12 +12,14 @@ class ProfileScreen extends StatefulWidget {
   final String userName;
   final String userAge;
   final String userEmail;
+  final bool isAdmin;
 
   const ProfileScreen({
     super.key,
     this.userName = "Unknown",
     this.userAge = "18",
     this.userEmail = "email@example.com",
+    this.isAdmin = false,
   });
 
   @override
@@ -217,7 +219,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final bool isAdmin = kAdminEmails.contains(email.toLowerCase());
+    final bool isAdmin = widget.isAdmin;
     final isDark = Theme.of(context).brightness == Brightness.dark;
 
     return Scaffold(

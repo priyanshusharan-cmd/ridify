@@ -104,6 +104,16 @@ app.get('/health', (req, res) => {
   });
 });
 app.get('/', (req, res) => { res.send('🚗 Ridify Backend API is running!'); });
+app.get('/api/config', (req, res) => {
+  res.json({
+    kMaxFieldLength: parseInt(process.env.MAX_FIELD_LENGTH) || 500,
+    kMaxMessageLength: parseInt(process.env.CHAT_MAX_LENGTH) || 1000,
+    kMaxPriceRupees: parseInt(process.env.MAX_PRICE_RUPEES) || 99999,
+    kMinRideDistanceKm: parseFloat(process.env.MIN_RIDE_DISTANCE_KM) || 1.5,
+    kMaxRoutePoints: parseInt(process.env.MAX_ROUTE_POINTS) || 500,
+    kDefaultSearchRadiusM: parseFloat(process.env.SEARCH_RADIUS_DEFAULT_M) || 2000,
+  });
+});
 app.use('/api/auth', authLimiter, authRoutes);
 app.use('/api/rides', rideLimiter, rideRoutes);
 

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import '../services/health_service.dart';
+import '../services/config_service.dart';
 import '../services/token_service.dart';
 import 'home_screen.dart';
 import 'login_screen.dart';
@@ -185,6 +185,7 @@ class _SplashScreenState extends State<SplashScreen>
     final savedName = prefs.getString('user_name');
     final savedAge = prefs.getString('user_age');
     final savedEmail = prefs.getString('user_email');
+    final savedIsAdmin = prefs.getBool('is_admin') ?? false;
 
     // Check for valid token using TokenService
     final hasToken = await TokenService.hasValidToken();
@@ -205,6 +206,7 @@ class _SplashScreenState extends State<SplashScreen>
                 userName: savedName,
                 userAge: savedAge,
                 userEmail: savedEmail,
+                isAdmin: savedIsAdmin,
               )
             : const LoginScreen(),
         transitionsBuilder: (context, animation, secondaryAnimation, child) =>
@@ -218,7 +220,7 @@ class _SplashScreenState extends State<SplashScreen>
   /// be asleep. Waking it up during the splash screen ensures it's ready
   /// by the time the user interacts with the app.
   void _wakeBackendServer() async {
-    HealthService().pingServer();
+    await ConfigService.fetchConfig();
   }
 
   @override

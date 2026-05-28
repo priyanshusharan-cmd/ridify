@@ -39,10 +39,11 @@ const register = async (req, res) => {
     const hashedPassword = await bcrypt.hash(password, BCRYPT_ROUNDS);
     const user = await User.create({ name, age, email, password: hashedPassword });
 
+    const isAdmin = ADMIN_EMAILS.includes(email);
     const accessToken = signAccessToken({ id: user._id, email: user.email });
     const refreshToken = signRefreshToken({ id: user._id, email: user.email });
     res.status(201).json({
-      user: { id: user._id, name: user.name, age: user.age, email: user.email },
+      user: { id: user._id, name: user.name, age: user.age, email: user.email, isAdmin },
       accessToken,
       refreshToken,
     });
@@ -79,10 +80,11 @@ const login = async (req, res) => {
       return res.status(401).json({ error: 'Invalid password.' });
     }
 
+    const isAdmin = ADMIN_EMAILS.includes(email);
     const accessToken = signAccessToken({ id: user._id, email: user.email });
     const refreshToken = signRefreshToken({ id: user._id, email: user.email });
     res.json({
-      user: { id: user._id, name: user.name, age: user.age, email: user.email },
+      user: { id: user._id, name: user.name, age: user.age, email: user.email, isAdmin },
       accessToken,
       refreshToken,
     });

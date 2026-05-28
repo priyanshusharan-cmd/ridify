@@ -100,6 +100,7 @@ class _LoginScreenState extends State<LoginScreen> {
         await prefs.setString('user_name', user['name'] ?? "Unknown");
         await prefs.setString('user_age', user['age'] ?? "18");
         await prefs.setString('user_email', user['email'] ?? "");
+        await prefs.setBool('is_admin', user['isAdmin'] == true);
 
         if (mounted) {
           Navigator.pushReplacement(
@@ -109,6 +110,7 @@ class _LoginScreenState extends State<LoginScreen> {
                 userName: user['name'] ?? "Unknown",
                 userAge: user['age'] ?? "18",
                 userEmail: user['email'] ?? "",
+                isAdmin: user['isAdmin'] == true,
               ),
             ),
           );

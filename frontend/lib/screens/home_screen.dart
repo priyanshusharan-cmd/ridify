@@ -53,12 +53,14 @@ class HomeScreen extends StatefulWidget {
   final String userName;
   final String userAge;
   final String userEmail;
+  final bool isAdmin;
 
   const HomeScreen({
     super.key,
     this.userName = "Unknown",
     this.userAge = "18",
     this.userEmail = "email@example.com",
+    this.isAdmin = false,
   });
 
   static void resetStartupAnimation() {
@@ -350,6 +352,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
         userName: widget.userName,
         userAge: widget.userAge,
         userEmail: widget.userEmail,
+        isAdmin: widget.isAdmin,
       ),
     ];
 
@@ -369,7 +372,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
           onCarTapped: _handleEasterEggTap,
         ),
         actions: [
-          if (kAdminEmails.contains(widget.userEmail.toLowerCase()))
+          if (widget.isAdmin)
             IconButton(
               icon: const Icon(Icons.delete_sweep, color: Colors.redAccent),
               tooltip: 'Admin: Wipe All Rides',
