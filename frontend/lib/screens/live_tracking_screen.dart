@@ -572,8 +572,11 @@ class _LiveTrackingScreenState extends State<LiveTrackingScreen> {
       if (rideData != null) rideData!['status'] = 'completed';
     });
     try {
-      await RideService.endRide(widget.rideId);
+      final updatedRide = await RideService.endRide(widget.rideId);
       if (mounted) {
+        setState(() {
+          rideData = updatedRide;
+        });
         _triggerCompletionScreen();
       }
     } catch (e) {
