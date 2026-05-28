@@ -149,7 +149,13 @@ class _LiveTrackingScreenState extends State<LiveTrackingScreen> {
         mapController.move(driverPosition!, 15.0);
         return;
       }
-      mapController.fitCamera(CameraFit.bounds(bounds: LatLngBounds.fromPoints(points), padding: const EdgeInsets.all(80.0)));
+      final bounds = LatLngBounds.fromPoints(points);
+      if (bounds.southWest.latitude == bounds.northEast.latitude && 
+          bounds.southWest.longitude == bounds.northEast.longitude) {
+        mapController.move(driverPosition!, 15.0);
+        return;
+      }
+      mapController.fitCamera(CameraFit.bounds(bounds: bounds, padding: const EdgeInsets.all(80.0)));
     } catch (_) {
       try { mapController.move(driverPosition!, 15.0); } catch (_) {}
     }
