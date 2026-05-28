@@ -744,8 +744,8 @@ class _LiveTrackingScreenState extends State<LiveTrackingScreen> {
               if (routePoints.isNotEmpty) PolylineLayer(polylines: [Polyline(points: routePoints, strokeWidth: 5.0, color: Colors.blueAccent)]),
               MarkerLayer(markers: [
                 if (!widget.isDriver && myPosition != null) Marker(point: myPosition!, width: 20, height: 20, child: const AnimatedPassengerMarker()),
-                if (riderPickupPosition != null) Marker(point: riderPickupPosition!, width: 40, height: 40, child: const Icon(Icons.location_on, color: Colors.green, size: 40)),
-                if (riderDestPosition != null) Marker(point: riderDestPosition!, width: 40, height: 40, child: const Icon(Icons.location_on, color: Colors.red, size: 40)),
+                if (riderPickupPosition != null) Marker(point: riderPickupPosition, width: 40, height: 40, child: const Icon(Icons.location_on, color: Colors.green, size: 40)),
+                if (riderDestPosition != null) Marker(point: riderDestPosition, width: 40, height: 40, child: const Icon(Icons.location_on, color: Colors.red, size: 40)),
                 Marker(point: driverPosition!, width: 120, height: 80, child: AnimatedDriverMarker(driverLabel: driverLabel)),
               ]),
             ],
