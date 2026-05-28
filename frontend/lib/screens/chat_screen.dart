@@ -94,7 +94,7 @@ class _ChatScreenState extends State<ChatScreen> {
         
         WidgetsBinding.instance.addPostFrameCallback((_) {
           if (_scrollController.hasClients) {
-            _scrollController.jumpTo(_scrollController.position.maxScrollExtent);
+            _scrollController.jumpTo(0.0);
           }
         });
     } catch (e) {
@@ -110,7 +110,7 @@ class _ChatScreenState extends State<ChatScreen> {
         WidgetsBinding.instance.addPostFrameCallback((_) {
           if (_scrollController.hasClients) {
             _scrollController.animateTo(
-              _scrollController.position.maxScrollExtent,
+              0.0,
               duration: const Duration(milliseconds: 300),
               curve: Curves.easeOut,
             );
@@ -236,11 +236,12 @@ class _ChatScreenState extends State<ChatScreen> {
         children: [
           Expanded(
             child: ListView.builder(
+              reverse: true,
               controller: _scrollController,
               padding: const EdgeInsets.all(20),
               itemCount: messages.length,
               itemBuilder: (context, index) {
-                final msg = messages[index];
+                final msg = messages[messages.length - 1 - index];
                 final bool isMe = (msg['senderEmail']?.toString().toLowerCase().trim() ?? '') == widget.myEmail.toLowerCase().trim();
                 return SwipeTo(
                   key: ValueKey(msg['timestamp'] ?? index.toString()),
