@@ -153,7 +153,7 @@ class OfferedRideCard extends StatelessWidget {
                               onTap: onCancelOffer,
                               child: const Icon(Icons.close, color: Colors.grey, size: 28),
                             )
-                          else if (!isOngoing)
+                          else if (!isOngoing && passengers.isNotEmpty)
                             Material(
                               color: isDark ? Colors.grey[800] : Colors.grey[200],
                               borderRadius: BorderRadius.circular(20),
