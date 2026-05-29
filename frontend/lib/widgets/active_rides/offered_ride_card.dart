@@ -138,7 +138,7 @@ class OfferedRideCard extends StatelessWidget {
                           return Row(
                             mainAxisSize: MainAxisSize.min,
                             children: [
-                              if (!isDetail)
+                              if (!isDetail && reqCount > 0)
                                 Container(
                                   margin: EdgeInsets.only(right: hasRightIcon ? 12 : 0),
                               padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
