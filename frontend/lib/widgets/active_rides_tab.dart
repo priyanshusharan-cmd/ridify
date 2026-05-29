@@ -238,8 +238,14 @@ class _ActiveRidesTabState extends State<ActiveRidesTab> {
 
     return SafeArea(
       key: const ValueKey('detail_view'),
-      child: SingleChildScrollView(
-        padding: const EdgeInsets.all(24.0),
+      child: RefreshIndicator(
+        onRefresh: () async {
+          widget.onRefresh();
+          await Future.delayed(const Duration(milliseconds: 500));
+        },
+        child: SingleChildScrollView(
+          physics: const AlwaysScrollableScrollPhysics(),
+          padding: const EdgeInsets.all(24.0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -299,6 +305,7 @@ class _ActiveRidesTabState extends State<ActiveRidesTab> {
           ],
         ),
       ),
+      ),
     );
   }
 
@@ -315,8 +322,14 @@ class _ActiveRidesTabState extends State<ActiveRidesTab> {
 
     return SafeArea(
       key: const ValueKey('list_view'),
-      child: SingleChildScrollView(
-        padding: const EdgeInsets.all(24.0),
+      child: RefreshIndicator(
+        onRefresh: () async {
+          widget.onRefresh();
+          await Future.delayed(const Duration(milliseconds: 500));
+        },
+        child: SingleChildScrollView(
+          physics: const AlwaysScrollableScrollPhysics(),
+          padding: const EdgeInsets.all(24.0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -383,6 +396,7 @@ class _ActiveRidesTabState extends State<ActiveRidesTab> {
             ],
           ],
         ),
+      ),
       ),
     );
   }

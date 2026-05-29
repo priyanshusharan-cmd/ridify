@@ -217,6 +217,10 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
     final socket = socketService.socket;
 
     // Direct state updates — no re-fetch needed
+    _onSocket(socket, 'connect', (_) {
+      fetchRides();
+    });
+
     _onSocket(socket, 'new_ride_request', (data) {
       if (data != null && data['ride'] != null) _upsertRide(Map<String, dynamic>.from(data['ride']));
     });
