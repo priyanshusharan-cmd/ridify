@@ -72,6 +72,17 @@ class RideStatusPanel extends StatelessWidget {
       snap: true,
       snapSizes: (isDriver && activePassengers.isNotEmpty) ? [minSize, maxSize] : null,
       builder: (BuildContext context, ScrollController scrollController) {
+        if (rideData == null) {
+          return Container(
+            decoration: BoxDecoration(
+              color: panelBg,
+              borderRadius: const BorderRadius.vertical(top: Radius.circular(30)),
+              boxShadow: const [BoxShadow(color: Colors.black12, blurRadius: 10)],
+            ),
+            child: const Center(child: CircularProgressIndicator()),
+          );
+        }
+
         return Container(
           decoration: BoxDecoration(
             color: panelBg,
