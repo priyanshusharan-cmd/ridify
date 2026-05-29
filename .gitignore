@@ -53,3 +53,7 @@ frontend/ios/Flutter/ephemeral/
 *.tmp
 *.swp
 *.bak
+
+# Test/debug scripts
+backend/test_*.js
+backend/debug_*.js

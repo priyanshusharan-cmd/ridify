@@ -170,8 +170,7 @@ exports.getAllRides = async (req, res) => {
     const lowerUserEmail = userEmail ? userEmail.toLowerCase() : '';
     const query = ADMIN_EMAILS.includes(lowerUserEmail) ? {} : {
       $or: [
-        { riderEmail: userEmail }, // Drivers are saved with original case from token
-        { riderEmail: lowerUserEmail }, // Fallback just in case
+        { riderEmail: lowerUserEmail },
         { passengers: lowerUserEmail },
         { requests: lowerUserEmail },
         { droppedPassengers: lowerUserEmail },
@@ -224,7 +223,7 @@ exports.getRideById = async (req, res) => {
 exports.createRide = async (req, res) => {
   try {
     const data = req.body;
-    data.riderEmail = req.user.email;
+    data.riderEmail = req.user.email.trim().toLowerCase();
     
     if (data.riderName) {
       data.riderName = String(data.riderName).trim().replace(/<[^>]*>/g, '').substring(0, 200);
@@ -232,6 +231,15 @@ exports.createRide = async (req, res) => {
 
     if (!data.routePath || !Array.isArray(data.routePath) || data.routePath.length < 2) {
       return res.status(400).json({ error: "Invalid routePath." });
+    }
+    
+    const validCoord = (p) =>
+      p !== null && typeof p === 'object' &&
+      isFinite(p.lat) && isFinite(p.lng) &&
+      p.lat >= -90 && p.lat <= 90 && p.lng >= -180 && p.lng <= 180;
+
+    if (!data.routePath.every(validCoord)) {
+      return res.status(400).json({ error: "routePath contains one or more invalid coordinates." });
     }
     
     const isValidCoord = (lat, lng) => isFinite(lat) && isFinite(lng) && lat >= -90 && lat <= 90 && lng >= -180 && lng <= 180;
@@ -355,8 +363,13 @@ exports.requestRide = async (req, res) => {
     // Bounds check: indices must be within the route
     const parsedStart = parseInt(startIndex);
     const parsedEnd = parseInt(endIndex);
-    if (isNaN(parsedStart) || isNaN(parsedEnd) || parsedStart < 0) {
-      return res.status(400).json({ error: "Invalid segment indices." });
+    if (
+      isNaN(parsedStart) || isNaN(parsedEnd) ||
+      parsedStart < 0 || parsedEnd <= 0 ||
+      parsedStart >= parsedEnd ||
+      parsedEnd >= ride.routePath.length
+    ) {
+      return res.status(400).json({ error: "Invalid segment indices. Must be within route bounds." });
     }
 
     const ride = await Ride.findById(req.params.id);
@@ -664,7 +677,7 @@ exports.kickPassenger = async (req, res) => {
     if (req.user.email !== ride.riderEmail) return res.status(403).json({ error: 'Only the ride driver can perform this action.' });
 
     // Cannot kick yourself (the driver)
-    if (ride.riderName === passengerEmail) {
+    if (ride.riderEmail === passengerEmail) {
       return res.status(400).json({ error: "Driver cannot kick themselves." });
     }
     // Must be a passenger or requester to be kicked
@@ -1016,7 +1029,8 @@ exports.endRide = async (req, res) => {
 // ── Chat — scoped emit ──────────────────────────────────────────────────────
 exports.sendChatMessage = async (req, res) => {
   try {
-    const { text, timestamp, replyTo } = req.body;
+    const { text, replyTo } = req.body;
+    const timestamp = new Date().toISOString();
     if (!text || !text.trim()) {
       return res.status(400).json({ error: "Text is required." });
     }

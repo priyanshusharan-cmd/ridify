@@ -1,6 +1,7 @@
 const { Server } = require('socket.io');
 const Ride = require('../models/ride');
 const { verifyAccessToken } = require('../utils/jwt');
+const logger = require('../utils/logger');
 
 function initSocket(server, app) {
   const io = new Server(server, {
@@ -71,8 +72,10 @@ function initSocket(server, app) {
   // SOCKET.IO — Room-based architecture
   // =============================================
 
+  const locationUpdateCooldowns = new Map();
+
   io.on('connection', async (socket) => {
-    console.log(`📡 Device connected: ${socket.id}`);
+    logger.info(`Socket connected: ${socket.id}`);
 
     // userEmail is now guaranteed by middleware — no event needed
     const userEmail = socket.userEmail;
@@ -85,7 +88,6 @@ function initSocket(server, app) {
       const rides = await Ride.find({
         status: { $in: ['available', 'accepted', 'full', 'started'] },
         $or: [
-          { riderEmail: userEmail },
           { riderEmail: lowerUserEmail },
           { passengers: lowerUserEmail },
           { requests: lowerUserEmail },
@@ -95,9 +97,9 @@ function initSocket(server, app) {
       for (const ride of rides) {
         socket.join(ride._id.toString());
       }
-      console.log(`👤 ${userEmail} registered, joined ${rides.length} rooms`);
+      logger.info(`User ${userEmail} registered, joined ${rides.length} rooms`);
     } catch (e) {
-      console.error('Auto-join error:', e.message);
+      logger.error('Socket auto-join error:', e.message);
     }
 
     // ── Explicit room management ───────────────────────────────────────
@@ -117,6 +119,11 @@ function initSocket(server, app) {
     // ── Driver location — verify the emitter is actually the driver ────
     socket.on('driver_location_update', async (data) => {
       if (!socket.userEmail || !data?.rideId) return;
+      const now = Date.now();
+      const cooldownKey = `loc_${socket.id}`;
+      const lastUpdate = locationUpdateCooldowns.get(cooldownKey) || 0;
+      if (now - lastUpdate < 1500) return; // max ~1 update per 1.5 seconds
+      locationUpdateCooldowns.set(cooldownKey, now);
       try {
         const ride = await Ride.findById(data.rideId, 'riderEmail').lean();
         if (!ride || ride.riderEmail !== socket.userEmail) return; // not the driver
@@ -131,13 +138,14 @@ function initSocket(server, app) {
 
     // ── Cleanup on disconnect ──────────────────────────────────────────
     socket.on('disconnect', () => {
+      locationUpdateCooldowns.delete(`loc_${socket.id}`);
       if (socket.userEmail && userSockets.has(socket.userEmail)) {
         userSockets.get(socket.userEmail).delete(socket.id);
         if (userSockets.get(socket.userEmail).size === 0) {
           userSockets.delete(socket.userEmail);
         }
       }
-      console.log(`📡 Device disconnected: ${socket.id}`);
+      logger.info(`Socket disconnected: ${socket.id}`);
     });
   });
 

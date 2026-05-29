@@ -3,12 +3,12 @@ const mongoose = require('mongoose');
 const CHAT_MAX_LENGTH = parseInt(process.env.CHAT_MAX_LENGTH) || 1000;
 
 const RideSchema = new mongoose.Schema({
-  riderName: String,
-  riderEmail: String,
-  pickupLocation: String,
+  riderName:      { type: String, maxlength: 200, trim: true },
+  riderEmail:     { type: String, required: true, lowercase: true, trim: true, maxlength: 500 },
+  pickupLocation: { type: String, required: true, maxlength: 500, trim: true },
   pickupLat: Number,
   pickupLng: Number,
-  destination: String,
+  destination:    { type: String, required: true, maxlength: 500, trim: true },
   destLat: Number,
   destLng: Number,
   pickupCoords: {
@@ -18,18 +18,18 @@ const RideSchema = new mongoose.Schema({
   departureTime: String,
   expiresAt: Number,
   optimisticLock: { type: Number, default: 0 },
-  fare: Number,
+  fare:           { type: Number, required: true, min: 1 },
   status: {
     type: String,
     enum: ['available', 'accepted', 'full', 'started', 'completed', 'cancelled'],
     default: 'available',
   },
-  vehicleType: String,
-  totalSeats: Number,
+  vehicleType:    { type: String, required: true, enum: ['Bike', 'Sedan', 'SUV'] },
+  totalSeats:     { type: Number, required: true, min: 1, max: 8 },
   availableSeats: Number,
-  routePath: [{ lat: Number, lng: Number }],
+  routePath:      { type: [{ lat: Number, lng: Number }], required: true },
   totalDistance: Number,
-  routePreference: { type: String, enum: ['flexible', 'shared_start', 'nonstop'], default: 'flexible' },
+  routePreference:{ type: String, required: true, enum: ['flexible', 'shared_start', 'nonstop'], default: 'flexible' },
   riderDetails: {
     type: Map,
     of: new mongoose.Schema({

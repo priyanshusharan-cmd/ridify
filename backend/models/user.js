@@ -13,6 +13,7 @@ const UserSchema = new mongoose.Schema({
     maxlength: MAX,
   },
   password: { type: String, select: false, required: true },
+  refreshTokens: { type: [String], default: [], select: false },
 }, { timestamps: true });
 
 UserSchema.index({ email: 1 }, { unique: true });

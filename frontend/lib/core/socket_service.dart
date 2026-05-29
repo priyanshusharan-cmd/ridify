@@ -105,4 +105,15 @@ class SocketService {
     _userEmail = null;
     _accessToken = null;
   }
+  void updateAccessToken(String newAccessToken) {
+    _accessToken = newAccessToken;
+    if (_socket != null) {
+      _socket!.io.options?['auth'] = {'token': newAccessToken};
+      if (_socket!.connected) {
+        // Force reconnect to pick up new auth
+        _socket!.disconnect();
+        Future.delayed(const Duration(milliseconds: 300), () => _socket?.connect());
+      }
+    }
+  }
 }

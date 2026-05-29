@@ -199,9 +199,27 @@ class _ProfileScreenState extends State<ProfileScreen> {
             style: ElevatedButton.styleFrom(
               backgroundColor: Theme.of(context).brightness == Brightness.dark ? const Color(0xFF2C2C2C) : Colors.black,
             ),
-            onPressed: () {
-              onSave(controller.text);
+            onPressed: () async {
+              final val = controller.text.trim();
               Navigator.pop(context);
+              try {
+                final updated = await AuthService.updateProfile(
+                  email,
+                  name: title == 'Name' ? val : null,
+                  age: title == 'Age' ? val : null,
+                );
+                onSave(val);
+                // Persist the updated name to SharedPreferences
+                final prefs = await SharedPreferences.getInstance();
+                if (title == 'Name') await prefs.setString('user_name', updated['name'] ?? val);
+                if (title == 'Age') await prefs.setString('user_age', updated['age'] ?? val);
+              } catch (e) {
+                if (mounted) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(content: Text(e.toString().replaceAll('Exception: ', '')), backgroundColor: Colors.red),
+                  );
+                }
+              }
             },
             child: const Text("Save", style: TextStyle(color: Colors.white)),
           ),

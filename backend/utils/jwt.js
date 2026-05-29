@@ -8,10 +8,10 @@ function signAccessToken(payload) {
   return jwt.sign(payload, SECRET, { expiresIn: EXPIRES_IN, algorithm: 'HS256' });
 }
 
+const REFRESH_SECRET = process.env.JWT_REFRESH_SECRET;
+
 function signRefreshToken(payload) {
-  return jwt.sign(payload, SECRET + '_refresh', {
-    expiresIn: REFRESH_EXPIRES_IN, algorithm: 'HS256'
-  });
+  return jwt.sign(payload, REFRESH_SECRET, { expiresIn: REFRESH_EXPIRES_IN, algorithm: 'HS256' });
 }
 
 function verifyAccessToken(token) {
@@ -19,7 +19,7 @@ function verifyAccessToken(token) {
 }
 
 function verifyRefreshToken(token) {
-  return jwt.verify(token, SECRET + '_refresh', { algorithms: ['HS256'] });
+  return jwt.verify(token, REFRESH_SECRET, { algorithms: ['HS256'] });
 }
 
 module.exports = { signAccessToken, signRefreshToken, verifyAccessToken, verifyRefreshToken };

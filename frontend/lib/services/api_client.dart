@@ -3,6 +3,7 @@ import 'package:flutter/foundation.dart';
 import 'package:http/http.dart' as http;
 import '../core/constants.dart';
 import 'token_service.dart';
+import '../core/socket_service.dart';
 
 class ApiClient {
   static Future<Map<String, String>> _authHeaders() async {
@@ -99,6 +100,7 @@ class ApiClient {
           accessToken: data['accessToken'],
           refreshToken: refreshToken, // Keep existing refresh token
         );
+        SocketService().updateAccessToken(data['accessToken']);
         return true;
       }
     } catch (_) {}

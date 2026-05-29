@@ -51,11 +51,31 @@ class AuthService {
   }
 
   static Future<void> adminDeleteAllUsers(String adminEmail) async {
-    // Left as an exercise, or can just use ApiClient (admin rights handled by token soon)
-    throw UnimplementedError("Admin routes should use ApiClient");
+    final response = await ApiClient.delete('/api/auth/users');
+    if (response.statusCode != 200) {
+      throw Exception(jsonDecode(response.body)['error'] ?? 'Failed to wipe all users.');
+    }
   }
 
   static Future<void> logout() async {
+    try {
+      final refreshToken = await TokenService.getRefreshToken();
+      await ApiClient.post(
+        '/api/auth/logout',
+        refreshToken != null ? {'refreshToken': refreshToken} : {},
+      );
+    } catch (_) {} // best-effort, always clear locally
     await TokenService.clearTokens();
+  }
+
+  static Future<Map<String, dynamic>> updateProfile(String email, {String? name, String? age}) async {
+    final body = <String, dynamic>{};
+    if (name != null) body['name'] = name;
+    if (age != null) body['age'] = age;
+    final response = await ApiClient.patch('/api/auth/user/${Uri.encodeComponent(email)}', body);
+    if (response.statusCode == 200) {
+      return jsonDecode(response.body)['user'];
+    }
+    throw Exception(jsonDecode(response.body)['error'] ?? 'Failed to update profile.');
   }
 }

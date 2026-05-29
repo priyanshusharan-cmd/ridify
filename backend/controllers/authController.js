@@ -30,6 +30,9 @@ const register = async (req, res) => {
     if (!isValidEmail(email)) {
       return res.status(400).json({ error: 'Invalid email format.' });
     }
+    if (!email.endsWith('@bmsce.ac.in')) {
+      return res.status(400).json({ error: 'Only @bmsce.ac.in email addresses are allowed to register.' });
+    }
 
     const existing = await User.findOne({ email });
     if (existing) {
@@ -42,6 +45,7 @@ const register = async (req, res) => {
     const isAdmin = ADMIN_EMAILS.includes(email);
     const accessToken = signAccessToken({ id: user._id, email: user.email });
     const refreshToken = signRefreshToken({ id: user._id, email: user.email });
+    await User.findByIdAndUpdate(user._id, { $push: { refreshTokens: refreshToken } });
     res.status(201).json({
       user: { id: user._id, name: user.name, age: user.age, email: user.email, isAdmin },
       accessToken,
@@ -72,17 +76,18 @@ const login = async (req, res) => {
     // Must explicitly select password since User model has select:false
     const user = await User.findOne({ email }).select('+password');
     if (!user) {
-      return res.status(404).json({ error: 'User not found.' });
+      return res.status(401).json({ error: 'Invalid email or password.' });
     }
 
     const isMatch = await bcrypt.compare(password, user.password);
     if (!isMatch) {
-      return res.status(401).json({ error: 'Invalid password.' });
+      return res.status(401).json({ error: 'Invalid email or password.' });
     }
 
     const isAdmin = ADMIN_EMAILS.includes(email);
     const accessToken = signAccessToken({ id: user._id, email: user.email });
     const refreshToken = signRefreshToken({ id: user._id, email: user.email });
+    await User.findByIdAndUpdate(user._id, { $push: { refreshTokens: refreshToken } });
     res.json({
       user: { id: user._id, name: user.name, age: user.age, email: user.email, isAdmin },
       accessToken,
@@ -100,7 +105,7 @@ const deleteUser = async (req, res) => {
   try {
     // Caller is identified from JWT — not from request body
     const callerEmail = req.user.email; // set by authenticate middleware
-    const targetEmail = req.params.email?.trim().toLowerCase();
+    const targetEmail = decodeURIComponent(req.params.email || '').trim().toLowerCase();
     const isAdmin = ADMIN_EMAILS.includes(callerEmail);
     if (callerEmail !== targetEmail && !isAdmin) {
       return res.status(403).json({ error: 'You can only delete your own account.' });
@@ -130,8 +135,11 @@ const refreshToken = async (req, res) => {
   try {
     const { verifyRefreshToken, signAccessToken } = require('../utils/jwt');
     const payload = verifyRefreshToken(token);
-    const user = await User.findById(payload.id);
+    const user = await User.findById(payload.id).select('+refreshTokens');
     if (!user) return res.status(404).json({ error: 'User not found.' });
+    if (!user.refreshTokens.includes(token)) {
+      return res.status(401).json({ error: 'Refresh token has been revoked.' });
+    }
     const newAccessToken = signAccessToken({ id: user._id, email: user.email });
     res.json({ accessToken: newAccessToken });
   } catch (err) {
@@ -139,4 +147,19 @@ const refreshToken = async (req, res) => {
   }
 };
 
-module.exports = { register, login, deleteUser, deleteAllUsers, refreshToken };
+const logout = async (req, res) => {
+  try {
+    const { refreshToken: token } = req.body;
+    if (token) {
+      await User.findOneAndUpdate(
+        { email: req.user.email },
+        { $pull: { refreshTokens: token } }
+      );
+    }
+    res.json({ message: 'Logged out.' });
+  } catch (err) {
+    res.status(500).json({ error: 'Server error.' });
+  }
+};
+
+module.exports = { register, login, deleteUser, deleteAllUsers, refreshToken, logout };

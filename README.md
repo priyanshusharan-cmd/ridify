@@ -47,7 +47,7 @@ Ridify is designed to make commuting easier, safer, and more social. Here’s wh
 We believe security shouldn't compromise simplicity:
 
 - **Bcrypt Hashing** — Every password is cryptographically hashed using salting. Plain-text is never stored in the database.
-- **Secure Email Auth** — Strict validation on both client and server ensures only legitimate accounts are created.
+- **Secure Email Auth** — Strict validation on both client and server ensures only legitimate accounts are created. Any valid email address (e.g., @gmail.com) is accepted.
 - **Persistent Sessions** — A frictionless login experience that remembers you securely across app restarts.
 - **Admin Shield** — Critical data management routes are protected by role-based access control (RBAC) middleware.
 

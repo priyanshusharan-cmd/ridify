@@ -1,6 +1,6 @@
 require('dotenv').config();
 const logger = require('./utils/logger');
-const REQUIRED_ENV = ['JWT_SECRET', 'MONGO_URI', 'ADMIN_SECRET', 'ADMIN_EMAILS'];
+const REQUIRED_ENV = ['JWT_SECRET', 'JWT_REFRESH_SECRET', 'MONGO_URI', 'ADMIN_SECRET', 'ADMIN_EMAILS'];
 const MISSING = REQUIRED_ENV.filter(k => !process.env[k] ||
   process.env[k].includes('your-') ||
   process.env[k].includes('example.com'));
@@ -41,8 +41,18 @@ app.use(helmet({
 const allowedOrigins = (process.env.ALLOWED_ORIGIN || '').split(',').map(s => s.trim()).filter(Boolean);
 app.use(cors({
   origin: (origin, callback) => {
-    if (!origin || allowedOrigins.includes('*') || allowedOrigins.includes(origin)) return callback(null, true);
-    callback(new Error(`CORS: Origin ${origin} not allowed`));
+    // No origin = server-to-server (curl, Postman etc)
+    if (process.env.NODE_ENV === 'production') {
+      if (!origin || !allowedOrigins.includes(origin)) {
+        return callback(new Error(`CORS: Origin '${origin}' not allowed`));
+      }
+      return callback(null, true);
+    }
+    // Development: allow if no restriction set, else match list
+    if (!origin || allowedOrigins.length === 0 || allowedOrigins.includes('*') || allowedOrigins.includes(origin)) {
+      return callback(null, true);
+    }
+    callback(new Error(`CORS: Origin '${origin}' not allowed`));
   },
   methods: ['GET', 'POST', 'PATCH', 'DELETE', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization', 'x-admin-email', 'x-admin-secret'],
@@ -97,11 +107,11 @@ require('./config/db')();
 // ── Routes ──────────────────────────────────────────────────────────────────
 app.get('/health', (req, res) => {
   const dbState = require('mongoose').connection.readyState;
-  res.status(dbState === 1 ? 200 : 503).json({
-    status: dbState === 1 ? 'ok' : 'degraded',
-    db: ['disconnected','connected','connecting','disconnecting'][dbState] || 'unknown',
-    uptime: process.uptime(),
-  });
+  if (dbState === 1) {
+    return res.status(200).json({ status: 'ok' });
+  }
+  // Don't reveal DB state details publicly
+  res.status(503).json({ status: 'unavailable' });
 });
 app.get('/', (req, res) => { res.send('🚗 Ridify Backend API is running!'); });
 app.get('/api/config', (req, res) => {

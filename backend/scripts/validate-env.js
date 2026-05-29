@@ -1,7 +1,7 @@
 require('dotenv').config();
 
 const REQUIRED = [
-  'JWT_SECRET', 'MONGO_URI', 'ADMIN_SECRET', 'ADMIN_EMAILS',
+  'JWT_SECRET', 'JWT_REFRESH_SECRET', 'MONGO_URI', 'ADMIN_SECRET', 'ADMIN_EMAILS',
   'PORT', 'NODE_ENV'
 ];
 const PLACEHOLDER_PATTERNS = ['your-', 'REPLACE_', 'example.com', 'your_'];
