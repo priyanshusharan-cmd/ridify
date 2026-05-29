@@ -59,6 +59,15 @@ app.use(cors({
   credentials: true,
 }));
 
+// Disable caching for all API routes to prevent Flutter Web aggressive caching
+app.use('/api', (req, res, next) => {
+  res.set('Cache-Control', 'no-store, no-cache, must-revalidate, proxy-revalidate');
+  res.set('Pragma', 'no-cache');
+  res.set('Expires', '0');
+  res.set('Surrogate-Control', 'no-store');
+  next();
+});
+
 // ── Request logging ─────────────────────────────────────────────────────────
 app.use(morgan('dev', {
   skip: (req) => req.path === '/health',
