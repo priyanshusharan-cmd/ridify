@@ -176,6 +176,21 @@ class _ChatScreenState extends State<ChatScreen> {
     }
   }
 
+  String _formatTimestamp(String? isoString) {
+    if (isoString == null || isoString.isEmpty) return "";
+    try {
+      final dt = DateTime.parse(isoString).toLocal();
+      final hour = dt.hour;
+      final minute = dt.minute;
+      final ampm = hour >= 12 ? 'PM' : 'AM';
+      final hr12 = hour % 12 == 0 ? 12 : hour % 12;
+      final minStr = minute.toString().padLeft(2, '0');
+      return '$hr12:$minStr $ampm';
+    } catch (e) {
+      return isoString;
+    }
+  }
+
   @override
   void dispose() {
     for (final entry in _socketListeners) {
@@ -426,7 +441,7 @@ class _ChatScreenState extends State<ChatScreen> {
                         ),
                         const SizedBox(height: 4),
                         Text(
-                          msg['timestamp'] ?? "",
+                          _formatTimestamp(msg['timestamp']),
                           textAlign: isMe ? TextAlign.end : TextAlign.start,
                           style: TextStyle(
                             color: isMe ? timestampMyColor : timestampOtherColor,
