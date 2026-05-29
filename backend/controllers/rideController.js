@@ -363,6 +363,10 @@ exports.requestRide = async (req, res) => {
     // Bounds check: indices must be within the route
     const parsedStart = parseInt(startIndex);
     const parsedEnd = parseInt(endIndex);
+
+    const ride = await Ride.findById(req.params.id);
+    if (!ride) return res.status(404).json({ error: "Ride not found" });
+
     if (
       isNaN(parsedStart) || isNaN(parsedEnd) ||
       parsedStart < 0 || parsedEnd <= 0 ||
@@ -371,9 +375,6 @@ exports.requestRide = async (req, res) => {
     ) {
       return res.status(400).json({ error: "Invalid segment indices. Must be within route bounds." });
     }
-
-    const ride = await Ride.findById(req.params.id);
-    if (!ride) return res.status(404).json({ error: "Ride not found" });
 
     // Prevent driver from requesting their own ride
     if (ride.riderEmail === riderEmail) {
