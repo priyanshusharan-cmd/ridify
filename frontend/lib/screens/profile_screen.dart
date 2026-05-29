@@ -214,11 +214,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 if (title == 'Name') await prefs.setString('user_name', updated['name'] ?? val);
                 if (title == 'Age') await prefs.setString('user_age', updated['age'] ?? val);
               } catch (e) {
-                if (mounted) {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(content: Text(e.toString().replaceAll('Exception: ', '')), backgroundColor: Colors.red),
-                  );
-                }
+                if (!context.mounted) return;
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(content: Text(e.toString().replaceAll('Exception: ', '')), backgroundColor: Colors.red),
+                );
               }
             },
             child: const Text("Save", style: TextStyle(color: Colors.white)),
