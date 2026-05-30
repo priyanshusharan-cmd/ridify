@@ -18,6 +18,7 @@ const http = require('http');
 
 const authRoutes = require('./routes/auth');
 const rideRoutes = require('./routes/rides');
+const adminRoutes = require('./routes/admin');
 
 const app = express();
 const server = http.createServer(app);
@@ -135,6 +136,7 @@ app.get('/api/config', (req, res) => {
 });
 app.use('/api/auth', authLimiter, authRoutes);
 app.use('/api/rides', rideLimiter, rideRoutes);
+app.use('/api/admin', authLimiter, adminRoutes);
 
 // ── Global error handler ────────────────────────────────────────────────────
 app.use((err, req, res, next) => {

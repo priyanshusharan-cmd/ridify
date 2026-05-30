@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'admin_panel_screen.dart';
 import 'package:provider/provider.dart';
 import 'login_screen.dart';
 import 'home_screen.dart';
@@ -92,55 +93,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
     }
   }
 
-  // ── ADMIN: WIPE ALL USERS ─────────────────────────────────────────────────
-  Future<void> _adminWipeAllUsers() async {
-    final confirmed = await showDialog<bool>(
-      context: context,
-      builder: (ctx) => AlertDialog(
-        title: const Text(
-          '⚠️ Delete ALL Users',
-          style: TextStyle(fontWeight: FontWeight.bold, color: Colors.red),
-        ),
-        content: const Text(
-          'This permanently deletes every user account and all associated ride data.\n\nYou will be logged out immediately after.',
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(ctx, false),
-            child: Text('Cancel', style: TextStyle(color: Theme.of(context).textTheme.bodyLarge?.color)),
-          ),
-          ElevatedButton(
-            style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
-            onPressed: () => Navigator.pop(ctx, true),
-            child: const Text('Yes, Delete All',
-                style: TextStyle(color: Colors.white)),
-          ),
-        ],
-      ),
-    );
-
-    if (confirmed != true || !mounted) return;
-
-    try {
-      await AuthService.adminDeleteAllUsers(email);
-      final prefs = await SharedPreferences.getInstance();
-      await prefs.clear(); // Auto-logout
-      if (!mounted) return;
-      Navigator.of(context).pushAndRemoveUntil(
-        MaterialPageRoute(builder: (_) => const LoginScreen()),
-        (route) => false,
-      );
-    } catch (e) {
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(e.toString().replaceAll('Exception: ', '')),
-            backgroundColor: Colors.red,
-          ),
-        );
-      }
-    }
-  }
 
   void _showDeleteConfirmationDialog() {
     showDialog(
@@ -388,26 +340,32 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       ),
                     ),
 
-                    // ── ADMIN-ONLY: WIPE ALL USERS ────────────────────────
+                    // ── ADMIN-ONLY SECTION ─────────────────────────────────
                     if (isAdmin) ...[
                       const SizedBox(height: 15),
                       SizedBox(
                         width: double.infinity,
                         height: 55,
-                        child: OutlinedButton.icon(
-                          style: OutlinedButton.styleFrom(
-                            side: const BorderSide(color: Colors.deepOrange),
+                        child: ElevatedButton.icon(
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: Theme.of(context).brightness == Brightness.dark
+                                ? const Color(0xFF2C2C2C)
+                                : Colors.black,
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(15),
                             ),
                           ),
-                          onPressed: _adminWipeAllUsers,
-                          icon: const Icon(Icons.delete_sweep,
-                              color: Colors.deepOrange),
+                          onPressed: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(builder: (_) => const AdminPanelScreen()),
+                            );
+                          },
+                          icon: const Icon(Icons.admin_panel_settings, color: Colors.amber),
                           label: const Text(
-                            "Admin: Wipe All Users",
+                            "Admin Panel",
                             style: TextStyle(
-                              color: Colors.deepOrange,
+                              color: Colors.white,
                               fontWeight: FontWeight.bold,
                             ),
                           ),

@@ -16,6 +16,7 @@ import '../widgets/home/ridify_app_bar_title.dart';
 import '../main.dart';
 import 'rider_completing_screen.dart';
 import 'driver_completing_screen.dart';
+import 'admin_panel_screen.dart';
 
 // ─────────────────────────────────────────────────────────────────────────────
 //  Animation constants
@@ -380,51 +381,13 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
         actions: [
           if (widget.isAdmin)
             IconButton(
-              icon: const Icon(Icons.delete_sweep, color: Colors.redAccent),
-              tooltip: 'Admin: Wipe All Rides',
-              onPressed: () async {
-                final confirmed = await showDialog<bool>(
-                  context: context,
-                  builder: (ctx) => AlertDialog(
-                    title: const Text(
-                      '⚠️ Wipe All Rides',
-                      style: TextStyle(fontWeight: FontWeight.bold),
-                    ),
-                    content: const Text(
-                      'This wipes the database of all rides and broadcasts a reset to all connected users. Are you sure?',
-                    ),
-                    actions: [
-                      TextButton(
-                        onPressed: () => Navigator.pop(ctx, false),
-                        child: const Text(
-                          'Cancel',
-                          style: TextStyle(color: Colors.black),
-                        ),
-                      ),
-                      ElevatedButton(
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: Colors.red,
-                        ),
-                        onPressed: () => Navigator.pop(ctx, true),
-                        child: const Text(
-                          'Yes, Wipe',
-                          style: TextStyle(color: Colors.white),
-                        ),
-                      ),
-                    ],
-                  ),
+              icon: const Icon(Icons.admin_panel_settings, color: Colors.amber),
+              tooltip: 'Admin Panel',
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (_) => const AdminPanelScreen()),
                 );
-                if (confirmed == true && mounted) {
-                  await RideService.adminDeleteAllRides(widget.userEmail);
-                  if (context.mounted) {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(
-                        content: Text("All rides wiped!"),
-                        backgroundColor: Colors.red,
-                      ),
-                    );
-                  }
-                }
               },
             ),
         ],

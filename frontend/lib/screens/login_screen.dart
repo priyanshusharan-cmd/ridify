@@ -67,10 +67,6 @@ class _LoginScreenState extends State<LoginScreen> {
       _showSnack("Please enter a valid email address.", Colors.red);
       return;
     }
-    if (!isLoginMode && !emailController.text.trim().toLowerCase().endsWith('@bmsce.ac.in')) {
-      _showSnack("Only @bmsce.ac.in email addresses are allowed.", Colors.red);
-      return;
-    }
 
     if (passwordController.text.trim().length < 8) {
       _showSnack("Password must be at least 8 characters.", Colors.red);

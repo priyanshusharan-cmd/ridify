@@ -14,6 +14,8 @@ const UserSchema = new mongoose.Schema({
   },
   password: { type: String, select: false, required: true },
   refreshTokens: { type: [String], default: [], select: false },
+  isBanned: { type: Boolean, default: false },
+  documentsVerified: { type: Boolean, default: false },
 }, { timestamps: true });
 
 UserSchema.index({ email: 1 }, { unique: true });

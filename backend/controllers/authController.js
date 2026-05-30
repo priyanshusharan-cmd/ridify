@@ -30,9 +30,6 @@ const register = async (req, res) => {
     if (!isValidEmail(email)) {
       return res.status(400).json({ error: 'Invalid email format.' });
     }
-    if (!email.endsWith('@bmsce.ac.in')) {
-      return res.status(400).json({ error: 'Only @bmsce.ac.in email addresses are allowed to register.' });
-    }
 
     const existing = await User.findOne({ email });
     if (existing) {
