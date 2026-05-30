@@ -447,7 +447,7 @@ class _LiveTrackingScreenState extends State<LiveTrackingScreen> {
     try {
       await RideService.markDriverArrived(widget.rideId, name);
     } catch (e) { debugPrint(e.toString()); syncRideStatus(); } finally {
-      if (mounted) _processingAction = false;
+      if (mounted) setState(() => _processingAction = false);
     }
   }
   Future<void> boardRide() async {
@@ -511,7 +511,7 @@ class _LiveTrackingScreenState extends State<LiveTrackingScreen> {
     try { 
       await RideService.kickPassenger(widget.rideId, name);
     } catch (e) { debugPrint(e.toString()); syncRideStatus(); } finally {
-      if (mounted) _processingAction = false;
+      if (mounted) setState(() => _processingAction = false);
     }
   }
   Future<void> _executeDropOff(String name) async {
@@ -528,7 +528,7 @@ class _LiveTrackingScreenState extends State<LiveTrackingScreen> {
       }
     });
     try { await RideService.dropOffPassenger(widget.rideId, name); } catch (e) { debugPrint(e.toString()); syncRideStatus(); } finally {
-      if (mounted) _processingAction = false;
+      if (mounted) setState(() => _processingAction = false);
     }
   }
 
@@ -589,10 +589,8 @@ class _LiveTrackingScreenState extends State<LiveTrackingScreen> {
       if (confirm != true) return;
     }
 
-    // Optimistic UI update
-    setState(() {
-      if (rideData != null) rideData!['status'] = 'completed';
-    });
+    setState(() => _processingAction = true);
+    
     try {
       final updatedRide = await RideService.endRide(widget.rideId);
       if (mounted) {
@@ -603,6 +601,8 @@ class _LiveTrackingScreenState extends State<LiveTrackingScreen> {
       }
     } catch (e) {
       syncRideStatus();
+    } finally {
+      if (mounted) setState(() => _processingAction = false);
     }
   }
   Future<void> startRide() async { 
@@ -614,7 +614,7 @@ class _LiveTrackingScreenState extends State<LiveTrackingScreen> {
       if (rideData != null) rideData!['status'] = 'started';
     });
     try { await RideService.startRide(widget.rideId); } catch (e) { debugPrint(e.toString()); syncRideStatus(); } finally {
-      if (mounted) _processingAction = false;
+      if (mounted) setState(() => _processingAction = false);
     }
   }
 
