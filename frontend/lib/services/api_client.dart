@@ -60,7 +60,7 @@ class ApiClient {
 
   static Future<http.Response> _handleResponse(
     http.Response response, String path, String method, [Map<String, dynamic>? body]) async {
-    if (response.statusCode == 401 && !path.contains('/auth/refresh') && !path.contains('/auth/login')) {
+    if (response.statusCode == 401 && !path.contains('/auth/refresh') && !path.contains('/auth/login') && !path.contains('/auth/verify-otp') && !path.contains('/auth/change-password')) {
       final refreshed = await _attemptRefresh();
       if (refreshed) {
         debugPrint('Token refreshed, retrying: $method $path');
