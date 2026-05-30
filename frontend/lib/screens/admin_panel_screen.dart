@@ -44,7 +44,6 @@ class _AdminPanelScreenState extends State<AdminPanelScreen> with SingleTickerPr
         iconTheme: const IconThemeData(color: Colors.white),
         bottom: TabBar(
           controller: _tabController,
-          isScrollable: true,
           indicatorColor: Colors.amber,
           labelColor: Colors.amber,
           unselectedLabelColor: Colors.white60,
@@ -1222,11 +1221,13 @@ class _RidesTabState extends State<_RidesTab> with AutomaticKeepAliveClientMixin
                     _DetailRow(icon: Icons.schedule, label: 'Departure', value: ride['departureTime'] ?? 'N/A'),
                     
                     const SizedBox(height: 24),
-                    if ((ride['passengers'] as List?)?.isNotEmpty == true) ...[
+                    if ((ride['passengers'] as List?)?.isNotEmpty == true || (ride['droppedPassengers'] as List?)?.isNotEmpty == true) ...[
                       const Text('Passengers', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
                       const SizedBox(height: 8),
                       ...((ride['passengers'] as List?) ?? []).map((email) {
                         final details = (ride['riderDetails'] as Map?)?[email] as Map?;
+                        final hasPaid = details?['paid'] == true;
+                        final fare = details?['fare'] ?? '?';
                         return Container(
                           margin: const EdgeInsets.only(bottom: 8),
                           padding: const EdgeInsets.all(12),
@@ -1241,6 +1242,36 @@ class _RidesTabState extends State<_RidesTab> with AutomaticKeepAliveClientMixin
                               const SizedBox(height: 4),
                               Text('Pickup: ${details?['pickupLocation'] ?? '?'}', style: const TextStyle(fontSize: 12)),
                               Text('Drop: ${details?['destination'] ?? '?'}', style: const TextStyle(fontSize: 12)),
+                              Text('Fare: ₹$fare | Status: ${hasPaid ? "Paid" : "Pending"}', style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: hasPaid ? Colors.green : Colors.orange)),
+                            ],
+                          ),
+                        );
+                      }),
+                      ...((ride['droppedPassengers'] as List?) ?? []).map((email) {
+                        final details = (ride['riderDetails'] as Map?)?[email] as Map?;
+                        final hasPaid = details?['paid'] == true;
+                        final fare = details?['fare'] ?? '?';
+                        return Container(
+                          margin: const EdgeInsets.only(bottom: 8),
+                          padding: const EdgeInsets.all(12),
+                          decoration: BoxDecoration(
+                            color: Colors.green.withAlpha(20),
+                            borderRadius: BorderRadius.circular(8),
+                            border: Border.all(color: Colors.green.withAlpha(100)),
+                          ),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text('${details?['riderName'] ?? 'Unknown'} ($email) - Dropped', style: const TextStyle(fontWeight: FontWeight.bold, color: Colors.green)),
+                              const SizedBox(height: 4),
+                              Text('Pickup: ${details?['pickupLocation'] ?? '?'}', style: const TextStyle(fontSize: 12)),
+                              Text('Drop: ${details?['destination'] ?? '?'}', style: const TextStyle(fontSize: 12)),
+                              Text('Fare: ₹$fare | Status: ${hasPaid ? "Paid" : "Pending"}', style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: hasPaid ? Colors.green : Colors.orange)),
+                              if (details?['droppedAt'] != null)
+                                Padding(
+                                  padding: const EdgeInsets.only(top: 4),
+                                  child: Text('Dropped at: ${_formatDateWithTime(details!['droppedAt'])}', style: const TextStyle(fontSize: 12, color: Colors.green, fontWeight: FontWeight.w500)),
+                                ),
                             ],
                           ),
                         );
@@ -1253,6 +1284,8 @@ class _RidesTabState extends State<_RidesTab> with AutomaticKeepAliveClientMixin
                       const SizedBox(height: 8),
                       ...((ride['kicked'] as List?) ?? []).map((email) {
                         final details = (ride['riderDetails'] as Map?)?[email] as Map?;
+                        final hasPaid = details?['paid'] == true;
+                        final fare = details?['fare'] ?? '?';
                         return Container(
                           margin: const EdgeInsets.only(bottom: 8),
                           padding: const EdgeInsets.all(12),
@@ -1268,6 +1301,7 @@ class _RidesTabState extends State<_RidesTab> with AutomaticKeepAliveClientMixin
                               const SizedBox(height: 4),
                               Text('Pickup: ${details?['pickupLocation'] ?? '?'}', style: const TextStyle(fontSize: 12)),
                               Text('Drop: ${details?['destination'] ?? '?'}', style: const TextStyle(fontSize: 12)),
+                              Text('Fare: ₹$fare | Status: ${hasPaid ? "Paid (Refunded?)" : "Pending"}', style: const TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: Colors.red)),
                               if (details?['kickedAt'] != null)
                                 Padding(
                                   padding: const EdgeInsets.only(top: 4),
