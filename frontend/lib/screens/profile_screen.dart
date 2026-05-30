@@ -491,6 +491,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
         ],
       ),
     );
+  }
+
   Widget _passwordTile() {
     final isDark = Theme.of(context).brightness == Brightness.dark;
     return Padding(
