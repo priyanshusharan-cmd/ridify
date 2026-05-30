@@ -183,6 +183,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
     TextEditingController currentController = TextEditingController();
     TextEditingController newController = TextEditingController();
     bool isSaving = false;
+    bool obscureCurrent = true;
+    bool obscureNew = true;
     
     showDialog(
       context: context,
@@ -196,14 +198,40 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 children: [
                   TextField(
                     controller: currentController,
-                    obscureText: true,
-                    decoration: const InputDecoration(hintText: "Current Password"),
+                    obscureText: obscureCurrent,
+                    decoration: InputDecoration(
+                      hintText: "Current Password",
+                      suffixIcon: IconButton(
+                        icon: Icon(
+                          obscureCurrent ? Icons.visibility_off : Icons.visibility,
+                          color: Colors.grey,
+                        ),
+                        onPressed: () {
+                          setState(() {
+                            obscureCurrent = !obscureCurrent;
+                          });
+                        },
+                      ),
+                    ),
                   ),
                   const SizedBox(height: 15),
                   TextField(
                     controller: newController,
-                    obscureText: true,
-                    decoration: const InputDecoration(hintText: "New Password (min 8 chars)"),
+                    obscureText: obscureNew,
+                    decoration: InputDecoration(
+                      hintText: "New Password (min 8 chars)",
+                      suffixIcon: IconButton(
+                        icon: Icon(
+                          obscureNew ? Icons.visibility_off : Icons.visibility,
+                          color: Colors.grey,
+                        ),
+                        onPressed: () {
+                          setState(() {
+                            obscureNew = !obscureNew;
+                          });
+                        },
+                      ),
+                    ),
                   ),
                 ],
               ),
