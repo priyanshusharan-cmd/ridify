@@ -86,9 +86,17 @@ const login = async (req, res) => {
       return res.status(400).json({ error: 'Invalid credentials.' });
     }
 
-    const user = await User.findOne({ email }).select('+password');
+    const user = await User.findOne({ email }).select('+password +isVerified');
     if (!user) {
       return res.status(401).json({ error: 'Invalid email or password.' });
+    }
+
+    if (!user.isVerified) {
+      return res.status(403).json({ 
+        error: 'Please verify your email to log in.', 
+        requireVerification: true,
+        email: user.email
+      });
     }
 
     const isMatch = await bcrypt.compare(password, user.password);
