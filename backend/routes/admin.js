@@ -13,18 +13,10 @@ const {
   deleteRide,
   forceCancelRide,
   getStats,
+  wipeAllRides,
   banUser,
   unbanUser,
-  verifyDocuments,
-  createPromo,
-  listPromos,
-  deletePromo,
-  getSettings,
-  updateCommission,
-  updateSurge,
-  listDisputes,
-  resolveDispute,
-  listSOSAlerts,
+  verifyDocuments
 } = require('../controllers/adminController');
 
 const router = express.Router();
@@ -47,24 +39,10 @@ router.patch('/users/:id/verify', verifyDocuments);
 router.get('/rides', listRides);
 router.get('/rides/:id', getRideById);
 router.delete('/rides/:id', deleteRide);
+router.delete('/rides', wipeAllRides);
 router.patch('/rides/:id/cancel', forceCancelRide);
 
 // ── Platform Stats ──────────────────────────────────────────────────────────
 router.get('/stats', getStats);
-
-// ── Promos ──────────────────────────────────────────────────────────────────
-router.post('/promos', createPromo);
-router.get('/promos', listPromos);
-router.delete('/promos/:id', deletePromo);
-
-// ── Platform Settings ───────────────────────────────────────────────────────
-router.get('/settings', getSettings);
-router.patch('/settings/commission', updateCommission);
-router.patch('/settings/surge', updateSurge);
-
-// ── Disputes & SOS ──────────────────────────────────────────────────────────
-router.get('/disputes', listDisputes);
-router.patch('/disputes/:id/resolve', resolveDispute);
-router.get('/sos', listSOSAlerts);
 
 module.exports = router;

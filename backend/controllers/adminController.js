@@ -1,10 +1,6 @@
 const bcrypt = require('bcrypt');
 const User = require('../models/user');
 const Ride = require('../models/ride');
-const Promo = require('../models/promo');
-const Dispute = require('../models/dispute');
-const SOSAlert = require('../models/sosAlert');
-const Setting = require('../models/setting');
 const { isValidEmail, isValidObjectId, MAX_FIELD_LENGTH } = require('../utils/validators');
 
 const BCRYPT_ROUNDS = parseInt(process.env.BCRYPT_ROUNDS) || 12;
@@ -311,6 +307,26 @@ const deleteRide = async (req, res) => {
   }
 };
 
+// ── Wipe All Rides ──────────────────────────────────────────────────────────
+const wipeAllRides = async (req, res) => {
+  try {
+    const adminEmail = req.admin?.email;
+    if (!adminEmail) return res.status(401).json({ error: 'Unauthorized.' });
+
+    await Ride.deleteMany({});
+    console.log(`[WipeAllRides] Admin ${adminEmail} wiped all rides.`);
+
+    if (req.io) {
+      req.io.emit('all_rides_wiped');
+    }
+
+    res.json({ message: 'All rides have been permanently deleted.' });
+  } catch (err) {
+    console.error('Admin wipeAllRides error:', err.message);
+    res.status(500).json({ error: 'Server error wiping rides.' });
+  }
+};
+
 // ── Force Cancel Ride ───────────────────────────────────────────────────────
 const forceCancelRide = async (req, res) => {
   try {
@@ -426,83 +442,6 @@ const verifyDocuments = async (req, res) => {
   } catch (err) { res.status(500).json({ error: 'Server error verifying docs' }); }
 };
 
-// ── Promos ──────────────────────────────────────────────────────────────────
-const createPromo = async (req, res) => {
-  try {
-    const { code, discountPercentage } = req.body;
-    if (!code || !discountPercentage) return res.status(400).json({ error: 'Code and discount required' });
-    const promo = await Promo.create({ code, discountPercentage });
-    res.status(201).json(promo);
-  } catch (err) {
-    if (err.code === 11000) return res.status(409).json({ error: 'Promo code already exists' });
-    res.status(500).json({ error: 'Server error creating promo' });
-  }
-};
-
-const listPromos = async (req, res) => {
-  try {
-    const promos = await Promo.find().sort({ createdAt: -1 }).lean();
-    res.json(promos);
-  } catch (err) { res.status(500).json({ error: 'Server error fetching promos' }); }
-};
-
-const deletePromo = async (req, res) => {
-  try {
-    if (!isValidObjectId(req.params.id)) return res.status(400).json({ error: 'Invalid ID' });
-    await Promo.findByIdAndDelete(req.params.id);
-    res.json({ message: 'Promo deleted' });
-  } catch (err) { res.status(500).json({ error: 'Server error deleting promo' }); }
-};
-
-// ── Settings ────────────────────────────────────────────────────────────────
-const getSettings = async (req, res) => {
-  try {
-    const settings = await Setting.find().lean();
-    res.json(settings);
-  } catch (err) { res.status(500).json({ error: 'Server error fetching settings' }); }
-};
-
-const updateCommission = async (req, res) => {
-  try {
-    const { value } = req.body;
-    if (typeof value !== 'number' || value < 0 || value > 100) return res.status(400).json({ error: 'Invalid commission value (0-100)' });
-    const setting = await Setting.findOneAndUpdate({ key: 'commission_rate' }, { value }, { upsert: true, new: true });
-    res.json(setting);
-  } catch (err) { res.status(500).json({ error: 'Server error updating commission' }); }
-};
-
-const updateSurge = async (req, res) => {
-  try {
-    const { value } = req.body;
-    if (typeof value !== 'number' || value < 1) return res.status(400).json({ error: 'Invalid surge value (>= 1)' });
-    const setting = await Setting.findOneAndUpdate({ key: 'surge_multiplier' }, { value }, { upsert: true, new: true });
-    res.json(setting);
-  } catch (err) { res.status(500).json({ error: 'Server error updating surge' }); }
-};
-
-// ── Disputes & SOS ──────────────────────────────────────────────────────────
-const listDisputes = async (req, res) => {
-  try {
-    const disputes = await Dispute.find().sort({ createdAt: -1 }).populate('rideId', 'status routePath').lean();
-    res.json(disputes);
-  } catch (err) { res.status(500).json({ error: 'Server error fetching disputes' }); }
-};
-
-const resolveDispute = async (req, res) => {
-  try {
-    if (!isValidObjectId(req.params.id)) return res.status(400).json({ error: 'Invalid ID' });
-    const dispute = await Dispute.findByIdAndUpdate(req.params.id, { status: 'resolved' }, { new: true });
-    res.json(dispute);
-  } catch (err) { res.status(500).json({ error: 'Server error resolving dispute' }); }
-};
-
-const listSOSAlerts = async (req, res) => {
-  try {
-    const alerts = await SOSAlert.find().sort({ createdAt: -1 }).lean();
-    res.json(alerts);
-  } catch (err) { res.status(500).json({ error: 'Server error fetching SOS alerts' }); }
-};
-
 module.exports = {
   listUsers,
   getUserById,
@@ -518,13 +457,6 @@ module.exports = {
   banUser,
   unbanUser,
   verifyDocuments,
-  createPromo,
-  listPromos,
-  deletePromo,
-  getSettings,
-  updateCommission,
-  updateSurge,
-  listDisputes,
-  resolveDispute,
-  listSOSAlerts,
+  getStats,
+  wipeAllRides
 };

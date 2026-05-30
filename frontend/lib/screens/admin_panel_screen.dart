@@ -248,26 +248,54 @@ class _DashboardTabState extends State<_DashboardTab> with AutomaticKeepAliveCli
             // ── System Actions ─────────────────────────────────────────
             _SectionHeader(title: 'System Actions'),
             const SizedBox(height: 12),
-            SizedBox(
-              width: double.infinity,
-              height: 55,
-              child: OutlinedButton.icon(
-                style: OutlinedButton.styleFrom(
-                  side: const BorderSide(color: Colors.deepOrange),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(15),
+            Row(
+              children: [
+                Expanded(
+                  child: SizedBox(
+                    height: 55,
+                    child: OutlinedButton.icon(
+                      style: OutlinedButton.styleFrom(
+                        side: const BorderSide(color: Colors.deepOrange),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(15),
+                        ),
+                      ),
+                      onPressed: () => _adminWipeAllUsers(context),
+                      icon: const Icon(Icons.group_off, color: Colors.deepOrange),
+                      label: const Text(
+                        "Wipe Users",
+                        style: TextStyle(
+                          color: Colors.deepOrange,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ),
                   ),
                 ),
-                onPressed: () => _adminWipeAllUsers(context),
-                icon: const Icon(Icons.delete_sweep, color: Colors.deepOrange),
-                label: const Text(
-                  "Wipe All Users",
-                  style: TextStyle(
-                    color: Colors.deepOrange,
-                    fontWeight: FontWeight.bold,
+                const SizedBox(width: 12),
+                Expanded(
+                  child: SizedBox(
+                    height: 55,
+                    child: OutlinedButton.icon(
+                      style: OutlinedButton.styleFrom(
+                        side: const BorderSide(color: Colors.red),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(15),
+                        ),
+                      ),
+                      onPressed: () => _adminWipeAllRides(context),
+                      icon: const Icon(Icons.car_crash, color: Colors.red),
+                      label: const Text(
+                        "Wipe Rides",
+                        style: TextStyle(
+                          color: Colors.red,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ),
                   ),
                 ),
-              ),
+              ],
             ),
             const SizedBox(height: 40),
           ],
@@ -330,6 +358,53 @@ class _DashboardTabState extends State<_DashboardTab> with AutomaticKeepAliveCli
       Navigator.of(context).pushAndRemoveUntil(
         MaterialPageRoute(builder: (_) => const LoginScreen()),
         (route) => false,
+      );
+    } catch (e) {
+      if (context.mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(e.toString().replaceAll('Exception: ', '')),
+            backgroundColor: Colors.red,
+          ),
+        );
+      }
+    }
+  }
+
+  Future<void> _adminWipeAllRides(BuildContext context) async {
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: const Text(
+          '⚠️ Delete ALL Rides',
+          style: TextStyle(fontWeight: FontWeight.bold, color: Colors.red),
+        ),
+        content: const Text(
+          'This permanently deletes every ride from the database.\n\nThis action cannot be undone.',
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(ctx, false),
+            child: Text('Cancel', style: TextStyle(color: Theme.of(context).textTheme.bodyLarge?.color)),
+          ),
+          ElevatedButton(
+            style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
+            onPressed: () => Navigator.pop(ctx, true),
+            child: const Text('Yes, Delete All',
+                style: TextStyle(color: Colors.white)),
+          ),
+        ],
+      ),
+    );
+
+    if (confirmed != true || !mounted) return;
+
+    try {
+      await AdminService.wipeAllRides();
+      _fetchStats();
+      if (!context.mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('All rides deleted successfully.'), backgroundColor: Colors.green),
       );
     } catch (e) {
       if (context.mounted) {
@@ -1066,6 +1141,16 @@ class _RidesTabState extends State<_RidesTab> with AutomaticKeepAliveClientMixin
     }
   }
 
+  String _formatDateWithTime(String? dateStr) {
+    if (dateStr == null) return '';
+    try {
+      final dt = DateTime.parse(dateStr).toLocal();
+      return '${dt.day}/${dt.month}/${dt.year} ${dt.hour}:${dt.minute.toString().padLeft(2, '0')}';
+    } catch (_) {
+      return '';
+    }
+  }
+
   void _showRideDetails(Map<String, dynamic> ride) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
     final status = ride['status'] ?? 'unknown';
@@ -1076,6 +1161,9 @@ class _RidesTabState extends State<_RidesTab> with AutomaticKeepAliveClientMixin
       isScrollControlled: true,
       backgroundColor: Colors.transparent,
       builder: (ctx) => Container(
+        constraints: BoxConstraints(
+          maxHeight: MediaQuery.of(ctx).size.height * 0.9,
+        ),
         decoration: BoxDecoration(
           color: isDark ? const Color(0xFF1E1E1E) : Colors.white,
           borderRadius: const BorderRadius.vertical(top: Radius.circular(20)),
@@ -1111,27 +1199,89 @@ class _RidesTabState extends State<_RidesTab> with AutomaticKeepAliveClientMixin
               ],
             ),
             const SizedBox(height: 16),
-            _DetailRow(icon: Icons.person, label: 'Driver', value: ride['riderName'] ?? ride['riderEmail'] ?? 'Unknown'),
-            _DetailRow(icon: Icons.email_outlined, label: 'Email', value: ride['riderEmail'] ?? ''),
-            _DetailRow(icon: Icons.location_on, label: 'Pickup', value: ride['pickupLocation'] ?? ''),
-            _DetailRow(icon: Icons.flag, label: 'Destination', value: ride['destination'] ?? ''),
-            _DetailRow(icon: Icons.directions_car, label: 'Vehicle', value: ride['vehicleType'] ?? ''),
-            _DetailRow(
-              icon: Icons.currency_rupee,
-              label: 'Fare',
-              value: '₹${ride['fare'] ?? 0}',
+            Expanded(
+              child: SingleChildScrollView(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    _DetailRow(icon: Icons.person, label: 'Driver', value: ride['riderName'] ?? ride['riderEmail'] ?? 'Unknown'),
+                    _DetailRow(icon: Icons.email_outlined, label: 'Email', value: ride['riderEmail'] ?? ''),
+                    _DetailRow(icon: Icons.location_on, label: 'Pickup', value: ride['pickupLocation'] ?? ''),
+                    _DetailRow(icon: Icons.flag, label: 'Destination', value: ride['destination'] ?? ''),
+                    _DetailRow(icon: Icons.directions_car, label: 'Vehicle', value: ride['vehicleType'] ?? ''),
+                    _DetailRow(
+                      icon: Icons.currency_rupee,
+                      label: 'Fare',
+                      value: '₹${ride['fare'] ?? 0}',
+                    ),
+                    _DetailRow(
+                      icon: Icons.airline_seat_recline_normal,
+                      label: 'Seats',
+                      value: '${ride['availableSeats'] ?? ride['totalSeats'] ?? '-'} / ${ride['totalSeats'] ?? '-'}',
+                    ),
+                    _DetailRow(icon: Icons.schedule, label: 'Departure', value: ride['departureTime'] ?? 'N/A'),
+                    
+                    const SizedBox(height: 24),
+                    if ((ride['passengers'] as List?)?.isNotEmpty == true) ...[
+                      const Text('Passengers', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
+                      const SizedBox(height: 8),
+                      ...((ride['passengers'] as List?) ?? []).map((email) {
+                        final details = (ride['riderDetails'] as Map?)?[email] as Map?;
+                        return Container(
+                          margin: const EdgeInsets.only(bottom: 8),
+                          padding: const EdgeInsets.all(12),
+                          decoration: BoxDecoration(
+                            color: isDark ? Colors.white10 : Colors.black.withAlpha(10),
+                            borderRadius: BorderRadius.circular(8),
+                          ),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text('${details?['riderName'] ?? 'Unknown'} ($email)', style: const TextStyle(fontWeight: FontWeight.bold)),
+                              const SizedBox(height: 4),
+                              Text('Pickup: ${details?['pickupLocation'] ?? '?'}', style: const TextStyle(fontSize: 12)),
+                              Text('Drop: ${details?['destination'] ?? '?'}', style: const TextStyle(fontSize: 12)),
+                            ],
+                          ),
+                        );
+                      }),
+                    ],
+
+                    if ((ride['kicked'] as List?)?.isNotEmpty == true) ...[
+                      const SizedBox(height: 16),
+                      const Text('Kicked Passengers', style: TextStyle(fontWeight: FontWeight.bold, color: Colors.red, fontSize: 16)),
+                      const SizedBox(height: 8),
+                      ...((ride['kicked'] as List?) ?? []).map((email) {
+                        final details = (ride['riderDetails'] as Map?)?[email] as Map?;
+                        return Container(
+                          margin: const EdgeInsets.only(bottom: 8),
+                          padding: const EdgeInsets.all(12),
+                          decoration: BoxDecoration(
+                            color: Colors.red.withAlpha(20),
+                            borderRadius: BorderRadius.circular(8),
+                            border: Border.all(color: Colors.red.withAlpha(100)),
+                          ),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text('${details?['riderName'] ?? 'Unknown'} ($email)', style: const TextStyle(fontWeight: FontWeight.bold, color: Colors.red)),
+                              const SizedBox(height: 4),
+                              Text('Pickup: ${details?['pickupLocation'] ?? '?'}', style: const TextStyle(fontSize: 12)),
+                              Text('Drop: ${details?['destination'] ?? '?'}', style: const TextStyle(fontSize: 12)),
+                              if (details?['kickedAt'] != null)
+                                Padding(
+                                  padding: const EdgeInsets.only(top: 4),
+                                  child: Text('Kicked at: ${_formatDateWithTime(details!['kickedAt'])}', style: const TextStyle(fontSize: 12, color: Colors.red, fontWeight: FontWeight.w500)),
+                                ),
+                            ],
+                          ),
+                        );
+                      }),
+                    ],
+                  ],
+                ),
+              ),
             ),
-            _DetailRow(
-              icon: Icons.airline_seat_recline_normal,
-              label: 'Seats',
-              value: '${ride['availableSeats'] ?? ride['totalSeats'] ?? '-'} / ${ride['totalSeats'] ?? '-'}',
-            ),
-            _DetailRow(
-              icon: Icons.people,
-              label: 'Passengers',
-              value: '${(ride['passengers'] as List?)?.length ?? 0}',
-            ),
-            _DetailRow(icon: Icons.schedule, label: 'Departure', value: ride['departureTime'] ?? 'N/A'),
             const SizedBox(height: 24),
             Row(
               children: [
@@ -1602,321 +1752,6 @@ class _VehicleIcon extends StatelessWidget {
     return CircleAvatar(
       backgroundColor: isDark ? Colors.white12 : Colors.black12,
       child: Icon(icon, color: isDark ? Colors.white70 : Colors.black54),
-    );
-  }
-}
-
-class _PromosTab extends StatefulWidget {
-  const _PromosTab();
-  @override
-  State<_PromosTab> createState() => _PromosTabState();
-}
-
-class _PromosTabState extends State<_PromosTab> with AutomaticKeepAliveClientMixin {
-  bool isLoading = true;
-  List<dynamic> promos = [];
-  String error = '';
-
-  @override
-  bool get wantKeepAlive => true;
-
-  @override
-  void initState() {
-    super.initState();
-    _fetchPromos();
-  }
-
-  Future<void> _fetchPromos() async {
-    try {
-      setState(() { isLoading = true; error = ''; });
-      final data = await AdminService.getPromos();
-      if (mounted) setState(() { promos = data; isLoading = false; });
-    } catch (e) {
-      if (mounted) setState(() { error = e.toString(); isLoading = false; });
-    }
-  }
-
-  Future<void> _createPromo() async {
-    final codeCtrl = TextEditingController();
-    final discountCtrl = TextEditingController();
-    final created = await showDialog<bool>(
-      context: context,
-      builder: (ctx) => AlertDialog(
-        title: const Text('Create Promo Code'),
-        content: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            TextField(controller: codeCtrl, decoration: const InputDecoration(labelText: 'Code (e.g. SUMMER50)')),
-            TextField(controller: discountCtrl, keyboardType: TextInputType.number, decoration: const InputDecoration(labelText: 'Discount %')),
-          ],
-        ),
-        actions: [
-          TextButton(onPressed: () => Navigator.pop(ctx, false), child: const Text('Cancel')),
-          ElevatedButton(
-            onPressed: () async {
-              try {
-                await AdminService.createPromo(codeCtrl.text.trim(), num.parse(discountCtrl.text));
-                if (ctx.mounted) Navigator.pop(ctx, true);
-              } catch (e) {
-                if (ctx.mounted) ScaffoldMessenger.of(ctx).showSnackBar(SnackBar(content: Text(e.toString())));
-              }
-            },
-            child: const Text('Create'),
-          ),
-        ],
-      ),
-    );
-    if (created == true) _fetchPromos();
-  }
-
-  Future<void> _deletePromo(String id) async {
-    try {
-      await AdminService.deletePromo(id);
-      _fetchPromos();
-    } catch (e) {
-      if (mounted) ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(e.toString())));
-    }
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    super.build(context);
-    if (isLoading) return const Center(child: CircularProgressIndicator());
-    if (error.isNotEmpty) return Center(child: Text(error, style: const TextStyle(color: Colors.red)));
-
-    return Scaffold(
-      backgroundColor: Colors.transparent,
-      floatingActionButton: FloatingActionButton(
-        onPressed: _createPromo,
-        child: const Icon(Icons.add),
-      ),
-      body: ListView.builder(
-        padding: const EdgeInsets.all(16),
-        itemCount: promos.length,
-        itemBuilder: (context, index) {
-          final p = promos[index];
-          return Card(
-            child: ListTile(
-              title: Text(p['code'], style: const TextStyle(fontWeight: FontWeight.bold)),
-              subtitle: Text('Discount: ${p['discountPercentage']}% | Used: ${p['usageCount']}'),
-              trailing: IconButton(
-                icon: const Icon(Icons.delete, color: Colors.red),
-                onPressed: () => _deletePromo(p['_id']),
-              ),
-            ),
-          );
-        },
-      ),
-    );
-  }
-}
-
-class _ConfigTab extends StatefulWidget {
-  const _ConfigTab();
-  @override
-  State<_ConfigTab> createState() => _ConfigTabState();
-}
-
-class _ConfigTabState extends State<_ConfigTab> with AutomaticKeepAliveClientMixin {
-  bool isLoading = true;
-  String error = '';
-  num commission = 10;
-  num surge = 1.0;
-
-  @override
-  bool get wantKeepAlive => true;
-
-  @override
-  void initState() {
-    super.initState();
-    _fetchSettings();
-  }
-
-  Future<void> _fetchSettings() async {
-    try {
-      setState(() { isLoading = true; error = ''; });
-      final data = await AdminService.getSettings();
-      for (var s in data) {
-        if (s['key'] == 'commission_rate') commission = s['value'];
-        if (s['key'] == 'surge_multiplier') surge = s['value'];
-      }
-      if (mounted) setState(() { isLoading = false; });
-    } catch (e) {
-      if (mounted) setState(() { error = e.toString(); isLoading = false; });
-    }
-  }
-
-  Future<void> _updateCommission(num val) async {
-    try {
-      await AdminService.updateCommission(val);
-      if (mounted) ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Commission updated')));
-    } catch (e) {
-      if (mounted) ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(e.toString())));
-    }
-  }
-
-  Future<void> _updateSurge(num val) async {
-    try {
-      await AdminService.updateSurge(val);
-      if (mounted) ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Surge updated')));
-    } catch (e) {
-      if (mounted) ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(e.toString())));
-    }
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    super.build(context);
-    if (isLoading) return const Center(child: CircularProgressIndicator());
-    if (error.isNotEmpty) return Center(child: Text(error, style: const TextStyle(color: Colors.red)));
-
-    return ListView(
-      padding: const EdgeInsets.all(16),
-      children: [
-        Card(
-          child: Padding(
-            padding: const EdgeInsets.all(16),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                const Text('Platform Commission (%)', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
-                Slider(
-                  value: commission.toDouble(),
-                  min: 0,
-                  max: 50,
-                  divisions: 50,
-                  label: commission.toString(),
-                  onChanged: (v) => setState(() => commission = v),
-                  onChangeEnd: (v) => _updateCommission(v),
-                ),
-              ],
-            ),
-          ),
-        ),
-        const SizedBox(height: 16),
-        Card(
-          child: Padding(
-            padding: const EdgeInsets.all(16),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                const Text('Surge Multiplier', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
-                Slider(
-                  value: surge.toDouble(),
-                  min: 1.0,
-                  max: 5.0,
-                  divisions: 40,
-                  label: surge.toStringAsFixed(1),
-                  onChanged: (v) => setState(() => surge = v),
-                  onChangeEnd: (v) => _updateSurge(v),
-                ),
-              ],
-            ),
-          ),
-        ),
-      ],
-    );
-  }
-}
-
-class _SupportTab extends StatefulWidget {
-  const _SupportTab();
-  @override
-  State<_SupportTab> createState() => _SupportTabState();
-}
-
-class _SupportTabState extends State<_SupportTab> with AutomaticKeepAliveClientMixin {
-  bool isLoading = true;
-  String error = '';
-  List<dynamic> disputes = [];
-  List<dynamic> sosAlerts = [];
-
-  @override
-  bool get wantKeepAlive => true;
-
-  @override
-  void initState() {
-    super.initState();
-    _fetchSupportData();
-  }
-
-  Future<void> _fetchSupportData() async {
-    try {
-      setState(() { isLoading = true; error = ''; });
-      final d = await AdminService.getDisputes();
-      final s = await AdminService.getSOSAlerts();
-      if (mounted) setState(() { disputes = d; sosAlerts = s; isLoading = false; });
-    } catch (e) {
-      if (mounted) setState(() { error = e.toString(); isLoading = false; });
-    }
-  }
-
-  Future<void> _resolveDispute(String id) async {
-    try {
-      await AdminService.resolveDispute(id);
-      _fetchSupportData();
-    } catch (e) {
-      if (mounted) ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(e.toString())));
-    }
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    super.build(context);
-    if (isLoading) return const Center(child: CircularProgressIndicator());
-    if (error.isNotEmpty) return Center(child: Text(error, style: const TextStyle(color: Colors.red)));
-
-    return DefaultTabController(
-      length: 2,
-      child: Column(
-        children: [
-          const TabBar(
-            labelColor: Colors.amber,
-            unselectedLabelColor: Colors.grey,
-            tabs: [
-              Tab(text: 'Disputes'),
-              Tab(text: 'SOS Alerts'),
-            ],
-          ),
-          Expanded(
-            child: TabBarView(
-              children: [
-                ListView.builder(
-                  padding: const EdgeInsets.all(16),
-                  itemCount: disputes.length,
-                  itemBuilder: (ctx, i) {
-                    final d = disputes[i];
-                    return Card(
-                      child: ListTile(
-                        title: Text('Ride: ${d['rideId'] ?? 'N/A'}'),
-                        subtitle: Text('Reporter: ${d['reporterEmail']}\nReason: ${d['reason']}'),
-                        trailing: d['status'] == 'open'
-                            ? TextButton(onPressed: () => _resolveDispute(d['_id']), child: const Text('Resolve'))
-                            : const Text('Resolved', style: TextStyle(color: Colors.green)),
-                      ),
-                    );
-                  },
-                ),
-                ListView.builder(
-                  padding: const EdgeInsets.all(16),
-                  itemCount: sosAlerts.length,
-                  itemBuilder: (ctx, i) {
-                    final s = sosAlerts[i];
-                    return Card(
-                      color: s['status'] == 'active' ? Colors.red.withAlpha(50) : null,
-                      child: ListTile(
-                        title: Text('User: ${s['userEmail']}'),
-                        subtitle: Text('Location: ${s['location']['lat']}, ${s['location']['lng']}'),
-                        trailing: Text(s['status'].toUpperCase(), style: TextStyle(color: s['status'] == 'active' ? Colors.red : Colors.green)),
-                      ),
-                    );
-                  },
-                ),
-              ],
-            ),
-          ),
-        ],
-      ),
     );
   }
 }

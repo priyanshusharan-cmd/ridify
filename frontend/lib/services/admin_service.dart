@@ -114,6 +114,13 @@ class AdminService {
     }
   }
 
+  static Future<void> wipeAllRides() async {
+    final response = await ApiClient.delete('/api/admin/rides');
+    if (response.statusCode != 200) {
+      throw Exception(jsonDecode(response.body)['error'] ?? 'Failed to wipe all rides.');
+    }
+  }
+
   static Future<void> forceCancelRide(String id) async {
     final response = await ApiClient.patch('/api/admin/rides/$id/cancel', {});
     if (response.statusCode != 200) {
@@ -148,53 +155,4 @@ class AdminService {
     if (response.statusCode != 200) throw Exception(jsonDecode(response.body)['error'] ?? 'Failed to verify user.');
   }
 
-  static Future<Map<String, dynamic>> createPromo(String code, num discount) async {
-    final response = await ApiClient.post('/api/admin/promos', {'code': code, 'discountPercentage': discount});
-    if (response.statusCode == 201) return jsonDecode(response.body);
-    throw Exception(jsonDecode(response.body)['error'] ?? 'Failed to create promo.');
-  }
-
-  static Future<List<dynamic>> getPromos() async {
-    final response = await ApiClient.get('/api/admin/promos');
-    if (response.statusCode == 200) return jsonDecode(response.body);
-    throw Exception(jsonDecode(response.body)['error'] ?? 'Failed to fetch promos.');
-  }
-
-  static Future<void> deletePromo(String id) async {
-    final response = await ApiClient.delete('/api/admin/promos/$id');
-    if (response.statusCode != 200) throw Exception(jsonDecode(response.body)['error'] ?? 'Failed to delete promo.');
-  }
-
-  static Future<List<dynamic>> getSettings() async {
-    final response = await ApiClient.get('/api/admin/settings');
-    if (response.statusCode == 200) return jsonDecode(response.body);
-    throw Exception(jsonDecode(response.body)['error'] ?? 'Failed to fetch settings.');
-  }
-
-  static Future<void> updateCommission(num value) async {
-    final response = await ApiClient.patch('/api/admin/settings/commission', {'value': value});
-    if (response.statusCode != 200) throw Exception(jsonDecode(response.body)['error'] ?? 'Failed to update commission.');
-  }
-
-  static Future<void> updateSurge(num value) async {
-    final response = await ApiClient.patch('/api/admin/settings/surge', {'value': value});
-    if (response.statusCode != 200) throw Exception(jsonDecode(response.body)['error'] ?? 'Failed to update surge.');
-  }
-
-  static Future<List<dynamic>> getDisputes() async {
-    final response = await ApiClient.get('/api/admin/disputes');
-    if (response.statusCode == 200) return jsonDecode(response.body);
-    throw Exception(jsonDecode(response.body)['error'] ?? 'Failed to fetch disputes.');
-  }
-
-  static Future<void> resolveDispute(String id) async {
-    final response = await ApiClient.patch('/api/admin/disputes/$id/resolve', {});
-    if (response.statusCode != 200) throw Exception(jsonDecode(response.body)['error'] ?? 'Failed to resolve dispute.');
-  }
-
-  static Future<List<dynamic>> getSOSAlerts() async {
-    final response = await ApiClient.get('/api/admin/sos');
-    if (response.statusCode == 200) return jsonDecode(response.body);
-    throw Exception(jsonDecode(response.body)['error'] ?? 'Failed to fetch SOS alerts.');
-  }
 }
