@@ -95,8 +95,8 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
   
   final List<MapEntry<String, void Function(dynamic)>> _socketListeners = [];
   
-  void _onSocket(dynamic socket, String event, void Function(dynamic) handler) {
-    socket.on(event, handler);
+  void _onSocket(String event, void Function(dynamic) handler) {
+    SocketService().on(event, handler);
     _socketListeners.add(MapEntry(event, handler));
   }
 
@@ -218,29 +218,29 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
     final socket = socketService.socket;
 
     // Direct state updates — no re-fetch needed
-    _onSocket(socket, 'connect', (_) {
+    _onSocket('connect', (_) {
       fetchRides();
     });
 
-    _onSocket(socket, 'new_ride_request', (data) {
+    _onSocket('new_ride_request', (data) {
       if (data != null && data['ride'] != null) _upsertRide(Map<String, dynamic>.from(data['ride']));
     });
-    _onSocket(socket, 'all_rides_wiped', (_) {
+    _onSocket('all_rides_wiped', (_) {
       if (mounted) setState(() => allRides = []);
     });
-    _onSocket(socket, 'ride_accepted', (data) {
+    _onSocket('ride_accepted', (data) {
       if (data != null && data['ride'] != null) _upsertRide(Map<String, dynamic>.from(data['ride']));
     });
-    _onSocket(socket, 'ride_cancelled', (data) {
+    _onSocket('ride_cancelled', (data) {
       if (data != null && data['ride'] != null) _upsertRide(Map<String, dynamic>.from(data['ride']));
     });
-    _onSocket(socket, 'driver_arrived', (data) {
+    _onSocket('driver_arrived', (data) {
       if (data != null && data['ride'] != null) _upsertRide(Map<String, dynamic>.from(data['ride']));
     });
-    _onSocket(socket, 'passenger_boarded', (data) {
+    _onSocket('passenger_boarded', (data) {
       if (data != null && data['ride'] != null) _upsertRide(Map<String, dynamic>.from(data['ride']));
     });
-    _onSocket(socket, 'passenger_dropped', (data) {
+    _onSocket('passenger_dropped', (data) {
       if (data != null && data['ride'] != null) {
         final ride = Map<String, dynamic>.from(data['ride']);
         _upsertRide(ride);
@@ -262,7 +262,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
         }
       }
     });
-    _onSocket(socket, 'passenger_kicked', (data) {
+    _onSocket('passenger_kicked', (data) {
       if (data != null && data['ride'] != null) {
         final ride = Map<String, dynamic>.from(data['ride']);
         _upsertRide(ride);
@@ -285,14 +285,14 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
         }
       }
     });
-    _onSocket(socket, 'passenger_paid', (data) {
+    _onSocket('passenger_paid', (data) {
       if (data != null && data['ride'] != null) _upsertRide(Map<String, dynamic>.from(data['ride']));
     });
-    _onSocket(socket, 'ride_started', (data) {
+    _onSocket('ride_started', (data) {
       if (data != null && data['ride'] != null) _upsertRide(Map<String, dynamic>.from(data['ride']));
     });
 
-    _onSocket(socket, 'ride_ended', (data) {
+    _onSocket('ride_ended', (data) {
       if (data != null && data['ride'] != null) {
         final ride = Map<String, dynamic>.from(data['ride']);
         _upsertRide(ride);
@@ -313,7 +313,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
       fetchRides();
     });
 
-    _onSocket(socket, 'database_wiped', (_) {
+    _onSocket('database_wiped', (_) {
       if (mounted) {
         setState(() => allRides = []);
         Navigator.popUntil(context, (route) => route.isFirst);
@@ -326,9 +326,9 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
     _startupController.dispose();
     _victoryController.dispose();
     // Clean up only our specific listeners
-    final socket = SocketService().socket;
+    final socketService = SocketService();
     for (final entry in _socketListeners) {
-      socket.off(entry.key, entry.value);
+      socketService.off(entry.key, entry.value);
     }
     _socketListeners.clear();
 

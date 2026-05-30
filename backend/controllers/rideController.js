@@ -8,7 +8,8 @@ const {
   getRiderDetail, 
   checkCapacityForSearch, 
   checkCapacityForRequest, 
-  checkCapacity 
+  checkCapacity,
+  decodeRiderDetailsForSocket
 } = require('../utils/rideHelpers');
 
 // ── Environment-configurable constants ──────────────────────────────────────
@@ -325,14 +326,14 @@ exports.cancelRide = async (req, res) => {
         if (!ride.declined.includes(requester)) {
           ride.declined.push(requester);
         }
-        req.emitToUser(requester, 'ride_cancelled', { rideId: req.params.id, ride: ride.toJSON() });
+        req.emitToUser(requester, 'ride_cancelled', { rideId: req.params.id, ride: decodeRiderDetailsForSocket(ride.toJSON()) });
       }
       ride.requests = [];
     }
 
     ride.status = 'cancelled';
     await ride.save();
-    req.io.to(req.params.id).emit('ride_cancelled', { rideId: req.params.id, ride: ride.toJSON() });
+    req.io.to(req.params.id).emit('ride_cancelled', { rideId: req.params.id, ride: decodeRiderDetailsForSocket(ride.toJSON()) });
     res.status(200).json({ success: true });
   } catch (err) { res.status(500).json({ error: err.message }); }
 };
@@ -454,8 +455,10 @@ exports.requestRide = async (req, res) => {
 
     const rideId = updateResult._id.toString();
     req.joinUserToRide(riderEmail, rideId);
-    req.io.to(rideId).emit('new_ride_request', { rideId, ride: updateResult.toJSON() });
-    req.emitToUser(ride.riderEmail, 'new_ride_request', { rideId, ride: updateResult.toJSON() });
+    
+    const ridePayload = decodeRiderDetailsForSocket(updateResult.toJSON());
+    req.io.to(rideId).emit('new_ride_request', { rideId, ride: ridePayload });
+    req.emitToUser(ride.riderEmail, 'new_ride_request', { rideId, ride: ridePayload });
 
     res.status(200).json({ success: true });
   } catch (err) { res.status(500).json({ error: err.message }); }
@@ -506,7 +509,7 @@ exports.acceptRider = async (req, res) => {
     for (const rName of toDecline) {
       ride.requests = ride.requests.filter(r => r !== rName);
       ride.declined.push(rName);
-      req.emitToUser(rName, 'ride_cancelled', { rideId: ride._id.toString(), ride: ride.toJSON() });
+      req.emitToUser(rName, 'ride_cancelled', { rideId: ride._id.toString(), ride: decodeRiderDetailsForSocket(ride.toJSON()) });
     }
 
     // Check if the ride is completely full across ALL segments.
@@ -631,7 +634,7 @@ exports.acceptRider = async (req, res) => {
     }
 
     const rideId = updateResult._id.toString();
-    req.io.to(rideId).emit('ride_accepted', { rideId, ride: updateResult.toJSON() });
+    req.io.to(rideId).emit('ride_accepted', { rideId, ride: decodeRiderDetailsForSocket(updateResult.toJSON()) });
     res.status(200).json(updateResult);
   } catch (err) { res.status(500).json({ error: err.message }); }
 };
@@ -664,8 +667,9 @@ exports.declineRider = async (req, res) => {
     
     await ride.save();
     const rideId = ride._id.toString();
-    req.io.to(rideId).emit('ride_accepted', { rideId, ride: ride.toJSON() });
-    req.emitToUser(passengerEmail, 'ride_cancelled', { rideId, ride: ride.toJSON() });
+    const ridePayload = decodeRiderDetailsForSocket(ride.toJSON());
+    req.io.to(rideId).emit('ride_accepted', { rideId, ride: ridePayload });
+    req.emitToUser(passengerEmail, 'ride_cancelled', { rideId, ride: ridePayload });
     res.status(200).json(ride);
   } catch (err) { res.status(500).json({ error: err.message }); }
 };
@@ -717,7 +721,7 @@ exports.kickPassenger = async (req, res) => {
 
     await ride.save();
     const rideId = ride._id.toString();
-    const payload = { rideId, kickedUser: passengerEmail, ride: ride.toJSON() };
+    const payload = { rideId, kickedUser: passengerEmail, ride: decodeRiderDetailsForSocket(ride.toJSON()) };
     req.io.to(rideId).emit('passenger_kicked', payload);
     // Also target the kicked user directly (they may have left the room)
     req.emitToUser(passengerEmail, 'passenger_kicked', payload);
@@ -789,7 +793,7 @@ exports.driverArrived = async (req, res) => {
     }
 
     const rideId = updateResult._id.toString();
-    req.io.to(rideId).emit('driver_arrived', { rideId, riderName: passengerEmail, ride: updateResult.toJSON() });
+    req.io.to(rideId).emit('driver_arrived', { rideId, riderName: passengerEmail, ride: decodeRiderDetailsForSocket(updateResult.toJSON()) });
     res.status(200).json(updateResult);
   } catch (err) { res.status(500).json({ error: err.message }); }
 };
@@ -855,7 +859,7 @@ exports.boardPassenger = async (req, res) => {
     }
 
     const rideId = updateResult._id.toString();
-    req.io.to(rideId).emit('passenger_boarded', { rideId, ride: updateResult.toJSON() });
+    req.io.to(rideId).emit('passenger_boarded', { rideId, riderName: passengerEmail, ride: decodeRiderDetailsForSocket(updateResult.toJSON()) });
     res.status(200).json(updateResult);
   } catch (err) { res.status(500).json({ error: err.message }); }
 };
@@ -923,7 +927,7 @@ exports.dropOffPassenger = async (req, res) => {
       rideId, 
       riderName: passengerEmail, 
       fare,
-      ride: updateResult.toJSON()
+      ride: decodeRiderDetailsForSocket(updateResult.toJSON())
     };
     req.io.to(rideId).emit('passenger_dropped', payload);
     res.status(200).json(updateResult);
@@ -957,7 +961,7 @@ exports.passengerPays = async (req, res) => {
 
     await ride.save();
     const rideId = ride._id.toString();
-    req.io.to(rideId).emit('passenger_paid', { rideId, riderName: passengerEmail, ride: ride.toJSON() });
+    req.io.to(rideId).emit('passenger_paid', { rideId, riderName: passengerEmail, ride: decodeRiderDetailsForSocket(ride.toJSON()) });
     res.status(200).json(ride);
   } catch (err) { res.status(500).json({ error: err.message }); }
 };
@@ -1028,7 +1032,7 @@ exports.startRide = async (req, res) => {
     }
 
     const rideId = updateResult._id.toString();
-    req.io.to(rideId).emit('ride_started', { rideId, ride: updateResult.toJSON() });
+    req.io.to(rideId).emit('ride_started', { rideId, ride: decodeRiderDetailsForSocket(updateResult.toJSON()) });
     res.status(200).json(updateResult);
   } catch (err) { res.status(500).json({ error: err.message }); }
 };
@@ -1105,7 +1109,7 @@ exports.endRide = async (req, res) => {
 
     req.io.to(rideId).emit('ride_ended', {
         rideId,
-        ride: ride.toJSON(),
+        ride: decodeRiderDetailsForSocket(ride.toJSON()),
         passengers: ride.droppedPassengers,
         riderName: ride.riderName,
         riderEmail: ride.riderEmail,

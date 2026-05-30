@@ -13,6 +13,7 @@ class SocketService {
   String? _userEmail;
   String? _accessToken;
   final Map<String, int> _joinedRidesCount = {};
+  final Map<String, List<void Function(dynamic)>> _eventListeners = {};
 
   /// The single shared socket. Created lazily on first access.
   io.Socket get socket {
@@ -27,7 +28,7 @@ class SocketService {
     final s = io.io(kBaseUrl, <String, dynamic>{
       'transports': ['websocket', 'polling'],
       'autoConnect': false, // Don't auto-connect until token is set
-      'forceNew': false,
+      'forceNew': true,
       'auth': {'token': accessToken},
     });
 
@@ -47,6 +48,13 @@ class SocketService {
     s.onReconnect((_) => debugPrint('🔌 Socket reconnected'));
     s.onError((e) => debugPrint('❌ Socket Error: $e'));
 
+    // Re-attach all registered listeners
+    for (final entry in _eventListeners.entries) {
+      for (final handler in entry.value) {
+        s.on(entry.key, handler);
+      }
+    }
+
     return s;
   }
 
@@ -62,6 +70,20 @@ class SocketService {
     }
     
     if (!socket.connected) socket.connect();
+  }
+
+  void on(String event, void Function(dynamic) handler) {
+    _eventListeners.putIfAbsent(event, () => []).add(handler);
+    if (_socket != null) {
+      _socket!.on(event, handler);
+    }
+  }
+
+  void off(String event, void Function(dynamic) handler) {
+    _eventListeners[event]?.remove(handler);
+    if (_socket != null) {
+      _socket!.off(event, handler);
+    }
   }
 
   /// Join a ride room for targeted events.

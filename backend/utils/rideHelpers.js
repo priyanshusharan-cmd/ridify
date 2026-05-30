@@ -3,7 +3,7 @@
  * Prefers expiresAt (minus the expiry buffer) as it is a timezone-independent
  * timestamp created on the client side. Falls back to parsing departureTime string.
  */
-const { emailToKey } = require('./emailKey');
+const { emailToKey, keyToEmail } = require('./emailKey');
 
 const EXPIRY_BUFFER_MS = 15 * 60 * 1000; // 15 minutes buffer added on ride creation
 
@@ -119,11 +119,26 @@ function checkCapacity(ride, newStartIndex, newEndIndex, requestedSeats) {
   return _checkCapacityWith(ride.passengers || [], ride, newStartIndex, newEndIndex, requestedSeats);
 }
 
+/**
+ * Decodes riderDetails map keys (_dot_ back to .) for a lean object before emitting over sockets.
+ */
+function decodeRiderDetailsForSocket(rideObj) {
+  if (rideObj.riderDetails) {
+    const decoded = {};
+    for (const [key, value] of Object.entries(rideObj.riderDetails)) {
+      decoded[keyToEmail(key)] = value;
+    }
+    rideObj.riderDetails = decoded;
+  }
+  return rideObj;
+}
+
 module.exports = {
   getDepartureTimeEpoch,
   getRiderDetail,
   _checkCapacityWith,
   checkCapacityForSearch,
   checkCapacityForRequest,
-  checkCapacity
+  checkCapacity,
+  decodeRiderDetailsForSocket
 };
