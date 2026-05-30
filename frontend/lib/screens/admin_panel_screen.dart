@@ -637,6 +637,7 @@ class _UsersTabState extends State<_UsersTab> with AutomaticKeepAliveClientMixin
                     labelText: 'Age',
                     prefixIcon: Icon(Icons.cake_outlined),
                     border: OutlineInputBorder(),
+                    counterText: '',
                   ),
                   keyboardType: TextInputType.number,
                   maxLength: 3,
