@@ -29,8 +29,29 @@ class AuthService {
     });
     if (response.statusCode == 201) {
       final data = jsonDecode(response.body);
+      // Backend returns { message, email }, not tokens. We do not save tokens here.
+      return data;
+    } else {
+      throw Exception(jsonDecode(response.body)['error'] ?? 'Registration failed');
+    }
+  }
+
+  static Future<void> requestLoginOtp(String email) async {
+    final response = await ApiClient.post('/api/auth/login-otp-request', {'email': email});
+    if (response.statusCode != 200) {
+      throw Exception(jsonDecode(response.body)['error'] ?? 'Failed to request OTP');
+    }
+  }
+
+  static Future<Map<String, dynamic>> verifyOtp(String email, String otp) async {
+    final response = await ApiClient.post('/api/auth/verify-otp', {
+      'email': email,
+      'otp': otp,
+    });
+    if (response.statusCode == 200) {
+      final data = jsonDecode(response.body);
       if (data['accessToken'] == null) {
-        throw Exception("Server did not return a JWT. Are you connected to the new backend?");
+        throw Exception("Server did not return a JWT.");
       }
       await TokenService.saveTokens(
         accessToken: data['accessToken'],
@@ -38,7 +59,14 @@ class AuthService {
       );
       return data['user'];
     } else {
-      throw Exception(jsonDecode(response.body)['error'] ?? 'Registration failed');
+      throw Exception(jsonDecode(response.body)['error'] ?? 'OTP Verification failed');
+    }
+  }
+
+  static Future<void> resendOtp(String email) async {
+    final response = await ApiClient.post('/api/auth/resend-otp', {'email': email});
+    if (response.statusCode != 200) {
+      throw Exception(jsonDecode(response.body)['error'] ?? 'Failed to resend OTP');
     }
   }
 

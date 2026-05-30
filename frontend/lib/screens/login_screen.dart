@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'home_screen.dart';
+import 'otp_screen.dart';
 import '../core/constants.dart';
 import '../services/auth_service.dart';
 class LoginScreen extends StatefulWidget {
@@ -82,20 +83,11 @@ class _LoginScreenState extends State<LoginScreen> {
 
     setState(() => isLoading = true);
     try {
-      final data = isLoginMode
-          ? await AuthService.login(
-              emailController.text.trim(),
-              passwordController.text.trim(),
-            )
-          : await AuthService.register(
-              nameController.text.trim(),
-              ageController.text.trim(),
-              emailController.text.trim(),
-              passwordController.text.trim(),
-            );
-
-      final user = data;
-        // Persist session
+      if (isLoginMode) {
+        final user = await AuthService.login(
+          emailController.text.trim(),
+          passwordController.text.trim(),
+        );
         final prefs = await SharedPreferences.getInstance();
         await prefs.setString('user_name', user['name'] ?? "Unknown");
         await prefs.setString('user_age', user['age'] ?? "18");
@@ -115,8 +107,50 @@ class _LoginScreenState extends State<LoginScreen> {
             ),
           );
         }
+      } else {
+        await AuthService.register(
+          nameController.text.trim(),
+          ageController.text.trim(),
+          emailController.text.trim(),
+          passwordController.text.trim(),
+        );
+        if (mounted) {
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (_) => OtpScreen(email: emailController.text.trim()),
+            ),
+          );
+        }
+      }
     } catch (e) {
-      _showSnack("Error: ${e.toString()}", Colors.red);
+      _showSnack("Error: ${e.toString().replaceAll('Exception: ', '')}", Colors.red);
+    } finally {
+      if (mounted) setState(() => isLoading = false);
+    }
+  }
+
+  Future<void> loginWithOtp() async {
+    if (emailController.text.trim().isEmpty) {
+      _showSnack("Please enter your Email to login with OTP", Colors.red);
+      return;
+    }
+    if (!_isValidEmail(emailController.text.trim())) {
+      _showSnack("Please enter a valid email address.", Colors.red);
+      return;
+    }
+
+    setState(() => isLoading = true);
+    try {
+      await AuthService.requestLoginOtp(emailController.text.trim());
+      if (mounted) {
+        Navigator.push(
+          context,
+          MaterialPageRoute(builder: (_) => OtpScreen(email: emailController.text.trim())),
+        );
+      }
+    } catch (e) {
+      _showSnack("Error: ${e.toString().replaceAll('Exception: ', '')}", Colors.red);
     } finally {
       if (mounted) setState(() => isLoading = false);
     }
@@ -236,7 +270,13 @@ class _LoginScreenState extends State<LoginScreen> {
                   ),
                 ),
 
-                const SizedBox(height: 30),
+                const SizedBox(height: 15),
+                if (isLoginMode)
+                  TextButton(
+                    onPressed: isLoading ? null : loginWithOtp,
+                    child: const Text("Log in with OTP instead", style: TextStyle(fontWeight: FontWeight.bold, color: Colors.blue)),
+                  ),
+                const SizedBox(height: 15),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [

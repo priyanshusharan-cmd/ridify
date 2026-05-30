@@ -2,6 +2,7 @@ const bcrypt = require('bcrypt');
 const User = require('../models/user');
 const { isValidEmail, MAX_FIELD_LENGTH } = require('../utils/validators');
 const { signAccessToken, signRefreshToken } = require('../utils/jwt');
+const { sendOtpEmail } = require('../utils/emailjs');
 
 const BCRYPT_ROUNDS = parseInt(process.env.BCRYPT_ROUNDS) || 12;
 const ADMIN_EMAILS = (process.env.ADMIN_EMAILS || '').split(',').map(e => e.trim().toLowerCase()).filter(Boolean);
@@ -37,16 +38,30 @@ const register = async (req, res) => {
     }
 
     const hashedPassword = await bcrypt.hash(password, BCRYPT_ROUNDS);
-    const user = await User.create({ name, age, email, password: hashedPassword });
+    
+    const otp = Math.floor(100000 + Math.random() * 900000).toString();
+    const otpExpiry = new Date(Date.now() + 10 * 60 * 1000); // 10 minutes
 
-    const isAdmin = ADMIN_EMAILS.includes(email);
-    const accessToken = signAccessToken({ id: user._id, email: user.email });
-    const refreshToken = signRefreshToken({ id: user._id, email: user.email });
-    await User.findByIdAndUpdate(user._id, { $push: { refreshTokens: refreshToken } });
+    const user = await User.create({ 
+      name, 
+      age, 
+      email, 
+      password: hashedPassword,
+      isVerified: false,
+      otp,
+      otpExpiry
+    });
+
+    try {
+      await sendOtpEmail(user.email, otp);
+    } catch (emailError) {
+      // Even if email fails, user is created. They can request a resend later.
+      console.error('Failed to send initial OTP email:', emailError);
+    }
+
     res.status(201).json({
-      user: { id: user._id, name: user.name, age: user.age, email: user.email, isAdmin },
-      accessToken,
-      refreshToken,
+      message: 'Registration successful. OTP sent to your email.',
+      email: user.email
     });
   } catch (err) {
     console.error('Register Error:', err.message);
@@ -71,9 +86,17 @@ const login = async (req, res) => {
     }
 
     // Must explicitly select password since User model has select:false
-    const user = await User.findOne({ email }).select('+password');
+    const user = await User.findOne({ email }).select('+password +isVerified');
     if (!user) {
       return res.status(401).json({ error: 'Invalid email or password.' });
+    }
+
+    if (!user.isVerified) {
+      return res.status(403).json({ 
+        error: 'Please verify your email to log in.', 
+        requireVerification: true,
+        email: user.email
+      });
     }
 
     const isMatch = await bcrypt.compare(password, user.password);
@@ -93,6 +116,35 @@ const login = async (req, res) => {
   } catch (err) {
     console.error('Login Error:', err.message);
     res.status(500).json({ error: 'Server error during login.' });
+  }
+};
+
+// ── Request Login OTP ───────────────────────────────────────────────────────
+const requestLoginOtp = async (req, res) => {
+  try {
+    const { email } = req.body;
+    if (!email) {
+      return res.status(400).json({ error: 'Email is required.' });
+    }
+
+    const user = await User.findOne({ email: String(email).trim().toLowerCase() });
+    if (!user) {
+      return res.status(404).json({ error: 'User not found. Please sign up first.' });
+    }
+
+    const otp = Math.floor(100000 + Math.random() * 900000).toString();
+    const otpExpiry = new Date(Date.now() + 10 * 60 * 1000); // 10 minutes
+
+    user.otp = otp;
+    user.otpExpiry = otpExpiry;
+    await user.save();
+
+    await sendOtpEmail(user.email, otp);
+
+    res.json({ message: 'Login OTP sent to your email.' });
+  } catch (err) {
+    console.error('Request Login OTP Error:', err.message);
+    res.status(500).json({ error: 'Server error while sending Login OTP.' });
   }
 };
 
@@ -159,4 +211,82 @@ const logout = async (req, res) => {
   }
 };
 
-module.exports = { register, login, deleteUser, deleteAllUsers, refreshToken, logout };
+// ── OTP Verification ────────────────────────────────────────────────────────
+const verifyOtp = async (req, res) => {
+  try {
+    const { email, otp } = req.body;
+    if (!email || !otp) {
+      return res.status(400).json({ error: 'Email and OTP are required.' });
+    }
+
+    const user = await User.findOne({ email: String(email).trim().toLowerCase() }).select('+otp +otpExpiry +isVerified');
+    if (!user) {
+      return res.status(404).json({ error: 'User not found.' });
+    }
+
+    if (!user.otp || user.otp !== String(otp)) {
+      return res.status(401).json({ error: 'Invalid OTP.' });
+    }
+
+    if (user.otpExpiry < new Date()) {
+      return res.status(401).json({ error: 'OTP has expired. Please request a new one.' });
+    }
+
+    // Mark as verified, remove OTP
+    user.isVerified = true;
+    user.otp = undefined;
+    user.otpExpiry = undefined;
+    
+    const isAdmin = ADMIN_EMAILS.includes(user.email);
+    const accessToken = signAccessToken({ id: user._id, email: user.email });
+    const refreshToken = signRefreshToken({ id: user._id, email: user.email });
+    
+    user.refreshTokens.push(refreshToken);
+    await user.save();
+
+    res.json({
+      message: 'Email verified successfully.',
+      user: { id: user._id, name: user.name, age: user.age, email: user.email, isAdmin },
+      accessToken,
+      refreshToken,
+    });
+  } catch (err) {
+    console.error('Verify OTP Error:', err.message);
+    res.status(500).json({ error: 'Server error during OTP verification.' });
+  }
+};
+
+// ── Resend OTP ──────────────────────────────────────────────────────────────
+const resendOtp = async (req, res) => {
+  try {
+    const { email } = req.body;
+    if (!email) {
+      return res.status(400).json({ error: 'Email is required.' });
+    }
+
+    const user = await User.findOne({ email: String(email).trim().toLowerCase() }).select('+isVerified');
+    if (!user) {
+      return res.status(404).json({ error: 'User not found.' });
+    }
+
+    if (user.isVerified) {
+      return res.status(400).json({ error: 'User is already verified.' });
+    }
+
+    const otp = Math.floor(100000 + Math.random() * 900000).toString();
+    const otpExpiry = new Date(Date.now() + 10 * 60 * 1000); // 10 minutes
+
+    user.otp = otp;
+    user.otpExpiry = otpExpiry;
+    await user.save();
+
+    await sendOtpEmail(user.email, otp);
+
+    res.json({ message: 'A new OTP has been sent to your email.' });
+  } catch (err) {
+    console.error('Resend OTP Error:', err.message);
+    res.status(500).json({ error: 'Server error while resending OTP.' });
+  }
+};
+
+module.exports = { register, login, requestLoginOtp, verifyOtp, resendOtp, deleteUser, deleteAllUsers, refreshToken, logout };
