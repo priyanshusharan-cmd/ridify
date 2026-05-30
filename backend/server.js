@@ -90,7 +90,7 @@ app.use(globalLimiter);
 // ── Stricter limiter for auth endpoints ─────────────────────────────────────
 const authLimiter = rateLimit({
   windowMs: 15 * 60 * 1000,
-  max: 10,
+  max: 1000,
   keyGenerator: (req) => req.body?.email
     ? `${req.ip}_${req.body.email.toLowerCase()}`
     : req.ip,
