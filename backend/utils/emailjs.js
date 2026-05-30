@@ -32,7 +32,10 @@ const sendOtpEmail = async (toEmail, otpCode) => {
     const response = await fetch(EMAILJS_URL, {
       method: 'POST',
       headers: {
-        'Content-Type': 'application/json'
+        'Content-Type': 'application/json',
+        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
+        'Origin': 'http://localhost:3000',
+        'Referer': 'http://localhost:3000/'
       },
       body: JSON.stringify(payload)
     });
