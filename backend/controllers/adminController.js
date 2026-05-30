@@ -310,7 +310,7 @@ const deleteRide = async (req, res) => {
 // ── Wipe All Rides ──────────────────────────────────────────────────────────
 const wipeAllRides = async (req, res) => {
   try {
-    const adminEmail = req.admin?.email;
+    const adminEmail = req.user?.email;
     if (!adminEmail) return res.status(401).json({ error: 'Unauthorized.' });
 
     await Ride.deleteMany({});
