@@ -224,7 +224,23 @@ class _LoginScreenState extends State<LoginScreen> {
                 const SizedBox(height: 16),
 
                 _passwordField(),
-                const SizedBox(height: 16),
+
+                if (isLoginMode) ...[
+                  const SizedBox(height: 16),
+                  Row(
+                    children: const [
+                      Expanded(child: Divider(color: Colors.grey, thickness: 0.5)),
+                      Padding(
+                        padding: EdgeInsets.symmetric(horizontal: 16),
+                        child: Text("OR", style: TextStyle(color: Colors.grey, fontWeight: FontWeight.bold)),
+                      ),
+                      Expanded(child: Divider(color: Colors.grey, thickness: 0.5)),
+                    ],
+                  ),
+                  const SizedBox(height: 16),
+                ] else ...[
+                  const SizedBox(height: 16),
+                ],
 
                 _otpField(),
                 const SizedBox(height: 25),
@@ -311,22 +327,20 @@ class _LoginScreenState extends State<LoginScreen> {
       maxLength: 6,
       decoration: InputDecoration(
         counterText: "",
-        hintText: isLoginMode ? "OTP Code (Optional)" : "OTP Code (Required)",
+        hintText: "OTP",
         hintStyle: TextStyle(color: Theme.of(context).brightness == Brightness.dark ? Colors.white54 : Colors.black54),
         prefixIcon: const Icon(Icons.security, color: Colors.grey),
         suffixIcon: Padding(
-          padding: const EdgeInsets.only(right: 6.0, top: 6.0, bottom: 6.0),
-          child: ElevatedButton(
-            style: ElevatedButton.styleFrom(
-              backgroundColor: otpSent ? Colors.grey : (Theme.of(context).brightness == Brightness.dark ? const Color(0xFF2C2C2C) : Colors.black),
+          padding: const EdgeInsets.only(right: 6.0),
+          child: TextButton(
+            style: TextButton.styleFrom(
               padding: const EdgeInsets.symmetric(horizontal: 12),
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
               minimumSize: const Size(80, 0),
             ),
             onPressed: isSendingOtp ? null : _sendOtp,
             child: isSendingOtp 
-              ? const SizedBox(width: 16, height: 16, child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2))
-              : Text(otpSent ? "Resend" : "Send OTP", style: const TextStyle(color: Colors.white, fontSize: 12, fontWeight: FontWeight.bold)),
+              ? const SizedBox(width: 16, height: 16, child: CircularProgressIndicator(color: Colors.grey, strokeWidth: 2))
+              : Text(otpSent ? "Resend" : "Send OTP", style: const TextStyle(color: Colors.grey, fontSize: 13, fontWeight: FontWeight.bold)),
           ),
         ),
         filled: true,
