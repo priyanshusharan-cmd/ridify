@@ -225,6 +225,9 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
     _onSocket(socket, 'new_ride_request', (data) {
       if (data != null && data['ride'] != null) _upsertRide(Map<String, dynamic>.from(data['ride']));
     });
+    _onSocket(socket, 'all_rides_wiped', (_) {
+      if (mounted) setState(() => allRides = []);
+    });
     _onSocket(socket, 'ride_accepted', (data) {
       if (data != null && data['ride'] != null) _upsertRide(Map<String, dynamic>.from(data['ride']));
     });

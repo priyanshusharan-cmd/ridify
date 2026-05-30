@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../services/admin_service.dart';
 import '../services/auth_service.dart';
+import '../core/socket_service.dart';
 import 'login_screen.dart';
 
 class AdminPanelScreen extends StatefulWidget {
@@ -89,6 +90,14 @@ class _DashboardTabState extends State<_DashboardTab> with AutomaticKeepAliveCli
   void initState() {
     super.initState();
     _fetchStats();
+    _initSocket();
+  }
+
+  void _initSocket() {
+    final socket = SocketService().socket;
+    socket.on('all_rides_wiped', (_) {
+      if (mounted) _fetchStats();
+    });
   }
 
   Future<void> _fetchStats() async {
@@ -1045,6 +1054,14 @@ class _RidesTabState extends State<_RidesTab> with AutomaticKeepAliveClientMixin
   void initState() {
     super.initState();
     _fetchRides();
+    _initSocket();
+  }
+
+  void _initSocket() {
+    final socket = SocketService().socket;
+    socket.on('all_rides_wiped', (_) {
+      if (mounted) _fetchRides(page: 1);
+    });
   }
 
   @override
