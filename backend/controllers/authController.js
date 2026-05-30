@@ -232,7 +232,6 @@ const verifyOtp = async (req, res) => {
       return res.status(401).json({ error: 'OTP has expired. Please request a new one.' });
     }
 
-    // Mark as verified, remove OTP
     user.isVerified = true;
     user.otp = undefined;
     user.otpExpiry = undefined;
@@ -241,8 +240,8 @@ const verifyOtp = async (req, res) => {
     const accessToken = signAccessToken({ id: user._id, email: user.email });
     const refreshToken = signRefreshToken({ id: user._id, email: user.email });
     
-    user.refreshTokens.push(refreshToken);
     await user.save();
+    await User.findByIdAndUpdate(user._id, { $push: { refreshTokens: refreshToken } });
 
     res.json({
       message: 'Email verified successfully.',
