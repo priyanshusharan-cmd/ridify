@@ -106,4 +106,14 @@ class AuthService {
     }
     throw Exception(jsonDecode(response.body)['error'] ?? 'Failed to update profile.');
   }
+
+  static Future<void> changePassword(String currentPassword, String newPassword) async {
+    final response = await ApiClient.patch('/api/auth/change-password', {
+      'currentPassword': currentPassword,
+      'newPassword': newPassword,
+    });
+    if (response.statusCode != 200) {
+      throw Exception(jsonDecode(response.body)['error'] ?? 'Failed to change password.');
+    }
+  }
 }

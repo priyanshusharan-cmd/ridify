@@ -1,7 +1,7 @@
 const express = require('express');
 const adminOnly = require('../middleware/adminOnly');
 const authenticate = require('../middleware/authenticate');
-const { register, login, requestLoginOtp, verifyOtp, resendOtp, deleteUser, deleteAllUsers, refreshToken, logout } = require('../controllers/authController');
+const { register, login, requestLoginOtp, verifyOtp, resendOtp, deleteUser, deleteAllUsers, refreshToken, logout, changePassword } = require('../controllers/authController');
 
 const router = express.Router();
 
@@ -15,6 +15,7 @@ router.post('/refresh', refreshToken);
 router.delete('/user/:email', authenticate, deleteUser);
 router.delete('/users', authenticate, adminOnly, deleteAllUsers);
 router.post('/logout', authenticate, logout);
+router.patch('/change-password', authenticate, changePassword);
 
 router.patch('/user/:email', authenticate, async (req, res) => {
   try {

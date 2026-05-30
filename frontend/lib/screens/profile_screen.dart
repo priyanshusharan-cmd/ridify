@@ -179,6 +179,75 @@ class _ProfileScreenState extends State<ProfileScreen> {
     );
   }
 
+  void _showChangePasswordDialog() {
+    TextEditingController currentController = TextEditingController();
+    TextEditingController newController = TextEditingController();
+    bool isSaving = false;
+    
+    showDialog(
+      context: context,
+      builder: (context) {
+        return StatefulBuilder(
+          builder: (context, setState) {
+            return AlertDialog(
+              title: const Text("Change Password"),
+              content: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  TextField(
+                    controller: currentController,
+                    obscureText: true,
+                    decoration: const InputDecoration(hintText: "Current Password"),
+                  ),
+                  const SizedBox(height: 15),
+                  TextField(
+                    controller: newController,
+                    obscureText: true,
+                    decoration: const InputDecoration(hintText: "New Password (min 8 chars)"),
+                  ),
+                ],
+              ),
+              actions: [
+                TextButton(
+                  onPressed: () => Navigator.pop(context),
+                  child: const Text("Cancel"),
+                ),
+                ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Theme.of(context).brightness == Brightness.dark ? const Color(0xFF2C2C2C) : Colors.black,
+                  ),
+                  onPressed: isSaving ? null : () async {
+                    if (currentController.text.trim().isEmpty || newController.text.trim().isEmpty) {
+                       ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("Both fields are required."), backgroundColor: Colors.red));
+                       return;
+                    }
+                    if (newController.text.trim().length < 8) {
+                       ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("New password must be at least 8 characters."), backgroundColor: Colors.red));
+                       return;
+                    }
+                    setState(() => isSaving = true);
+                    try {
+                      await AuthService.changePassword(currentController.text.trim(), newController.text.trim());
+                      if (!context.mounted) return;
+                      Navigator.pop(context);
+                      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("Password changed successfully."), backgroundColor: Colors.green));
+                    } catch (e) {
+                      if (!context.mounted) return;
+                      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(e.toString().replaceAll('Exception: ', '')), backgroundColor: Colors.red));
+                    } finally {
+                      if (context.mounted) setState(() => isSaving = false);
+                    }
+                  },
+                  child: isSaving ? const SizedBox(width: 16, height: 16, child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2)) : const Text("Save", style: TextStyle(color: Colors.white)),
+                ),
+              ],
+            );
+          }
+        );
+      },
+    );
+  }
+
   String getInitials(String name) {
     List<String> parts = name.trim().split(" ");
     if (parts.isEmpty) return "?";
@@ -292,6 +361,26 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     ),
 
                     const SizedBox(height: 40),
+
+                    // ── CHANGE PASSWORD ──────────────────────────────────────────────
+                    SizedBox(
+                      width: double.infinity,
+                      height: 55,
+                      child: OutlinedButton.icon(
+                        style: OutlinedButton.styleFrom(
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(15),
+                          ),
+                        ),
+                        onPressed: _showChangePasswordDialog,
+                        icon: const Icon(Icons.lock_reset),
+                        label: const Text(
+                          "Change Password",
+                          style: TextStyle(fontWeight: FontWeight.bold),
+                        ),
+                      ),
+                    ),
+                    const SizedBox(height: 15),
 
                     // ── LOGOUT ──────────────────────────────────────────────
                     SizedBox(

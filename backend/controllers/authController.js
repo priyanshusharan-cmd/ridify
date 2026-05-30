@@ -32,8 +32,34 @@ const register = async (req, res) => {
       return res.status(400).json({ error: 'Invalid email format.' });
     }
 
-    const existing = await User.findOne({ email });
+    const existing = await User.findOne({ email }).select('+isVerified +lastOtpSentAt');
     if (existing) {
+      if (!existing.isVerified) {
+        if (existing.lastOtpSentAt && Date.now() - existing.lastOtpSentAt.getTime() < 10 * 60 * 1000) {
+          const waitMinutes = Math.ceil((10 * 60 * 1000 - (Date.now() - existing.lastOtpSentAt.getTime())) / 60000);
+          return res.status(429).json({ error: `Please wait ${waitMinutes} minute(s) before requesting another OTP.` });
+        }
+        const newHashedPassword = await bcrypt.hash(password, BCRYPT_ROUNDS);
+        const newOtp = Math.floor(100000 + Math.random() * 900000).toString();
+        
+        existing.password = newHashedPassword;
+        existing.name = name;
+        if (age) existing.age = age;
+        existing.otp = newOtp;
+        existing.otpExpiry = new Date(Date.now() + 10 * 60 * 1000);
+        existing.lastOtpSentAt = new Date();
+        await existing.save();
+
+        try {
+          await sendOtpEmail(existing.email, newOtp);
+        } catch (emailError) {
+          console.error('Failed to send OTP email on re-register:', emailError);
+        }
+        return res.status(201).json({
+          message: 'Registration updated. New OTP sent to your email.',
+          email: existing.email
+        });
+      }
       return res.status(409).json({ error: 'Email already registered.' });
     }
 
@@ -301,4 +327,37 @@ const resendOtp = async (req, res) => {
   }
 };
 
-module.exports = { register, login, requestLoginOtp, verifyOtp, resendOtp, deleteUser, deleteAllUsers, refreshToken, logout };
+// ── Change Password ─────────────────────────────────────────────────────────
+const changePassword = async (req, res) => {
+  try {
+    const { currentPassword, newPassword } = req.body;
+    if (!currentPassword || !newPassword) {
+      return res.status(400).json({ error: 'Current and new passwords are required.' });
+    }
+
+    if (newPassword.length < 8) {
+      return res.status(400).json({ error: 'New password must be at least 8 characters.' });
+    }
+
+    const email = req.user.email; // from authenticate middleware
+    const user = await User.findOne({ email }).select('+password');
+    if (!user) {
+      return res.status(404).json({ error: 'User not found.' });
+    }
+
+    const isMatch = await bcrypt.compare(currentPassword, user.password);
+    if (!isMatch) {
+      return res.status(401).json({ error: 'Incorrect current password.' });
+    }
+
+    user.password = await bcrypt.hash(newPassword, BCRYPT_ROUNDS);
+    await user.save();
+
+    res.json({ message: 'Password updated successfully.' });
+  } catch (err) {
+    console.error('Change Password Error:', err.message);
+    res.status(500).json({ error: 'Server error while changing password.' });
+  }
+};
+
+module.exports = { register, login, requestLoginOtp, verifyOtp, resendOtp, deleteUser, deleteAllUsers, refreshToken, logout, changePassword };
