@@ -538,10 +538,11 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   style: TextStyle(color: isDark ? Colors.white54 : Colors.grey, fontSize: 12),
                 ),
                 Text(
-                  "........",
+                  "••••••••",
                   style: TextStyle(
                     fontWeight: FontWeight.bold,
-                    fontSize: 22,
+                    fontSize: 15,
+                    letterSpacing: 2,
                     color: Theme.of(context).textTheme.bodyLarge?.color,
                   ),
                 ),
