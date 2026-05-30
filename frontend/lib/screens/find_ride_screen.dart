@@ -77,6 +77,22 @@ class _FindRideScreenState extends State<FindRideScreen> {
     });
   }
 
+  void _swapLocations() {
+    setState(() {
+      final tempText = pickupController.text;
+      pickupController.text = destinationController.text;
+      destinationController.text = tempText;
+
+      final tempLat = pickupLat;
+      pickupLat = destLat;
+      destLat = tempLat;
+
+      final tempLng = pickupLng;
+      pickupLng = destLng;
+      destLng = tempLng;
+    });
+  }
+
   Future<void> _pickDate(BuildContext context) async {
     final DateTime? picked = await showDatePicker(
       context: context,
@@ -272,66 +288,87 @@ class _FindRideScreenState extends State<FindRideScreen> {
                 borderRadius: BorderRadius.circular(20),
                 border: Border.all(color: Theme.of(context).dividerColor),
               ),
-              child: Column(
+              child: Row(
                 children: [
-                  AddressSearchWidget(
-                    controller: pickupController,
-                    hintText: "Your Pickup Location",
-                    prefixIcon: Icons.location_on_outlined,
-                    iconColor: Colors.green,
-                    onMapTap: () async {
-                      final initial = (pickupLat != null && pickupLng != null)
-                          ? LatLng(pickupLat!, pickupLng!)
-                          : null;
-                      final result = await Navigator.push(
-                        context,
-                        MaterialPageRoute(builder: (context) => MapPickerScreen(initialPosition: initial)),
-                      );
-                      if (result != null && mounted) {
-                        setState(() {
-                          pickupController.text = result['name'];
-                          pickupLat = result['lat'];
-                          pickupLng = result['lng'];
-                        });
-                      }
-                    },
-                    onSelected: (name, lat, lon) {
-                      setState(() {
-                         pickupLat = lat;
-                         pickupLng = lon;
-                      });
-                    },
+                  Expanded(
+                    child: Column(
+                      children: [
+                        AddressSearchWidget(
+                          controller: pickupController,
+                          hintText: "Your Pickup Location",
+                          prefixIcon: Icons.location_on_outlined,
+                          iconColor: Colors.green,
+                          onMapTap: () async {
+                            final initial = (pickupLat != null && pickupLng != null)
+                                ? LatLng(pickupLat!, pickupLng!)
+                                : null;
+                            final result = await Navigator.push(
+                              context,
+                              MaterialPageRoute(builder: (context) => MapPickerScreen(initialPosition: initial)),
+                            );
+                            if (result != null && mounted) {
+                              setState(() {
+                                pickupController.text = result['name'];
+                                pickupLat = result['lat'];
+                                pickupLng = result['lng'];
+                              });
+                            }
+                          },
+                          onSelected: (name, lat, lon) {
+                            setState(() {
+                               pickupLat = lat;
+                               pickupLng = lon;
+                            });
+                          },
+                        ),
+                        Divider(height: 1, color: Theme.of(context).dividerColor),
+                        AddressSearchWidget(
+                          controller: destinationController,
+                          hintText: "Your Destination",
+                          prefixIcon: Icons.flag_outlined,
+                          iconColor: Colors.red,
+                          onMapTap: () async {
+                            final initial = (destLat != null && destLng != null)
+                                ? LatLng(destLat!, destLng!)
+                                : (pickupLat != null && pickupLng != null)
+                                    ? LatLng(pickupLat!, pickupLng!)
+                                    : null;
+                            final result = await Navigator.push(
+                              context,
+                              MaterialPageRoute(builder: (context) => MapPickerScreen(initialPosition: initial)),
+                            );
+                            if (result != null && mounted) {
+                              setState(() {
+                                destinationController.text = result['name'];
+                                destLat = result['lat'];
+                                destLng = result['lng'];
+                              });
+                            }
+                          },
+                          onSelected: (name, lat, lon) {
+                            setState(() {
+                              destLat = lat;
+                              destLng = lon;
+                            });
+                          },
+                        ),
+                      ],
+                    ),
                   ),
-                  Divider(height: 1, color: Theme.of(context).dividerColor),
-                  AddressSearchWidget(
-                    controller: destinationController,
-                    hintText: "Your Destination",
-                    prefixIcon: Icons.flag_outlined,
-                    iconColor: Colors.red,
-                    onMapTap: () async {
-                      final initial = (destLat != null && destLng != null)
-                          ? LatLng(destLat!, destLng!)
-                          : (pickupLat != null && pickupLng != null)
-                              ? LatLng(pickupLat!, pickupLng!)
-                              : null;
-                      final result = await Navigator.push(
-                        context,
-                        MaterialPageRoute(builder: (context) => MapPickerScreen(initialPosition: initial)),
-                      );
-                      if (result != null && mounted) {
-                        setState(() {
-                          destinationController.text = result['name'];
-                          destLat = result['lat'];
-                          destLng = result['lng'];
-                        });
-                      }
-                    },
-                    onSelected: (name, lat, lon) {
-                      setState(() {
-                        destLat = lat;
-                        destLng = lon;
-                      });
-                    },
+                  Padding(
+                    padding: const EdgeInsets.only(right: 8.0, left: 4.0),
+                    child: Container(
+                      decoration: BoxDecoration(
+                        color: Theme.of(context).cardColor,
+                        shape: BoxShape.circle,
+                        border: Border.all(color: Theme.of(context).dividerColor),
+                      ),
+                      child: IconButton(
+                        icon: const Icon(Icons.swap_vert),
+                        onPressed: _swapLocations,
+                        tooltip: "Swap locations",
+                      ),
+                    ),
                   ),
                 ],
               ),

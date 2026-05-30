@@ -50,20 +50,16 @@ class SocketService {
     return s;
   }
 
-  /// Register this user identity. Call once after login.
   void registerUser(String userEmail, String accessToken) {
-    final isNewUser = _userEmail != userEmail;
+    final needsRecreate = _userEmail != userEmail || _accessToken != accessToken;
     _userEmail = userEmail;
     _accessToken = accessToken;
     
-    if (_socket != null && isNewUser) {
-      // Different user — must disconnect and reconnect with new identity
+    if (_socket != null && needsRecreate) {
       _socket!.disconnect();
+      _socket!.dispose();
       _socket = null;
     }
-    
-    // Update auth on socket options
-    _socket?.io.options?['auth'] = {'token': accessToken};
     
     if (!socket.connected) socket.connect();
   }
@@ -106,13 +102,14 @@ class SocketService {
     _accessToken = null;
   }
   void updateAccessToken(String newAccessToken) {
+    if (_accessToken == newAccessToken) return;
     _accessToken = newAccessToken;
     if (_socket != null) {
-      _socket!.io.options?['auth'] = {'token': newAccessToken};
-      if (_socket!.connected) {
-        // Force reconnect to pick up new auth
-        _socket!.disconnect();
-        Future.delayed(const Duration(milliseconds: 300), () => _socket?.connect());
+      _socket!.disconnect();
+      _socket!.dispose();
+      _socket = null;
+      if (_userEmail != null) {
+         Future.delayed(const Duration(milliseconds: 300), () => socket.connect());
       }
     }
   }
