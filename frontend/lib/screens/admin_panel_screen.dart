@@ -17,7 +17,7 @@ class _AdminPanelScreenState extends State<AdminPanelScreen> with SingleTickerPr
   @override
   void initState() {
     super.initState();
-    _tabController = TabController(length: 6, vsync: this);
+    _tabController = TabController(length: 3, vsync: this);
   }
 
   @override
@@ -52,9 +52,6 @@ class _AdminPanelScreenState extends State<AdminPanelScreen> with SingleTickerPr
             Tab(icon: Icon(Icons.dashboard), text: 'Dashboard'),
             Tab(icon: Icon(Icons.people), text: 'Users'),
             Tab(icon: Icon(Icons.directions_car), text: 'Rides'),
-            Tab(icon: Icon(Icons.local_offer), text: 'Promos'),
-            Tab(icon: Icon(Icons.settings), text: 'Config'),
-            Tab(icon: Icon(Icons.support_agent), text: 'Support'),
           ],
         ),
       ),
@@ -64,9 +61,6 @@ class _AdminPanelScreenState extends State<AdminPanelScreen> with SingleTickerPr
           _DashboardTab(),
           _UsersTab(),
           _RidesTab(),
-          _PromosTab(),
-          _ConfigTab(),
-          _SupportTab(),
         ],
       ),
     );
