@@ -110,13 +110,8 @@ class _LoginScreenState extends State<LoginScreen> {
         await AuthService.requestLoginOtp(emailController.text.trim());
         _showSnack("OTP sent to your email for login.", Colors.green);
       } else {
-        await AuthService.register(
-          nameController.text.trim(),
-          ageController.text.trim(),
-          emailController.text.trim(),
-          passwordController.text.trim(),
-        );
-        _showSnack("Account created! OTP sent to your email to verify.", Colors.green);
+        await AuthService.requestSignupOtp(emailController.text.trim());
+        _showSnack("OTP sent to your email to verify.", Colors.green);
       }
       setState(() => otpSent = true);
       _startCooldown(10 * 60); // Start 10-minute cooldown
@@ -162,8 +157,20 @@ class _LoginScreenState extends State<LoginScreen> {
     try {
       Map<String, dynamic>? user;
       
-      if (useOtp) {
-        user = await AuthService.verifyOtp(emailController.text.trim(), otpController.text.trim());
+      if (!isLoginMode) {
+        user = await AuthService.register(
+          nameController.text.trim(),
+          ageController.text.trim(),
+          emailController.text.trim(),
+          passwordController.text.trim(),
+          otpController.text.trim(),
+        );
+      } else if (useOtp) {
+        user = await AuthService.login(
+          emailController.text.trim(),
+          '',
+          otp: otpController.text.trim(),
+        );
       } else {
         user = await AuthService.login(
           emailController.text.trim(),

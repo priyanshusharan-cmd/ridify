@@ -1,15 +1,14 @@
 const express = require('express');
 const adminOnly = require('../middleware/adminOnly');
 const authenticate = require('../middleware/authenticate');
-const { register, login, requestLoginOtp, verifyOtp, resendOtp, deleteUser, deleteAllUsers, refreshToken, logout, changePassword } = require('../controllers/authController');
+const { requestSignupOtp, register, login, requestLoginOtp, deleteUser, deleteAllUsers, refreshToken, logout, changePassword } = require('../controllers/authController');
 
 const router = express.Router();
 
+router.post('/signup-otp-request', requestSignupOtp);
 router.post('/register', register);
 router.post('/login', login);
 router.post('/login-otp-request', requestLoginOtp);
-router.post('/verify-otp', verifyOtp);
-router.post('/resend-otp', resendOtp);
 router.post('/refresh', refreshToken);
 // authenticate middleware now secures delete routes
 router.delete('/user/:email', authenticate, deleteUser);

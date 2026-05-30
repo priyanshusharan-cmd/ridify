@@ -1,5 +1,6 @@
 const bcrypt = require('bcrypt');
 const User = require('../models/user');
+const OtpVerification = require('../models/OtpVerification');
 const { isValidEmail, MAX_FIELD_LENGTH } = require('../utils/validators');
 const { signAccessToken, signRefreshToken } = require('../utils/jwt');
 const { sendOtpEmail } = require('../utils/emailjs');
@@ -7,20 +8,64 @@ const { sendOtpEmail } = require('../utils/emailjs');
 const BCRYPT_ROUNDS = parseInt(process.env.BCRYPT_ROUNDS) || 12;
 const ADMIN_EMAILS = (process.env.ADMIN_EMAILS || '').split(',').map(e => e.trim().toLowerCase()).filter(Boolean);
 
+// ── Request Signup OTP ──────────────────────────────────────────────────────
+const requestSignupOtp = async (req, res) => {
+  try {
+    let { email } = req.body;
+    if (!email) {
+      return res.status(400).json({ error: 'Email is required.' });
+    }
+    email = String(email).trim().toLowerCase();
+
+    if (!isValidEmail(email)) {
+      return res.status(400).json({ error: 'Invalid email format.' });
+    }
+
+    const existingUser = await User.findOne({ email });
+    if (existingUser) {
+      return res.status(409).json({ error: 'Email already registered. Please log in.' });
+    }
+
+    const existingOtp = await OtpVerification.findOne({ email });
+    if (existingOtp && existingOtp.lastOtpSentAt && Date.now() - existingOtp.lastOtpSentAt.getTime() < 10 * 60 * 1000) {
+      const waitMinutes = Math.ceil((10 * 60 * 1000 - (Date.now() - existingOtp.lastOtpSentAt.getTime())) / 60000);
+      return res.status(429).json({ error: `Please wait ${waitMinutes} minute(s) before requesting another OTP.` });
+    }
+
+    const otp = Math.floor(100000 + Math.random() * 900000).toString();
+    
+    if (existingOtp) {
+      existingOtp.otp = otp;
+      existingOtp.lastOtpSentAt = new Date();
+      await existingOtp.save();
+    } else {
+      await OtpVerification.create({ email, otp });
+    }
+
+    await sendOtpEmail(email, otp);
+
+    res.json({ message: 'Signup OTP sent to your email.' });
+  } catch (err) {
+    console.error('Request Signup OTP Error:', err.message);
+    res.status(500).json({ error: 'Server error while sending Signup OTP.' });
+  }
+};
+
 // ── Register ────────────────────────────────────────────────────────────────
 const register = async (req, res) => {
   try {
-    let { name, age, email, password } = req.body;
-    if (!name || !email || !password) {
-      return res.status(400).json({ error: 'Name, email, and password are required.' });
+    let { name, age, email, password, otp } = req.body;
+    if (!name || !email || !password || !otp) {
+      return res.status(400).json({ error: 'Name, email, password, and OTP are required.' });
     }
 
     name = String(name).trim();
     email = String(email).trim().toLowerCase();
     password = String(password);
+    otp = String(otp).trim();
     age = age ? String(age).trim() : undefined;
 
-    // Field length limits — also prevents bcrypt DoS from 1 MB passwords
+    // Field length limits
     if (name.length > MAX_FIELD_LENGTH || email.length > MAX_FIELD_LENGTH || password.length > 200) {
       return res.status(400).json({ error: 'One or more fields exceed maximum length.' });
     }
@@ -32,37 +77,41 @@ const register = async (req, res) => {
       return res.status(400).json({ error: 'Invalid email format.' });
     }
 
-    const existing = await User.findOne({ email });
-    if (existing) {
+    const existingUser = await User.findOne({ email });
+    if (existingUser) {
       return res.status(409).json({ error: 'Email already registered. Please log in.' });
+    }
+
+    const otpRecord = await OtpVerification.findOne({ email });
+    if (!otpRecord) {
+      return res.status(401).json({ error: 'No OTP requested for this email. Please request an OTP first.' });
+    }
+    if (otpRecord.otp !== otp) {
+      return res.status(401).json({ error: 'Invalid OTP.' });
     }
 
     const hashedPassword = await bcrypt.hash(password, BCRYPT_ROUNDS);
     
-    const otp = Math.floor(100000 + Math.random() * 900000).toString();
-    const otpExpiry = new Date(Date.now() + 10 * 60 * 1000); // 10 minutes
-
     const user = await User.create({ 
       name, 
       age, 
       email, 
       password: hashedPassword,
-      isVerified: false,
-      otp,
-      otpExpiry,
-      lastOtpSentAt: new Date()
+      isVerified: true, // Account is instantly verified upon creation
     });
 
-    try {
-      await sendOtpEmail(user.email, otp);
-    } catch (emailError) {
-      // Even if email fails, user is created. They can request a resend later.
-      console.error('Failed to send initial OTP email:', emailError);
-    }
+    await OtpVerification.deleteOne({ email }); // Clear the used OTP
+
+    const isAdmin = ADMIN_EMAILS.includes(email);
+    const accessToken = signAccessToken({ id: user._id, email: user.email });
+    const refreshToken = signRefreshToken({ id: user._id, email: user.email });
+    await User.findByIdAndUpdate(user._id, { $push: { refreshTokens: refreshToken } });
 
     res.status(201).json({
-      message: 'Registration successful. OTP sent to your email.',
-      email: user.email
+      message: 'Registration successful.',
+      user: { id: user._id, name: user.name, age: user.age, email: user.email, isAdmin },
+      accessToken,
+      refreshToken,
     });
   } catch (err) {
     console.error('Register Error:', err.message);
@@ -73,35 +122,43 @@ const register = async (req, res) => {
 // ── Login ───────────────────────────────────────────────────────────────────
 const login = async (req, res) => {
   try {
-    let { email, password } = req.body;
-    if (!email || !password) {
-      return res.status(400).json({ error: 'Email and password are required.' });
+    let { email, password, otp } = req.body;
+    if (!email) {
+      return res.status(400).json({ error: 'Email is required.' });
+    }
+    if (!password && !otp) {
+      return res.status(400).json({ error: 'Password or OTP is required.' });
     }
 
     email = String(email).trim().toLowerCase();
-    password = String(password);
+    password = password ? String(password) : undefined;
+    otp = otp ? String(otp).trim() : undefined;
 
     // Length limits
-    if (email.length > MAX_FIELD_LENGTH || password.length > 200) {
+    if (email.length > MAX_FIELD_LENGTH || (password && password.length > 200)) {
       return res.status(400).json({ error: 'Invalid credentials.' });
     }
 
-    const user = await User.findOne({ email }).select('+password +isVerified');
+    const user = await User.findOne({ email }).select('+password +otp +otpExpiry');
     if (!user) {
       return res.status(401).json({ error: 'Invalid email or password.' });
     }
 
-    if (!user.isVerified) {
-      return res.status(403).json({ 
-        error: 'Please verify your email to log in.', 
-        requireVerification: true,
-        email: user.email
-      });
-    }
-
-    const isMatch = await bcrypt.compare(password, user.password);
-    if (!isMatch) {
-      return res.status(401).json({ error: 'Invalid email or password.' });
+    if (otp) {
+      if (!user.otp || user.otp !== otp) {
+        return res.status(401).json({ error: 'Invalid OTP.' });
+      }
+      if (user.otpExpiry < new Date()) {
+        return res.status(401).json({ error: 'OTP has expired. Please request a new one.' });
+      }
+      user.otp = undefined;
+      user.otpExpiry = undefined;
+      await user.save();
+    } else {
+      const isMatch = await bcrypt.compare(password, user.password);
+      if (!isMatch) {
+        return res.status(401).json({ error: 'Invalid email or password.' });
+      }
     }
 
     const isAdmin = ADMIN_EMAILS.includes(email);
@@ -217,88 +274,7 @@ const logout = async (req, res) => {
   }
 };
 
-// ── OTP Verification ────────────────────────────────────────────────────────
-const verifyOtp = async (req, res) => {
-  try {
-    const { email, otp } = req.body;
-    if (!email || !otp) {
-      return res.status(400).json({ error: 'Email and OTP are required.' });
-    }
-
-    const user = await User.findOne({ email: String(email).trim().toLowerCase() }).select('+otp +otpExpiry +isVerified');
-    if (!user) {
-      return res.status(404).json({ error: 'User not found.' });
-    }
-
-    if (!user.otp || user.otp !== String(otp)) {
-      return res.status(401).json({ error: 'Invalid OTP.' });
-    }
-
-    if (user.otpExpiry < new Date()) {
-      return res.status(401).json({ error: 'OTP has expired. Please request a new one.' });
-    }
-
-    user.isVerified = true;
-    user.otp = undefined;
-    user.otpExpiry = undefined;
-    
-    const isAdmin = ADMIN_EMAILS.includes(user.email);
-    const accessToken = signAccessToken({ id: user._id, email: user.email });
-    const refreshToken = signRefreshToken({ id: user._id, email: user.email });
-    
-    await user.save();
-    await User.findByIdAndUpdate(user._id, { $push: { refreshTokens: refreshToken } });
-
-    res.json({
-      message: 'Email verified successfully.',
-      user: { id: user._id, name: user.name, age: user.age, email: user.email, isAdmin },
-      accessToken,
-      refreshToken,
-    });
-  } catch (err) {
-    console.error('Verify OTP Error:', err.message);
-    res.status(500).json({ error: 'Server error during OTP verification.' });
-  }
-};
-
-// ── Resend OTP ──────────────────────────────────────────────────────────────
-const resendOtp = async (req, res) => {
-  try {
-    const { email } = req.body;
-    if (!email) {
-      return res.status(400).json({ error: 'Email is required.' });
-    }
-
-    const user = await User.findOne({ email: String(email).trim().toLowerCase() }).select('+isVerified +lastOtpSentAt');
-    if (!user) {
-      return res.status(404).json({ error: 'User not found.' });
-    }
-
-    if (user.isVerified) {
-      return res.status(400).json({ error: 'User is already verified.' });
-    }
-
-    if (user.lastOtpSentAt && Date.now() - user.lastOtpSentAt.getTime() < 10 * 60 * 1000) {
-      const waitMinutes = Math.ceil((10 * 60 * 1000 - (Date.now() - user.lastOtpSentAt.getTime())) / 60000);
-      return res.status(429).json({ error: `Please wait ${waitMinutes} minute(s) before requesting another OTP.` });
-    }
-
-    const otp = Math.floor(100000 + Math.random() * 900000).toString();
-    const otpExpiry = new Date(Date.now() + 10 * 60 * 1000); // 10 minutes
-
-    user.otp = otp;
-    user.otpExpiry = otpExpiry;
-    user.lastOtpSentAt = new Date();
-    await user.save();
-
-    await sendOtpEmail(user.email, otp);
-
-    res.json({ message: 'A new OTP has been sent to your email.' });
-  } catch (err) {
-    console.error('Resend OTP Error:', err.message);
-    res.status(500).json({ error: 'Server error while resending OTP.' });
-  }
-};
+// (verifyOtp and resendOtp removed as they are no longer needed)
 
 // ── Change Password ─────────────────────────────────────────────────────────
 const changePassword = async (req, res) => {
@@ -333,4 +309,4 @@ const changePassword = async (req, res) => {
   }
 };
 
-module.exports = { register, login, requestLoginOtp, verifyOtp, resendOtp, deleteUser, deleteAllUsers, refreshToken, logout, changePassword };
+module.exports = { requestSignupOtp, register, login, requestLoginOtp, deleteUser, deleteAllUsers, refreshToken, logout, changePassword };
