@@ -8,7 +8,7 @@ import 'package:url_launcher/url_launcher.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:latlong2/latlong.dart';
-import 'package:swipe_to/swipe_to.dart';
+import '../widgets/swipe_to_reply.dart';
 import 'package:flutter/services.dart';
 
 class ChatScreen extends StatefulWidget {
@@ -264,9 +264,9 @@ class _ChatScreenState extends State<ChatScreen> {
               itemBuilder: (context, index) {
                 final msg = messages[messages.length - 1 - index];
                 final bool isMe = (msg['senderEmail']?.toString().toLowerCase().trim() ?? '') == widget.myEmail.toLowerCase().trim();
-                return SwipeTo(
+                return SwipeToReply(
                   key: ValueKey('msg_${messages.length - 1 - index}'),
-                  onRightSwipe: (details) {
+                  onReply: () {
                     setState(() {
                       replyToMessage = {
                         'sender': msg['sender'],
