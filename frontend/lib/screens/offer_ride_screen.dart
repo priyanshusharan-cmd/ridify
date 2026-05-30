@@ -386,89 +386,98 @@ class _OfferRideScreenState extends State<OfferRideScreen> {
                 borderRadius: BorderRadius.circular(20),
                 border: Border.all(color: Theme.of(context).dividerColor),
               ),
-              child: Row(
+              child: Stack(
+                alignment: Alignment.center,
                 children: [
-                  Expanded(
-                    child: Column(
-                      children: [
-                        AddressSearchWidget(
-                          controller: pickupController,
-                          hintText: "Your Pickup Location",
-                          prefixIcon: Icons.location_on_outlined,
-                          iconColor: Colors.green,
-                          onMapTap: () async {
-                            final initial = (pickupLat != null && pickupLng != null)
-                                ? LatLng(pickupLat!, pickupLng!)
-                                : null;
-                            final result = await Navigator.push(
-                              context,
-                              MaterialPageRoute(builder: (context) => MapPickerScreen(initialPosition: initial)),
-                            );
-                            if (result != null && mounted) {
-                              setState(() {
-                                pickupController.text = result['name'];
-                                pickupLat = result['lat'];
-                                pickupLng = result['lng'];
-                              });
-                              fetchRoute();
-                            }
-                          },
-                          onSelected: (name, lat, lon) {
+                  Column(
+                    children: [
+                      AddressSearchWidget(
+                        controller: pickupController,
+                        hintText: "Your Pickup Location",
+                        prefixIcon: Icons.location_on_outlined,
+                        iconColor: Colors.green,
+                        onMapTap: () async {
+                          final initial = (pickupLat != null && pickupLng != null)
+                              ? LatLng(pickupLat!, pickupLng!)
+                              : null;
+                          final result = await Navigator.push(
+                            context,
+                            MaterialPageRoute(builder: (context) => MapPickerScreen(initialPosition: initial)),
+                          );
+                          if (result != null && mounted) {
                             setState(() {
-                              pickupLat = lat;
-                              pickupLng = lon;
+                              pickupController.text = result['name'];
+                              pickupLat = result['lat'];
+                              pickupLng = result['lng'];
                             });
                             fetchRoute();
-                          },
-                        ),
-                        Divider(height: 1, color: Theme.of(context).dividerColor),
-                        AddressSearchWidget(
-                          controller: destinationController,
-                          hintText: "Your Destination",
-                          prefixIcon: Icons.flag_outlined,
-                          iconColor: Colors.red,
-                          onMapTap: () async {
-                            final initial = (destLat != null && destLng != null)
-                                ? LatLng(destLat!, destLng!)
-                                : (pickupLat != null && pickupLng != null)
-                                    ? LatLng(pickupLat!, pickupLng!)
-                                    : null;
-                            final result = await Navigator.push(
-                              context,
-                              MaterialPageRoute(builder: (context) => MapPickerScreen(initialPosition: initial)),
-                            );
-                            if (result != null && mounted) {
-                              setState(() {
-                                destinationController.text = result['name'];
-                                destLat = result['lat'];
-                                destLng = result['lng'];
-                              });
-                              fetchRoute();
-                            }
-                          },
-                          onSelected: (name, lat, lon) {
+                          }
+                        },
+                        onSelected: (name, lat, lon) {
+                          setState(() {
+                            pickupLat = lat;
+                            pickupLng = lon;
+                          });
+                          fetchRoute();
+                        },
+                      ),
+                      Divider(height: 1, color: Theme.of(context).dividerColor),
+                      AddressSearchWidget(
+                        controller: destinationController,
+                        hintText: "Your Destination",
+                        prefixIcon: Icons.flag_outlined,
+                        iconColor: Colors.red,
+                        onMapTap: () async {
+                          final initial = (destLat != null && destLng != null)
+                              ? LatLng(destLat!, destLng!)
+                              : (pickupLat != null && pickupLng != null)
+                                  ? LatLng(pickupLat!, pickupLng!)
+                                  : null;
+                          final result = await Navigator.push(
+                            context,
+                            MaterialPageRoute(builder: (context) => MapPickerScreen(initialPosition: initial)),
+                          );
+                          if (result != null && mounted) {
                             setState(() {
-                              destLat = lat;
-                              destLng = lon;
+                              destinationController.text = result['name'];
+                              destLat = result['lat'];
+                              destLng = result['lng'];
                             });
                             fetchRoute();
-                          },
+                          }
+                        },
+                        onSelected: (name, lat, lon) {
+                          setState(() {
+                            destLat = lat;
+                            destLng = lon;
+                          });
+                          fetchRoute();
+                        },
+                      ),
+                    ],
+                  ),
+                  Container(
+                    decoration: BoxDecoration(
+                      color: Theme.of(context).cardColor,
+                      shape: BoxShape.circle,
+                      border: Border.all(color: Theme.of(context).dividerColor),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.black.withValues(alpha: 0.1),
+                          blurRadius: 4,
+                          offset: const Offset(0, 2),
                         ),
                       ],
                     ),
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.only(right: 8.0, left: 4.0),
-                    child: Container(
-                      decoration: BoxDecoration(
-                        color: Theme.of(context).cardColor,
-                        shape: BoxShape.circle,
-                        border: Border.all(color: Theme.of(context).dividerColor),
-                      ),
-                      child: IconButton(
-                        icon: const Icon(Icons.swap_vert),
-                        onPressed: _swapLocations,
-                        tooltip: "Swap locations",
+                    child: Material(
+                      color: Colors.transparent,
+                      child: InkWell(
+                        customBorder: const CircleBorder(),
+                        onTap: _swapLocations,
+                        child: const Padding(
+                          padding: EdgeInsets.all(8.0),
+                          child: Icon(Icons.swap_vert, size: 20),
+                        ),
                       ),
                     ),
                   ),

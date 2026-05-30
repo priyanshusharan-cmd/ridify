@@ -14,18 +14,13 @@ function initSocket(server, app) {
   // USER ↔ SOCKET TRACKING
   // =============================================
 
-  // userEmail → Set<socketId>  (supports multiple devices per user)
-  const userSockets = new Map();
-
   /**
-   * Emit an event to a specific user across all their connected devices.
+   * Emit an event to a specific user across all their connected devices
+   * by leveraging their personal socket.io room.
    */
   function emitToUser(userEmail, event, data) {
-    const sockets = userSockets.get(userEmail);
-    if (sockets) {
-      for (const sid of sockets) {
-        io.to(sid).emit(event, data);
-      }
+    if (userEmail) {
+      io.to(userEmail.toLowerCase()).emit(event, data);
     }
   }
 
@@ -33,12 +28,8 @@ function initSocket(server, app) {
    * Join all of a user's connected sockets into a ride room.
    */
   function joinUserToRide(userEmail, rideId) {
-    const sockets = userSockets.get(userEmail);
-    if (sockets) {
-      for (const sid of sockets) {
-        const s = io.sockets.sockets.get(sid);
-        if (s) s.join(rideId);
-      }
+    if (userEmail && rideId) {
+      io.in(userEmail.toLowerCase()).socketsJoin(rideId.toString());
     }
   }
 
@@ -79,8 +70,11 @@ function initSocket(server, app) {
 
     // userEmail is now guaranteed by middleware — no event needed
     const userEmail = socket.userEmail;
-    if (!userSockets.has(userEmail)) userSockets.set(userEmail, new Set());
-    userSockets.get(userEmail).add(socket.id);
+    
+    // Join a personal room for this user to allow cross-device emits without maps
+    if (userEmail) {
+      socket.join(userEmail);
+    }
 
     // Auto-join rooms for every ride this user is involved in
     try {
@@ -139,12 +133,6 @@ function initSocket(server, app) {
     // ── Cleanup on disconnect ──────────────────────────────────────────
     socket.on('disconnect', () => {
       locationUpdateCooldowns.delete(`loc_${socket.id}`);
-      if (socket.userEmail && userSockets.has(socket.userEmail)) {
-        userSockets.get(socket.userEmail).delete(socket.id);
-        if (userSockets.get(socket.userEmail).size === 0) {
-          userSockets.delete(socket.userEmail);
-        }
-      }
       logger.info(`Socket disconnected: ${socket.id}`);
     });
   });
