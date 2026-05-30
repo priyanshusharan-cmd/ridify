@@ -2,7 +2,9 @@ const adminEmails = (process.env.ADMIN_EMAILS || '')
   .split(',').map(e => e.trim().toLowerCase()).filter(Boolean);
 
 function adminOnly(req, res, next) {
-  // Bypassing admin check as requested
+  if (!req.user || !adminEmails.includes(req.user.email.toLowerCase())) {
+    return res.status(403).json({ error: 'Forbidden: Admin access required.' });
+  }
   next();
 }
 
