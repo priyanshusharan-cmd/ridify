@@ -20,6 +20,7 @@ class RideStatusPanel extends StatelessWidget {
   final String myName;
   final String myEmail;
   final String rideId;
+  final bool isProcessing;
   final VoidCallback onBoardRide;
   final VoidCallback onStartRide;
   final VoidCallback onEndRide;
@@ -45,6 +46,7 @@ class RideStatusPanel extends StatelessWidget {
     required this.myName,
     required this.myEmail,
     required this.rideId,
+    required this.isProcessing,
     required this.onBoardRide,
     required this.onStartRide,
     required this.onEndRide,
@@ -152,52 +154,58 @@ class RideStatusPanel extends StatelessWidget {
                   if (!isDriver && isAccepted && !iHaveBoarded && !iAmDropped)
                     ElevatedButton(
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: !iAmArrived ? Colors.grey.shade300 : (isDark ? const Color(0xFF1B4332) : Colors.green.shade600),
-                        foregroundColor: !iAmArrived ? Colors.grey.shade600 : Colors.white,
+                        backgroundColor: (!iAmArrived || isProcessing) ? Colors.grey.shade300 : (isDark ? const Color(0xFF1B4332) : Colors.green.shade600),
+                        foregroundColor: (!iAmArrived || isProcessing) ? Colors.grey.shade600 : Colors.white,
                         elevation: 0,
                         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
                         padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
                       ),
-                      onPressed: () {
+                      onPressed: isProcessing ? null : () {
                         if (!iAmArrived) {
                           ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("Wait for the driver to arrive"), backgroundColor: Colors.orange));
                         } else {
                           onBoardRide();
                         }
                       },
-                      child: const Text("Board", style: TextStyle(fontWeight: FontWeight.bold, fontSize: 15)),
+                      child: isProcessing
+                          ? const SizedBox(width: 18, height: 18, child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white))
+                          : const Text("Board", style: TextStyle(fontWeight: FontWeight.bold, fontSize: 15)),
                     ),
                   // Driver: Start / End button
                   if (isDriver) ...[
                     if (!isStarted)
                       ElevatedButton(
                         style: ElevatedButton.styleFrom(
-                          backgroundColor: isDark ? const Color(0xFF1A3A5C) : Colors.blue.shade600,
-                          foregroundColor: Colors.white,
+                          backgroundColor: isProcessing ? Colors.grey.shade300 : (isDark ? const Color(0xFF1A3A5C) : Colors.blue.shade600),
+                          foregroundColor: isProcessing ? Colors.grey.shade600 : Colors.white,
                           elevation: 0,
                           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
                           padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 14),
                         ),
-                        onPressed: onStartRide,
-                        child: const Text("Start", style: TextStyle(fontWeight: FontWeight.bold, fontSize: 15)),
+                        onPressed: isProcessing ? null : onStartRide,
+                        child: isProcessing
+                            ? const SizedBox(width: 18, height: 18, child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white))
+                            : const Text("Start", style: TextStyle(fontWeight: FontWeight.bold, fontSize: 15)),
                       )
                     else
                       ElevatedButton(
                         style: ElevatedButton.styleFrom(
-                          backgroundColor: canEnd ? (isDark ? const Color(0xFF5C1A1A) : Colors.red.shade600) : Colors.grey.shade300,
-                          foregroundColor: canEnd ? Colors.white : Colors.grey.shade600,
+                          backgroundColor: (canEnd && !isProcessing) ? (isDark ? const Color(0xFF5C1A1A) : Colors.red.shade600) : Colors.grey.shade300,
+                          foregroundColor: (canEnd && !isProcessing) ? Colors.white : Colors.grey.shade600,
                           elevation: 0,
                           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
                           padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 14),
                         ),
-                        onPressed: () {
+                        onPressed: isProcessing ? null : () {
                           if (!canEnd) {
                             ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("There are passengers still in the car"), backgroundColor: Colors.red));
                           } else {
                             onEndRide();
                           }
                         },
-                        child: const Text("End", style: TextStyle(fontWeight: FontWeight.bold, fontSize: 15)),
+                        child: isProcessing
+                            ? const SizedBox(width: 18, height: 18, child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white))
+                            : const Text("End", style: TextStyle(fontWeight: FontWeight.bold, fontSize: 15)),
                       ),
                   ],
                 ]),
@@ -243,6 +251,7 @@ class RideStatusPanel extends StatelessWidget {
                       isArrived: isArrived,
                       isStarted: isStarted,
                       canFit: canFit,
+                      isProcessing: isProcessing,
                       routePreference: rideData?['routePreference'] ?? 'flexible',
                       isDark: isDark,
                       onDropOff: () => onDropOffPassenger(p),

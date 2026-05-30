@@ -48,6 +48,7 @@ class _LiveTrackingScreenState extends State<LiveTrackingScreen> {
   
   bool _locationTimedOut = false;
   Timer? _locationTimeoutTimer;
+  bool _processingAction = false;
 
   @override
   void initState() {
@@ -433,6 +434,8 @@ class _LiveTrackingScreenState extends State<LiveTrackingScreen> {
   }
 
   Future<void> driverArriveForPassenger(String name) async {
+    if (_processingAction) return;
+    _processingAction = true;
     // Optimistic UI update
     setState(() {
       if (rideData != null) {
@@ -443,21 +446,17 @@ class _LiveTrackingScreenState extends State<LiveTrackingScreen> {
     });
     try {
       await RideService.markDriverArrived(widget.rideId, name);
-    } catch (e) { debugPrint(e.toString()); syncRideStatus(); }
+    } catch (e) { debugPrint(e.toString()); syncRideStatus(); } finally {
+      if (mounted) _processingAction = false;
+    }
   }
   Future<void> boardRide() async {
-    if (widget.rideId.isEmpty) return;
-    // Optimistic UI update
-    setState(() {
-      if (rideData != null) {
-        List boarded = List.from(rideData!['boardedPassengers'] ?? []);
-        if (!boarded.contains(myEmailLower)) boarded.add(myEmailLower);
-        rideData!['boardedPassengers'] = boarded;
-      }
-    });
+    if (widget.rideId.isEmpty || _processingAction) return;
+    setState(() => _processingAction = true);
 
     try {
       await RideService.boardPassenger(widget.rideId, myEmailLower);
+      // Success — socket event 'passenger_boarded' will update UI
     } catch (e) {
       debugPrint(e.toString());
       if (mounted) {
@@ -467,6 +466,8 @@ class _LiveTrackingScreenState extends State<LiveTrackingScreen> {
         );
       }
       syncRideStatus();
+    } finally {
+      if (mounted) setState(() => _processingAction = false);
     }
   }
 
@@ -495,7 +496,9 @@ class _LiveTrackingScreenState extends State<LiveTrackingScreen> {
     );
   }
 
-  Future<void> kickPassenger(String name) async { 
+  Future<void> kickPassenger(String name) async {
+    if (_processingAction) return;
+    _processingAction = true;
     // Optimistic UI update
     setState(() {
       if (rideData != null) {
@@ -506,9 +509,13 @@ class _LiveTrackingScreenState extends State<LiveTrackingScreen> {
     });
     try { 
       await RideService.kickPassenger(widget.rideId, name);
-    } catch (e) { debugPrint(e.toString()); syncRideStatus(); } 
+    } catch (e) { debugPrint(e.toString()); syncRideStatus(); } finally {
+      if (mounted) _processingAction = false;
+    }
   }
-  Future<void> _executeDropOff(String name) async { 
+  Future<void> _executeDropOff(String name) async {
+    if (_processingAction) return;
+    _processingAction = true;
     // Optimistic UI update
     setState(() {
       if (rideData != null) {
@@ -519,7 +526,9 @@ class _LiveTrackingScreenState extends State<LiveTrackingScreen> {
         rideData!['droppedPassengers'] = dropped;
       }
     });
-    try { await RideService.dropOffPassenger(widget.rideId, name); } catch (e) { debugPrint(e.toString()); syncRideStatus(); } 
+    try { await RideService.dropOffPassenger(widget.rideId, name); } catch (e) { debugPrint(e.toString()); syncRideStatus(); } finally {
+      if (mounted) _processingAction = false;
+    }
   }
 
   Future<void> dropOffPassenger(String passengerEmail) async {
@@ -593,13 +602,16 @@ class _LiveTrackingScreenState extends State<LiveTrackingScreen> {
     }
   }
   Future<void> startRide() async { 
-    if (widget.rideId.isEmpty) return; 
+    if (widget.rideId.isEmpty || _processingAction) return;
+    _processingAction = true;
     // Optimistic UI update
     setState(() {
       isStarted = true;
       if (rideData != null) rideData!['status'] = 'started';
     });
-    try { await RideService.startRide(widget.rideId); } catch (e) { debugPrint(e.toString()); syncRideStatus(); } 
+    try { await RideService.startRide(widget.rideId); } catch (e) { debugPrint(e.toString()); syncRideStatus(); } finally {
+      if (mounted) _processingAction = false;
+    }
   }
 
   // Returns {title, address, lat, lng} for the next stop header
@@ -693,6 +705,7 @@ class _LiveTrackingScreenState extends State<LiveTrackingScreen> {
     SocketService().leaveRide(widget.rideId);
     super.dispose();
   }
+
 
   @override
   Widget build(BuildContext context) {
@@ -848,6 +861,7 @@ class _LiveTrackingScreenState extends State<LiveTrackingScreen> {
           myName: widget.myName,
           myEmail: widget.myEmail,
           rideId: widget.rideId,
+          isProcessing: _processingAction,
           onBoardRide: boardRide,
           onStartRide: startRide,
           onEndRide: endRide,

@@ -319,13 +319,15 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
 
   @override
   void dispose() {
-    for (final entry in _socketListeners) {
-      SocketService().socket.off(entry.key, entry.value);
-    }
-    _socketListeners.clear();
-    // Socket is shared singleton — don't dispose it
     _startupController.dispose();
     _victoryController.dispose();
+    // Clean up only our specific listeners
+    final socket = SocketService().socket;
+    for (final entry in _socketListeners) {
+      socket.off(entry.key, entry.value);
+    }
+    _socketListeners.clear();
+
     super.dispose();
   }
 

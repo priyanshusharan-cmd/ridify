@@ -736,15 +736,17 @@ exports.driverArrived = async (req, res) => {
       return res.status(400).json({ error: "First start the ride" });
     }
 
-    if (!ride.arrivedAt) ride.arrivedAt = [];
+    const arrivedAt = [...(ride.arrivedAt || [])];
 
     if (ride.routePreference === 'flexible') {
-      // Must be an accepted passenger to be marked as arrived
       if (!ride.passengers.includes(passengerEmail)) {
         return res.status(400).json({ error: "User is not an accepted passenger on this ride." });
       }
       if (ride.droppedPassengers && ride.droppedPassengers.includes(passengerEmail)) {
         return res.status(400).json({ error: "Passenger has already been dropped off." });
+      }
+      if (arrivedAt.includes(passengerEmail)) {
+        return res.status(400).json({ error: "Already marked as arrived." });
       }
       const riderDetail = getRiderDetail(ride, passengerEmail);
       const neededSeats = riderDetail?.seats || 1;
@@ -755,23 +757,39 @@ exports.driverArrived = async (req, res) => {
       if (currentlyOccupied + neededSeats > ride.totalSeats) {
         return res.status(400).json({ error: "Car capacity reached" });
       }
-      if (!ride.arrivedAt.includes(passengerEmail)) {
-        ride.arrivedAt.push(passengerEmail);
-      }
+      arrivedAt.push(passengerEmail);
     } else if (ride.routePreference === 'nonstop' || ride.routePreference === 'shared_start') {
       for (const pName of ride.passengers) {
-        if (!ride.arrivedAt.includes(pName) && 
+        if (!arrivedAt.includes(pName) && 
             !ride.boardedPassengers.includes(pName) && 
             !ride.droppedPassengers.includes(pName)) {
-          ride.arrivedAt.push(pName);
+          arrivedAt.push(pName);
         }
       }
     }
     
-    await ride.save();
-    const rideId = ride._id.toString();
-    req.io.to(rideId).emit('driver_arrived', { rideId, riderName: passengerEmail, ride: ride.toJSON() });
-    res.status(200).json(ride);
+    const updateResult = await Ride.findOneAndUpdate(
+      {
+        _id: ride._id,
+        optimisticLock: ride.optimisticLock,
+      },
+      {
+        $set: { arrivedAt },
+        $inc: { optimisticLock: 1 }
+      },
+      { new: true }
+    );
+
+    if (!updateResult) {
+      return res.status(409).json({
+        error: 'Concurrent modification detected. Please retry.',
+        code: 'OPTIMISTIC_LOCK_CONFLICT'
+      });
+    }
+
+    const rideId = updateResult._id.toString();
+    req.io.to(rideId).emit('driver_arrived', { rideId, riderName: passengerEmail, ride: updateResult.toJSON() });
+    res.status(200).json(updateResult);
   } catch (err) { res.status(500).json({ error: err.message }); }
 };
 
@@ -781,16 +799,14 @@ exports.boardPassenger = async (req, res) => {
     const passengerEmail = decodeURIComponent(req.params.passengerEmail || '').toLowerCase().trim();
     let ride = await Ride.findById(req.params.id);
     if (!ride) return res.status(404).json({ error: "Ride not found" });
-    if (req.user.email !== ride.riderEmail && req.user.email !== passengerEmail) {
-      return res.status(403).json({ error: 'Only the driver or passenger can perform this action.' });
-    }
-    if (!['accepted', 'full', 'started'].includes(ride.status)) return res.status(400).json({ error: 'Ride must be accepted or started before boarding.' });
-
-    if (!ride.passengers.includes(passengerEmail)) {
+    if (ride.status !== 'started') {
       return res.status(400).json({ error: "Passenger must be accepted before boarding." });
     }
     if (ride.kicked.includes(passengerEmail) || ride.declined.includes(passengerEmail)) {
       return res.status(400).json({ error: "User is kicked or declined from this ride." });
+    }
+    if (ride.boardedPassengers.includes(passengerEmail)) {
+      return res.status(400).json({ error: "Passenger is already boarded." });
     }
 
     let currentlyOccupied = 0;
@@ -803,22 +819,43 @@ exports.boardPassenger = async (req, res) => {
        return res.status(400).json({ error: "Physical car is full!" });
     }
 
-    if (!ride.boardedPassengers.includes(passengerEmail)) {
-      ride.boardedPassengers.push(passengerEmail);
-    }
+    // Prepare updated fields
+    const boardedPassengers = [...ride.boardedPassengers, passengerEmail];
     const riderDetailBoard = getRiderDetail(ride, passengerEmail);
     if (riderDetailBoard) {
       riderDetailBoard.boardedAt = new Date();
       const safeName = emailToKey(passengerEmail);
       ride.riderDetails.set(safeName, riderDetailBoard);
     }
-    // Remove from arrivedAt — they've progressed past the "arrived" stage
-    ride.arrivedAt = ride.arrivedAt.filter(p => p !== passengerEmail);
+    const arrivedAt = (ride.arrivedAt || []).filter(p => p !== passengerEmail);
 
-    await ride.save();
-    const rideId = ride._id.toString();
-    req.io.to(rideId).emit('passenger_boarded', { rideId, ride: ride.toJSON() });
-    res.status(200).json(ride);
+    const updateResult = await Ride.findOneAndUpdate(
+      {
+        _id: ride._id,
+        optimisticLock: ride.optimisticLock,
+        boardedPassengers: { $ne: passengerEmail } // atomic guard: not already boarded
+      },
+      {
+        $set: {
+          boardedPassengers,
+          arrivedAt,
+          riderDetails: ride.riderDetails,
+        },
+        $inc: { optimisticLock: 1 }
+      },
+      { new: true }
+    );
+
+    if (!updateResult) {
+      return res.status(409).json({
+        error: 'Action already processed or concurrent modification. Please retry.',
+        code: 'OPTIMISTIC_LOCK_CONFLICT'
+      });
+    }
+
+    const rideId = updateResult._id.toString();
+    req.io.to(rideId).emit('passenger_boarded', { rideId, ride: updateResult.toJSON() });
+    res.status(200).json(updateResult);
   } catch (err) { res.status(500).json({ error: err.message }); }
 };
 
@@ -840,12 +877,12 @@ exports.dropOffPassenger = async (req, res) => {
       return res.status(400).json({ error: "Passenger has already been dropped off." });
     }
 
-    ride.boardedPassengers = ride.boardedPassengers.filter(p => p !== passengerEmail);
-    ride.passengers = ride.passengers.filter(p => p !== passengerEmail);
+    const boardedPassengers = ride.boardedPassengers.filter(p => p !== passengerEmail);
+    const passengers = ride.passengers.filter(p => p !== passengerEmail);
     
-    if (!ride.droppedPassengers) ride.droppedPassengers = [];
-    if (!ride.droppedPassengers.includes(passengerEmail)) {
-      ride.droppedPassengers.push(passengerEmail);
+    const droppedPassengers = [...(ride.droppedPassengers || [])];
+    if (!droppedPassengers.includes(passengerEmail)) {
+      droppedPassengers.push(passengerEmail);
     }
     const riderDetailDrop = getRiderDetail(ride, passengerEmail);
     if (riderDetailDrop) {
@@ -854,16 +891,41 @@ exports.dropOffPassenger = async (req, res) => {
       ride.riderDetails.set(safeName, riderDetailDrop);
     }
 
-    await ride.save();
-    const rideId = ride._id.toString();
+    const updateResult = await Ride.findOneAndUpdate(
+      {
+        _id: ride._id,
+        optimisticLock: ride.optimisticLock,
+        droppedPassengers: { $ne: passengerEmail } // atomic guard: not already dropped
+      },
+      {
+        $set: {
+          boardedPassengers,
+          passengers,
+          droppedPassengers,
+          riderDetails: ride.riderDetails,
+        },
+        $inc: { optimisticLock: 1 }
+      },
+      { new: true }
+    );
+
+    if (!updateResult) {
+      return res.status(409).json({
+        error: 'Action already processed or concurrent modification. Please retry.',
+        code: 'OPTIMISTIC_LOCK_CONFLICT'
+      });
+    }
+
+    const rideId = updateResult._id.toString();
+    const fare = getRiderDetail(updateResult, passengerEmail)?.fare;
     const payload = { 
       rideId, 
       riderName: passengerEmail, 
-      fare: getRiderDetail(ride, passengerEmail)?.fare,
-      ride: ride.toJSON()
+      fare,
+      ride: updateResult.toJSON()
     };
     req.io.to(rideId).emit('passenger_dropped', payload);
-    res.status(200).json(ride);
+    res.status(200).json(updateResult);
   } catch (err) { res.status(500).json({ error: err.message }); }
 };
 
@@ -910,37 +972,63 @@ exports.startRide = async (req, res) => {
       return res.status(400).json({ error: `Cannot start a ride that is already ${ride.status}.` });
     }
 
-    ride.status = 'started';
-    ride.startedAt = new Date();
-
+    const declined = [...(ride.declined || [])];
     if (ride.requests && ride.requests.length > 0) {
       const pendingReqs = [...ride.requests];
       for (const requester of pendingReqs) {
-        if (!ride.declined) ride.declined = [];
-        if (!ride.declined.includes(requester)) {
-          ride.declined.push(requester);
+        if (!declined.includes(requester)) {
+          declined.push(requester);
         }
-        req.emitToUser(requester, 'ride_cancelled', { rideId: ride._id.toString(), ride: ride.toJSON() });
       }
-      ride.requests = [];
     }
 
+    const arrivedAt = [...(ride.arrivedAt || [])];
     if (ride.routePreference === 'nonstop' || ride.routePreference === 'shared_start') {
-      if (!ride.arrivedAt) ride.arrivedAt = [];
       for (const pName of ride.passengers) {
-        if (!ride.arrivedAt.includes(pName) && 
+        if (!arrivedAt.includes(pName) && 
             !ride.boardedPassengers.includes(pName) && 
             !ride.droppedPassengers.includes(pName)) {
-          ride.arrivedAt.push(pName);
+          arrivedAt.push(pName);
         }
       }
     }
 
-    await ride.save();
+    const updateResult = await Ride.findOneAndUpdate(
+      {
+        _id: ride._id,
+        optimisticLock: ride.optimisticLock,
+        status: { $nin: ['started', 'completed', 'cancelled'] } // atomic guard
+      },
+      {
+        $set: {
+          status: 'started',
+          startedAt: new Date(),
+          requests: [],
+          declined,
+          arrivedAt,
+        },
+        $inc: { optimisticLock: 1 }
+      },
+      { new: true }
+    );
 
-    const rideId = ride._id.toString();
-    req.io.to(rideId).emit('ride_started', { rideId, ride: ride.toJSON() });
-    res.status(200).json(ride);
+    if (!updateResult) {
+      return res.status(409).json({
+        error: 'Ride already started or concurrent modification. Please retry.',
+        code: 'OPTIMISTIC_LOCK_CONFLICT'
+      });
+    }
+
+    // Emit decline events to pending requesters AFTER the DB write succeeds
+    if (ride.requests && ride.requests.length > 0) {
+      for (const requester of ride.requests) {
+        req.emitToUser(requester, 'ride_cancelled', { rideId: updateResult._id.toString(), ride: updateResult.toJSON() });
+      }
+    }
+
+    const rideId = updateResult._id.toString();
+    req.io.to(rideId).emit('ride_started', { rideId, ride: updateResult.toJSON() });
+    res.status(200).json(updateResult);
   } catch (err) { res.status(500).json({ error: err.message }); }
 };
 

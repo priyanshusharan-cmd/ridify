@@ -9,6 +9,7 @@ class PassengerTile extends StatelessWidget {
   final bool isArrived;
   final bool isStarted;
   final bool canFit;
+  final bool isProcessing;
   final String routePreference;
   final bool isDark;
   final VoidCallback onDropOff;
@@ -25,6 +26,7 @@ class PassengerTile extends StatelessWidget {
     required this.isArrived,
     required this.isStarted,
     required this.canFit,
+    required this.isProcessing,
     required this.routePreference,
     required this.isDark,
     required this.onDropOff,
@@ -87,13 +89,15 @@ class PassengerTile extends StatelessWidget {
           if (routePreference != 'nonstop') ...[
             TextButton(
               style: TextButton.styleFrom(
-                backgroundColor: Colors.red.shade50,
-                foregroundColor: Colors.red.shade700,
+                backgroundColor: isProcessing ? Colors.grey.shade100 : Colors.red.shade50,
+                foregroundColor: isProcessing ? Colors.grey.shade400 : Colors.red.shade700,
                 padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
                 shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
               ),
-              onPressed: onDropOff,
-              child: const Text("Drop-off", style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold)),
+              onPressed: isProcessing ? null : onDropOff,
+              child: isProcessing
+                  ? const SizedBox(width: 14, height: 14, child: CircularProgressIndicator(strokeWidth: 2))
+                  : const Text("Drop-off", style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold)),
             ),
             const SizedBox(width: 8),
           ],
@@ -106,12 +110,12 @@ class PassengerTile extends StatelessWidget {
           if (!isArrived && routePreference != 'nonstop' && routePreference != 'shared_start') ...[
             TextButton(
               style: TextButton.styleFrom(
-                backgroundColor: (canFit && isStarted) ? Colors.green.shade50 : Colors.grey.shade100,
-                foregroundColor: (canFit && isStarted) ? Colors.green.shade700 : Colors.grey.shade600,
+                backgroundColor: (canFit && isStarted && !isProcessing) ? Colors.green.shade50 : Colors.grey.shade100,
+                foregroundColor: (canFit && isStarted && !isProcessing) ? Colors.green.shade700 : Colors.grey.shade600,
                 padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
                 shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
               ),
-              onPressed: () {
+              onPressed: isProcessing ? null : () {
                 if (!isStarted) {
                   ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("First start the ride"), backgroundColor: Colors.orange));
                 } else if (!canFit) {
@@ -120,7 +124,9 @@ class PassengerTile extends StatelessWidget {
                   onArrive();
                 }
               },
-              child: Text((canFit && isStarted) ? "Arrived" : (isStarted ? "Full" : "Arrived"), style: const TextStyle(fontSize: 12, fontWeight: FontWeight.bold)),
+              child: isProcessing
+                  ? const SizedBox(width: 14, height: 14, child: CircularProgressIndicator(strokeWidth: 2))
+                  : Text((canFit && isStarted) ? "Arrived" : (isStarted ? "Full" : "Arrived"), style: const TextStyle(fontSize: 12, fontWeight: FontWeight.bold)),
             ),
             const SizedBox(width: 8),
           ],
