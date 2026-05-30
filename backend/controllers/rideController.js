@@ -437,7 +437,7 @@ exports.requestRide = async (req, res) => {
       { _id: ride._id, optimisticLock: ride.optimisticLock },
       {
         $set: {
-          requests: ride.requests,
+          requests: [...ride.requests],
           riderDetails: ride.riderDetails
         },
         $inc: { optimisticLock: 1 }
@@ -455,6 +455,7 @@ exports.requestRide = async (req, res) => {
     const rideId = updateResult._id.toString();
     req.joinUserToRide(riderEmail, rideId);
     req.io.to(rideId).emit('new_ride_request', { rideId, ride: updateResult.toJSON() });
+    req.emitToUser(ride.riderEmail, 'new_ride_request', { rideId, ride: updateResult.toJSON() });
 
     res.status(200).json({ success: true });
   } catch (err) { res.status(500).json({ error: err.message }); }
