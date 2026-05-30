@@ -1,8 +1,8 @@
 <div align="center">
-  <img src="frontend/assets/icon.png" alt="Ridify Logo" width="150" />
+  <img src="frontend/assets/icon.png" alt="Ridify Logo" width="180" />
   
   # 🚗 Ridify
-
+  
   ### **Real-time ride-sharing, reimagined for students.**  
   *Offer a seat, find a ride, track it live, and split the cost — all in one seamless experience.*
 
@@ -15,17 +15,82 @@
 
 ---
 
+## ✨ What's New & App Evolution
+
+Ridify has evolved significantly! We've introduced a **complete UI overhaul**, featuring a stunning **Dark Mode**, smoother animations, and enhanced user flows. The application now boasts improved real-time tracking, an expanded financial dashboard, more intuitive chat experiences, and deeper integration with OpenStreetMap.
+
+---
+
 ## 🚀 Key Features
 
-Ridify is designed to make commuting easier, safer, and more social. Here’s what makes it stand out:
-
+- 🌓 **Dynamic Theme Support** — Beautifully crafted Light and Dark modes.
 - 🚘 **Flexible Ride Offering** — Post journeys with custom vehicle types, available seats, and transparent fares.
 - 🔍 **Smart Ride Discovery** — Find the perfect ride based on your location, schedule, and vehicle preference.
 - ⚡ **Instant Matching** — Connect with drivers and passengers instantly via real-time Socket.IO events.
 - 🗺️ **Live Map Tracking** — Watch your ride approach in real-time with integrated OpenStreetMap & GPS tracking.
-- 💬 **Integrated Group Chat** — Coordinate pickup details and socialize with your ride group before and during the journey.
-- 💰 **Financial Dashboard** — Track your total earnings as a driver or your savings as a passenger at a glance.
-- 🛡️ **Admin Suite** — Robust management tools for data cleanup and user moderation, protected by secure middleware.
+- 💬 **Integrated Group Chat** — Coordinate pickup details and socialize with your ride group.
+- 💰 **Financial Dashboard** — Track your total earnings as a driver or your savings as a passenger.
+- 🔔 **Rich Notifications** — Stay updated on ride requests, acceptances, and driver arrivals.
+- 🛡️ **Admin Suite** — Robust management tools for data cleanup and user moderation.
+
+---
+
+## 📸 App Gallery (Light & Dark Modes)
+
+> *Placeholders for all major screens across the Ridify ecosystem, beautifully designed for both Light and Dark preferences.*
+
+### 🚀 Onboarding & Authentication
+| Screen | Light Mode | Dark Mode |
+|---|:---:|:---:|
+| **Splash Screen** | <img src="frontend/assets/screenshots/splash_light.png" width="220" /> | <img src="frontend/assets/screenshots/splash_dark.png" width="220" /> |
+| **Onboarding** | <img src="frontend/assets/screenshots/onboarding_light.png" width="220" /> | <img src="frontend/assets/screenshots/onboarding_dark.png" width="220" /> |
+| **Login** | <img src="frontend/assets/screenshots/login_light.png" width="220" /> | <img src="frontend/assets/screenshots/login_dark.png" width="220" /> |
+| **Sign Up** | <img src="frontend/assets/screenshots/signup_light.png" width="220" /> | <img src="frontend/assets/screenshots/signup_dark.png" width="220" /> |
+| **OTP Verification** | <img src="frontend/assets/screenshots/otp_light.png" width="220" /> | <img src="frontend/assets/screenshots/otp_dark.png" width="220" /> |
+
+### 🏠 Main Dashboard & Navigation
+| Screen | Light Mode | Dark Mode |
+|---|:---:|:---:|
+| **Home Dashboard** | <img src="frontend/assets/screenshots/home_light.png" width="220" /> | <img src="frontend/assets/screenshots/home_dark.png" width="220" /> |
+| **Side Menu / Drawer** | <img src="frontend/assets/screenshots/menu_light.png" width="220" /> | <img src="frontend/assets/screenshots/menu_dark.png" width="220" /> |
+| **Notifications** | <img src="frontend/assets/screenshots/notifications_light.png" width="220" /> | <img src="frontend/assets/screenshots/notifications_dark.png" width="220" /> |
+
+### 🚘 Ride Marketplace (Passenger)
+| Screen | Light Mode | Dark Mode |
+|---|:---:|:---:|
+| **Find a Ride** | <img src="frontend/assets/screenshots/find_ride_light.png" width="220" /> | <img src="frontend/assets/screenshots/find_ride_dark.png" width="220" /> |
+| **Available Rides** | <img src="frontend/assets/screenshots/available_rides_light.png" width="220" /> | <img src="frontend/assets/screenshots/available_rides_dark.png" width="220" /> |
+| **Ride Details** | <img src="frontend/assets/screenshots/ride_details_light.png" width="220" /> | <img src="frontend/assets/screenshots/ride_details_dark.png" width="220" /> |
+| **Booking Status** | <img src="frontend/assets/screenshots/booking_status_light.png" width="220" /> | <img src="frontend/assets/screenshots/booking_status_dark.png" width="220" /> |
+
+### 🚗 Ride Hosting (Driver)
+| Screen | Light Mode | Dark Mode |
+|---|:---:|:---:|
+| **Offer a Ride** | <img src="frontend/assets/screenshots/offer_ride_light.png" width="220" /> | <img src="frontend/assets/screenshots/offer_ride_dark.png" width="220" /> |
+| **Match Requests** | <img src="frontend/assets/screenshots/match_requests_light.png" width="220" /> | <img src="frontend/assets/screenshots/match_requests_dark.png" width="220" /> |
+| **Ongoing Activity** | <img src="frontend/assets/screenshots/ongoing_activity_light.png" width="220" /> | <img src="frontend/assets/screenshots/ongoing_activity_dark.png" width="220" /> |
+
+### 🗺️ Live Journey & Communication
+| Screen | Light Mode | Dark Mode |
+|---|:---:|:---:|
+| **Live Tracking (Passenger)** | <img src="frontend/assets/screenshots/tracking_passenger_light.png" width="220" /> | <img src="frontend/assets/screenshots/tracking_passenger_dark.png" width="220" /> |
+| **Live Tracking (Driver)** | <img src="frontend/assets/screenshots/tracking_driver_light.png" width="220" /> | <img src="frontend/assets/screenshots/tracking_driver_dark.png" width="220" /> |
+| **In-Ride Chat** | <img src="frontend/assets/screenshots/chat_light.png" width="220" /> | <img src="frontend/assets/screenshots/chat_dark.png" width="220" /> |
+| **Driver Arriving Alert** | <img src="frontend/assets/screenshots/driver_arriving_light.png" width="220" /> | <img src="frontend/assets/screenshots/driver_arriving_dark.png" width="220" /> |
+
+### 🏁 Ride Completion & Analytics
+| Screen | Light Mode | Dark Mode |
+|---|:---:|:---:|
+| **Ride Completed (Passenger)** | <img src="frontend/assets/screenshots/completed_passenger_light.png" width="220" /> | <img src="frontend/assets/screenshots/completed_passenger_dark.png" width="220" /> |
+| **Ride Completed (Driver)** | <img src="frontend/assets/screenshots/completed_driver_light.png" width="220" /> | <img src="frontend/assets/screenshots/completed_driver_dark.png" width="220" /> |
+| **Earnings Dashboard** | <img src="frontend/assets/screenshots/earnings_light.png" width="220" /> | <img src="frontend/assets/screenshots/earnings_dark.png" width="220" /> |
+
+### ⚙️ User Profile & Settings
+| Screen | Light Mode | Dark Mode |
+|---|:---:|:---:|
+| **User Profile** | <img src="frontend/assets/screenshots/profile_light.png" width="220" /> | <img src="frontend/assets/screenshots/profile_dark.png" width="220" /> |
+| **Ride History** | <img src="frontend/assets/screenshots/history_light.png" width="220" /> | <img src="frontend/assets/screenshots/history_dark.png" width="220" /> |
+| **App Settings** | <img src="frontend/assets/screenshots/settings_light.png" width="220" /> | <img src="frontend/assets/screenshots/settings_dark.png" width="220" /> |
 
 ---
 
@@ -47,169 +112,15 @@ Ridify is designed to make commuting easier, safer, and more social. Here’s wh
 We believe security shouldn't compromise simplicity:
 
 - **Bcrypt Hashing** — Every password is cryptographically hashed using salting. Plain-text is never stored in the database.
-- **Secure Email Auth** — Strict validation on both client and server ensures only legitimate accounts are created. Any valid email address (e.g., @gmail.com) is accepted.
+- **Secure Email Auth** — Strict validation on both client and server ensures only legitimate accounts are created.
 - **Persistent Sessions** — A frictionless login experience that remembers you securely across app restarts.
 - **Admin Shield** — Critical data management routes are protected by role-based access control (RBAC) middleware.
 
 ---
 
-## 📸 Experience Ridify
-
-> *A complete walkthrough of the Ridify ecosystem, featuring 20 unique states across the Passenger and Driver journeys, live routing, and real-time data sync.*
-
-### 🚪 Authentication & User Hub
-<table>
-  <tr>
-    <th width="50%">Login & Registration</th>
-    <th width="50%">Profile & History</th>
-  </tr>
-  <tr>
-    <td valign="top" align="center">
-      <b>Login</b><br>
-      <img src="frontend/assets/screenshots/login.jpg" alt="Login" width="250">
-    </td>
-    <td valign="top" align="center">
-      <b>Signup</b><br>
-      <img src="frontend/assets/screenshots/signup.jpg" alt="Signup" width="250">
-    </td>
-  </tr>
-  <tr>
-    <td valign="top" align="center">
-      <b>User Profile</b><br>
-      <img src="frontend/assets/screenshots/profile.jpg" alt="Profile" width="250">
-    </td>
-    <td valign="top" align="center">
-      <b>Ride History</b><br>
-      <img src="frontend/assets/screenshots/rideHistory.jpg" alt="History" width="250">
-    </td>
-  </tr>
-</table>
-
-### 💰 Dynamic Dashboards
-<table>
-  <tr>
-    <th width="50%">Initial State</th>
-    <th width="50%">Active State</th>
-  </tr>
-  <tr>
-    <td valign="top" align="center">
-      <b>New Dashboard</b><br>
-      <img src="frontend/assets/screenshots/home.jpg" alt="Home" width="250">
-    </td>
-    <td valign="top" align="center">
-      <b>Earnings & Spending</b><br>
-      <img src="frontend/assets/screenshots/toatalEarning&Spending.jpg" alt="Earnings" width="250">
-    </td>
-  </tr>
-</table>
-
-### 🚘 The Marketplace
-<table>
-  <tr>
-    <th width="50%">Passenger Search</th>
-    <th width="50%">Driver Hosting</th>
-  </tr>
-  <tr>
-    <td valign="top" align="center">
-      <b>Search Form</b><br>
-      <img src="frontend/assets/screenshots/findRide.jpg" alt="Find Ride" width="250">
-    </td>
-    <td valign="top" align="center">
-      <b>Create Listing</b><br>
-      <img src="frontend/assets/screenshots/offerRide.jpg" alt="Offer Ride" width="250">
-    </td>
-  </tr>
-  <tr>
-    <td valign="top" align="center">
-      <b>Available Rides</b><br>
-      <img src="frontend/assets/screenshots/availableRides.jpg" alt="Available Rides" width="250">
-    </td>
-    <td valign="top" align="center">
-      <b>Driver Match Requests</b><br>
-      <img src="frontend/assets/screenshots/matchRequest.jpg" alt="Match Request" width="250">
-    </td>
-  </tr>
-  <tr>
-    <td valign="top" align="center">
-      <b>Request Processing</b><br>
-      <img src="frontend/assets/screenshots/matchStatus.jpg" alt="Match Status" width="250">
-    </td>
-    <td valign="top" align="center">
-      <b>Ongoing Activity</b><br>
-      <img src="frontend/assets/screenshots/activity.jpg" alt="Activity" width="250">
-    </td>
-  </tr>
-</table>
-
-### 📱 Live Journey: Passenger Perspective
-<table>
-  <tr>
-    <th width="50%">Approaching</th>
-    <th width="50%">Boarded</th>
-  </tr>
-  <tr>
-    <td valign="top" align="center">
-      <b>Driver Arriving</b><br>
-      <img src="frontend/assets/screenshots/liveTrackingScreen2.jpg" alt="Driver Arriving" width="250">
-    </td>
-    <td valign="top" align="center">
-      <b>You're In!</b><br>
-      <img src="frontend/assets/screenshots/liveTrackingScreen3.jpg" alt="Boarded" width="250">
-    </td>
-  </tr>
-</table>
-
-### 🚗 Live Journey: Driver Perspective & Chat
-<table>
-  <tr>
-    <th width="50%">Route Management</th>
-    <th width="50%">Communication</th>
-  </tr>
-  <tr>
-    <td valign="top" align="center">
-      <b>Waiting for Passengers</b><br>
-      <img src="frontend/assets/screenshots/liveTrackingScreen.jpg" alt="Waiting" width="250">
-    </td>
-    <td valign="top" align="center">
-      <b>Ride In Progress</b><br>
-      <img src="frontend/assets/screenshots/liveTrackingScreen4.jpg" alt="In Progress" width="250">
-    </td>
-  </tr>
-  <tr>
-    <td valign="top" align="center">
-      <b>Ready to End</b><br>
-      <img src="frontend/assets/screenshots/liveTrackingScreen5.jpg" alt="Ready to End" width="250">
-    </td>
-    <td valign="top" align="center">
-      <b>Socket.IO Live Chat</b><br>
-      <img src="frontend/assets/screenshots/chatScreen.jpg" alt="Chat" width="250">
-    </td>
-  </tr>
-</table>
-
-### 🏁 Ride Completion
-<table>
-  <tr>
-    <th width="50%">Driver Success</th>
-    <th width="50%">Passenger Success</th>
-  </tr>
-  <tr>
-    <td valign="top" align="center">
-      <b>Driver Completion</b><br>
-      <img src="frontend/assets/screenshots/rideCompletedDriverScreen.jpg" alt="Driver Done" width="250">
-    </td>
-    <td valign="top" align="center">
-      <b>Rider Completion</b><br>
-      <img src="frontend/assets/screenshots/rideCompletedRiderScreen.jpg" alt="Rider Done" width="250">
-    </td>
-  </tr>
-</table>
-
----
-
 ## ⚙️ Installation & Setup
 
-## ⚠️ Security Configuration
+### ⚠️ Security Configuration
 
 Before running this application, you MUST:
 
@@ -226,13 +137,10 @@ Before running this application, you MUST:
    Set this as `ADMIN_SECRET` in `backend/.env`.
 
 3. **Set a real `ADMIN_EMAILS`** — do not use `admin@example.com`.
-
 4. **Never commit `.env` files** — they are gitignored by default.
-
 5. **Use HTTPS** for the backend URL in production.
 
-> ⚠️ The application will refuse to start if placeholder values are detected
-> in required environment variables.
+> ⚠️ The application will refuse to start if placeholder values are detected in required environment variables.
 
 ### 📦 Prerequisites
 * **Flutter SDK** (`^3.x`)
