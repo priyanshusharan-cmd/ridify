@@ -138,21 +138,22 @@ class _LoginScreenState extends State<LoginScreen> {
         );
       }
 
+      final userData = user;
       final prefs = await SharedPreferences.getInstance();
-      await prefs.setString('user_name', user['name'] ?? "Unknown");
-      await prefs.setString('user_age', user['age'] ?? "18");
-      await prefs.setString('user_email', user['email'] ?? "");
-      await prefs.setBool('is_admin', user['isAdmin'] == true);
+      await prefs.setString('user_name', userData['name'] ?? "Unknown");
+      await prefs.setString('user_age', userData['age'] ?? "18");
+      await prefs.setString('user_email', userData['email'] ?? "");
+      await prefs.setBool('is_admin', userData['isAdmin'] == true);
 
       if (mounted) {
         Navigator.pushReplacement(
           context,
           MaterialPageRoute(
             builder: (_) => HomeScreen(
-              userName: user['name'] ?? "Unknown",
-              userAge: user['age'] ?? "18",
-              userEmail: user['email'] ?? "",
-              isAdmin: user['isAdmin'] == true,
+              userName: userData['name'] ?? "Unknown",
+              userAge: userData['age'] ?? "18",
+              userEmail: userData['email'] ?? "",
+              isAdmin: userData['isAdmin'] == true,
             ),
           ),
         );
