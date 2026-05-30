@@ -162,14 +162,23 @@ class RideStatusPanel extends StatelessWidget {
                       ),
                       onPressed: isProcessing ? null : () {
                         if (!iAmArrived) {
+                          ScaffoldMessenger.of(context).clearSnackBars();
                           ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("Wait for the driver to arrive"), backgroundColor: Colors.orange));
                         } else {
                           onBoardRide();
                         }
                       },
-                      child: isProcessing
-                          ? const SizedBox(width: 18, height: 18, child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white))
-                          : const Text("Board", style: TextStyle(fontWeight: FontWeight.bold, fontSize: 15)),
+                      child: Stack(
+                        alignment: Alignment.center,
+                        children: [
+                          Opacity(
+                            opacity: isProcessing ? 0 : 1,
+                            child: const Text("Board", style: TextStyle(fontWeight: FontWeight.bold, fontSize: 15)),
+                          ),
+                          if (isProcessing)
+                            const SizedBox(width: 18, height: 18, child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white)),
+                        ],
+                      ),
                     ),
                   // Driver: Start / End button
                   if (isDriver) ...[
@@ -183,9 +192,17 @@ class RideStatusPanel extends StatelessWidget {
                           padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 14),
                         ),
                         onPressed: isProcessing ? null : onStartRide,
-                        child: isProcessing
-                            ? const SizedBox(width: 18, height: 18, child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white))
-                            : const Text("Start", style: TextStyle(fontWeight: FontWeight.bold, fontSize: 15)),
+                        child: Stack(
+                          alignment: Alignment.center,
+                          children: [
+                            Opacity(
+                              opacity: isProcessing ? 0 : 1,
+                              child: const Text("Start", style: TextStyle(fontWeight: FontWeight.bold, fontSize: 15)),
+                            ),
+                            if (isProcessing)
+                              const SizedBox(width: 18, height: 18, child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white)),
+                          ],
+                        ),
                       )
                     else
                       ElevatedButton(
@@ -198,14 +215,23 @@ class RideStatusPanel extends StatelessWidget {
                         ),
                         onPressed: isProcessing ? null : () {
                           if (!canEnd) {
+                            ScaffoldMessenger.of(context).clearSnackBars();
                             ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("There are passengers still in the car"), backgroundColor: Colors.red));
                           } else {
                             onEndRide();
                           }
                         },
-                        child: isProcessing
-                            ? const SizedBox(width: 18, height: 18, child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white))
-                            : const Text("End", style: TextStyle(fontWeight: FontWeight.bold, fontSize: 15)),
+                        child: Stack(
+                          alignment: Alignment.center,
+                          children: [
+                            Opacity(
+                              opacity: isProcessing ? 0 : 1,
+                              child: const Text("End", style: TextStyle(fontWeight: FontWeight.bold, fontSize: 15)),
+                            ),
+                            if (isProcessing)
+                              const SizedBox(width: 18, height: 18, child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white)),
+                          ],
+                        ),
                       ),
                   ],
                 ]),

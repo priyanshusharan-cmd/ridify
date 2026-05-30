@@ -461,6 +461,7 @@ class _LiveTrackingScreenState extends State<LiveTrackingScreen> {
       debugPrint(e.toString());
       if (mounted) {
         String msg = e.toString().replaceAll('Exception: ', '');
+        ScaffoldMessenger.of(context).clearSnackBars();
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text(msg), backgroundColor: Colors.red),
         );
@@ -553,7 +554,10 @@ class _LiveTrackingScreenState extends State<LiveTrackingScreen> {
       canEnd = activePassengers.isEmpty && boardedPassengers.isEmpty;
     }
     if (!canEnd) { 
-      if (mounted) ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("Cannot end trip. Passengers still active."), backgroundColor: Colors.red)); 
+      if (mounted) {
+        ScaffoldMessenger.of(context).clearSnackBars();
+        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("Cannot end trip. Passengers still active."), backgroundColor: Colors.red));
+      }
       return; 
     }
 
