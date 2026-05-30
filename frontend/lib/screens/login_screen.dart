@@ -167,7 +167,11 @@ class _LoginScreenState extends State<LoginScreen> {
 
   void _showSnack(String msg, Color color) {
     if (!mounted) return;
-    ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(msg), backgroundColor: color));
+    String cleanMsg = msg.replaceAll('Exception: ', '');
+    if (cleanMsg.contains('ClientFailed to fetch') || cleanMsg.contains('Connection refused')) {
+      cleanMsg = "Cannot connect to server. Please ensure the backend is running.";
+    }
+    ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(cleanMsg), backgroundColor: color));
   }
 
   OutlineInputBorder _border(bool focused) {
