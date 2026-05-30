@@ -3,6 +3,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'home_screen.dart';
 import '../core/constants.dart';
 import '../services/auth_service.dart';
+import 'dart:async';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -16,6 +17,9 @@ class _LoginScreenState extends State<LoginScreen> {
   bool isSendingOtp = false;
   bool otpSent = false;
   bool _obscurePassword = true;
+  
+  Timer? _cooldownTimer;
+  int _cooldownSeconds = 0;
 
   final TextEditingController nameController = TextEditingController();
   final TextEditingController ageController = TextEditingController();
@@ -53,7 +57,26 @@ class _LoginScreenState extends State<LoginScreen> {
     _emailFocus.dispose();
     _passwordFocus.dispose();
     _otpFocus.dispose();
+    _cooldownTimer?.cancel();
     super.dispose();
+  }
+
+  void _startCooldown(int seconds) {
+    setState(() => _cooldownSeconds = seconds);
+    _cooldownTimer?.cancel();
+    _cooldownTimer = Timer.periodic(const Duration(seconds: 1), (timer) {
+      if (!mounted) {
+        timer.cancel();
+        return;
+      }
+      setState(() {
+        if (_cooldownSeconds > 0) {
+          _cooldownSeconds--;
+        } else {
+          timer.cancel();
+        }
+      });
+    });
   }
 
   bool _isValidEmail(String email) {
@@ -96,8 +119,18 @@ class _LoginScreenState extends State<LoginScreen> {
         _showSnack("Account created! OTP sent to your email to verify.", Colors.green);
       }
       setState(() => otpSent = true);
+      _startCooldown(10 * 60); // Start 10-minute cooldown
     } catch (e) {
-      _showSnack("Error: ${e.toString().replaceAll('Exception: ', '')}", Colors.red);
+      String errorMsg = e.toString().replaceAll('Exception: ', '');
+      _showSnack("Error: $errorMsg", Colors.red);
+      
+      final match = RegExp(r'wait (\d+) minute').firstMatch(errorMsg);
+      if (match != null) {
+        int mins = int.tryParse(match.group(1)!) ?? 0;
+        if (mins > 0) {
+          _startCooldown(mins * 60);
+        }
+      }
     } finally {
       if (mounted) setState(() => isSendingOtp = false);
     }
@@ -232,13 +265,14 @@ class _LoginScreenState extends State<LoginScreen> {
                 if (isLoginMode) ...[
                   const SizedBox(height: 16),
                   Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
                     children: const [
-                      Expanded(child: Divider(color: Colors.grey, thickness: 0.5)),
+                      SizedBox(width: 60, child: Divider(color: Colors.grey, thickness: 0.5)),
                       Padding(
                         padding: EdgeInsets.symmetric(horizontal: 16),
                         child: Text("OR", style: TextStyle(color: Colors.grey, fontWeight: FontWeight.bold)),
                       ),
-                      Expanded(child: Divider(color: Colors.grey, thickness: 0.5)),
+                      SizedBox(width: 60, child: Divider(color: Colors.grey, thickness: 0.5)),
                     ],
                   ),
                   const SizedBox(height: 16),
@@ -341,10 +375,15 @@ class _LoginScreenState extends State<LoginScreen> {
               padding: const EdgeInsets.symmetric(horizontal: 12),
               minimumSize: const Size(80, 0),
             ),
-            onPressed: isSendingOtp ? null : _sendOtp,
+            onPressed: (isSendingOtp || _cooldownSeconds > 0) ? null : _sendOtp,
             child: isSendingOtp 
               ? const SizedBox(width: 16, height: 16, child: CircularProgressIndicator(color: Colors.grey, strokeWidth: 2))
-              : Text(otpSent ? "Resend" : "Send OTP", style: const TextStyle(color: Colors.grey, fontSize: 13, fontWeight: FontWeight.bold)),
+              : Text(
+                  _cooldownSeconds > 0 
+                    ? "${(_cooldownSeconds ~/ 60).toString().padLeft(2, '0')}:${(_cooldownSeconds % 60).toString().padLeft(2, '0')}"
+                    : (otpSent ? "Resend" : "Send OTP"), 
+                  style: const TextStyle(color: Colors.grey, fontSize: 13, fontWeight: FontWeight.bold)
+                ),
           ),
         ),
         filled: true,

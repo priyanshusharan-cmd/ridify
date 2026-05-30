@@ -49,7 +49,8 @@ const register = async (req, res) => {
       password: hashedPassword,
       isVerified: false,
       otp,
-      otpExpiry
+      otpExpiry,
+      lastOtpSentAt: new Date()
     });
 
     try {
@@ -127,9 +128,14 @@ const requestLoginOtp = async (req, res) => {
       return res.status(400).json({ error: 'Email is required.' });
     }
 
-    const user = await User.findOne({ email: String(email).trim().toLowerCase() });
+    const user = await User.findOne({ email: String(email).trim().toLowerCase() }).select('+lastOtpSentAt');
     if (!user) {
       return res.status(404).json({ error: 'User not found. Please sign up first.' });
+    }
+
+    if (user.lastOtpSentAt && Date.now() - user.lastOtpSentAt.getTime() < 10 * 60 * 1000) {
+      const waitMinutes = Math.ceil((10 * 60 * 1000 - (Date.now() - user.lastOtpSentAt.getTime())) / 60000);
+      return res.status(429).json({ error: `Please wait ${waitMinutes} minute(s) before requesting another OTP.` });
     }
 
     const otp = Math.floor(100000 + Math.random() * 900000).toString();
@@ -137,6 +143,7 @@ const requestLoginOtp = async (req, res) => {
 
     user.otp = otp;
     user.otpExpiry = otpExpiry;
+    user.lastOtpSentAt = new Date();
     await user.save();
 
     await sendOtpEmail(user.email, otp);
@@ -263,7 +270,7 @@ const resendOtp = async (req, res) => {
       return res.status(400).json({ error: 'Email is required.' });
     }
 
-    const user = await User.findOne({ email: String(email).trim().toLowerCase() }).select('+isVerified');
+    const user = await User.findOne({ email: String(email).trim().toLowerCase() }).select('+isVerified +lastOtpSentAt');
     if (!user) {
       return res.status(404).json({ error: 'User not found.' });
     }
@@ -272,11 +279,17 @@ const resendOtp = async (req, res) => {
       return res.status(400).json({ error: 'User is already verified.' });
     }
 
+    if (user.lastOtpSentAt && Date.now() - user.lastOtpSentAt.getTime() < 10 * 60 * 1000) {
+      const waitMinutes = Math.ceil((10 * 60 * 1000 - (Date.now() - user.lastOtpSentAt.getTime())) / 60000);
+      return res.status(429).json({ error: `Please wait ${waitMinutes} minute(s) before requesting another OTP.` });
+    }
+
     const otp = Math.floor(100000 + Math.random() * 900000).toString();
     const otpExpiry = new Date(Date.now() + 10 * 60 * 1000); // 10 minutes
 
     user.otp = otp;
     user.otpExpiry = otpExpiry;
+    user.lastOtpSentAt = new Date();
     await user.save();
 
     await sendOtpEmail(user.email, otp);
