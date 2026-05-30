@@ -1,9 +1,11 @@
 import 'dart:convert';
-import 'package:flutter/foundation.dart';
 import 'package:http/http.dart' as http;
 import '../core/constants.dart';
 import 'token_service.dart';
 import '../core/socket_service.dart';
+import 'package:flutter/material.dart';
+import '../main.dart';
+import '../screens/login_screen.dart';
 
 class ApiClient {
   static Future<Map<String, String>> _authHeaders() async {
@@ -58,11 +60,18 @@ class ApiClient {
 
   static Future<http.Response> _handleResponse(
     http.Response response, String path, String method, [Map<String, dynamic>? body]) async {
-    if (response.statusCode == 401 && !path.contains('/auth/refresh')) {
+    if (response.statusCode == 401 && !path.contains('/auth/refresh') && !path.contains('/auth/login')) {
       final refreshed = await _attemptRefresh();
       if (refreshed) {
         debugPrint('Token refreshed, retrying: $method $path');
         return _retryRequest(path, method, body);
+      } else {
+        // Force logout if refresh fails or user is deleted
+        await TokenService.clearTokens();
+        navigatorKey.currentState?.pushAndRemoveUntil(
+          MaterialPageRoute(builder: (_) => const LoginScreen()),
+          (route) => false,
+        );
       }
     }
     return response;
