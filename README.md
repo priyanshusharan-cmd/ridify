@@ -15,12 +15,6 @@
 
 ---
 
-## ✨ What's New & App Evolution
-
-Ridify has evolved significantly! We've introduced a **complete UI overhaul**, featuring a stunning **Dark Mode**, smoother animations, and enhanced user flows. The application now boasts improved real-time tracking, an expanded financial dashboard, more intuitive chat experiences, and deeper integration with OpenStreetMap.
-
----
-
 ## 🚀 Key Features
 
 - 🌓 **Dynamic Theme Support** — Beautifully crafted Light and Dark modes.
