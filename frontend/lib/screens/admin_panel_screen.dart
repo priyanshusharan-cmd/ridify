@@ -964,6 +964,8 @@ class _RidesTabState extends State<_RidesTab> with AutomaticKeepAliveClientMixin
   int _page = 1;
   int _totalPages = 1;
   String? _statusFilter;
+  
+  final TextEditingController _searchController = TextEditingController();
 
   final List<String?> _filters = [null, 'available', 'accepted', 'started', 'completed', 'cancelled'];
   final List<String> _filterLabels = ['All', 'Available', 'Accepted', 'Started', 'Completed', 'Cancelled'];
@@ -977,10 +979,17 @@ class _RidesTabState extends State<_RidesTab> with AutomaticKeepAliveClientMixin
     _fetchRides();
   }
 
+  @override
+  void dispose() {
+    _searchController.dispose();
+    super.dispose();
+  }
+
   Future<void> _fetchRides({int page = 1}) async {
     setState(() { _loading = true; _error = null; });
     try {
-      final data = await AdminService.getAllRides(status: _statusFilter, page: page);
+      final query = _searchController.text.trim();
+      final data = await AdminService.getAllRides(status: _statusFilter, driverEmail: query.isNotEmpty ? query : null, page: page);
       if (mounted) {
         setState(() {
           _rides = data['rides'] ?? [];
@@ -1180,6 +1189,41 @@ class _RidesTabState extends State<_RidesTab> with AutomaticKeepAliveClientMixin
 
     return Column(
       children: [
+        // ── Search Bar ────────────────────────────────────────────
+        Padding(
+          padding: const EdgeInsets.fromLTRB(16, 16, 16, 8),
+          child: Row(
+            children: [
+              Expanded(
+                child: TextField(
+                  controller: _searchController,
+                  decoration: InputDecoration(
+                    hintText: 'Search by driver email...',
+                    prefixIcon: const Icon(Icons.search),
+                    suffixIcon: _searchController.text.isNotEmpty
+                        ? IconButton(
+                            icon: const Icon(Icons.clear),
+                            onPressed: () {
+                              _searchController.clear();
+                              _fetchRides();
+                            },
+                          )
+                        : null,
+                    filled: true,
+                    fillColor: isDark ? const Color(0xFF2A2A2A) : Colors.grey[100],
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(12),
+                      borderSide: BorderSide.none,
+                    ),
+                    contentPadding: const EdgeInsets.symmetric(vertical: 0),
+                  ),
+                  onSubmitted: (_) => _fetchRides(),
+                ),
+              ),
+            ],
+          ),
+        ),
+
         // ── Filter Chips ──────────────────────────────────────────
         SizedBox(
           height: 56,

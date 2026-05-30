@@ -136,7 +136,7 @@ app.get('/api/config', (req, res) => {
 });
 app.use('/api/auth', authLimiter, authRoutes);
 app.use('/api/rides', rideLimiter, rideRoutes);
-app.use('/api/admin', authLimiter, adminRoutes);
+app.use('/api/admin', adminRoutes);
 
 // ── Global error handler ────────────────────────────────────────────────────
 app.use((err, req, res, next) => {
