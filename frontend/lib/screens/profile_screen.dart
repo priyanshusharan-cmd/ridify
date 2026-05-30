@@ -359,28 +359,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       email,
                       (val) => setState(() => email = val),
                     ),
+                    _passwordTile(),
 
                     const SizedBox(height: 40),
-
-                    // ── CHANGE PASSWORD ──────────────────────────────────────────────
-                    SizedBox(
-                      width: double.infinity,
-                      height: 55,
-                      child: OutlinedButton.icon(
-                        style: OutlinedButton.styleFrom(
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(15),
-                          ),
-                        ),
-                        onPressed: _showChangePasswordDialog,
-                        icon: const Icon(Icons.lock_reset),
-                        label: const Text(
-                          "Change Password",
-                          style: TextStyle(fontWeight: FontWeight.bold),
-                        ),
-                      ),
-                    ),
-                    const SizedBox(height: 15),
 
                     // ── LOGOUT ──────────────────────────────────────────────
                     SizedBox(
@@ -506,6 +487,40 @@ class _ProfileScreenState extends State<ProfileScreen> {
           IconButton(
             icon: const Icon(Icons.edit_outlined, size: 20, color: Colors.grey),
             onPressed: () => _showEditDialog(title, value, onSave),
+          ),
+        ],
+      ),
+    );
+  Widget _passwordTile() {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 10),
+      child: Row(
+        children: [
+          Icon(Icons.lock_outline, color: isDark ? Colors.white70 : Colors.black54, size: 22),
+          const SizedBox(width: 15),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  "Password",
+                  style: TextStyle(color: isDark ? Colors.white54 : Colors.grey, fontSize: 12),
+                ),
+                Text(
+                  "........",
+                  style: TextStyle(
+                    fontWeight: FontWeight.bold,
+                    fontSize: 22,
+                    color: Theme.of(context).textTheme.bodyLarge?.color,
+                  ),
+                ),
+              ],
+            ),
+          ),
+          IconButton(
+            icon: const Icon(Icons.edit_outlined, size: 20, color: Colors.grey),
+            onPressed: _showChangePasswordDialog,
           ),
         ],
       ),

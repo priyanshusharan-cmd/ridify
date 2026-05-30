@@ -32,35 +32,9 @@ const register = async (req, res) => {
       return res.status(400).json({ error: 'Invalid email format.' });
     }
 
-    const existing = await User.findOne({ email }).select('+isVerified +lastOtpSentAt');
+    const existing = await User.findOne({ email });
     if (existing) {
-      if (!existing.isVerified) {
-        if (existing.lastOtpSentAt && Date.now() - existing.lastOtpSentAt.getTime() < 10 * 60 * 1000) {
-          const waitMinutes = Math.ceil((10 * 60 * 1000 - (Date.now() - existing.lastOtpSentAt.getTime())) / 60000);
-          return res.status(429).json({ error: `Please wait ${waitMinutes} minute(s) before requesting another OTP.` });
-        }
-        const newHashedPassword = await bcrypt.hash(password, BCRYPT_ROUNDS);
-        const newOtp = Math.floor(100000 + Math.random() * 900000).toString();
-        
-        existing.password = newHashedPassword;
-        existing.name = name;
-        if (age) existing.age = age;
-        existing.otp = newOtp;
-        existing.otpExpiry = new Date(Date.now() + 10 * 60 * 1000);
-        existing.lastOtpSentAt = new Date();
-        await existing.save();
-
-        try {
-          await sendOtpEmail(existing.email, newOtp);
-        } catch (emailError) {
-          console.error('Failed to send OTP email on re-register:', emailError);
-        }
-        return res.status(201).json({
-          message: 'Registration updated. New OTP sent to your email.',
-          email: existing.email
-        });
-      }
-      return res.status(409).json({ error: 'Email already registered.' });
+      return res.status(409).json({ error: 'Email already registered. Please log in.' });
     }
 
     const hashedPassword = await bcrypt.hash(password, BCRYPT_ROUNDS);
@@ -112,18 +86,9 @@ const login = async (req, res) => {
       return res.status(400).json({ error: 'Invalid credentials.' });
     }
 
-    // Must explicitly select password since User model has select:false
-    const user = await User.findOne({ email }).select('+password +isVerified');
+    const user = await User.findOne({ email }).select('+password');
     if (!user) {
       return res.status(401).json({ error: 'Invalid email or password.' });
-    }
-
-    if (!user.isVerified) {
-      return res.status(403).json({ 
-        error: 'Please verify your email to log in.', 
-        requireVerification: true,
-        email: user.email
-      });
     }
 
     const isMatch = await bcrypt.compare(password, user.password);
