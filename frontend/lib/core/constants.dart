@@ -1,5 +1,7 @@
-
-
+// IMPORTANT: When building an APK for production (e.g. connecting to Render),
+// you MUST either pass the URL during build:
+// flutter build apk --release --dart-define=BACKEND_URL=https://your-app.onrender.com
+// OR change the defaultValue below to your Render URL instead of localhost.
 const String kBaseUrl = String.fromEnvironment('BACKEND_URL', defaultValue: 'http://localhost:5001');
 
 
