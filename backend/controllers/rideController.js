@@ -324,12 +324,13 @@ exports.cancelRide = async (req, res) => {
     }
 
     // Auto-decline all pending requests before cancelling
+    const notifiedRequesters = [];
     if (ride.requests && ride.requests.length > 0) {
       for (const requester of ride.requests) {
         if (!ride.declined.includes(requester)) {
           ride.declined.push(requester);
         }
-        req.emitToUser(requester, 'ride_cancelled', { rideId: req.params.id, ride: decodeRiderDetailsForSocket(ride.toJSON()) });
+        notifiedRequesters.push(requester);
         req.removeUserFromRide(requester, req.params.id);
       }
       ride.requests = [];
@@ -337,7 +338,14 @@ exports.cancelRide = async (req, res) => {
 
     ride.status = 'cancelled';
     await ride.save();
-    req.io.to(req.params.id).emit('ride_cancelled', { rideId: req.params.id, ride: decodeRiderDetailsForSocket(ride.toJSON()) });
+    
+    const finalPayload = { rideId: req.params.id, ride: decodeRiderDetailsForSocket(ride.toJSON()) };
+    
+    for (const requester of notifiedRequesters) {
+      req.emitToUser(requester, 'ride_cancelled', finalPayload);
+    }
+    
+    req.io.to(req.params.id).emit('ride_cancelled', finalPayload);
     res.status(200).json({ success: true });
   } catch (err) { res.status(500).json({ error: err.message }); }
 };
