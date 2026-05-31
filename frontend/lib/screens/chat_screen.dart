@@ -270,6 +270,7 @@ class _ChatScreenState extends State<ChatScreen> {
                 return SwipeToReply(
                   key: ValueKey('msg_${messages.length - 1 - index}'),
                   onReply: () {
+                    _focusNode.unfocus();
                     setState(() {
                       replyToMessage = {
                         'sender': msg['sender'],
@@ -277,8 +278,12 @@ class _ChatScreenState extends State<ChatScreen> {
                       };
                       _readOnly = false;
                     });
-                    _focusNode.requestFocus();
-                    SystemChannels.textInput.invokeMethod('TextInput.show');
+                    Future.delayed(const Duration(milliseconds: 50), () {
+                      if (mounted) {
+                        _focusNode.requestFocus();
+                        SystemChannels.textInput.invokeMethod('TextInput.show');
+                      }
+                    });
                   },
                   child: Align(
                   alignment: isMe
@@ -515,8 +520,14 @@ class _ChatScreenState extends State<ChatScreen> {
                       autofocus: true,
                       onTap: () {
                         if (_readOnly) {
+                          _focusNode.unfocus();
                           setState(() => _readOnly = false);
-                          SystemChannels.textInput.invokeMethod('TextInput.show');
+                          Future.delayed(const Duration(milliseconds: 50), () {
+                            if (mounted) {
+                              _focusNode.requestFocus();
+                              SystemChannels.textInput.invokeMethod('TextInput.show');
+                            }
+                          });
                         }
                       },
                       minLines: 1,
