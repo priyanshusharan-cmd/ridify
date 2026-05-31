@@ -37,6 +37,7 @@ class _ChatScreenState extends State<ChatScreen> {
   final List<Map<String, dynamic>> messages = [];
   final List<MapEntry<String, void Function(dynamic)>> _socketListeners = [];
   Map<String, dynamic>? replyToMessage;
+  bool _readOnly = true;
 
   void _on(String event, void Function(dynamic) handler) {
     socket.on(event, handler);
@@ -274,8 +275,10 @@ class _ChatScreenState extends State<ChatScreen> {
                         'sender': msg['sender'],
                         'text': msg['text'],
                       };
+                      _readOnly = false;
                     });
                     _focusNode.requestFocus();
+                    SystemChannels.textInput.invokeMethod('TextInput.show');
                   },
                   child: Align(
                   alignment: isMe
@@ -507,6 +510,15 @@ class _ChatScreenState extends State<ChatScreen> {
                     child: TextField(
                       controller: _controller,
                       focusNode: _focusNode,
+                      readOnly: _readOnly,
+                      showCursor: true,
+                      autofocus: true,
+                      onTap: () {
+                        if (_readOnly) {
+                          setState(() => _readOnly = false);
+                          SystemChannels.textInput.invokeMethod('TextInput.show');
+                        }
+                      },
                       minLines: 1,
                       maxLines: 5,
                       keyboardType: TextInputType.multiline,
