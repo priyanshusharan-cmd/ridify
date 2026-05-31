@@ -60,6 +60,22 @@ class ApiClient {
 
   static Future<http.Response> _handleResponse(
     http.Response response, String path, String method, [Map<String, dynamic>? body]) async {
+    
+    // Check for explicit ban or deletion first
+    try {
+      final decoded = jsonDecode(response.body);
+      if (decoded['code'] == 'USER_DELETED' || decoded['code'] == 'ACCOUNT_BANNED') {
+        await TokenService.clearTokens();
+        if (navigatorKey.currentState != null) {
+          navigatorKey.currentState!.pushAndRemoveUntil(
+            MaterialPageRoute(builder: (_) => const LoginScreen()),
+            (route) => false,
+          );
+        }
+        return response; // Return the response, but they are already logged out
+      }
+    } catch (_) {}
+
     if (response.statusCode == 401 && !path.contains('/auth/refresh') && !path.contains('/auth/login') && !path.contains('/auth/verify-otp') && !path.contains('/auth/change-password')) {
       final refreshed = await _attemptRefresh();
       if (refreshed) {

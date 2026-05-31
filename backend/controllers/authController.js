@@ -269,6 +269,9 @@ const refreshToken = async (req, res) => {
     const payload = verifyRefreshToken(token);
     const user = await User.findById(payload.id).select('+refreshTokens');
     if (!user) return res.status(404).json({ error: 'User not found.' });
+    if (user.isBanned) {
+      return res.status(403).json({ error: 'Your account has been suspended.', code: 'ACCOUNT_BANNED' });
+    }
     if (!user.refreshTokens.includes(token)) {
       return res.status(401).json({ error: 'Refresh token has been revoked.' });
     }
