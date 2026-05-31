@@ -338,7 +338,7 @@ class _DashboardTabState extends State<_DashboardTab> with AutomaticKeepAliveCli
           style: TextStyle(fontWeight: FontWeight.bold, color: Colors.red),
         ),
         content: const Text(
-          'This permanently deletes every user account and all associated ride data.\n\nYou will be logged out immediately after.',
+          'This permanently deletes every user account and all associated ride data EXCEPT your admin account.',
         ),
         actions: [
           TextButton(
@@ -348,7 +348,7 @@ class _DashboardTabState extends State<_DashboardTab> with AutomaticKeepAliveCli
           ElevatedButton(
             style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
             onPressed: () => Navigator.pop(ctx, true),
-            child: const Text('Yes, Delete All',
+            child: const Text('Yes, Delete All Others',
                 style: TextStyle(color: Colors.white)),
           ),
         ],
@@ -361,11 +361,11 @@ class _DashboardTabState extends State<_DashboardTab> with AutomaticKeepAliveCli
       final prefs = await SharedPreferences.getInstance();
       final adminEmail = prefs.getString('email') ?? '';
       await AuthService.adminDeleteAllUsers(adminEmail);
-      await prefs.clear(); // Auto-logout
       if (!context.mounted) return;
-      Navigator.of(context).pushAndRemoveUntil(
-        MaterialPageRoute(builder: (_) => const LoginScreen()),
-        (route) => false,
+      
+      _fetchStats();
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('All other users deleted.'), backgroundColor: Colors.green),
       );
     } catch (e) {
       if (context.mounted) {

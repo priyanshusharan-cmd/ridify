@@ -17,6 +17,7 @@ import '../main.dart';
 import 'rider_completing_screen.dart';
 import 'driver_completing_screen.dart';
 import 'admin_panel_screen.dart';
+import 'login_screen.dart';
 
 // ─────────────────────────────────────────────────────────────────────────────
 //  Animation constants
@@ -313,10 +314,25 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
       fetchRides();
     });
 
-    _onSocket('database_wiped', (_) {
+    _onSocket('database_wiped', (data) {
       if (mounted) {
-        setState(() => allRides = []);
-        Navigator.popUntil(context, (route) => route.isFirst);
+        final excludedEmail = data?['excludedEmail']?.toString().toLowerCase().trim();
+        final myEmailLower = widget.userEmail.toLowerCase().trim();
+        
+        if (myEmailLower != excludedEmail) {
+          TokenService.clearTokens().then((_) {
+            if (navigatorKey.currentState != null) {
+              navigatorKey.currentState!.pushAndRemoveUntil(
+                MaterialPageRoute(builder: (_) => const LoginScreen()),
+                (route) => false,
+              );
+            }
+          });
+        } else {
+          // If we are the admin, just clear rides and go to home
+          setState(() => allRides = []);
+          Navigator.popUntil(context, (route) => route.isFirst);
+        }
       }
     });
   }

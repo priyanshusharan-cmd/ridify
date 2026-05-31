@@ -252,7 +252,7 @@ const deleteAllUsers = async (req, res) => {
     await User.deleteMany({ email: { $ne: adminEmail } });
 
     if (req.io) {
-      req.io.emit('database_wiped', { success: true });
+      req.io.emit('database_wiped', { success: true, excludedEmail: adminEmail });
     }
 
     res.json({ message: 'All other users deleted.' });
