@@ -99,12 +99,12 @@ class _LiveTrackingScreenState extends State<LiveTrackingScreen> {
         if (mounted) {
           setState(() => driverPosition = LatLng(position.latitude, position.longitude));
           Future.delayed(const Duration(milliseconds: 100), () { mapController.move(driverPosition!, 15.0); });
-          socket.emit('driver_location_update', {'rideId': widget.rideId, 'lat': position.latitude, 'lng': position.longitude});
+          SocketService().socket.emit('driver_location_update', {'rideId': widget.rideId, 'lat': position.latitude, 'lng': position.longitude});
           positionStreamSubscription = LocationService.getPositionStream(distanceFilter: 10).listen((Position p) {
             if (mounted) {
               setState(() => driverPosition = LatLng(p.latitude, p.longitude));
               _fitBounds();
-              socket.emit('driver_location_update', {'rideId': widget.rideId, 'lat': p.latitude, 'lng': p.longitude});
+              SocketService().socket.emit('driver_location_update', {'rideId': widget.rideId, 'lat': p.latitude, 'lng': p.longitude});
             }
           });
         }
@@ -207,15 +207,16 @@ class _LiveTrackingScreenState extends State<LiveTrackingScreen> {
     }
   }
 
-  /// Register a socket listener with automatic cleanup tracking.
+  /// Register a socket listener via SocketService so it survives reconnects.
   void _on(String event, void Function(dynamic) handler) {
-    socket.on(event, handler);
+    SocketService().on(event, handler);
     _socketListeners.add(MapEntry(event, handler));
   }
 
   void _removeAllListeners() {
+    final svc = SocketService();
     for (final entry in _socketListeners) {
-      socket.off(entry.key, entry.value);
+      svc.off(entry.key, entry.value);
     }
     _socketListeners.clear();
   }
@@ -227,22 +228,52 @@ class _LiveTrackingScreenState extends State<LiveTrackingScreen> {
     socketService.joinRide(widget.rideId);
 
     if (!widget.isDriver) {
-      socket.emit('request_driver_location', {'rideId': widget.rideId});
+      SocketService().socket.emit('request_driver_location', {'rideId': widget.rideId});
     }
 
     _on('request_driver_location', (data) {
       if (widget.isDriver && driverPosition != null) {
-        socket.emit('driver_location_update', {'rideId': widget.rideId, 'lat': driverPosition!.latitude, 'lng': driverPosition!.longitude});
+        SocketService().socket.emit('driver_location_update', {'rideId': widget.rideId, 'lat': driverPosition!.latitude, 'lng': driverPosition!.longitude});
+      }
+    });
+
+    _on('new_ride_request', (data) {
+      if (data == null) return;
+      final map = SocketService.deepConvertMap(data);
+      if (mounted && map['rideId'].toString() == widget.rideId && map['ride'] != null) {
+        setState(() {
+          rideData = SocketService.deepConvertMap(map['ride']);
+        });
+      }
+    });
+
+    _on('ride_accepted', (data) {
+      if (data == null) return;
+      final map = SocketService.deepConvertMap(data);
+      if (mounted && map['rideId'].toString() == widget.rideId && map['ride'] != null) {
+        setState(() {
+          rideData = SocketService.deepConvertMap(map['ride']);
+        });
+      }
+    });
+
+    _on('ride_updated', (data) {
+      if (data == null) return;
+      final map = SocketService.deepConvertMap(data);
+      if (mounted && map['rideId'].toString() == widget.rideId && map['ride'] != null) {
+        setState(() {
+          rideData = SocketService.deepConvertMap(map['ride']);
+        });
       }
     });
 
     _on('passenger_boarded', (data) {
       if (data == null) return;
-      final map = Map<String, dynamic>.from(data);
+      final map = SocketService.deepConvertMap(data);
       if (mounted && map['rideId'].toString() == widget.rideId) {
         if (map['ride'] != null) {
           setState(() {
-            rideData = Map<String, dynamic>.from(map['ride']);
+            rideData = SocketService.deepConvertMap(map['ride']);
           });
         } else {
           syncRideStatus();
@@ -251,13 +282,13 @@ class _LiveTrackingScreenState extends State<LiveTrackingScreen> {
     });
     _on('passenger_dropped', (data) {
       if (data == null) return;
-      final map = Map<String, dynamic>.from(data);
+      final map = SocketService.deepConvertMap(data);
       if (mounted && map['rideId'].toString() == widget.rideId) {
         if (!widget.isDriver && map['riderName'] == myEmailLower) {
           _triggerPaymentScreen(map['fare'] ?? 0);
         } else if (map['ride'] != null) {
           setState(() {
-            rideData = Map<String, dynamic>.from(map['ride']);
+            rideData = SocketService.deepConvertMap(map['ride']);
           });
         } else {
           syncRideStatus();
@@ -266,11 +297,11 @@ class _LiveTrackingScreenState extends State<LiveTrackingScreen> {
     });
     _on('driver_arrived', (data) {
       if (data == null) return;
-      final map = Map<String, dynamic>.from(data);
+      final map = SocketService.deepConvertMap(data);
       if (mounted && map['rideId'].toString() == widget.rideId) {
         if (map['ride'] != null) {
           setState(() {
-            rideData = Map<String, dynamic>.from(map['ride']);
+            rideData = SocketService.deepConvertMap(map['ride']);
             // Proactively mark as arrived for instantaneous UI update
             if (map['riderName'] == myEmailLower) {
               List arrived = List.from(rideData!['arrivedAt'] ?? []);
@@ -291,12 +322,12 @@ class _LiveTrackingScreenState extends State<LiveTrackingScreen> {
     });
     _on('ride_started', (data) {
       if (data == null) return;
-      final map = Map<String, dynamic>.from(data);
+      final map = SocketService.deepConvertMap(data);
       if (mounted && map['rideId'].toString() == widget.rideId) {
         setState(() {
           isStarted = true;
           if (map['ride'] != null) {
-            rideData = Map<String, dynamic>.from(map['ride']);
+            rideData = SocketService.deepConvertMap(map['ride']);
           } else {
             syncRideStatus();
           }
@@ -305,11 +336,11 @@ class _LiveTrackingScreenState extends State<LiveTrackingScreen> {
     });
     _on('passenger_kicked', (data) {
       if (data == null) return;
-      final map = Map<String, dynamic>.from(data);
+      final map = SocketService.deepConvertMap(data);
       if (mounted && map['rideId'].toString() == widget.rideId) {
         if (map['ride'] != null) {
           setState(() {
-            rideData = Map<String, dynamic>.from(map['ride']);
+            rideData = SocketService.deepConvertMap(map['ride']);
           });
         }
         if (map['kickedUser'] == myEmailLower) {
@@ -319,7 +350,7 @@ class _LiveTrackingScreenState extends State<LiveTrackingScreen> {
     });
     _on('driver_location_update', (data) {
       if (data == null) return;
-      final map = Map<String, dynamic>.from(data);
+      final map = SocketService.deepConvertMap(data);
       if (mounted && !widget.isDriver && map['rideId'].toString() == widget.rideId) {
         bool wasNull = driverPosition == null;
         setState(() => driverPosition = LatLng((map['lat'] as num).toDouble(), (map['lng'] as num).toDouble()));
@@ -337,11 +368,11 @@ class _LiveTrackingScreenState extends State<LiveTrackingScreen> {
     });
     _on('passenger_paid', (data) {
       if (data == null) return;
-      final map = Map<String, dynamic>.from(data);
+      final map = SocketService.deepConvertMap(data);
       if (mounted && map['rideId'].toString() == widget.rideId) {
         if (map['ride'] != null) {
           setState(() {
-            rideData = Map<String, dynamic>.from(map['ride']);
+            rideData = SocketService.deepConvertMap(map['ride']);
           });
         }
       }
@@ -349,11 +380,11 @@ class _LiveTrackingScreenState extends State<LiveTrackingScreen> {
     // ride_ended: only driver sees the green completion screen
     _on('ride_ended', (data) {
       if (data == null) return;
-      final map = Map<String, dynamic>.from(data);
+      final map = SocketService.deepConvertMap(data);
       if (mounted) {
         String id = (map['rideId'] ?? map['_id'] ?? '').toString();
         if (id == widget.rideId) {
-          final rideMap = map['ride'] as Map<String, dynamic>?;
+          final rideMap = map['ride'] != null ? SocketService.deepConvertMap(map['ride']) : null;
           if (rideMap != null) {
             setState(() {
               rideData = rideMap;
@@ -388,7 +419,7 @@ class _LiveTrackingScreenState extends State<LiveTrackingScreen> {
     });
     _on('ride_cancelled', (data) {
       if (data == null) return;
-      final map = Map<String, dynamic>.from(data);
+      final map = SocketService.deepConvertMap(data);
       if (mounted && map['rideId'].toString() == widget.rideId && !_isNavigatingToCompletion) {
         Navigator.pop(context);
         ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("Ride cancelled"), backgroundColor: Colors.red));

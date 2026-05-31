@@ -135,4 +135,26 @@ class SocketService {
       }
     }
   }
+
+  /// Recursively converts all nested [Map<dynamic, dynamic>] (from socket.io JSON
+  /// parsing) into [Map<String, dynamic>] so Dart code can access keys safely.
+  static Map<String, dynamic> deepConvertMap(dynamic data) {
+    if (data is Map) {
+      return data.map<String, dynamic>(
+        (key, value) => MapEntry(key.toString(), _deepConvertValue(value)),
+      );
+    }
+    return <String, dynamic>{};
+  }
+
+  static dynamic _deepConvertValue(dynamic value) {
+    if (value is Map) {
+      return value.map<String, dynamic>(
+        (k, v) => MapEntry(k.toString(), _deepConvertValue(v)),
+      );
+    } else if (value is List) {
+      return value.map((e) => _deepConvertValue(e)).toList();
+    }
+    return value;
+  }
 }

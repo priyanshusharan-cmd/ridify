@@ -216,7 +216,14 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
     
     final socketService = SocketService();
     socketService.registerUser(widget.userEmail, accessToken); // Pass token
-    // socket variable removed
+
+    // Helper to safely extract and deep-convert ride data from socket payloads
+    Map<String, dynamic>? _rideFromEvent(dynamic data) {
+      if (data == null) return null;
+      final map = SocketService.deepConvertMap(data);
+      if (map['ride'] != null) return SocketService.deepConvertMap(map['ride']);
+      return null;
+    }
 
     // Direct state updates — no re-fetch needed
     _onSocket('connect', (_) {
@@ -224,89 +231,110 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
     });
 
     _onSocket('new_ride_request', (data) {
-      if (data != null && data['ride'] != null) _upsertRide(Map<String, dynamic>.from(data['ride']));
+      final ride = _rideFromEvent(data);
+      if (ride != null) _upsertRide(ride);
     });
     _onSocket('all_rides_wiped', (_) {
       if (mounted) setState(() => allRides = []);
     });
     _onSocket('ride_accepted', (data) {
-      if (data != null && data['ride'] != null) _upsertRide(Map<String, dynamic>.from(data['ride']));
+      final ride = _rideFromEvent(data);
+      if (ride != null) _upsertRide(ride);
     });
     _onSocket('ride_cancelled', (data) {
-      if (data != null && data['ride'] != null) _upsertRide(Map<String, dynamic>.from(data['ride']));
+      final ride = _rideFromEvent(data);
+      if (ride != null) _upsertRide(ride);
+    });
+    // ride_updated: fired when ride state changes (e.g., after decline) — keeps driver's UI in sync
+    _onSocket('ride_updated', (data) {
+      final ride = _rideFromEvent(data);
+      if (ride != null) _upsertRide(ride);
     });
     _onSocket('driver_arrived', (data) {
-      if (data != null && data['ride'] != null) _upsertRide(Map<String, dynamic>.from(data['ride']));
+      final ride = _rideFromEvent(data);
+      if (ride != null) _upsertRide(ride);
     });
     _onSocket('passenger_boarded', (data) {
-      if (data != null && data['ride'] != null) _upsertRide(Map<String, dynamic>.from(data['ride']));
+      final ride = _rideFromEvent(data);
+      if (ride != null) _upsertRide(ride);
     });
     _onSocket('passenger_dropped', (data) {
-      if (data != null && data['ride'] != null) {
-        final ride = Map<String, dynamic>.from(data['ride']);
-        _upsertRide(ride);
-        final droppedUser = data['riderName']?.toString().toLowerCase().trim();
-        final myEmailLower = widget.userEmail.toLowerCase().trim();
-        if (droppedUser == myEmailLower) {
-          final rideId = ride['rideId'] ?? ride['_id'];
-          if (rideId != null && !navigatedRides.contains(rideId)) {
-            navigatedRides.add(rideId);
-            if (navigatorKey.currentState != null) {
-              int fare = (data['fare'] as num?)?.toInt() ?? 0;
-              navigatorKey.currentState!.push(MaterialPageRoute(
-                builder: (_) => RiderCompletingScreen(
-                  isDriver: false, rideId: rideId, myName: widget.userName, myEmail: widget.userEmail, fareAmount: fare, initialRideData: ride
-                )
-              ));
+      if (data != null) {
+        final map = SocketService.deepConvertMap(data);
+        final ride = map['ride'] != null ? SocketService.deepConvertMap(map['ride']) : null;
+        if (ride != null) {
+          _upsertRide(ride);
+          final droppedUser = map['riderName']?.toString().toLowerCase().trim();
+          final myEmailLower = widget.userEmail.toLowerCase().trim();
+          if (droppedUser == myEmailLower) {
+            final rideId = ride['rideId'] ?? ride['_id'];
+            if (rideId != null && !navigatedRides.contains(rideId)) {
+              navigatedRides.add(rideId);
+              if (navigatorKey.currentState != null) {
+                int fare = (map['fare'] as num?)?.toInt() ?? 0;
+                navigatorKey.currentState!.push(MaterialPageRoute(
+                  builder: (_) => RiderCompletingScreen(
+                    isDriver: false, rideId: rideId, myName: widget.userName, myEmail: widget.userEmail, fareAmount: fare, initialRideData: ride
+                  )
+                ));
+              }
             }
           }
         }
       }
     });
     _onSocket('passenger_kicked', (data) {
-      if (data != null && data['ride'] != null) {
-        final ride = Map<String, dynamic>.from(data['ride']);
-        _upsertRide(ride);
-        final kickedUser = data['kickedUser']?.toString().toLowerCase().trim();
-        final myEmailLower = widget.userEmail.toLowerCase().trim();
-        if (kickedUser == myEmailLower) {
-          final rideId = ride['rideId'] ?? ride['_id'];
-          if (rideId != null && !navigatedRides.contains(rideId)) {
-            navigatedRides.add(rideId);
-            final ctx = navigatorKey.currentContext;
-            if (ctx != null) {
-              showDialog(
-                context: ctx, barrierDismissible: false, builder: (_) => AlertDialog(
-                  title: const Text("Removed from Ride"), content: const Text("The driver has removed you from this ride."),
-                  actions: [TextButton(onPressed: () { Navigator.pop(ctx); Navigator.popUntil(ctx, (route) => route.isFirst); }, child: const Text("OK", style: TextStyle(color: Colors.red, fontWeight: FontWeight.bold)))],
-                )
-              );
+      if (data != null) {
+        final map = SocketService.deepConvertMap(data);
+        final ride = map['ride'] != null ? SocketService.deepConvertMap(map['ride']) : null;
+        if (ride != null) {
+          _upsertRide(ride);
+          final kickedUser = map['kickedUser']?.toString().toLowerCase().trim();
+          final myEmailLower = widget.userEmail.toLowerCase().trim();
+          if (kickedUser == myEmailLower) {
+            final rideId = ride['rideId'] ?? ride['_id'];
+            if (rideId != null && !navigatedRides.contains(rideId)) {
+              navigatedRides.add(rideId);
+              final ctx = navigatorKey.currentContext;
+              if (ctx != null) {
+                showDialog(
+                  context: ctx, barrierDismissible: false, builder: (_) => AlertDialog(
+                    title: const Text("Removed from Ride"), content: const Text("The driver has removed you from this ride."),
+                    actions: [TextButton(onPressed: () { Navigator.pop(ctx); Navigator.popUntil(ctx, (route) => route.isFirst); }, child: const Text("OK", style: TextStyle(color: Colors.red, fontWeight: FontWeight.bold)))],
+                  )
+                );
+              }
             }
           }
         }
       }
     });
     _onSocket('passenger_paid', (data) {
-      if (data != null && data['ride'] != null) _upsertRide(Map<String, dynamic>.from(data['ride']));
+      final ride = _rideFromEvent(data);
+      if (ride != null) _upsertRide(ride);
     });
     _onSocket('ride_started', (data) {
-      if (data != null && data['ride'] != null) _upsertRide(Map<String, dynamic>.from(data['ride']));
+      final ride = _rideFromEvent(data);
+      if (ride != null) _upsertRide(ride);
     });
 
     _onSocket('ride_ended', (data) {
-      if (data != null && data['ride'] != null) {
-        final ride = Map<String, dynamic>.from(data['ride']);
-        _upsertRide(ride);
-        final driverEmail = ride['riderEmail']?.toString().toLowerCase().trim();
-        final myEmailLower = widget.userEmail.toLowerCase().trim();
-        if (driverEmail == myEmailLower) {
-          final rideId = ride['rideId'] ?? ride['_id'];
-          if (rideId != null && !navigatedRides.contains(rideId)) {
-            navigatedRides.add(rideId);
-            if (navigatorKey.currentState != null) {
-              navigatorKey.currentState!.push(MaterialPageRoute(
-                builder: (_) => DriverCompletingScreen(rideId: rideId, initialRideData: ride)
-              ));
+      if (data != null) {
+        final map = SocketService.deepConvertMap(data);
+        final ride = map['ride'] != null ? SocketService.deepConvertMap(map['ride']) : null;
+        if (ride != null) {
+          _upsertRide(ride);
+          final driverEmail = ride['riderEmail']?.toString().toLowerCase().trim();
+          final myEmailLower = widget.userEmail.toLowerCase().trim();
+          if (driverEmail == myEmailLower) {
+            final rideId = ride['rideId'] ?? ride['_id'];
+            if (rideId != null && !navigatedRides.contains(rideId)) {
+              navigatedRides.add(rideId);
+              if (navigatorKey.currentState != null) {
+                navigatorKey.currentState!.push(MaterialPageRoute(
+                  builder: (_) => DriverCompletingScreen(rideId: rideId, initialRideData: ride)
+                ));
+              }
             }
           }
         }

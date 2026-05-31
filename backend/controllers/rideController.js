@@ -727,6 +727,8 @@ exports.declineRider = async (req, res) => {
     // Fix: Emit 'ride_cancelled' to the declined requester. Note: we do NOT emit 'ride_accepted' 
     // to the room to avoid false UI updates for others.
     req.emitToUser(passengerEmail, 'ride_cancelled', { rideId, ride: ridePayload });
+    // Notify the ride room (driver + other participants) so their UI updates in real-time
+    req.io.to(rideId).emit('ride_updated', { rideId, ride: ridePayload });
     req.removeUserFromRide(passengerEmail, rideId);
     res.status(200).json(ride);
   } catch (err) { res.status(500).json({ error: err.message }); }

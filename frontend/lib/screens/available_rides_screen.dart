@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'dart:async';
+import '../core/socket_service.dart';
 import '../widgets/find_ride/available_ride_card.dart';
 import '../services/ride_service.dart';
 
@@ -43,11 +44,84 @@ class _AvailableRidesScreenState extends State<AvailableRidesScreen> {
 
   String? _sendingRideId;
 
+  final List<MapEntry<String, void Function(dynamic)>> _socketListeners = [];
+
+  void _onSocket(String event, void Function(dynamic) handler) {
+    SocketService().on(event, handler);
+    _socketListeners.add(MapEntry(event, handler));
+  }
+
   @override
   void initState() {
     super.initState();
     allRides = List.from(widget.initialRides);
     _applyFiltersAndSort();
+    _initSocketListeners();
+  }
+
+  @override
+  void dispose() {
+    final svc = SocketService();
+    for (final entry in _socketListeners) {
+      svc.off(entry.key, entry.value);
+    }
+    _socketListeners.clear();
+    super.dispose();
+  }
+
+  void _initSocketListeners() {
+    // Remove rides that get cancelled while browsing
+    _onSocket('ride_cancelled', (data) {
+      if (data == null) return;
+      final map = SocketService.deepConvertMap(data);
+      final rideId = map['rideId']?.toString();
+      if (rideId != null && mounted) {
+        setState(() {
+          allRides.removeWhere((r) => r['_id'].toString() == rideId);
+        });
+        _applyFiltersAndSort();
+      }
+    });
+
+    // Update rides that change state (e.g., capacity changes after accept/decline)
+    _onSocket('ride_accepted', (data) {
+      if (data == null) return;
+      final map = SocketService.deepConvertMap(data);
+      final ride = map['ride'] != null ? SocketService.deepConvertMap(map['ride']) : null;
+      if (ride != null && mounted) {
+        final rideId = ride['_id']?.toString();
+        // If the ride is now full or the user is now a passenger, remove it from search results
+        final status = ride['status']?.toString();
+        if (status == 'full') {
+          setState(() {
+            allRides.removeWhere((r) => r['_id'].toString() == rideId);
+          });
+          _applyFiltersAndSort();
+        }
+      }
+    });
+
+    // Update rides after decline frees up capacity or other changes
+    _onSocket('ride_updated', (data) {
+      if (data == null) return;
+      final map = SocketService.deepConvertMap(data);
+      final ride = map['ride'] != null ? SocketService.deepConvertMap(map['ride']) : null;
+      if (ride != null && mounted) {
+        final rideId = ride['_id']?.toString();
+        setState(() {
+          final idx = allRides.indexWhere((r) => r['_id'].toString() == rideId);
+          if (idx >= 0) {
+            // Preserve computed fields from search that the server doesn't send back
+            ride['computedFare'] = allRides[idx]['computedFare'];
+            ride['computedDistance'] = allRides[idx]['computedDistance'];
+            ride['startIndex'] = allRides[idx]['startIndex'];
+            ride['endIndex'] = allRides[idx]['endIndex'];
+            allRides[idx] = ride;
+          }
+        });
+        _applyFiltersAndSort();
+      }
+    });
   }
 
   void _applyFiltersAndSort() {
