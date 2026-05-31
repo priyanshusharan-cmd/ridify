@@ -1,8 +1,8 @@
+import 'package:flutter_dotenv/flutter_dotenv.dart';
+
 // IMPORTANT: When building an APK for production (e.g. connecting to Render),
-// you MUST either pass the URL during build:
-// flutter build apk --release --dart-define=BACKEND_URL=https://your-app.onrender.com
-// OR change the defaultValue below to your Render URL instead of localhost.
-const String kBaseUrl = String.fromEnvironment('BACKEND_URL', defaultValue: 'http://localhost:5001');
+// make sure the BACKEND_URL in frontend/.env points to your Render URL.
+String get kBaseUrl => dotenv.env['BACKEND_URL'] ?? 'http://localhost:5001';
 
 
 
