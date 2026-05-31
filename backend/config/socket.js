@@ -83,7 +83,7 @@ function initSocket(server, app) {
   io.use((socket, next) => {
     const ip = socket.handshake.address;
     const count = (connectionCounts.get(ip) || 0) + 1;
-    if (count > 50) return next(new Error('Too many connections from this IP'));
+    if (count > 200) return next(new Error('Too many connections from this IP'));
     connectionCounts.set(ip, count);
     socket.on('disconnect', () => {
       const current = connectionCounts.get(ip);

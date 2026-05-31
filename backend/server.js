@@ -101,7 +101,7 @@ const authLimiter = rateLimit({
 
 const rideLimiter = rateLimit({
   windowMs: 60 * 1000,
-  max: 30,
+  max: 300,
   keyGenerator: (req) => req.user?.email || req.ip,
   message: { error: 'Too many ride actions. Please slow down.' },
 });

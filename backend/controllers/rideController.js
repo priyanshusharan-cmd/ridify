@@ -353,253 +353,272 @@ exports.deleteAllRides = async (req, res) => {
 
 // ── Request a ride — join requester + scoped emit ────────────────────────────
 exports.requestRide = async (req, res) => {
-  try {
-    const { riderName, seats, computedFare, computedDistance, startIndex, endIndex, pickupLat, pickupLng, destLat, destLng, pickupLocation, destination } = req.body;
-    const riderEmail = req.user.email;
-    
-    const seatCount = parseInt(seats);
-    if (isNaN(seatCount) || seatCount <= 0 || seatCount > 8) {
-      return res.status(400).json({ error: "Seats must be an integer between 1 and 8." });
-    }
-
-    if (startIndex == null || endIndex == null || startIndex >= endIndex) {
-      return res.status(400).json({ error: "Invalid pickup/destination segment indices." });
-    }
-    // Bounds check: indices must be within the route
-    const parsedStart = parseInt(startIndex);
-    const parsedEnd = parseInt(endIndex);
-
-    const ride = await Ride.findById(req.params.id);
-    if (!ride) return res.status(404).json({ error: "Ride not found" });
-
-    if (
-      isNaN(parsedStart) || isNaN(parsedEnd) ||
-      parsedStart < 0 || parsedEnd <= 0 ||
-      parsedStart >= parsedEnd ||
-      parsedEnd >= ride.routePath.length
-    ) {
-      return res.status(400).json({ error: "Invalid segment indices. Must be within route bounds." });
-    }
-
-    // Prevent driver from requesting their own ride
-    if (ride.riderEmail === riderEmail) {
-      return res.status(400).json({ error: "You cannot request your own ride." });
-    }
-
-    // Prevent requesting an expired ride
-    if (ride.expiresAt && ride.expiresAt < Date.now()) {
-      return res.status(400).json({ error: "This ride has expired." });
-    }
-
-    // Prevent duplicate requests (arrays now store emails)
-    if (ride.requests.includes(riderEmail) || ride.passengers.includes(riderEmail)) {
-      return res.status(400).json({ error: "You have already requested or joined this ride." });
-    }
-    if (ride.declined.includes(riderEmail)) {
-      return res.status(400).json({ error: "You were already declined for this ride." });
-    }
-    if (ride.kicked.includes(riderEmail)) {
-      return res.status(400).json({ error: "You were removed from this ride." });
-    }
-    if (['started', 'completed', 'cancelled'].includes(ride.status)) {
-      return res.status(400).json({ error: `This ride is already ${ride.status}.` });
-    }
-
-    // For requests: count passengers + existing requests to prevent overbooking
-    if (!checkCapacityForRequest(ride, startIndex, endIndex, seats)) {
-      return res.status(400).json({ error: "Capacity exceeded for this segment" });
-    }
-
-    ride.requests.push(riderEmail);
-    if (!ride.riderDetails) ride.riderDetails = new Map();
-    const safeEmail = emailToKey(riderEmail);
-    // Server-side fare recalculation to prevent client-side manipulation
-    let serverFare = computedFare;
-    if (ride.routePath && ride.routePath.length >= 2 && parsedEnd <= ride.routePath.length) {
-      let tripDist = 0;
-      const sampleCount = 100;
-      const distStep = Math.max(1, Math.floor((parsedEnd - parsedStart) / sampleCount));
-      for (let i = parsedStart; i < parsedEnd; i += distStep) {
-        const nextIdx = Math.min(i + distStep, parsedEnd);
-        tripDist += turf.distance(
-          turf.point([ride.routePath[i].lng, ride.routePath[i].lat]),
-          turf.point([ride.routePath[nextIdx].lng, ride.routePath[nextIdx].lat]),
-          { units: 'kilometers' }
-        );
+  let retries = 5;
+  while (retries > 0) {
+    try {
+      const { riderName, seats, computedFare, computedDistance, startIndex, endIndex, pickupLat, pickupLng, destLat, destLng, pickupLocation, destination } = req.body;
+      const riderEmail = req.user.email;
+      
+      const seatCount = parseInt(seats);
+      if (isNaN(seatCount) || seatCount <= 0 || seatCount > 8) {
+        return res.status(400).json({ error: "Seats must be an integer between 1 and 8." });
       }
-      let percentage = tripDist / (ride.totalDistance || tripDist || 1);
-      if (percentage > 1) percentage = 1;
-      serverFare = percentage >= 0.99 ? ride.fare : Math.round(ride.fare * percentage);
-    }
-    if (serverFare < 1) serverFare = 1;
-    // TODO: full fix requires server-computed startIndex/endIndex from pickup coords
 
-    ride.riderDetails.set(safeEmail, {
-      pickupLat, pickupLng, destLat, destLng, pickupLocation, destination,
-      fare: serverFare, distance: computedDistance, seats: seatCount,
-      startIndex: parsedStart, endIndex: parsedEnd, paid: false, riderName: riderName || ''
-    });
-    
-    const updateResult = await Ride.findOneAndUpdate(
-      { _id: ride._id, optimisticLock: ride.optimisticLock },
-      {
-        $set: {
-          requests: [...ride.requests],
-          riderDetails: ride.riderDetails
-        },
-        $inc: { optimisticLock: 1 }
-      },
-      { new: true }
-    );
+      if (startIndex == null || endIndex == null || startIndex >= endIndex) {
+        return res.status(400).json({ error: "Invalid pickup/destination segment indices." });
+      }
+      // Bounds check: indices must be within the route
+      const parsedStart = parseInt(startIndex);
+      const parsedEnd = parseInt(endIndex);
 
-    if (!updateResult) {
-      return res.status(409).json({
-        error: 'Concurrent modification detected. Please retry.',
-        code: 'OPTIMISTIC_LOCK_CONFLICT'
+      const ride = await Ride.findById(req.params.id);
+      if (!ride) return res.status(404).json({ error: "Ride not found" });
+
+      if (
+        isNaN(parsedStart) || isNaN(parsedEnd) ||
+        parsedStart < 0 || parsedEnd <= 0 ||
+        parsedStart >= parsedEnd ||
+        parsedEnd >= ride.routePath.length
+      ) {
+        return res.status(400).json({ error: "Invalid segment indices. Must be within route bounds." });
+      }
+
+      // Prevent driver from requesting their own ride
+      if (ride.riderEmail === riderEmail) {
+        return res.status(400).json({ error: "You cannot request your own ride." });
+      }
+
+      // Prevent requesting an expired ride
+      if (ride.expiresAt && ride.expiresAt < Date.now()) {
+        return res.status(400).json({ error: "This ride has expired." });
+      }
+
+      // Prevent duplicate requests (arrays now store emails)
+      if (ride.requests.includes(riderEmail) || ride.passengers.includes(riderEmail)) {
+        return res.status(400).json({ error: "You have already requested or joined this ride." });
+      }
+      if (ride.declined.includes(riderEmail)) {
+        return res.status(400).json({ error: "You were already declined for this ride." });
+      }
+      if (ride.kicked.includes(riderEmail)) {
+        return res.status(400).json({ error: "You were removed from this ride." });
+      }
+      if (['started', 'completed', 'cancelled'].includes(ride.status)) {
+        return res.status(400).json({ error: `This ride is already ${ride.status}.` });
+      }
+
+      // For requests: count passengers + existing requests to prevent overbooking
+      if (!checkCapacityForRequest(ride, startIndex, endIndex, seats)) {
+        return res.status(400).json({ error: "Capacity exceeded for this segment" });
+      }
+
+      ride.requests.push(riderEmail);
+      if (!ride.riderDetails) ride.riderDetails = new Map();
+      const safeEmail = emailToKey(riderEmail);
+      // Server-side fare recalculation to prevent client-side manipulation
+      let serverFare = computedFare;
+      if (ride.routePath && ride.routePath.length >= 2 && parsedEnd <= ride.routePath.length) {
+        let tripDist = 0;
+        const sampleCount = 100;
+        const distStep = Math.max(1, Math.floor((parsedEnd - parsedStart) / sampleCount));
+        for (let i = parsedStart; i < parsedEnd; i += distStep) {
+          const nextIdx = Math.min(i + distStep, parsedEnd);
+          tripDist += turf.distance(
+            turf.point([ride.routePath[i].lng, ride.routePath[i].lat]),
+            turf.point([ride.routePath[nextIdx].lng, ride.routePath[nextIdx].lat]),
+            { units: 'kilometers' }
+          );
+        }
+        let percentage = tripDist / (ride.totalDistance || tripDist || 1);
+        if (percentage > 1) percentage = 1;
+        serverFare = percentage >= 0.99 ? ride.fare : Math.round(ride.fare * percentage);
+      }
+      if (serverFare < 1) serverFare = 1;
+      
+      ride.riderDetails.set(safeEmail, {
+        pickupLat, pickupLng, destLat, destLng, pickupLocation, destination,
+        fare: serverFare, distance: computedDistance, seats: seatCount,
+        startIndex: parsedStart, endIndex: parsedEnd, paid: false, riderName: riderName || ''
       });
+      
+      const updateResult = await Ride.findOneAndUpdate(
+        { _id: ride._id, optimisticLock: ride.optimisticLock },
+        {
+          $set: {
+            requests: [...ride.requests],
+            riderDetails: ride.riderDetails
+          },
+          $inc: { optimisticLock: 1 }
+        },
+        { new: true }
+      );
+
+      if (!updateResult) {
+        retries--;
+        if (retries === 0) {
+          return res.status(409).json({
+            error: 'Concurrent modification detected. Please retry.',
+            code: 'OPTIMISTIC_LOCK_CONFLICT'
+          });
+        }
+        // Random jitter between 20ms and 100ms
+        await new Promise(r => setTimeout(r, Math.random() * 80 + 20));
+        continue;
+      }
+
+      const rideId = updateResult._id.toString();
+      req.joinUserToRide(riderEmail, rideId);
+      
+      const ridePayload = decodeRiderDetailsForSocket(updateResult.toJSON());
+      req.io.to(rideId).emit('new_ride_request', { rideId, ride: ridePayload });
+      req.emitToUser(ride.riderEmail, 'new_ride_request', { rideId, ride: ridePayload });
+
+      return res.status(200).json({ success: true });
+    } catch (err) { 
+      return res.status(500).json({ error: err.message }); 
     }
-
-    const rideId = updateResult._id.toString();
-    req.joinUserToRide(riderEmail, rideId);
-    
-    const ridePayload = decodeRiderDetailsForSocket(updateResult.toJSON());
-    req.io.to(rideId).emit('new_ride_request', { rideId, ride: ridePayload });
-    req.emitToUser(ride.riderEmail, 'new_ride_request', { rideId, ride: ridePayload });
-
-    res.status(200).json({ success: true });
-  } catch (err) { res.status(500).json({ error: err.message }); }
+  }
 };
 
 // ── Accept a rider — scoped emit ─────────────────────────────────────────────
 exports.acceptRider = async (req, res) => {
-  try {
-    const passengerEmail = decodeURIComponent(req.params.passengerEmail || '').toLowerCase().trim();
-    let ride = await Ride.findById(req.params.id);
-    if (!ride) return res.status(404).json({ error: "Ride not found" });
-    if (req.user.email !== ride.riderEmail) return res.status(403).json({ error: 'Only the ride driver can perform this action.' });
+  let retries = 5;
+  while (retries > 0) {
+    try {
+      const passengerEmail = decodeURIComponent(req.params.passengerEmail || '').toLowerCase().trim();
+      let ride = await Ride.findById(req.params.id);
+      if (!ride) return res.status(404).json({ error: "Ride not found" });
+      if (req.user.email !== ride.riderEmail) return res.status(403).json({ error: 'Only the ride driver can perform this action.' });
 
-    // Prevent duplicate acceptance
-    if (ride.passengers.includes(passengerEmail)) {
-      return res.status(400).json({ error: "Already accepted" });
-    }
-    // Must still be in requests
-    if (!ride.requests.includes(passengerEmail)) {
-      return res.status(400).json({ error: "Request not found" });
-    }
+      // Prevent duplicate acceptance
+      if (ride.passengers.includes(passengerEmail)) {
+        return res.status(400).json({ error: "Already accepted" });
+      }
+      // Must still be in requests
+      if (!ride.requests.includes(passengerEmail)) {
+        return res.status(400).json({ error: "Request not found" });
+      }
 
-    const riderDetail = getRiderDetail(ride, passengerEmail);
-    if (!riderDetail) return res.status(400).json({ error: "Rider details not found" });
+      const riderDetail = getRiderDetail(ride, passengerEmail);
+      if (!riderDetail) {
+        return res.status(400).json({ error: "Rider details not found" });
+      }
 
-    // Enforce capacity check at the moment of acceptance
-    if (!checkCapacity(ride, riderDetail.startIndex, riderDetail.endIndex, riderDetail.seats)) {
-      return res.status(400).json({ error: "Cannot accept. Capacity exceeded for this segment." });
-    }
+      // Final capacity check (sweep-line check)
+      if (!checkCapacity(ride, riderDetail.startIndex, riderDetail.endIndex, riderDetail.seats)) {
+        return res.status(400).json({ error: "Not enough capacity" });
+      }
 
-    ride.requests = ride.requests.filter(r => r !== passengerEmail);
-    ride.passengers.push(passengerEmail);
+      // Move from requests to passengers
+      ride.requests = ride.requests.filter(r => r !== passengerEmail);
+      ride.passengers.push(passengerEmail);
+      
+      // Update paid status if needed (though driver accept usually doesn't set paid = true)
+      // riderDetail is updated inside the Map indirectly if we use set
+      ride.riderDetails.set(emailToKey(passengerEmail), riderDetail);
 
-    if (ride.status === 'available') ride.status = 'accepted';
+      if (ride.status === 'available') ride.status = 'accepted';
 
-    // Auto-decline any remaining requests that no longer fit the capacity
-    const toDecline = [];
-    const remainingRequests = [...ride.requests];
-    for (const rName of remainingRequests) {
-      const pd = getRiderDetail(ride, rName);
-      if (pd) {
-        if (!checkCapacity(ride, pd.startIndex, pd.endIndex, pd.seats)) {
-          toDecline.push(rName);
+      // Auto-decline any remaining requests that no longer fit the capacity
+      const toDecline = [];
+      const remainingRequests = [...ride.requests];
+      for (const rName of remainingRequests) {
+        const pd = getRiderDetail(ride, rName);
+        if (pd) {
+          if (!checkCapacity(ride, pd.startIndex, pd.endIndex, pd.seats)) {
+            toDecline.push(rName);
+          }
         }
       }
-    }
 
-    for (const rName of toDecline) {
-      ride.requests = ride.requests.filter(r => r !== rName);
-      ride.declined.push(rName);
-      req.emitToUser(rName, 'ride_cancelled', { rideId: ride._id.toString(), ride: decodeRiderDetailsForSocket(ride.toJSON()) });
-      req.removeUserFromRide(rName, ride._id.toString());
-    }
+      for (const rName of toDecline) {
+        ride.requests = ride.requests.filter(r => r !== rName);
+        ride.declined.push(rName);
+        req.emitToUser(rName, 'ride_cancelled', { rideId: ride._id.toString(), ride: decodeRiderDetailsForSocket(ride.toJSON()) });
+        req.removeUserFromRide(rName, ride._id.toString());
+      }
 
-    // Check if the ride is completely full across ALL segments.
-    // For nonstop / shared_start: simple seat sum is enough.
-    // For flexible: we must check if even 1 extra seat fits ANYWHERE.
-    if (ride.routePreference === 'nonstop' || ride.routePreference === 'shared_start') {
-      let totalUsed = 0;
-      for (const pName of ride.passengers) {
-        const pd = getRiderDetail(ride, pName);
-        totalUsed += pd?.seats || 1;
-      }
-      if (totalUsed >= ride.totalSeats) {
-        ride.status = 'full';
-      }
-    } else {
-      // Flexible: the ride is "full" only if EVERY segment along the route
-      // is at totalSeats capacity.  Build the sweep-line of accepted
-      // passengers and check that the minimum occupancy never drops below
-      // totalSeats.  If any segment has room, new passengers could still
-      // board there.
-      const kickedSet = new Set(ride.kicked || []);
-      const droppedSet = new Set(ride.droppedPassengers || []);
-      const segChanges = [];
-      for (const pName of ride.passengers) {
-        if (kickedSet.has(pName) || droppedSet.has(pName)) continue;
-        const p = getRiderDetail(ride, pName);
-        if (p) {
-          segChanges.push({ index: p.startIndex, change: p.seats });
-          segChanges.push({ index: p.endIndex, change: -p.seats });
+      // Check if the ride is completely full across ALL segments.
+      // For nonstop / shared_start: simple seat sum is enough.
+      // For flexible: we must check if even 1 extra seat fits ANYWHERE.
+      if (ride.routePreference === 'nonstop' || ride.routePreference === 'shared_start') {
+        let totalUsed = 0;
+        for (const pName of ride.passengers) {
+          const pd = getRiderDetail(ride, pName);
+          totalUsed += pd?.seats || 1;
         }
-      }
-      segChanges.sort((a, b) => a.index - b.index || a.change - b.change);
+        if (totalUsed >= ride.totalSeats) {
+          ride.status = 'full';
+        }
+      } else {
+        // Flexible: the ride is "full" only if EVERY segment along the route
+        // is at totalSeats capacity.  Build the sweep-line of accepted
+        // passengers and check that the minimum occupancy never drops below
+        // totalSeats.  If any segment has room, new passengers could still
+        // board there.
+        const kickedSet = new Set(ride.kicked || []);
+        const droppedSet = new Set(ride.droppedPassengers || []);
+        const segChanges = [];
+        for (const pName of ride.passengers) {
+          if (kickedSet.has(pName) || droppedSet.has(pName)) continue;
+          const p = getRiderDetail(ride, pName);
+          if (p) {
+            segChanges.push({ index: p.startIndex, change: p.seats });
+            segChanges.push({ index: p.endIndex, change: -p.seats });
+          }
+        }
+        segChanges.sort((a, b) => a.index - b.index || a.change - b.change);
 
-      let cur = 0;
-      let minOccupancy = 0;  // minimum occupancy seen across all segments
-      let maxOccupancy = 0;
-      for (const c of segChanges) {
-        cur += c.change;
-        if (cur > maxOccupancy) maxOccupancy = cur;
-        if (cur < minOccupancy) minOccupancy = cur;
-      }
-      // The ride is full only when PEAK occupancy is at capacity AND there is
-      // no segment where occupancy dips.  Simpler: ride is full if peak == totalSeats
-      // and min occupancy (in any active region) also == totalSeats.  But the
-      // easiest correct check: is there room for 1 seat on at least some segment?
-      // We know the ride is full if maxOccupancy >= totalSeats — because the
-      // sweep only adds occupied segments, and if the peak is at totalSeats it
-      // means somewhere is full.  But another segment might not be.  The only
-      // time it's truly "full everywhere" is when no [start..end] interval
-      // can fit 1 seat.  The simplest correct approach: try every passenger's
-      // segment boundary as a test interval.
-      // Actually: if maxOccupancy >= totalSeats it doesn't mean all segments
-      // are full.  We should NOT mark as full unless it is truly impossible for
-      // any sub-segment to accommodate even 1 seat.  The conservative safe
-      // approach: mark full only when all segments are at capacity.
-      // For simplicity and correctness, just leave as 'accepted' for flexible
-      // — the search already handles per-segment capacity properly.
-      // We mark full only when EVERY point along the route is at full capacity.
-      // This is true when the minimum point-occupancy across the entire active
-      // range equals totalSeats.
-      // Build occupancy at every event boundary:
-      let isFull = false;
-      if (ride.passengers.length > 0 && segChanges.length > 0) {
-        const routeLength = (ride.routePath || []).length;
-        // The first event is the earliest passenger pickup index.
-        // If it's > 0, the segment [0, firstEvent) has 0 occupancy → not full.
-        const firstEventIndex = segChanges[0].index;
-        // After processing all events, occupancy returns to 0.
-        // The last event is the latest drop-off. If it's before the route end,
-        // the segment [lastEvent, routeEnd) has 0 occupancy → not full.
-        const lastEventIndex = segChanges[segChanges.length - 1].index;
+        let cur = 0;
+        let minOccupancy = 0;  // minimum occupancy seen across all segments
+        let maxOccupancy = 0;
+        for (const c of segChanges) {
+          cur += c.change;
+          if (cur > maxOccupancy) maxOccupancy = cur;
+          if (cur < minOccupancy) minOccupancy = cur;
+        }
+        // The ride is full only when PEAK occupancy is at capacity AND there is
+        // no segment where occupancy dips.  Simpler: ride is full if peak == totalSeats
+        // and min occupancy (in any active region) also == totalSeats.  But the
+        // easiest correct check: is there room for 1 seat on at least some segment?
+        // We know the ride is full if maxOccupancy >= totalSeats — because the
+        // sweep only adds occupied segments, and if the peak is at totalSeats it
+        // means somewhere is full.  But another segment might not be.  The only
+        // time it's truly "full everywhere" is when no [start..end] interval
+        // can fit 1 seat.  The simplest correct approach: try every passenger's
+        // segment boundary as a test interval.
+        // Actually: if maxOccupancy >= totalSeats it doesn't mean all segments
+        // are full.  We should NOT mark as full unless it is truly impossible for
+        // any sub-segment to accommodate even 1 seat.  The conservative safe
+        // approach: mark full only when all segments are at capacity.
+        // For simplicity and correctness, just leave as 'accepted' for flexible
+        // — the search already handles per-segment capacity properly.
+        // We mark full only when EVERY point along the route is at full capacity.
+        // This is true when the minimum point-occupancy across the entire active
+        // range equals totalSeats.
+        // Build occupancy at every event boundary:
+        let isFull = false;
+        if (ride.passengers.length > 0 && segChanges.length > 0) {
+          const routeLength = (ride.routePath || []).length;
+          // The first event is the earliest passenger pickup index.
+          // If it's > 0, the segment [0, firstEvent) has 0 occupancy → not full.
+          const firstEventIndex = segChanges[0].index;
+          // After processing all events, occupancy returns to 0.
+          // The last event is the latest drop-off. If it's before the route end,
+          // the segment [lastEvent, routeEnd) has 0 occupancy → not full.
+          const lastEventIndex = segChanges[segChanges.length - 1].index;
 
-        if (firstEventIndex > 0 || lastEventIndex < routeLength - 1) {
-          // There are uncovered segments at the start/end of the route
-          // where occupancy is 0, so the ride is NOT full.
-          isFull = false;
-        } else {
-          // All events span the entire route — check each segment between events
-          let occ = 0;
-          let allFull = true;
-          for (let i = 0; i < segChanges.length; i++) {
-            occ += segChanges[i].change;
-            if (i < segChanges.length - 1 && segChanges[i + 1].index > segChanges[i].index) {
+          if (firstEventIndex > 0 || lastEventIndex < routeLength - 1) {
+            // There are uncovered segments at the start/end of the route
+            // where occupancy is 0, so the ride is NOT full.
+            isFull = false;
+          } else {
+            // All events span the entire route — check each segment between events
+            let occ = 0;
+            let allFull = true;
+            for (let i = 0; i < segChanges.length; i++) {
+              occ += segChanges[i].change;
+              if (i < segChanges.length - 1 && segChanges[i + 1].index > segChanges[i].index) {
               if (occ < ride.totalSeats) {
                 allFull = false;
                 break;
@@ -634,10 +653,15 @@ exports.acceptRider = async (req, res) => {
     );
 
     if (!updateResult) {
-      return res.status(409).json({
-        error: 'Concurrent modification detected. The ride state changed. Please retry.',
-        code: 'OPTIMISTIC_LOCK_CONFLICT'
-      });
+      retries--;
+      if (retries === 0) {
+        return res.status(409).json({
+          error: 'Concurrent modification detected. The ride state changed. Please retry.',
+          code: 'OPTIMISTIC_LOCK_CONFLICT'
+        });
+      }
+      await new Promise(r => setTimeout(r, Math.random() * 80 + 20));
+      continue;
     }
 
     const rideId = updateResult._id.toString();
@@ -656,8 +680,11 @@ exports.acceptRider = async (req, res) => {
       });
     }
 
-    res.status(200).json(updateResult);
-  } catch (err) { res.status(500).json({ error: err.message }); }
+    return res.status(200).json(updateResult);
+    } catch (err) { 
+      return res.status(500).json({ error: err.message }); 
+    }
+  }
 };
 
 // ── Decline — scoped emit ────────────────────────────────────────────────────
