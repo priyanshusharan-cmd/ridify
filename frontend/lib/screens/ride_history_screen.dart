@@ -80,7 +80,7 @@ class RideHistoryScreen extends StatelessWidget {
                       ),
                     )
                   : ListView.builder(
-                      padding: const EdgeInsets.only(left: 24, right: 24, bottom: 100),
+                      padding: const EdgeInsets.only(left: 24, right: 24, bottom: 24),
                       itemCount: myCompletedRides.length,
                       itemBuilder: (context, index) {
                         final ride = myCompletedRides[index];
