@@ -145,7 +145,7 @@ const login = async (req, res) => {
 
     const user = await User.findOne({ email }).select('+password +otp +otpExpiry');
     if (!user) {
-      return res.status(401).json({ error: 'Invalid email or password.' });
+      return res.status(404).json({ error: 'User not registered. Please sign up first.' });
     }
 
     if (user.isBanned) {
@@ -196,8 +196,7 @@ const requestLoginOtp = async (req, res) => {
 
     const user = await User.findOne({ email: String(email).trim().toLowerCase() }).select('+lastOtpSentAt');
     if (!user) {
-      await new Promise(r => setTimeout(r, 250));
-      return res.json(GENERIC_RESPONSE);
+      return res.status(404).json({ error: 'User not registered. Please sign up first.' });
     }
 
     if (user.lastOtpSentAt && Date.now() - user.lastOtpSentAt.getTime() < 10 * 60 * 1000) {
