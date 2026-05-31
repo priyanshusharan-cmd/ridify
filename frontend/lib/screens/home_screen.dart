@@ -326,9 +326,8 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
         final myEmailLower = widget.userEmail.toLowerCase().trim();
         
         if (excludedEmail != null && myEmailLower == excludedEmail) {
-          // If we are the admin, just clear rides and go to home
+          // If we are the admin, just clear rides from the local list but stay on current screen
           setState(() => allRides = []);
-          Navigator.popUntil(context, (route) => route.isFirst);
         } else {
           TokenService.clearTokens().then((_) {
             if (navigatorKey.currentState != null) {
