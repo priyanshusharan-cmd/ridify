@@ -4,8 +4,11 @@ const { verifyAccessToken } = require('../utils/jwt');
 const logger = require('../utils/logger');
 
 function initSocket(server, app) {
+  const allowedOrigin = process.env.ALLOWED_ORIGIN;
+  if (process.env.NODE_ENV === 'production' && !allowedOrigin) { throw new Error('FATAL: ALLOWED_ORIGIN must be set in production'); }
+
   const io = new Server(server, {
-    cors: { origin: process.env.ALLOWED_ORIGIN || '*' },
+    cors: { origin: allowedOrigin || 'http://localhost:3000' },
     pingInterval: parseInt(process.env.SOCKET_PING_INTERVAL) || 10000,
     pingTimeout: parseInt(process.env.SOCKET_PING_TIMEOUT) || 5000,
   });
@@ -65,6 +68,21 @@ function initSocket(server, app) {
 
   const locationUpdateCooldowns = new Map();
 
+  // Rate Limiting Middleware (M7)
+  const connectionCounts = new Map();
+  io.use((socket, next) => {
+    const ip = socket.handshake.address;
+    const count = (connectionCounts.get(ip) || 0) + 1;
+    if (count > 50) return next(new Error('Too many connections from this IP'));
+    connectionCounts.set(ip, count);
+    socket.on('disconnect', () => {
+      const current = connectionCounts.get(ip);
+      if (current > 1) connectionCounts.set(ip, current - 1);
+      else connectionCounts.delete(ip);
+    });
+    next();
+  });
+
   io.on('connection', async (socket) => {
     logger.info(`Socket connected: ${socket.id}`);
 
@@ -114,7 +132,7 @@ function initSocket(server, app) {
     socket.on('driver_location_update', async (data) => {
       if (!socket.userEmail || !data?.rideId) return;
       const now = Date.now();
-      const cooldownKey = `loc_${socket.id}`;
+      const cooldownKey = `loc_${socket.userEmail}`;
       const lastUpdate = locationUpdateCooldowns.get(cooldownKey) || 0;
       if (now - lastUpdate < 1500) return; // max ~1 update per 1.5 seconds
       locationUpdateCooldowns.set(cooldownKey, now);
@@ -132,7 +150,7 @@ function initSocket(server, app) {
 
     // ── Cleanup on disconnect ──────────────────────────────────────────
     socket.on('disconnect', () => {
-      locationUpdateCooldowns.delete(`loc_${socket.id}`);
+      locationUpdateCooldowns.delete(`loc_${socket.userEmail}`);
       logger.info(`Socket disconnected: ${socket.id}`);
     });
   });

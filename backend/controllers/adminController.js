@@ -1,3 +1,4 @@
+const logger = require('../utils/logger');
 const bcrypt = require('bcrypt');
 const User = require('../models/user');
 const Ride = require('../models/ride');
@@ -44,7 +45,7 @@ const listUsers = async (req, res) => {
       pagination: { page, limit, total, pages: Math.ceil(total / limit) },
     });
   } catch (err) {
-    console.error('Admin listUsers error:', err.message);
+    logger.error('Admin listUsers error:', err.message);
     res.status(500).json({ error: 'Server error fetching users.' });
   }
 };
@@ -67,7 +68,7 @@ const getUserById = async (req, res) => {
 
     res.json({ user, stats: { ridesAsDriver, ridesAsPassenger } });
   } catch (err) {
-    console.error('Admin getUserById error:', err.message);
+    logger.error('Admin getUserById error:', err.message);
     res.status(500).json({ error: 'Server error fetching user.' });
   }
 };
@@ -117,7 +118,7 @@ const createUser = async (req, res) => {
       message: 'User created successfully (no verification required).',
     });
   } catch (err) {
-    console.error('Admin createUser error:', err.message);
+    logger.error('Admin createUser error:', err.message);
     res.status(500).json({ error: 'Server error creating user.' });
   }
 };
@@ -160,7 +161,7 @@ const updateUser = async (req, res) => {
 
     res.json({ user, message: 'User updated successfully.' });
   } catch (err) {
-    console.error('Admin updateUser error:', err.message);
+    logger.error('Admin updateUser error:', err.message);
     res.status(500).json({ error: 'Server error updating user.' });
   }
 };
@@ -177,7 +178,7 @@ const deleteUserById = async (req, res) => {
 
     res.json({ message: `User ${user.email} deleted successfully.` });
   } catch (err) {
-    console.error('Admin deleteUserById error:', err.message);
+    logger.error('Admin deleteUserById error:', err.message);
     res.status(500).json({ error: 'Server error deleting user.' });
   }
 };
@@ -208,7 +209,7 @@ const bulkDeleteUsers = async (req, res) => {
     const result = await User.deleteMany({ _id: { $in: validIds } });
     res.json({ message: `${result.deletedCount} user(s) deleted.`, deletedCount: result.deletedCount });
   } catch (err) {
-    console.error('Admin bulkDeleteUsers error:', err.message);
+    logger.error('Admin bulkDeleteUsers error:', err.message);
     res.status(500).json({ error: 'Server error during bulk delete.' });
   }
 };
@@ -266,7 +267,7 @@ const listRides = async (req, res) => {
       pagination: { page, limit, total, pages: Math.ceil(total / limit) },
     });
   } catch (err) {
-    console.error('Admin listRides error:', err.message);
+    logger.error('Admin listRides error:', err.message);
     res.status(500).json({ error: 'Server error fetching rides.' });
   }
 };
@@ -281,7 +282,7 @@ const getRideById = async (req, res) => {
     if (!ride) return res.status(404).json({ error: 'Ride not found.' });
     res.json(ride);
   } catch (err) {
-    console.error('Admin getRideById error:', err.message);
+    logger.error('Admin getRideById error:', err.message);
     res.status(500).json({ error: 'Server error fetching ride.' });
   }
 };
@@ -302,7 +303,7 @@ const deleteRide = async (req, res) => {
 
     res.json({ message: 'Ride deleted successfully.' });
   } catch (err) {
-    console.error('Admin deleteRide error:', err.message);
+    logger.error('Admin deleteRide error:', err.message);
     res.status(500).json({ error: 'Server error deleting ride.' });
   }
 };
@@ -314,7 +315,7 @@ const wipeAllRides = async (req, res) => {
     if (!adminEmail) return res.status(401).json({ error: 'Unauthorized.' });
 
     await Ride.deleteMany({});
-    console.log(`[WipeAllRides] Admin ${adminEmail} wiped all rides.`);
+    logger.info(`[WipeAllRides] Admin ${adminEmail} wiped all rides.`);
 
     if (req.io) {
       req.io.emit('all_rides_wiped');
@@ -322,7 +323,7 @@ const wipeAllRides = async (req, res) => {
 
     res.json({ message: 'All rides have been permanently deleted.' });
   } catch (err) {
-    console.error('Admin wipeAllRides error:', err.message);
+    logger.error('Admin wipeAllRides error:', err.message);
     res.status(500).json({ error: 'Server error wiping rides.' });
   }
 };
@@ -362,7 +363,7 @@ const forceCancelRide = async (req, res) => {
 
     res.json({ message: 'Ride force-cancelled by admin.', ride });
   } catch (err) {
-    console.error('Admin forceCancelRide error:', err.message);
+    logger.error('Admin forceCancelRide error:', err.message);
     res.status(500).json({ error: 'Server error cancelling ride.' });
   }
 };
@@ -409,7 +410,7 @@ const getStats = async (req, res) => {
       },
     });
   } catch (err) {
-    console.error('Admin getStats error:', err.message);
+    logger.error('Admin getStats error:', err.message);
     res.status(500).json({ error: 'Server error fetching stats.' });
   }
 };
@@ -457,6 +458,5 @@ module.exports = {
   banUser,
   unbanUser,
   verifyDocuments,
-  getStats,
   wipeAllRides
 };

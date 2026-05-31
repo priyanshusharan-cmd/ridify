@@ -3,6 +3,7 @@ const turf = require('@turf/turf');
 const { isValidEmail, isValidObjectId } = require('../utils/validators');
 const { emailToKey, keyToEmail } = require('../utils/emailKey');
 const asyncHandler = require('../utils/asyncHandler');
+const sanitizeHtml = require('sanitize-html');
 const { 
   getDepartureTimeEpoch, 
   getRiderDetail, 
@@ -1135,7 +1136,7 @@ exports.sendChatMessage = async (req, res) => {
     const senderEmail = req.user.email;
     
     // Message length limit and HTML stripping
-    const trimmedText = text.trim().replace(/<[^>]*>/g, '');
+    const trimmedText = sanitizeHtml(text.trim(), { allowedTags: [], allowedAttributes: {} });
     if (trimmedText.length > CHAT_MAX_LENGTH) {
       return res.status(400).json({ error: `Message too long. Max ${CHAT_MAX_LENGTH} characters.` });
     }
@@ -1204,6 +1205,8 @@ exports.getDriverStats = async (req, res) => {
 // Wrap all controllers with asyncHandler
 Object.keys(exports).forEach(key => {
   if (typeof exports[key] === 'function') {
-    exports[key] = asyncHandler(exports[key]);
+    const original = exports[key];
+    exports[key] = asyncHandler(original);
+    Object.defineProperty(exports[key], 'name', { value: original.name });
   }
 });
