@@ -26,7 +26,6 @@ class _SwipeToReplyState extends State<SwipeToReply>
   // ── Constants ──────────────────────────────────────────────────────────────
   static const double _triggerThreshold = 64.0;   // px to trigger reply
   static const double _maxDrag = 100.0;            // max drag distance
-  static const double _iconSize = 24.0;
 
   // ── State ──────────────────────────────────────────────────────────────────
   double _dragOffset = 0.0;

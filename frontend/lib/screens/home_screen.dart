@@ -215,7 +215,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
     
     final socketService = SocketService();
     socketService.registerUser(widget.userEmail, accessToken); // Pass token
-    final socket = socketService.socket;
+    // socket variable removed
 
     // Direct state updates — no re-fetch needed
     _onSocket('connect', (_) {

@@ -1,3 +1,4 @@
+const logger = require('../utils/logger');
 const bcrypt = require('bcrypt');
 const User = require('../models/user');
 const OtpVerification = require('../models/OtpVerification');
@@ -47,7 +48,7 @@ const requestSignupOtp = async (req, res) => {
 
     res.json({ message: 'Signup OTP sent to your email.' });
   } catch (err) {
-    console.error('Request Signup OTP Error:', err.message);
+    logger.error('Request Signup OTP Error:', err.message);
     res.status(500).json({ error: 'Server error while sending Signup OTP.' });
   }
 };
@@ -115,7 +116,7 @@ const register = async (req, res) => {
       refreshToken,
     });
   } catch (err) {
-    console.error('Register Error:', err.message);
+    logger.error('Register Error:', err.message);
     res.status(500).json({ error: 'Server error during registration.' });
   }
 };
@@ -176,7 +177,7 @@ const login = async (req, res) => {
       refreshToken,
     });
   } catch (err) {
-    console.error('Login Error:', err.message);
+    logger.error('Login Error:', err.message);
     res.status(500).json({ error: 'Server error during login.' });
   }
 };
@@ -214,7 +215,7 @@ const requestLoginOtp = async (req, res) => {
 
     res.json(GENERIC_RESPONSE);
   } catch (err) {
-    console.error('Request Login OTP Error:', err.message);
+    logger.error('Request Login OTP Error:', err.message);
     res.status(500).json({ error: 'Server error while sending Login OTP.' });
   }
 };
@@ -246,7 +247,7 @@ const deleteAllUsers = async (req, res) => {
     if (!confirmSecret || confirmSecret !== process.env.ADMIN_SECRET) {
       return res.status(403).json({ error: 'Forbidden' });
     }
-    console.warn(`[${new Date().toISOString()}] Admin ${req.user ? req.user.email : 'Unknown'} triggered deleteAllUsers`);
+    logger.warn(`[${new Date().toISOString()}] Admin ${req.user ? req.user.email : 'Unknown'} triggered deleteAllUsers`);
 
     await User.deleteMany({});
     res.json({ message: 'All users deleted.' });
@@ -323,7 +324,7 @@ const changePassword = async (req, res) => {
 
     res.json({ message: 'Password updated successfully. All other sessions have been signed out.' });
   } catch (err) {
-    console.error('Change Password Error:', err.message);
+    logger.error('Change Password Error:', err.message);
     res.status(500).json({ error: 'Server error while changing password.' });
   }
 };

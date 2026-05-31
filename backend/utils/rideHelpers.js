@@ -133,6 +133,22 @@ function decodeRiderDetailsForSocket(rideObj) {
   return rideObj;
 }
 
+function sanitizeRideForBroadcast(rideObj, viewerEmail) {
+  const sanitized = { ...rideObj };
+  if (sanitized.riderDetails && typeof sanitized.riderDetails === 'object') {
+    const filtered = {};
+    for (const [email, details] of Object.entries(sanitized.riderDetails)) {
+      if (email === viewerEmail || email === sanitized.riderEmail) {
+        filtered[email] = details;
+      } else {
+        filtered[email] = { riderName: details.riderName, paid: details.paid, seats: details.seats };
+      }
+    }
+    sanitized.riderDetails = filtered;
+  }
+  return sanitized;
+}
+
 module.exports = {
   getDepartureTimeEpoch,
   getRiderDetail,
@@ -140,5 +156,6 @@ module.exports = {
   checkCapacityForSearch,
   checkCapacityForRequest,
   checkCapacity,
-  decodeRiderDetailsForSocket
+  decodeRiderDetailsForSocket,
+  sanitizeRideForBroadcast
 };

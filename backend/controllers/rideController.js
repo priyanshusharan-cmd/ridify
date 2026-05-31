@@ -1,3 +1,4 @@
+const logger = require('../utils/logger');
 const Ride = require('../models/ride');
 const turf = require('@turf/turf');
 const { isValidEmail, isValidObjectId } = require('../utils/validators');
@@ -10,7 +11,8 @@ const {
   checkCapacityForSearch, 
   checkCapacityForRequest, 
   checkCapacity,
-  decodeRiderDetailsForSocket
+  decodeRiderDetailsForSocket,
+  sanitizeRideForBroadcast
 } = require('../utils/rideHelpers');
 
 // ── Environment-configurable constants ──────────────────────────────────────
@@ -428,6 +430,8 @@ exports.requestRide = async (req, res) => {
       if (percentage > 1) percentage = 1;
       serverFare = percentage >= 0.99 ? ride.fare : Math.round(ride.fare * percentage);
     }
+    if (serverFare < 1) serverFare = 1;
+    // TODO: full fix requires server-computed startIndex/endIndex from pickup coords
 
     ride.riderDetails.set(safeEmail, {
       pickupLat, pickupLng, destLat, destLng, pickupLocation, destination,
@@ -635,7 +639,21 @@ exports.acceptRider = async (req, res) => {
     }
 
     const rideId = updateResult._id.toString();
-    req.io.to(rideId).emit('ride_accepted', { rideId, ride: decodeRiderDetailsForSocket(updateResult.toJSON()) });
+    const decodedFullRide = decodeRiderDetailsForSocket(updateResult.toJSON());
+    
+    const participants = new Set([
+      decodedFullRide.riderEmail,
+      ...(decodedFullRide.passengers || []),
+      ...(decodedFullRide.requests || [])
+    ]);
+
+    for (const p of participants) {
+      req.emitToUser(p, 'ride_accepted', {
+        rideId,
+        ride: sanitizeRideForBroadcast(decodedFullRide, p)
+      });
+    }
+
     res.status(200).json(updateResult);
   } catch (err) { res.status(500).json({ error: err.message }); }
 };
@@ -1105,7 +1123,7 @@ exports.endRide = async (req, res) => {
       return detail && !detail.paid;
     });
     if (unpaid.length > 0) {
-      console.warn(`Ride ${ride._id} ended with ${unpaid.length} unpaid passenger(s):`, unpaid);
+      logger.warn(`Ride ${ride._id} ended with ${unpaid.length} unpaid passenger(s):`, unpaid);
     }
 
     req.io.to(rideId).emit('ride_ended', {

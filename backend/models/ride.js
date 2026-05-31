@@ -107,6 +107,8 @@ RideSchema.index({ requests: 1 });
 RideSchema.index({ droppedPassengers: 1 });
 RideSchema.index({ status: 1, expiresAt: 1 });
 RideSchema.index({ status: 1, vehicleType: 1, departureTime: 1 });
+// POLICY: Completed/cancelled rides are auto-deleted 30 days after last update.
+// ACTION REQUIRED before production: implement archive job that copies to ride_archive collection.
 RideSchema.index({ updatedAt: 1 }, {
   expireAfterSeconds: 30 * 24 * 3600,
   partialFilterExpression: { status: { $in: ['cancelled', 'completed'] } }
