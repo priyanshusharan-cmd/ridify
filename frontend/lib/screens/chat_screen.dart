@@ -507,7 +507,6 @@ class _ChatScreenState extends State<ChatScreen> {
                     child: TextField(
                       controller: _controller,
                       focusNode: _focusNode,
-                      autofocus: true,
                       minLines: 1,
                       maxLines: 5,
                       keyboardType: TextInputType.multiline,
