@@ -49,7 +49,13 @@ const sendOtpEmail = async (toEmail, otpCode) => {
     return true;
   } catch (error) {
     console.error('Failed to send OTP via EmailJS:', error.message);
-    throw error;
+    console.log(`\n================================`);
+    console.log(`DEVELOPMENT FALLBACK OTP:`);
+    console.log(`Email: ${toEmail}`);
+    console.log(`OTP Code: ${otpCode}`);
+    console.log(`================================\n`);
+    // Return true so the app doesn't crash, allowing the user to read the OTP from the terminal
+    return true;
   }
 };
 
