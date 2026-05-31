@@ -33,6 +33,7 @@ class _ChatScreenState extends State<ChatScreen> {
   late io.Socket socket;
   final TextEditingController _controller = TextEditingController();
   final ScrollController _scrollController = ScrollController();
+  final FocusNode _focusNode = FocusNode();
   final List<Map<String, dynamic>> messages = [];
   final List<MapEntry<String, void Function(dynamic)>> _socketListeners = [];
   Map<String, dynamic>? replyToMessage;
@@ -198,6 +199,7 @@ class _ChatScreenState extends State<ChatScreen> {
     }
     _socketListeners.clear();
     _scrollController.dispose();
+    _focusNode.dispose();
     super.dispose();
   }
 
@@ -273,6 +275,7 @@ class _ChatScreenState extends State<ChatScreen> {
                         'text': msg['text'],
                       };
                     });
+                    _focusNode.requestFocus();
                   },
                   child: Align(
                   alignment: isMe
@@ -503,6 +506,8 @@ class _ChatScreenState extends State<ChatScreen> {
                     },
                     child: TextField(
                       controller: _controller,
+                      focusNode: _focusNode,
+                      autofocus: true,
                       minLines: 1,
                       maxLines: 5,
                       keyboardType: TextInputType.multiline,
