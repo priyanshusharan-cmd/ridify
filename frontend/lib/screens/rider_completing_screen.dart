@@ -118,13 +118,18 @@ class _RiderCompletingScreenState extends State<RiderCompletingScreen> {
       distance = "0.0 km";
       duration = "0 mins";
     } else {
-      String d = (rideData?['riderDetails']?[myEmailLower]?['distance'] ?? "0.0").toString();
-      double distValue = double.tryParse(d.replaceAll(RegExp(r'[^0-9.]'), '')) ?? 0.0;
-      distance = "${distValue.toStringAsFixed(1)} km";
-      
       String? boardedAt = rideData?['riderDetails']?[myEmailLower]?['boardedAt'];
       String? droppedAt = rideData?['riderDetails']?[myEmailLower]?['droppedAt'];
       String? kickedAt = rideData?['riderDetails']?[myEmailLower]?['kickedAt'];
+      bool wasKicked = kickedAt != null || (rideData?['kicked'] ?? []).contains(myEmailLower);
+      
+      if (wasKicked) {
+        distance = "0.0 km";
+      } else {
+        String d = (rideData?['riderDetails']?[myEmailLower]?['distance'] ?? "0.0").toString();
+        double distValue = double.tryParse(d.replaceAll(RegExp(r'[^0-9.]'), '')) ?? 0.0;
+        distance = "${distValue.toStringAsFixed(1)} km";
+      }
       
       if (boardedAt == null) {
         duration = "0 mins";

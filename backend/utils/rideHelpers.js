@@ -123,13 +123,9 @@ function checkCapacity(ride, newStartIndex, newEndIndex, requestedSeats) {
  * Decodes riderDetails map keys (_dot_ back to .) for a lean object before emitting over sockets.
  */
 function decodeRiderDetailsForSocket(rideObj) {
-  if (rideObj.riderDetails) {
-    const decoded = {};
-    for (const [key, value] of Object.entries(rideObj.riderDetails)) {
-      decoded[keyToEmail(key)] = value;
-    }
-    rideObj.riderDetails = decoded;
-  }
+  // Mongoose schema toJSON hook ALREADY decodes the keys.
+  // We must not double-decode them, otherwise Buffer.from('email@foo.com', 'base64url') 
+  // produces garbage output like 'm⵭,ڞ	W('
   return rideObj;
 }
 
