@@ -1,24 +1,6 @@
 import 'package:flutter/foundation.dart';
-import 'package:flutter_dotenv/flutter_dotenv.dart';
 
-/// The base URL for backend API calls, pulled securely from .env.
-/// Falls back to localhost only in debug mode; release builds must set BACKEND_URL.
-String get kBaseUrl {
-  final url = dotenv.env['BACKEND_URL']?.trim();
-  if (url == null || url.isEmpty) {
-    if (kDebugMode) {
-      debugPrint('WARNING: BACKEND_URL not set, using localhost fallback.');
-      return 'http://localhost:5001';
-    }
-    throw StateError('BACKEND_URL must be set in .env for release builds.');
-  }
-  if (!kDebugMode && url.startsWith('http://') && !url.contains('localhost')) {
-    throw StateError(
-      'SECURITY: Production BACKEND_URL must use HTTPS. Got: $url'
-    );
-  }
-  return url;
-}
+const String kBaseUrl = String.fromEnvironment('BACKEND_URL', defaultValue: 'http://localhost:5001');
 
 
 

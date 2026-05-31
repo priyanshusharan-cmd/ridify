@@ -16,6 +16,10 @@ module.exports = async function authenticate(req, res, next) {
       return res.status(401).json({ error: 'User account has been deleted.', code: 'USER_DELETED' });
     }
 
+    if (user.isBanned) {
+      return res.status(403).json({ error: 'Your account has been suspended. Contact support.', code: 'ACCOUNT_BANNED' });
+    }
+
     req.user = { email: payload.email, id: payload.id };
     next();
   } catch (err) {

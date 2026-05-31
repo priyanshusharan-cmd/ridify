@@ -4,6 +4,7 @@ const OtpVerification = require('../models/OtpVerification');
 const { isValidEmail, MAX_FIELD_LENGTH } = require('../utils/validators');
 const { signAccessToken, signRefreshToken } = require('../utils/jwt');
 const { sendOtpEmail } = require('../utils/emailjs');
+const { generateOtp } = require('../utils/otpGenerator');
 
 const BCRYPT_ROUNDS = parseInt(process.env.BCRYPT_ROUNDS) || 12;
 const ADMIN_EMAILS = (process.env.ADMIN_EMAILS || '').split(',').map(e => e.trim().toLowerCase()).filter(Boolean);
@@ -32,7 +33,7 @@ const requestSignupOtp = async (req, res) => {
       return res.status(429).json({ error: `Please wait ${waitMinutes} minute(s) before requesting another OTP.` });
     }
 
-    const otp = Math.floor(100000 + Math.random() * 900000).toString();
+    const otp = generateOtp();
     
     if (existingOtp) {
       existingOtp.otp = otp;
@@ -144,6 +145,10 @@ const login = async (req, res) => {
       return res.status(401).json({ error: 'Invalid email or password.' });
     }
 
+    if (user.isBanned) {
+      return res.status(403).json({ error: 'Your account has been suspended. Contact support.', code: 'ACCOUNT_BANNED' });
+    }
+
     if (otp) {
       if (!user.otp || user.otp !== otp) {
         return res.status(401).json({ error: 'Invalid OTP.' });
@@ -184,9 +189,12 @@ const requestLoginOtp = async (req, res) => {
       return res.status(400).json({ error: 'Email is required.' });
     }
 
+    const GENERIC_RESPONSE = { message: 'If that email is registered, an OTP has been sent.' };
+
     const user = await User.findOne({ email: String(email).trim().toLowerCase() }).select('+lastOtpSentAt');
     if (!user) {
-      return res.status(404).json({ error: 'User not found. Please sign up first.' });
+      await new Promise(r => setTimeout(r, 250));
+      return res.json(GENERIC_RESPONSE);
     }
 
     if (user.lastOtpSentAt && Date.now() - user.lastOtpSentAt.getTime() < 10 * 60 * 1000) {
@@ -194,7 +202,7 @@ const requestLoginOtp = async (req, res) => {
       return res.status(429).json({ error: `Please wait ${waitMinutes} minute(s) before requesting another OTP.` });
     }
 
-    const otp = Math.floor(100000 + Math.random() * 900000).toString();
+    const otp = generateOtp();
     const otpExpiry = new Date(Date.now() + 10 * 60 * 1000); // 10 minutes
 
     user.otp = otp;
@@ -204,7 +212,7 @@ const requestLoginOtp = async (req, res) => {
 
     await sendOtpEmail(user.email, otp);
 
-    res.json({ message: 'Login OTP sent to your email.' });
+    res.json(GENERIC_RESPONSE);
   } catch (err) {
     console.error('Request Login OTP Error:', err.message);
     res.status(500).json({ error: 'Server error while sending Login OTP.' });
@@ -234,6 +242,12 @@ const deleteUser = async (req, res) => {
 // ── Delete All Users (admin only) ───────────────────────────────────────────
 const deleteAllUsers = async (req, res) => {
   try {
+    const { confirmSecret } = req.body;
+    if (!confirmSecret || confirmSecret !== process.env.ADMIN_SECRET) {
+      return res.status(403).json({ error: 'Forbidden' });
+    }
+    console.warn(`[${new Date().toISOString()}] Admin ${req.user ? req.user.email : 'Unknown'} triggered deleteAllUsers`);
+
     await User.deleteMany({});
     res.json({ message: 'All users deleted.' });
   } catch (err) {
@@ -284,6 +298,10 @@ const changePassword = async (req, res) => {
       return res.status(400).json({ error: 'Current and new passwords are required.' });
     }
 
+    if (currentPassword === newPassword) {
+      return res.status(400).json({ error: 'New password must be different.' });
+    }
+
     if (newPassword.length < 8) {
       return res.status(400).json({ error: 'New password must be at least 8 characters.' });
     }
@@ -300,9 +318,10 @@ const changePassword = async (req, res) => {
     }
 
     user.password = await bcrypt.hash(newPassword, BCRYPT_ROUNDS);
+    user.refreshTokens = [];
     await user.save();
 
-    res.json({ message: 'Password updated successfully.' });
+    res.json({ message: 'Password updated successfully. All other sessions have been signed out.' });
   } catch (err) {
     console.error('Change Password Error:', err.message);
     res.status(500).json({ error: 'Server error while changing password.' });
