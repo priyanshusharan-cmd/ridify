@@ -330,6 +330,7 @@ exports.cancelRide = async (req, res) => {
           ride.declined.push(requester);
         }
         req.emitToUser(requester, 'ride_cancelled', { rideId: req.params.id, ride: decodeRiderDetailsForSocket(ride.toJSON()) });
+        req.removeUserFromRide(requester, req.params.id);
       }
       ride.requests = [];
     }
@@ -515,6 +516,7 @@ exports.acceptRider = async (req, res) => {
       ride.requests = ride.requests.filter(r => r !== rName);
       ride.declined.push(rName);
       req.emitToUser(rName, 'ride_cancelled', { rideId: ride._id.toString(), ride: decodeRiderDetailsForSocket(ride.toJSON()) });
+      req.removeUserFromRide(rName, ride._id.toString());
     }
 
     // Check if the ride is completely full across ALL segments.
@@ -687,8 +689,10 @@ exports.declineRider = async (req, res) => {
     await ride.save();
     const rideId = ride._id.toString();
     const ridePayload = decodeRiderDetailsForSocket(ride.toJSON());
-    req.io.to(rideId).emit('ride_accepted', { rideId, ride: ridePayload });
+    // Fix: Emit 'ride_cancelled' to the declined requester. Note: we do NOT emit 'ride_accepted' 
+    // to the room to avoid false UI updates for others.
     req.emitToUser(passengerEmail, 'ride_cancelled', { rideId, ride: ridePayload });
+    req.removeUserFromRide(passengerEmail, rideId);
     res.status(200).json(ride);
   } catch (err) { res.status(500).json({ error: err.message }); }
 };
@@ -744,6 +748,7 @@ exports.kickPassenger = async (req, res) => {
     req.io.to(rideId).emit('passenger_kicked', payload);
     // Also target the kicked user directly (they may have left the room)
     req.emitToUser(passengerEmail, 'passenger_kicked', payload);
+    req.removeUserFromRide(passengerEmail, rideId);
     res.status(200).json(ride);
   } catch (err) { res.status(500).json({ error: err.message }); }
 };
@@ -949,6 +954,7 @@ exports.dropOffPassenger = async (req, res) => {
       ride: decodeRiderDetailsForSocket(updateResult.toJSON())
     };
     req.io.to(rideId).emit('passenger_dropped', payload);
+    req.removeUserFromRide(passengerEmail, rideId);
     res.status(200).json(updateResult);
   } catch (err) { res.status(500).json({ error: err.message }); }
 };
@@ -1047,6 +1053,7 @@ exports.startRide = async (req, res) => {
     if (ride.requests && ride.requests.length > 0) {
       for (const requester of ride.requests) {
         req.emitToUser(requester, 'ride_cancelled', { rideId: updateResult._id.toString(), ride: updateResult.toJSON() });
+        req.removeUserFromRide(requester, updateResult._id.toString());
       }
     }
 

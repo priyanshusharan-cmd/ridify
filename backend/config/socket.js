@@ -36,11 +36,21 @@ function initSocket(server, app) {
     }
   }
 
+  /**
+   * Remove all of a user's connected sockets from a ride room.
+   */
+  function removeUserFromRide(userEmail, rideId) {
+    if (userEmail && rideId) {
+      io.in(userEmail.toLowerCase()).socketsLeave(rideId.toString());
+    }
+  }
+
   // Attach io + helpers to req so routes can use them
   app.use((req, res, next) => {
     req.io = io;
     req.emitToUser = emitToUser;
     req.joinUserToRide = joinUserToRide;
+    req.removeUserFromRide = removeUserFromRide;
     next();
   });
 
@@ -155,7 +165,7 @@ function initSocket(server, app) {
     });
   });
 
-  return { io, emitToUser, joinUserToRide };
+  return { io, emitToUser, joinUserToRide, removeUserFromRide };
 }
 
 module.exports = initSocket;
