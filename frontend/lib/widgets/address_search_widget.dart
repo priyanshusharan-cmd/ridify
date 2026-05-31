@@ -30,6 +30,26 @@ class _AddressSearchWidgetState extends State<AddressSearchWidget> {
   bool _isLoading = false;
   OverlayEntry? _overlayEntry;
   final LayerLink _layerLink = LayerLink();
+  final FocusNode _focusNode = FocusNode();
+
+  @override
+  void initState() {
+    super.initState();
+    _focusNode.addListener(() {
+      if (_focusNode.hasFocus) {
+        if (_suggestions.isNotEmpty) {
+          _showOverlay();
+        }
+      } else {
+        // Small delay to allow tap on overlay items to register before removing
+        Future.delayed(const Duration(milliseconds: 150), () {
+          if (mounted && !_focusNode.hasFocus) {
+            _removeOverlay();
+          }
+        });
+      }
+    });
+  }
 
   Future<void> _searchAddress(String query) async {
     if (query.isEmpty) {
@@ -50,7 +70,7 @@ class _AddressSearchWidgetState extends State<AddressSearchWidget> {
       setState(() {
         _suggestions = suggestions;
       });
-      if (_suggestions.isNotEmpty) {
+      if (_suggestions.isNotEmpty && _focusNode.hasFocus) {
         _showOverlay();
       } else {
         _removeOverlay();
@@ -148,6 +168,7 @@ class _AddressSearchWidgetState extends State<AddressSearchWidget> {
   void dispose() {
     _debounce?.cancel();
     _debounce = null;
+    _focusNode.dispose();
     _removeOverlay();
     super.dispose();
   }
@@ -158,6 +179,8 @@ class _AddressSearchWidgetState extends State<AddressSearchWidget> {
       link: _layerLink,
       child: TextField(
         controller: widget.controller,
+        focusNode: _focusNode,
+        onTapOutside: (event) => _focusNode.unfocus(),
         onChanged: _onChanged,
         textAlignVertical: TextAlignVertical.center,
         style: TextStyle(color: Theme.of(context).textTheme.bodyLarge?.color),
