@@ -243,14 +243,19 @@ const deleteUser = async (req, res) => {
 // ── Delete All Users (admin only) ───────────────────────────────────────────
 const deleteAllUsers = async (req, res) => {
   try {
-    const { confirmSecret } = req.body;
-    if (!confirmSecret || confirmSecret !== process.env.ADMIN_SECRET) {
-      return res.status(403).json({ error: 'Forbidden' });
-    }
-    logger.warn(`[${new Date().toISOString()}] Admin ${req.user ? req.user.email : 'Unknown'} triggered deleteAllUsers`);
+    const adminEmail = req.user ? req.user.email : null;
+    if (!adminEmail) return res.status(401).json({ error: 'Unauthorized.' });
 
-    await User.deleteMany({});
-    res.json({ message: 'All users deleted.' });
+    logger.warn(`[${new Date().toISOString()}] Admin ${adminEmail} triggered deleteAllUsers`);
+
+    // Delete all users EXCEPT the admin who is triggering the wipe
+    await User.deleteMany({ email: { $ne: adminEmail } });
+
+    if (req.io) {
+      req.io.emit('database_wiped', { success: true });
+    }
+
+    res.json({ message: 'All other users deleted.' });
   } catch (err) {
     res.status(500).json({ error: 'Server error.' });
   }

@@ -318,7 +318,7 @@ const wipeAllRides = async (req, res) => {
     logger.info(`[WipeAllRides] Admin ${adminEmail} wiped all rides.`);
 
     if (req.io) {
-      req.io.emit('all_rides_wiped');
+      req.io.emit('all_rides_wiped', { success: true });
     }
 
     res.json({ message: 'All rides have been permanently deleted.' });
