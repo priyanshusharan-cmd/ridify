@@ -316,10 +316,20 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
 
     _onSocket('database_wiped', (data) {
       if (mounted) {
-        final excludedEmail = data?['excludedEmail']?.toString().toLowerCase().trim();
+        String? excludedEmail;
+        if (data is Map) {
+          excludedEmail = data['excludedEmail']?.toString().toLowerCase().trim();
+        } else if (data is List && data.isNotEmpty && data.first is Map) {
+          excludedEmail = data.first['excludedEmail']?.toString().toLowerCase().trim();
+        }
+        
         final myEmailLower = widget.userEmail.toLowerCase().trim();
         
-        if (myEmailLower != excludedEmail) {
+        if (excludedEmail != null && myEmailLower == excludedEmail) {
+          // If we are the admin, just clear rides and go to home
+          setState(() => allRides = []);
+          Navigator.popUntil(context, (route) => route.isFirst);
+        } else {
           TokenService.clearTokens().then((_) {
             if (navigatorKey.currentState != null) {
               navigatorKey.currentState!.pushAndRemoveUntil(
@@ -328,10 +338,6 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
               );
             }
           });
-        } else {
-          // If we are the admin, just clear rides and go to home
-          setState(() => allRides = []);
-          Navigator.popUntil(context, (route) => route.isFirst);
         }
       }
     });

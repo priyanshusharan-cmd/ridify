@@ -67,7 +67,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
   Future<void> _deleteAccount() async {
     try {
       await AuthService.deleteAccount(email);
-      await AuthService.logout();
       
       final prefs = await SharedPreferences.getInstance();
       await prefs.clear();

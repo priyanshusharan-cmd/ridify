@@ -36,6 +36,10 @@ const requestSignupOtp = async (req, res) => {
 
     const otp = generateOtp();
     
+    // Attempt to send the email FIRST
+    await sendOtpEmail(email, otp);
+
+    // Only update DB if email succeeds
     if (existingOtp) {
       existingOtp.otp = otp;
       existingOtp.lastOtpSentAt = new Date();
@@ -43,8 +47,6 @@ const requestSignupOtp = async (req, res) => {
     } else {
       await OtpVerification.create({ email, otp });
     }
-
-    await sendOtpEmail(email, otp);
 
     res.json({ message: 'Signup OTP sent to your email.' });
   } catch (err) {
@@ -206,12 +208,13 @@ const requestLoginOtp = async (req, res) => {
     const otp = generateOtp();
     const otpExpiry = new Date(Date.now() + 10 * 60 * 1000); // 10 minutes
 
+    // Attempt to send the email FIRST
+    await sendOtpEmail(user.email, otp);
+
     user.otp = otp;
     user.otpExpiry = otpExpiry;
     user.lastOtpSentAt = new Date();
     await user.save();
-
-    await sendOtpEmail(user.email, otp);
 
     res.json(GENERIC_RESPONSE);
   } catch (err) {
