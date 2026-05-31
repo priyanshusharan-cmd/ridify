@@ -292,56 +292,59 @@ class _ProfileScreenState extends State<ProfileScreen> {
       body: SafeArea(
         child: Column(
           children: [
+            // ── FIXED HEADER — does NOT scroll ──────────────────────
+            Padding(
+              padding: const EdgeInsets.only(left: 24, right: 24, top: 24, bottom: 8),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text(
+                    "My Profile",
+                    style: TextStyle(
+                      fontSize: 28,
+                      fontWeight: FontWeight.bold,
+                      color: Theme.of(context).textTheme.bodyLarge?.color,
+                    ),
+                  ),
+                  PopupMenuButton<ThemeMode>(
+                    icon: Icon(
+                      Icons.dark_mode_outlined,
+                      color: Theme.of(context).iconTheme.color,
+                    ),
+                    onSelected: (ThemeMode mode) {
+                      Provider.of<ThemeProvider>(context, listen: false)
+                          .setThemeMode(mode);
+                    },
+                    itemBuilder: (BuildContext context) => <PopupMenuEntry<ThemeMode>>[
+                      const PopupMenuItem<ThemeMode>(
+                        value: ThemeMode.light,
+                        child: Text('Light Mode'),
+                      ),
+                      const PopupMenuItem<ThemeMode>(
+                        value: ThemeMode.dark,
+                        child: Text('Dark Mode'),
+                      ),
+                      const PopupMenuItem<ThemeMode>(
+                        value: ThemeMode.system,
+                        child: Text('Use Device Settings'),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+            ),
+
+            // ── SCROLLABLE CONTENT ──────────────────────────────────
             Expanded(
               child: SingleChildScrollView(
                 padding: const EdgeInsets.only(
                   left: 24,
                   right: 24,
-                  top: 24,
-                  bottom: 100,
+                  top: 12,
+                  bottom: 24,
                 ),
                 child: Column(
                   children: [
-                    // ── HEADER ──────────────────────
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Text(
-                          "My Profile",
-                          style: TextStyle(
-                            fontSize: 28,
-                            fontWeight: FontWeight.bold,
-                            color: Theme.of(context).textTheme.bodyLarge?.color,
-                          ),
-                        ),
-                        PopupMenuButton<ThemeMode>(
-                          icon: Icon(
-                            Icons.dark_mode_outlined,
-                            color: Theme.of(context).iconTheme.color,
-                          ),
-                          onSelected: (ThemeMode mode) {
-                            Provider.of<ThemeProvider>(context, listen: false)
-                                .setThemeMode(mode);
-                          },
-                          itemBuilder: (BuildContext context) => <PopupMenuEntry<ThemeMode>>[
-                            const PopupMenuItem<ThemeMode>(
-                              value: ThemeMode.light,
-                              child: Text('Light Mode'),
-                            ),
-                            const PopupMenuItem<ThemeMode>(
-                              value: ThemeMode.dark,
-                              child: Text('Dark Mode'),
-                            ),
-                            const PopupMenuItem<ThemeMode>(
-                              value: ThemeMode.system,
-                              child: Text('Use Device Settings'),
-                            ),
-                          ],
-                        ),
-                      ],
-                    ),
-                    const SizedBox(height: 24),
-
                     CircleAvatar(
                       radius: 45,
                       backgroundColor: isDark ? Colors.white : Colors.black,
