@@ -274,6 +274,7 @@ class _FindRideScreenState extends State<FindRideScreen> {
                 pickupLocation: pickupController.text,
                 destination: destinationController.text,
                 onBack: () => setState(() => _searchResults = null),
+                onRefresh: startSearch,
               )
             : SingleChildScrollView(
                 key: const ValueKey('search_form'),

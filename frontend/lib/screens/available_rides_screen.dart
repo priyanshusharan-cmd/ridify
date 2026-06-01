@@ -16,6 +16,7 @@ class AvailableRidesScreen extends StatefulWidget {
   final String pickupLocation;
   final String destination;
   final VoidCallback? onBack;
+  final Future<void> Function()? onRefresh;
 
   const AvailableRidesScreen({
     super.key,
@@ -30,6 +31,7 @@ class AvailableRidesScreen extends StatefulWidget {
     required this.pickupLocation,
     required this.destination,
     this.onBack,
+    this.onRefresh,
   });
 
   @override
@@ -57,6 +59,17 @@ class _AvailableRidesScreenState extends State<AvailableRidesScreen> {
     allRides = List.from(widget.initialRides);
     _applyFiltersAndSort();
     _initSocketListeners();
+  }
+
+  @override
+  void didUpdateWidget(AvailableRidesScreen oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (widget.initialRides != oldWidget.initialRides) {
+      setState(() {
+        allRides = List.from(widget.initialRides);
+      });
+      _applyFiltersAndSort();
+    }
   }
 
   @override
@@ -448,27 +461,36 @@ class _AvailableRidesScreenState extends State<AvailableRidesScreen> {
 
           // List of Rides
           Expanded(
-            child: displayedRides.isEmpty
-                ? Center(
-                    child: Text(
-                      "No rides available for this filter.",
-                      style: TextStyle(color: subtitleColor, fontSize: 16),
+            child: RefreshIndicator(
+              onRefresh: widget.onRefresh ?? () async {},
+              child: displayedRides.isEmpty
+                  ? Stack(
+                      children: [
+                        ListView(), // required for RefreshIndicator to work when empty
+                        Center(
+                          child: Text(
+                            "No rides available for this filter.",
+                            style: TextStyle(color: subtitleColor, fontSize: 16),
+                          ),
+                        ),
+                      ],
+                    )
+                  : ListView.builder(
+                      physics: const AlwaysScrollableScrollPhysics(),
+                      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                      itemCount: displayedRides.length,
+                      itemBuilder: (context, index) {
+                        final ride = displayedRides[index];
+                        return AvailableRideCard(
+                          ride: ride,
+                          isSending: _sendingRideId == ride['_id'],
+                          onBook: () => sendRideRequest(ride, ride['riderName'] ?? "Driver"),
+                          fallbackPickup: widget.pickupLocation,
+                          fallbackDestination: widget.destination,
+                        );
+                      },
                     ),
-                  )
-                : ListView.builder(
-                    padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                    itemCount: displayedRides.length,
-                    itemBuilder: (context, index) {
-                      final ride = displayedRides[index];
-                      return AvailableRideCard(
-                        ride: ride,
-                        isSending: _sendingRideId == ride['_id'],
-                        onBook: () => sendRideRequest(ride, ride['riderName'] ?? "Driver"),
-                        fallbackPickup: widget.pickupLocation,
-                        fallbackDestination: widget.destination,
-                      );
-                    },
-                  ),
+            ),
           ),
         ],
       );

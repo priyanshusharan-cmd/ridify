@@ -421,7 +421,7 @@ class _LiveTrackingScreenState extends State<LiveTrackingScreen> {
       if (data == null) return;
       final map = SocketService.deepConvertMap(data);
       if (mounted && map['rideId'].toString() == widget.rideId && !_isNavigatingToCompletion) {
-        Navigator.pop(context);
+        Navigator.popUntil(context, (route) => route.isFirst);
         ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("Ride cancelled"), backgroundColor: Colors.red));
       }
     });

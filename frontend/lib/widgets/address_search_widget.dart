@@ -180,7 +180,6 @@ class _AddressSearchWidgetState extends State<AddressSearchWidget> {
       child: TextField(
         controller: widget.controller,
         focusNode: _focusNode,
-        onTapOutside: (event) => _focusNode.unfocus(),
         onChanged: _onChanged,
         textAlignVertical: TextAlignVertical.center,
         style: TextStyle(color: Theme.of(context).textTheme.bodyLarge?.color),
