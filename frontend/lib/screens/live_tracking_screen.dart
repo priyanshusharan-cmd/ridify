@@ -440,7 +440,10 @@ class _LiveTrackingScreenState extends State<LiveTrackingScreen> {
       if (!mounted) {
         return;
       }
-      Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (context) => DriverCompletingScreen(rideId: widget.rideId, initialRideData: rideData)));
+      Navigator.of(context).pushAndRemoveUntil(
+        MaterialPageRoute(builder: (context) => DriverCompletingScreen(rideId: widget.rideId, initialRideData: rideData)),
+        (route) => route.isFirst
+      );
     });
   }
 
@@ -452,7 +455,10 @@ class _LiveTrackingScreenState extends State<LiveTrackingScreen> {
     _isNavigatingToCompletion = true;
     Future.delayed(const Duration(milliseconds: 100), () {
       if (!mounted) return;
-      Navigator.of(context).push(MaterialPageRoute(builder: (_) => RiderCompletingScreen(isDriver: false, rideId: widget.rideId, myName: widget.myName, myEmail: widget.myEmail, fareAmount: fareAmount, initialRideData: rideData)));
+      Navigator.of(context).pushAndRemoveUntil(
+        MaterialPageRoute(builder: (_) => RiderCompletingScreen(isDriver: false, rideId: widget.rideId, myName: widget.myName, myEmail: widget.myEmail, fareAmount: fareAmount, initialRideData: rideData)),
+        (route) => route.isFirst
+      );
     });
   }
 

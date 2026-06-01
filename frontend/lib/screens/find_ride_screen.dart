@@ -189,7 +189,7 @@ class _FindRideScreenState extends State<FindRideScreen> {
       );
 
       if (mounted) {
-        if (validRides.isEmpty) {
+        if (validRides.isEmpty && _searchResults == null) {
           ScaffoldMessenger.of(context).showSnackBar(
             const SnackBar(
               content: Text("No rides found matching your route and criteria."),
