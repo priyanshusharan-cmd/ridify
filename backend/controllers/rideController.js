@@ -117,8 +117,6 @@ exports.searchRides = async (req, res) => {
           // Skip rides where the searching user is the driver, or has been declined, kicked, or is already a passenger/requester
           if (userEmail) {
             if (ride.riderEmail === userEmail) continue;
-            if ((ride.declined || []).includes(userEmail)) continue;
-            if ((ride.kicked || []).includes(userEmail)) continue;
             if ((ride.passengers || []).includes(userEmail)) continue;
             if ((ride.requests || []).includes(userEmail)) continue;
           }
@@ -408,12 +406,6 @@ exports.requestRide = async (req, res) => {
       // Prevent duplicate requests (arrays now store emails)
       if (ride.requests.includes(riderEmail) || ride.passengers.includes(riderEmail)) {
         return res.status(400).json({ error: "You have already requested or joined this ride." });
-      }
-      if (ride.declined.includes(riderEmail)) {
-        return res.status(400).json({ error: "You were already declined for this ride." });
-      }
-      if (ride.kicked.includes(riderEmail)) {
-        return res.status(400).json({ error: "You were removed from this ride." });
       }
       if (['started', 'completed', 'cancelled'].includes(ride.status)) {
         return res.status(400).json({ error: `This ride is already ${ride.status}.` });

@@ -8,7 +8,7 @@ function initSocket(server, app) {
   if (process.env.NODE_ENV === 'production' && !allowedOrigin) { throw new Error('FATAL: ALLOWED_ORIGIN must be set in production'); }
 
   const io = new Server(server, {
-    cors: { origin: allowedOrigin || 'http://localhost:3000' },
+    cors: { origin: allowedOrigin ? allowedOrigin : '*' },
     pingInterval: parseInt(process.env.SOCKET_PING_INTERVAL) || 10000,
     pingTimeout: parseInt(process.env.SOCKET_PING_TIMEOUT) || 5000,
   });
