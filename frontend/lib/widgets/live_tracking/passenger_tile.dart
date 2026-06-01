@@ -10,6 +10,7 @@ class PassengerTile extends StatelessWidget {
   final bool isStarted;
   final bool canFit;
   final bool isProcessing;
+  final bool isAnyProcessing;
   final String routePreference;
   final bool isDark;
   final VoidCallback onDropOff;
@@ -27,6 +28,7 @@ class PassengerTile extends StatelessWidget {
     required this.isStarted,
     required this.canFit,
     required this.isProcessing,
+    required this.isAnyProcessing,
     required this.routePreference,
     required this.isDark,
     required this.onDropOff,
@@ -89,12 +91,12 @@ class PassengerTile extends StatelessWidget {
           if (routePreference != 'nonstop') ...[
             TextButton(
               style: TextButton.styleFrom(
-                backgroundColor: isProcessing ? Colors.grey.shade100 : Colors.red.shade50,
-                foregroundColor: isProcessing ? Colors.grey.shade400 : Colors.red.shade700,
+                backgroundColor: isAnyProcessing ? Colors.grey.shade100 : Colors.red.shade50,
+                foregroundColor: isAnyProcessing ? Colors.grey.shade400 : Colors.red.shade700,
                 padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
                 shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
               ),
-              onPressed: isProcessing ? null : onDropOff,
+              onPressed: isAnyProcessing ? null : onDropOff,
               child: Stack(
                 alignment: Alignment.center,
                 children: [
@@ -118,12 +120,12 @@ class PassengerTile extends StatelessWidget {
           if (!isArrived && routePreference != 'nonstop' && routePreference != 'shared_start') ...[
             TextButton(
               style: TextButton.styleFrom(
-                backgroundColor: (canFit && isStarted && !isProcessing) ? Colors.green.shade50 : Colors.grey.shade100,
-                foregroundColor: (canFit && isStarted && !isProcessing) ? Colors.green.shade700 : Colors.grey.shade600,
+                backgroundColor: (canFit && isStarted && !isAnyProcessing) ? Colors.green.shade50 : Colors.grey.shade100,
+                foregroundColor: (canFit && isStarted && !isAnyProcessing) ? Colors.green.shade700 : Colors.grey.shade600,
                 padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
                 shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
               ),
-              onPressed: isProcessing ? null : () {
+              onPressed: isAnyProcessing ? null : () {
                 if (!isStarted) {
                   ScaffoldMessenger.of(context).clearSnackBars();
                   ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("First start the ride"), backgroundColor: Colors.orange));

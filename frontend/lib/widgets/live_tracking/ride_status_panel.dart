@@ -20,7 +20,7 @@ class RideStatusPanel extends StatelessWidget {
   final String myName;
   final String myEmail;
   final String rideId;
-  final bool isProcessing;
+  final String? processingActionId;
   final VoidCallback onBoardRide;
   final VoidCallback onStartRide;
   final VoidCallback onEndRide;
@@ -46,7 +46,7 @@ class RideStatusPanel extends StatelessWidget {
     required this.myName,
     required this.myEmail,
     required this.rideId,
-    required this.isProcessing,
+    required this.processingActionId,
     required this.onBoardRide,
     required this.onStartRide,
     required this.onEndRide,
@@ -154,13 +154,13 @@ class RideStatusPanel extends StatelessWidget {
                   if (!isDriver && isAccepted && !iHaveBoarded && !iAmDropped)
                     ElevatedButton(
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: (!iAmArrived || isProcessing) ? Colors.grey.shade300 : (isDark ? const Color(0xFF1B4332) : Colors.green.shade600),
-                        foregroundColor: (!iAmArrived || isProcessing) ? Colors.grey.shade600 : Colors.white,
+                        backgroundColor: (!iAmArrived || processingActionId != null) ? Colors.grey.shade300 : (isDark ? const Color(0xFF1B4332) : Colors.green.shade600),
+                        foregroundColor: (!iAmArrived || processingActionId != null) ? Colors.grey.shade600 : Colors.white,
                         elevation: 0,
                         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
                         padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
                       ),
-                      onPressed: isProcessing ? null : () {
+                      onPressed: processingActionId != null ? null : () {
                         if (!iAmArrived) {
                           ScaffoldMessenger.of(context).clearSnackBars();
                           ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("Wait for the driver to arrive"), backgroundColor: Colors.orange));
@@ -172,10 +172,10 @@ class RideStatusPanel extends StatelessWidget {
                         alignment: Alignment.center,
                         children: [
                           Opacity(
-                            opacity: isProcessing ? 0 : 1,
+                            opacity: processingActionId == 'board' ? 0 : 1,
                             child: const Text("Board", style: TextStyle(fontWeight: FontWeight.bold, fontSize: 15)),
                           ),
-                          if (isProcessing)
+                          if (processingActionId == 'board')
                             const SizedBox(width: 18, height: 18, child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white)),
                         ],
                       ),
@@ -185,21 +185,21 @@ class RideStatusPanel extends StatelessWidget {
                     if (!isStarted)
                       ElevatedButton(
                         style: ElevatedButton.styleFrom(
-                          backgroundColor: isProcessing ? Colors.grey.shade300 : (isDark ? const Color(0xFF1A3A5C) : Colors.blue.shade600),
-                          foregroundColor: isProcessing ? Colors.grey.shade600 : Colors.white,
+                          backgroundColor: processingActionId != null ? Colors.grey.shade300 : (isDark ? const Color(0xFF1A3A5C) : Colors.blue.shade600),
+                          foregroundColor: processingActionId != null ? Colors.grey.shade600 : Colors.white,
                           elevation: 0,
                           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
                           padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 14),
                         ),
-                        onPressed: isProcessing ? null : onStartRide,
+                        onPressed: processingActionId != null ? null : onStartRide,
                         child: Stack(
                           alignment: Alignment.center,
                           children: [
                             Opacity(
-                              opacity: isProcessing ? 0 : 1,
+                              opacity: processingActionId == 'start' ? 0 : 1,
                               child: const Text("Start", style: TextStyle(fontWeight: FontWeight.bold, fontSize: 15)),
                             ),
-                            if (isProcessing)
+                            if (processingActionId == 'start')
                               const SizedBox(width: 18, height: 18, child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white)),
                           ],
                         ),
@@ -207,13 +207,13 @@ class RideStatusPanel extends StatelessWidget {
                     else
                       ElevatedButton(
                         style: ElevatedButton.styleFrom(
-                          backgroundColor: (canEnd && !isProcessing) ? (isDark ? const Color(0xFF5C1A1A) : Colors.red.shade600) : Colors.grey.shade300,
-                          foregroundColor: (canEnd && !isProcessing) ? Colors.white : Colors.grey.shade600,
+                          backgroundColor: (canEnd && processingActionId == null) ? (isDark ? const Color(0xFF5C1A1A) : Colors.red.shade600) : Colors.grey.shade300,
+                          foregroundColor: (canEnd && processingActionId == null) ? Colors.white : Colors.grey.shade600,
                           elevation: 0,
                           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
                           padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 14),
                         ),
-                        onPressed: isProcessing ? null : () {
+                        onPressed: processingActionId != null ? null : () {
                           if (!canEnd) {
                             ScaffoldMessenger.of(context).clearSnackBars();
                             ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("There are passengers still in the car"), backgroundColor: Colors.red));
@@ -225,10 +225,10 @@ class RideStatusPanel extends StatelessWidget {
                           alignment: Alignment.center,
                           children: [
                             Opacity(
-                              opacity: isProcessing ? 0 : 1,
+                              opacity: processingActionId == 'end' ? 0 : 1,
                               child: const Text("End", style: TextStyle(fontWeight: FontWeight.bold, fontSize: 15)),
                             ),
-                            if (isProcessing)
+                            if (processingActionId == 'end')
                               const SizedBox(width: 18, height: 18, child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white)),
                           ],
                         ),
@@ -277,7 +277,8 @@ class RideStatusPanel extends StatelessWidget {
                       isArrived: isArrived,
                       isStarted: isStarted,
                       canFit: canFit,
-                      isProcessing: isProcessing,
+                      isProcessing: processingActionId == p,
+                      isAnyProcessing: processingActionId != null,
                       routePreference: rideData?['routePreference'] ?? 'flexible',
                       isDark: isDark,
                       onDropOff: () => onDropOffPassenger(p),

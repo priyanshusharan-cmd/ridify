@@ -44,11 +44,11 @@ class _LiveTrackingScreenState extends State<LiveTrackingScreen> {
   final MapController mapController = MapController();
   StreamSubscription<Position>? positionStreamSubscription;
   bool _isNavigatingToCompletion = false;
+  String? _processingActionId;
   final List<MapEntry<String, void Function(dynamic)>> _socketListeners = [];
   
   bool _locationTimedOut = false;
   Timer? _locationTimeoutTimer;
-  bool _processingAction = false;
 
   @override
   void initState() {
@@ -465,8 +465,8 @@ class _LiveTrackingScreenState extends State<LiveTrackingScreen> {
   }
 
   Future<void> driverArriveForPassenger(String name) async {
-    if (_processingAction) return;
-    _processingAction = true;
+    if (_processingActionId != null) return;
+    _processingActionId = name;
     // Optimistic UI update
     setState(() {
       if (rideData != null) {
@@ -478,12 +478,12 @@ class _LiveTrackingScreenState extends State<LiveTrackingScreen> {
     try {
       await RideService.markDriverArrived(widget.rideId, name);
     } catch (e) { debugPrint(e.toString()); syncRideStatus(); } finally {
-      if (mounted) setState(() => _processingAction = false);
+      if (mounted) setState(() => _processingActionId = null);
     }
   }
   Future<void> boardRide() async {
-    if (widget.rideId.isEmpty || _processingAction) return;
-    setState(() => _processingAction = true);
+    if (widget.rideId.isEmpty || _processingActionId != null) return;
+    setState(() => _processingActionId = 'board');
 
     try {
       await RideService.boardPassenger(widget.rideId, myEmailLower);
@@ -499,7 +499,7 @@ class _LiveTrackingScreenState extends State<LiveTrackingScreen> {
       }
       syncRideStatus();
     } finally {
-      if (mounted) setState(() => _processingAction = false);
+      if (mounted) setState(() => _processingActionId = null);
     }
   }
 
@@ -529,8 +529,8 @@ class _LiveTrackingScreenState extends State<LiveTrackingScreen> {
   }
 
   Future<void> kickPassenger(String name) async {
-    if (_processingAction) return;
-    _processingAction = true;
+    if (_processingActionId != null) return;
+    _processingActionId = name;
     // Optimistic UI update
     setState(() {
       if (rideData != null) {
@@ -542,12 +542,12 @@ class _LiveTrackingScreenState extends State<LiveTrackingScreen> {
     try { 
       await RideService.kickPassenger(widget.rideId, name);
     } catch (e) { debugPrint(e.toString()); syncRideStatus(); } finally {
-      if (mounted) setState(() => _processingAction = false);
+      if (mounted) setState(() => _processingActionId = null);
     }
   }
   Future<void> _executeDropOff(String name) async {
-    if (_processingAction) return;
-    _processingAction = true;
+    if (_processingActionId != null) return;
+    _processingActionId = name;
     // Optimistic UI update
     setState(() {
       if (rideData != null) {
@@ -559,7 +559,7 @@ class _LiveTrackingScreenState extends State<LiveTrackingScreen> {
       }
     });
     try { await RideService.dropOffPassenger(widget.rideId, name); } catch (e) { debugPrint(e.toString()); syncRideStatus(); } finally {
-      if (mounted) setState(() => _processingAction = false);
+      if (mounted) setState(() => _processingActionId = null);
     }
   }
 
@@ -620,7 +620,7 @@ class _LiveTrackingScreenState extends State<LiveTrackingScreen> {
       if (confirm != true) return;
     }
 
-    setState(() => _processingAction = true);
+    setState(() => _processingActionId = 'end');
     
     try {
       final updatedRide = await RideService.endRide(widget.rideId);
@@ -633,19 +633,19 @@ class _LiveTrackingScreenState extends State<LiveTrackingScreen> {
     } catch (e) {
       syncRideStatus();
     } finally {
-      if (mounted) setState(() => _processingAction = false);
+      if (mounted) setState(() => _processingActionId = null);
     }
   }
   Future<void> startRide() async { 
-    if (widget.rideId.isEmpty || _processingAction) return;
-    _processingAction = true;
+    if (widget.rideId.isEmpty || _processingActionId != null) return;
+    _processingActionId = 'start';
     // Optimistic UI update
     setState(() {
       isStarted = true;
       if (rideData != null) rideData!['status'] = 'started';
     });
     try { await RideService.startRide(widget.rideId); } catch (e) { debugPrint(e.toString()); syncRideStatus(); } finally {
-      if (mounted) setState(() => _processingAction = false);
+      if (mounted) setState(() => _processingActionId = null);
     }
   }
 
@@ -896,7 +896,7 @@ class _LiveTrackingScreenState extends State<LiveTrackingScreen> {
           myName: widget.myName,
           myEmail: widget.myEmail,
           rideId: widget.rideId,
-          isProcessing: _processingAction,
+          processingActionId: _processingActionId,
           onBoardRide: boardRide,
           onStartRide: startRide,
           onEndRide: endRide,
