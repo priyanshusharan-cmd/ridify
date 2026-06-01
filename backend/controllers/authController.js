@@ -70,10 +70,10 @@ const register = async (req, res) => {
     age = age ? String(age).trim() : undefined;
 
     // Field length limits
-    if (name.length > MAX_FIELD_LENGTH || email.length > MAX_FIELD_LENGTH || password.length > 200) {
-      return res.status(400).json({ error: 'One or more fields exceed maximum length.' });
+    if (name.length > MAX_FIELD_LENGTH || email.length > MAX_FIELD_LENGTH || password.length > 200 || password.length < 8) {
+      return res.status(400).json({ error: 'One or more fields exceed maximum length or password is too short (min 8).' });
     }
-    if (age && age.length > 3) {
+    if (age && (age.length > 3 || isNaN(Number(age)) || Number(age) < 1)) {
       return res.status(400).json({ error: 'Invalid age.' });
     }
 

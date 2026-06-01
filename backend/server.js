@@ -179,6 +179,10 @@ for (const name in networkInterfaces) {
   }
   if (localIp !== 'localhost') break;
 }
-server.listen(PORT, '0.0.0.0', () =>
-  logger.info(`🚀 Server running on http://${localIp}:${PORT}`)
-);
+if (require.main === module) {
+  server.listen(PORT, '0.0.0.0', () =>
+    logger.info(`🚀 Server running on http://${localIp}:${PORT}`)
+  );
+}
+
+module.exports = { app, server };

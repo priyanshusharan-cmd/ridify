@@ -218,7 +218,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
     socketService.registerUser(widget.userEmail, accessToken); // Pass token
 
     // Helper to safely extract and deep-convert ride data from socket payloads
-    Map<String, dynamic>? _rideFromEvent(dynamic data) {
+    Map<String, dynamic>? rideFromEvent(dynamic data) {
       if (data == null) return null;
       final map = SocketService.deepConvertMap(data);
       if (map['ride'] != null) return SocketService.deepConvertMap(map['ride']);
@@ -231,31 +231,31 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
     });
 
     _onSocket('new_ride_request', (data) {
-      final ride = _rideFromEvent(data);
+      final ride = rideFromEvent(data);
       if (ride != null) _upsertRide(ride);
     });
     _onSocket('all_rides_wiped', (_) {
       if (mounted) setState(() => allRides = []);
     });
     _onSocket('ride_accepted', (data) {
-      final ride = _rideFromEvent(data);
+      final ride = rideFromEvent(data);
       if (ride != null) _upsertRide(ride);
     });
     _onSocket('ride_cancelled', (data) {
-      final ride = _rideFromEvent(data);
+      final ride = rideFromEvent(data);
       if (ride != null) _upsertRide(ride);
     });
     // ride_updated: fired when ride state changes (e.g., after decline) — keeps driver's UI in sync
     _onSocket('ride_updated', (data) {
-      final ride = _rideFromEvent(data);
+      final ride = rideFromEvent(data);
       if (ride != null) _upsertRide(ride);
     });
     _onSocket('driver_arrived', (data) {
-      final ride = _rideFromEvent(data);
+      final ride = rideFromEvent(data);
       if (ride != null) _upsertRide(ride);
     });
     _onSocket('passenger_boarded', (data) {
-      final ride = _rideFromEvent(data);
+      final ride = rideFromEvent(data);
       if (ride != null) _upsertRide(ride);
     });
     _onSocket('passenger_dropped', (data) {
@@ -310,11 +310,11 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
       }
     });
     _onSocket('passenger_paid', (data) {
-      final ride = _rideFromEvent(data);
+      final ride = rideFromEvent(data);
       if (ride != null) _upsertRide(ride);
     });
     _onSocket('ride_started', (data) {
-      final ride = _rideFromEvent(data);
+      final ride = rideFromEvent(data);
       if (ride != null) _upsertRide(ride);
     });
 

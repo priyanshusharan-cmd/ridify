@@ -251,7 +251,7 @@ exports.createRide = async (req, res) => {
       return res.status(400).json({ error: "Invalid coordinates." });
     }
 
-    if (data.totalSeats != null && (!Number.isInteger(Number(data.totalSeats)) || data.totalSeats < 1 || data.totalSeats > 8)) {
+    if (!Number.isInteger(Number(data.totalSeats)) || data.totalSeats < 1 || data.totalSeats > 8) {
       return res.status(400).json({ error: "Total seats must be an integer between 1 and 8." });
     }
     
@@ -878,6 +878,9 @@ exports.boardPassenger = async (req, res) => {
     if (ride.kicked.includes(passengerEmail) || ride.declined.includes(passengerEmail)) {
       return res.status(400).json({ error: "User is kicked or declined from this ride." });
     }
+    if (!ride.passengers.includes(passengerEmail)) {
+      return res.status(400).json({ error: "Passenger must be accepted before boarding." });
+    }
     if (ride.boardedPassengers.includes(passengerEmail)) {
       return res.status(400).json({ error: "Passenger is already boarded." });
     }
@@ -1014,6 +1017,9 @@ exports.passengerPays = async (req, res) => {
     const detail = getRiderDetail(ride, passengerEmail);
     if (!detail) {
       return res.status(400).json({ error: "Rider details not found for this passenger." });
+    }
+    if (!ride.passengers.includes(passengerEmail) && !ride.boardedPassengers.includes(passengerEmail) && !(ride.droppedPassengers && ride.droppedPassengers.includes(passengerEmail))) {
+      return res.status(400).json({ error: "Only accepted passengers can make payments." });
     }
     if (detail.paid) {
       return res.status(400).json({ error: "Passenger has already paid." });
@@ -1222,7 +1228,8 @@ exports.sendChatMessage = async (req, res) => {
     const isDriver = ride.riderEmail === normalizedEmail;
     const isPassenger = (ride.passengers || []).includes(normalizedEmail);
     const isBoarded = (ride.boardedPassengers || []).includes(normalizedEmail);
-    if (!isDriver && !isPassenger && !isBoarded) {
+    const isDropped = (ride.droppedPassengers || []).includes(normalizedEmail);
+    if (!isDriver && !isPassenger && !isBoarded && !isDropped) {
       return res.status(403).json({ error: 'Only ride participants can send messages.' });
     }
     ride.chatMessages.push({ sender: sender.trim(), senderEmail: normalizedEmail, text: trimmedText, timestamp, replyTo });
