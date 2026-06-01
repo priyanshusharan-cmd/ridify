@@ -499,6 +499,7 @@ class _AvailableRidesScreenState extends State<AvailableRidesScreen> {
                         );
                       },
                     ),
+              ),
             ),
           ),
         ],
