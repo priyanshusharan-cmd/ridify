@@ -4,6 +4,7 @@ class RequestDetailCard extends StatelessWidget {
   final Map<String, dynamic> ride;
   final String requester;
   final bool isProcessing;
+  final bool isDeclineProcessing;
   final VoidCallback onAccept;
   final VoidCallback onDecline;
 
@@ -12,6 +13,7 @@ class RequestDetailCard extends StatelessWidget {
     required this.ride,
     required this.requester,
     required this.isProcessing,
+    required this.isDeclineProcessing,
     required this.onAccept,
     required this.onDecline,
   });
@@ -149,8 +151,10 @@ class RequestDetailCard extends StatelessWidget {
                     padding: const EdgeInsets.symmetric(vertical: 14),
                     shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
                   ),
-                  onPressed: isProcessing ? null : onDecline,
-                  child: const Text("Decline", style: TextStyle(color: Colors.redAccent, fontWeight: FontWeight.bold, fontSize: 16)),
+                  onPressed: (isProcessing || isDeclineProcessing) ? null : onDecline,
+                  child: isDeclineProcessing
+                      ? const SizedBox(width: 20, height: 20, child: CircularProgressIndicator(strokeWidth: 2, color: Colors.redAccent))
+                      : const Text("Decline", style: TextStyle(color: Colors.redAccent, fontWeight: FontWeight.bold, fontSize: 16)),
                 ),
               ),
               const SizedBox(width: 12),
@@ -161,7 +165,7 @@ class RequestDetailCard extends StatelessWidget {
                     padding: const EdgeInsets.symmetric(vertical: 14),
                     shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
                   ),
-                  onPressed: isProcessing ? null : onAccept,
+                  onPressed: (isProcessing || isDeclineProcessing) ? null : onAccept,
                   child: isProcessing
                       ? const SizedBox(width: 20, height: 20, child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white))
                       : Text(

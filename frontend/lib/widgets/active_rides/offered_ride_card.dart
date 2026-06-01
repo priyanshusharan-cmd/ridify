@@ -69,6 +69,7 @@ class OfferedRideCard extends StatelessWidget {
   final Map<String, dynamic> ride;
   final bool isDetail;
   final bool isOngoing;
+  final bool isCancelProcessing;
   final String? userEmail;
   final VoidCallback? onTap;
   final VoidCallback? onCancelOffer;
@@ -79,6 +80,7 @@ class OfferedRideCard extends StatelessWidget {
     required this.ride,
     this.isDetail = false,
     this.isOngoing = false,
+    this.isCancelProcessing = false,
     this.userEmail,
     this.onTap,
     this.onCancelOffer,
@@ -153,8 +155,10 @@ class OfferedRideCard extends StatelessWidget {
                             ),
                           if (passengers.isEmpty && isDetail)
                             GestureDetector(
-                              onTap: onCancelOffer,
-                              child: const Icon(Icons.close, color: Colors.grey, size: 28),
+                              onTap: isCancelProcessing ? null : onCancelOffer,
+                              child: isCancelProcessing
+                                  ? const SizedBox(width: 24, height: 24, child: CircularProgressIndicator(strokeWidth: 2, color: Colors.grey))
+                                  : const Icon(Icons.close, color: Colors.grey, size: 28),
                             )
                           else if (!isOngoing && passengers.isNotEmpty)
                             Material(

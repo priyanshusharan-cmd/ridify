@@ -126,7 +126,12 @@ class _AvailableRidesScreenState extends State<AvailableRidesScreen> {
 
   void _applyFiltersAndSort() {
     setState(() {
+      final myEmailLower = widget.userEmail.toLowerCase().trim();
       displayedRides = allRides.where((ride) {
+        final List<String> reqs = (ride['requests'] as List?)?.map((e) => e.toString().toLowerCase().trim()).toList() ?? [];
+        final List<String> pass = (ride['passengers'] as List?)?.map((e) => e.toString().toLowerCase().trim()).toList() ?? [];
+        if (reqs.contains(myEmailLower) || pass.contains(myEmailLower)) return false;
+
         if (selectedFilter == 'Any') return true;
         final vehicleType = ride['vehicleType']?.toString().toLowerCase() ?? '';
         return vehicleType.contains(selectedFilter.toLowerCase());

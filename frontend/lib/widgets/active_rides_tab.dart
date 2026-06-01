@@ -62,14 +62,28 @@ class ActiveRidesTab extends StatefulWidget {
 
 class _ActiveRidesTabState extends State<ActiveRidesTab> {
   final Set<String> _processingAccepts = {};
+  final Set<String> _processingDeclines = {};
+  String? _processingCancelId;
   String? _selectedRideId;
 
   Future<void> _declineRider(String rideId, String requester, BuildContext context) async {
+    final key = '${rideId}_$requester';
+    if (_processingDeclines.contains(key)) return;
+
+    setState(() => _processingDeclines.add(key));
+
     try {
       await RideService.declineRider(rideId, requester);
       widget.onRefresh();
     } catch (e) {
+      if (context.mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(e.toString().replaceAll('Exception: ', '')), backgroundColor: Colors.red),
+        );
+      }
       debugPrint(e.toString());
+    } finally {
+      if (mounted) setState(() => _processingDeclines.remove(key));
     }
   }
 
@@ -96,6 +110,8 @@ class _ActiveRidesTabState extends State<ActiveRidesTab> {
   }
 
   Future<void> _cancelOfferedRide(String id, BuildContext context) async {
+    if (_processingCancelId == id) return;
+    setState(() => _processingCancelId = id);
     try {
       await RideService.cancelRide(id, callerEmail: widget.myEmail);
       if (!context.mounted) return;
@@ -108,7 +124,14 @@ class _ActiveRidesTabState extends State<ActiveRidesTab> {
       setState(() => _selectedRideId = null);
       widget.onRefresh();
     } catch (e) {
+      if (context.mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(e.toString().replaceAll('Exception: ', '')), backgroundColor: Colors.red),
+        );
+      }
       debugPrint(e.toString());
+    } finally {
+      if (mounted) setState(() => _processingCancelId = null);
     }
   }
 
@@ -274,6 +297,7 @@ class _ActiveRidesTabState extends State<ActiveRidesTab> {
             OfferedRideCard(
               ride: selectedObj,
               isDetail: true,
+              isCancelProcessing: _processingCancelId == selectedObj['_id'].toString(),
               onCancelOffer: () => _confirmCancelOffer(selectedObj['_id'].toString()),
               onOpenMap: () => _openMap(selectedObj),
             ),
@@ -294,10 +318,12 @@ class _ActiveRidesTabState extends State<ActiveRidesTab> {
               ...requests.map((requester) {
                 final String acceptKey = '${selectedObj['_id']}_$requester';
                 final bool isProcessing = _processingAccepts.contains(acceptKey);
+                final bool isDeclineProcessing = _processingDeclines.contains(acceptKey);
                 return RequestDetailCard(
                   ride: selectedObj,
                   requester: requester.toString(),
                   isProcessing: isProcessing,
+                  isDeclineProcessing: isDeclineProcessing,
                   onAccept: () => _acceptRider(selectedObj['_id'], requester.toString(), context),
                   onDecline: () => _declineRider(selectedObj['_id'].toString(), requester.toString(), context),
                 );
