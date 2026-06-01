@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'dart:async';
+import 'dart:ui';
 import '../core/socket_service.dart';
 import '../widgets/find_ride/available_ride_card.dart';
 import '../services/ride_service.dart';
@@ -325,13 +326,6 @@ class _AvailableRidesScreenState extends State<AvailableRidesScreen> {
                     ),
                   ],
                 ),
-                const Spacer(),
-                if (widget.onRefresh != null)
-                  IconButton(
-                    icon: Icon(Icons.refresh, color: primaryTextColor),
-                    onPressed: widget.onRefresh,
-                    tooltip: "Refresh Rides",
-                  ),
               ],
             ),
           ),
@@ -468,22 +462,30 @@ class _AvailableRidesScreenState extends State<AvailableRidesScreen> {
 
           // List of Rides
           Expanded(
-            child: RefreshIndicator(
-              onRefresh: widget.onRefresh ?? () async {},
-              child: displayedRides.isEmpty
-                  ? Stack(
-                      children: [
-                        ListView(), // required for RefreshIndicator to work when empty
-                        Center(
-                          child: Text(
-                            "No rides available for this filter.",
-                            style: TextStyle(color: subtitleColor, fontSize: 16),
+            child: ScrollConfiguration(
+              behavior: ScrollConfiguration.of(context).copyWith(
+                dragDevices: {
+                  PointerDeviceKind.touch,
+                  PointerDeviceKind.mouse,
+                  PointerDeviceKind.trackpad,
+                },
+              ),
+              child: RefreshIndicator(
+                onRefresh: widget.onRefresh ?? () async {},
+                child: displayedRides.isEmpty
+                    ? Stack(
+                        children: [
+                          ListView(physics: const BouncingScrollPhysics(parent: AlwaysScrollableScrollPhysics())), // required for RefreshIndicator
+                          Center(
+                            child: Text(
+                              "No rides available for this filter.",
+                              style: TextStyle(color: subtitleColor, fontSize: 16),
+                            ),
                           ),
-                        ),
-                      ],
-                    )
-                  : ListView.builder(
-                      physics: const AlwaysScrollableScrollPhysics(),
+                        ],
+                      )
+                    : ListView.builder(
+                        physics: const BouncingScrollPhysics(parent: AlwaysScrollableScrollPhysics()),
                       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
                       itemCount: displayedRides.length,
                       itemBuilder: (context, index) {
