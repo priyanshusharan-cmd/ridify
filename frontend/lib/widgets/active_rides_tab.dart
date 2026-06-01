@@ -184,7 +184,8 @@ class _ActiveRidesTabState extends State<ActiveRidesTab> {
       if (isDriver) {
         return r['status'] == 'started';
       } else if (isPassenger) {
-        return r['status'] == 'accepted' ||
+        return r['status'] == 'available' ||
+            r['status'] == 'accepted' ||
             r['status'] == 'full' ||
             r['status'] == 'started';
       }

@@ -37,7 +37,6 @@ class _ChatScreenState extends State<ChatScreen> {
   final List<Map<String, dynamic>> messages = [];
   final List<MapEntry<String, void Function(dynamic)>> _socketListeners = [];
   Map<String, dynamic>? replyToMessage;
-  bool _readOnly = true;
 
   void _on(String event, void Function(dynamic) handler) {
     socket.on(event, handler);
@@ -276,12 +275,10 @@ class _ChatScreenState extends State<ChatScreen> {
                         'sender': msg['sender'],
                         'text': msg['text'],
                       };
-                      _readOnly = false;
                     });
                     Future.delayed(const Duration(milliseconds: 50), () {
                       if (mounted) {
                         _focusNode.requestFocus();
-                        SystemChannels.textInput.invokeMethod('TextInput.show');
                       }
                     });
                   },
@@ -515,21 +512,7 @@ class _ChatScreenState extends State<ChatScreen> {
                     child: TextField(
                       controller: _controller,
                       focusNode: _focusNode,
-                      readOnly: _readOnly,
                       showCursor: true,
-                      autofocus: true,
-                      onTap: () {
-                        if (_readOnly) {
-                          _focusNode.unfocus();
-                          setState(() => _readOnly = false);
-                          Future.delayed(const Duration(milliseconds: 50), () {
-                            if (mounted) {
-                              _focusNode.requestFocus();
-                              SystemChannels.textInput.invokeMethod('TextInput.show');
-                            }
-                          });
-                        }
-                      },
                       minLines: 1,
                       maxLines: 5,
                       keyboardType: TextInputType.multiline,
