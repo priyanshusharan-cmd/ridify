@@ -345,7 +345,6 @@ exports.cancelRide = async (req, res) => {
       req.emitToUser(requester, 'ride_cancelled', finalPayload);
     }
     req.io.to(req.params.id).emit('ride_cancelled', finalPayload);
-    req.io.emit('ride_cancelled_global', finalPayload); // Broadcast globally for search screens
     res.status(200).json({ success: true });
   } catch (err) { res.status(500).json({ error: err.message }); }
 };
@@ -690,7 +689,6 @@ exports.acceptRider = async (req, res) => {
     
     // Also broadcast to the ride room so that active listeners (e.g. LiveTrackingScreen) update immediately
     req.io.to(rideId).emit('ride_updated', { rideId, ride: decodedFullRide });
-    req.io.emit('ride_updated_global', { rideId, ride: decodedFullRide }); // Broadcast for search screens
 
     return res.status(200).json(updateResult);
     } catch (err) { 

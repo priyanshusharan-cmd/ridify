@@ -97,18 +97,6 @@ class _AvailableRidesScreenState extends State<AvailableRidesScreen> {
       }
     });
 
-    _onSocket('ride_cancelled_global', (data) {
-      if (data == null) return;
-      final map = SocketService.deepConvertMap(data);
-      final rideId = map['rideId']?.toString();
-      if (rideId != null && mounted) {
-        setState(() {
-          allRides.removeWhere((r) => r['_id'].toString() == rideId);
-        });
-        _applyFiltersAndSort();
-      }
-    });
-
     // Update rides that change state (e.g., capacity changes after accept/decline)
     _onSocket('ride_accepted', (data) {
       if (data == null) return;
@@ -129,27 +117,6 @@ class _AvailableRidesScreenState extends State<AvailableRidesScreen> {
 
     // Update rides after decline frees up capacity or other changes
     _onSocket('ride_updated', (data) {
-      if (data == null) return;
-      final map = SocketService.deepConvertMap(data);
-      final ride = map['ride'] != null ? SocketService.deepConvertMap(map['ride']) : null;
-      if (ride != null && mounted) {
-        final rideId = ride['_id']?.toString();
-        setState(() {
-          final idx = allRides.indexWhere((r) => r['_id'].toString() == rideId);
-          if (idx >= 0) {
-            // Preserve computed fields from search that the server doesn't send back
-            ride['computedFare'] = allRides[idx]['computedFare'];
-            ride['computedDistance'] = allRides[idx]['computedDistance'];
-            ride['startIndex'] = allRides[idx]['startIndex'];
-            ride['endIndex'] = allRides[idx]['endIndex'];
-            allRides[idx] = ride;
-          }
-        });
-        _applyFiltersAndSort();
-      }
-    });
-
-    _onSocket('ride_updated_global', (data) {
       if (data == null) return;
       final map = SocketService.deepConvertMap(data);
       final ride = map['ride'] != null ? SocketService.deepConvertMap(map['ride']) : null;
