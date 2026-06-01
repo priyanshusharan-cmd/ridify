@@ -687,6 +687,9 @@ exports.acceptRider = async (req, res) => {
         ride: sanitizeRideForBroadcast(decodedFullRide, p)
       });
     }
+    
+    // Also broadcast to the ride room so that active listeners (e.g. LiveTrackingScreen) update immediately
+    req.io.to(rideId).emit('ride_updated', { rideId, ride: decodedFullRide });
 
     return res.status(200).json(updateResult);
     } catch (err) { 
