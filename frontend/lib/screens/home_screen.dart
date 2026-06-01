@@ -77,6 +77,7 @@ class HomeScreen extends StatefulWidget {
 class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
   int _currentIndex = 0;
   List<dynamic> allRides = [];
+  Timer? _expirationTimer;
 
 
   // ── Easter Egg state ───────────────────────────────────────────────────────
@@ -112,6 +113,13 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
   @override
   void initState() {
     super.initState();
+    _initSocket();
+    fetchRides();
+    
+    // Rebuild every minute to auto-hide expired rides and badges
+    _expirationTimer = Timer.periodic(const Duration(minutes: 1), (_) {
+      if (mounted) setState(() {});
+    });
 
     // Measure "Ridify" exactly once so parkingX is always pixel-perfect.
     final tp = TextPainter(
@@ -147,9 +155,6 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
       vsync: this,
       duration: const Duration(milliseconds: 3000),
     );
-
-    fetchRides();
-    _initSocket();
   }
 
   // ── Animation helpers (extracted to RidifyAppBarTitle) ─────────
@@ -380,6 +385,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
       socketService.off(entry.key, entry.value);
     }
     _socketListeners.clear();
+    _expirationTimer?.cancel();
 
     super.dispose();
   }
@@ -389,10 +395,22 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
   Widget build(BuildContext context) {
     int requestsForMeCount = 0;
     for (final r in allRides.where(
-      (r) =>
-          r['riderEmail'] == widget.userEmail &&
-          r['status'] != 'cancelled' &&
-          r['status'] != 'completed',
+      (r) {
+        if (r['riderEmail'] != widget.userEmail ||
+            r['status'] == 'cancelled' ||
+            r['status'] == 'completed') {
+          return false;
+        }
+        if (r['expiresAt'] != null) {
+          final expiresAt = r['expiresAt'] is int
+              ? r['expiresAt'] as int
+              : int.tryParse(r['expiresAt'].toString()) ?? 0;
+          if (expiresAt > 0 && DateTime.now().millisecondsSinceEpoch > expiresAt) {
+            return false;
+          }
+        }
+        return true;
+      },
     )) {
       requestsForMeCount += (r['requests'] as List?)?.length ?? 0;
     }
