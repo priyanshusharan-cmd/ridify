@@ -269,13 +269,18 @@ exports.createRide = async (req, res) => {
     }
     data.fare = fare;
 
-    const departureEpoch = data.expiresAt; // keep for reference if provided
-    let depEpoch = departureEpoch && typeof departureEpoch === 'number'
-      ? departureEpoch : Date.now() + (2 * 60 * 60 * 1000);
+    const reqDeparture = data.departureEpoch;
+    let depEpoch = reqDeparture && typeof reqDeparture === 'number'
+      ? reqDeparture : Date.now();
+      
     const now = Date.now();
-    depEpoch = Math.max(depEpoch, now + 5 * 60 * 1000);
+    // Allow rides to be scheduled up to 7 days in advance
+    depEpoch = Math.max(depEpoch, now); // Can't depart in the past
     depEpoch = Math.min(depEpoch, now + 7 * 24 * 60 * 60 * 1000);
+    
+    // Ride expires exactly 15 minutes after the departure time
     data.expiresAt = depEpoch + (15 * 60 * 1000);
+    data.departureEpoch = depEpoch; // Save actual departure epoch
     if (data.pickupLng != null && data.pickupLat != null) {
       data.pickupCoords = {
         type: 'Point',

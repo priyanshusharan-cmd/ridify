@@ -30,6 +30,16 @@ class RideHistoryCard extends StatelessWidget {
     // Did the ride actually start?
     bool rideWasStarted = ride['startedAt'] != null;
 
+    bool isExpired = false;
+    if (!isCancelled && !wasDeclined && !wasKicked && ride['status'] != 'completed' && ride['expiresAt'] != null) {
+      final expiresAt = ride['expiresAt'] is int 
+          ? ride['expiresAt'] as int 
+          : int.tryParse(ride['expiresAt'].toString()) ?? 0;
+      if (expiresAt > 0 && DateTime.now().millisecondsSinceEpoch > expiresAt) {
+        isExpired = true;
+      }
+    }
+
     String statusText = "Completed";
     Color statusColor = const Color(0xFF4ADE80);
     IconData statusIcon = Icons.check_circle_outline_rounded;
@@ -47,6 +57,11 @@ class RideHistoryCard extends StatelessWidget {
       statusText = "Removed";
       statusColor = Colors.redAccent;
       statusIcon = Icons.remove_circle_outline_rounded;
+    }
+    if (isExpired && !isCancelled && !wasDeclined && !wasKicked && ride['status'] != 'completed') {
+      statusText = "Expired";
+      statusColor = Colors.grey;
+      statusIcon = Icons.timer_off_outlined;
     }
 
     // For riders (not drivers): show THEIR pickup/dest from riderDetails
@@ -108,9 +123,13 @@ class RideHistoryCard extends StatelessWidget {
           duration = "${diff < 0 ? 0 : diff} mins";
         } catch (_) {}
       }
-    } else {
-      // Normal completed ride
-      if (wasIDriver) {
+      } else if (isExpired && !rideWasStarted) {
+        // Expired without starting
+        distance = "0.0 km";
+        duration = "0 mins";
+      } else {
+        // Normal completed ride
+        if (wasIDriver) {
         String d = (ride['totalDistance'] ?? ride['distance'] ?? "0.0").toString();
         double distValue = double.tryParse(d.replaceAll(RegExp(r'[^0-9.]'), '')) ?? 0.0;
         distance = "${distValue.toStringAsFixed(1)} km";
@@ -144,7 +163,7 @@ class RideHistoryCard extends StatelessWidget {
 
     int paxCount = 0;
     Set<String> allInRide = {};
-    if (wasDeclined || wasKicked || isCancelled) {
+    if (wasDeclined || wasKicked || isCancelled || (isExpired && !rideWasStarted)) {
       paxCount = 0;
     } else if (wasIDriver) {
       Set<String> kickedSet = {};
@@ -168,11 +187,10 @@ class RideHistoryCard extends StatelessWidget {
       paxCount = int.tryParse(details?['seats']?.toString() ?? '1') ?? 1;
     }
 
-    // Fare: show ₹0 for declined, kicked, and cancelled rides
     String fare;
     if (wasDeclined || wasKicked) {
       fare = "0";
-    } else if (isCancelled) {
+    } else if (isCancelled || (isExpired && !rideWasStarted)) {
       fare = "0";
     } else if (wasIDriver) {
       double driverTotalEarned = 0;

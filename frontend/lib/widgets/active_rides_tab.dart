@@ -184,7 +184,20 @@ class _ActiveRidesTabState extends State<ActiveRidesTab> {
   @override
   Widget build(BuildContext context) {
     final List<dynamic> activeRidesOnly = widget.rides
-        .where((r) => r['status'] != 'cancelled' && r['status'] != 'completed')
+        .where((r) {
+          if (r['status'] == 'cancelled' || r['status'] == 'completed') return false;
+          
+          // Check if expired
+          if (r['expiresAt'] != null) {
+            final expiresAt = r['expiresAt'] is int 
+                ? r['expiresAt'] as int 
+                : int.tryParse(r['expiresAt'].toString()) ?? 0;
+            if (expiresAt > 0 && DateTime.now().millisecondsSinceEpoch > expiresAt) {
+              return false; // Expired rides shouldn't show in Activity
+            }
+          }
+          return true;
+        })
         .toList();
 
     final String myEmailLower = widget.myEmail.trim().toLowerCase();

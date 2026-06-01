@@ -243,8 +243,14 @@ class _OfferRideScreenState extends State<OfferRideScreen> {
 
     String timeString = "${dateToUse.day}/${dateToUse.month}/${dateToUse.year} at ${timeToUse.format(context)}";
 
-    final dt = DateTime(dateToUse.year, dateToUse.month, dateToUse.day, timeToUse.hour, timeToUse.minute);
-    int expiresAtEpoch = dt.millisecondsSinceEpoch + (15 * 60 * 1000);
+    DateTime dt = DateTime(dateToUse.year, dateToUse.month, dateToUse.day, timeToUse.hour, timeToUse.minute);
+    
+    // Snap past time to 'Now'
+    if (dt.isBefore(DateTime.now())) {
+      dt = DateTime.now();
+    }
+    
+    int departureEpoch = dt.millisecondsSinceEpoch;
 
     try {
       final rideData = {
@@ -257,7 +263,7 @@ class _OfferRideScreenState extends State<OfferRideScreen> {
         "destLat": destLat,
         "destLng": destLng,
         "departureTime": timeString,
-        "expiresAt": expiresAtEpoch,
+        "departureEpoch": departureEpoch,
         "fare": parsedPrice,
         "status": "available",
         "vehicleType": selectedVehicle,
