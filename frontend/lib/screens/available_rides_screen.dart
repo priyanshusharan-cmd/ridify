@@ -325,6 +325,13 @@ class _AvailableRidesScreenState extends State<AvailableRidesScreen> {
                     ),
                   ],
                 ),
+                const Spacer(),
+                if (widget.onRefresh != null)
+                  IconButton(
+                    icon: Icon(Icons.refresh, color: primaryTextColor),
+                    onPressed: widget.onRefresh,
+                    tooltip: "Refresh Rides",
+                  ),
               ],
             ),
           ),
