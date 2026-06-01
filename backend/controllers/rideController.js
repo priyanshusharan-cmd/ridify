@@ -1228,8 +1228,7 @@ exports.sendChatMessage = async (req, res) => {
     const isDriver = ride.riderEmail === normalizedEmail;
     const isPassenger = (ride.passengers || []).includes(normalizedEmail);
     const isBoarded = (ride.boardedPassengers || []).includes(normalizedEmail);
-    const isDropped = (ride.droppedPassengers || []).includes(normalizedEmail);
-    if (!isDriver && !isPassenger && !isBoarded && !isDropped) {
+    if (!isDriver && !isPassenger && !isBoarded) {
       return res.status(403).json({ error: 'Only ride participants can send messages.' });
     }
     ride.chatMessages.push({ sender: sender.trim(), senderEmail: normalizedEmail, text: trimmedText, timestamp, replyTo });
