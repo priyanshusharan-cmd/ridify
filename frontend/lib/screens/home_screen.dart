@@ -331,14 +331,35 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
           _upsertRide(ride);
           final driverEmail = ride['riderEmail']?.toString().toLowerCase().trim();
           final myEmailLower = widget.userEmail.toLowerCase().trim();
-          if (driverEmail == myEmailLower) {
-            final rideId = ride['rideId'] ?? ride['_id'];
-            if (rideId != null && !navigatedRides.contains(rideId)) {
+          
+          final rideId = ride['rideId'] ?? ride['_id'];
+          if (rideId != null && !navigatedRides.contains(rideId)) {
+            if (driverEmail == myEmailLower) {
               navigatedRides.add(rideId);
               if (navigatorKey.currentState != null) {
                 navigatorKey.currentState!.push(MaterialPageRoute(
                   builder: (_) => DriverCompletingScreen(rideId: rideId, initialRideData: ride)
                 ));
+              }
+            } else {
+              // Check if I was a passenger
+              final List<String> passengers = (ride['passengers'] as List?)?.map((e) => e.toString().toLowerCase().trim()).toList() ?? [];
+              final List<String> dropped = (ride['droppedPassengers'] as List?)?.map((e) => e.toString().toLowerCase().trim()).toList() ?? [];
+              
+              if (passengers.contains(myEmailLower) || dropped.contains(myEmailLower)) {
+                navigatedRides.add(rideId);
+                if (navigatorKey.currentState != null) {
+                  final riderDetails = ride['riderDetails'] as Map?;
+                  final uemailDot = myEmailLower.replaceAll('.', '_dot_');
+                  final details = riderDetails?[myEmailLower] ?? riderDetails?[uemailDot];
+                  int fare = (details?['fare'] as num?)?.toInt() ?? (ride['fare'] as num?)?.toInt() ?? 0;
+                  
+                  navigatorKey.currentState!.push(MaterialPageRoute(
+                    builder: (_) => RiderCompletingScreen(
+                      isDriver: false, rideId: rideId, myName: widget.userName, myEmail: widget.userEmail, fareAmount: fare, initialRideData: ride
+                    )
+                  ));
+                }
               }
             }
           }
