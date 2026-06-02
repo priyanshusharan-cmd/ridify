@@ -197,12 +197,20 @@ class OfferedRideCard extends StatelessWidget {
                                   ),
                                 ),
                               if (isDetail)
-                                GestureDetector(
-                                  onTap: isCancelProcessing ? null : onCancelOffer,
-                                  child: isCancelProcessing
-                                      ? const SizedBox(width: 24, height: 24, child: CircularProgressIndicator(strokeWidth: 2, color: Colors.grey))
-                                      : const Icon(Icons.close, color: Colors.grey, size: 28),
-                                ),
+                                Builder(builder: (context) {
+                                  final List boarded = ride['boardedPassengers'] as List? ?? [];
+                                  final bool isStarted = ride['status'] == 'started' || ride['status'] == 'completed';
+                                  final bool canCancel = !isStarted && passengers.isEmpty && boarded.isEmpty;
+                                  
+                                  if (!canCancel) return const SizedBox.shrink();
+                                  
+                                  return GestureDetector(
+                                    onTap: isCancelProcessing ? null : onCancelOffer,
+                                    child: isCancelProcessing
+                                        ? const SizedBox(width: 24, height: 24, child: CircularProgressIndicator(strokeWidth: 2, color: Colors.grey))
+                                        : const Icon(Icons.close, color: Colors.grey, size: 28),
+                                  );
+                                }),
                               if (!isOngoing && passengers.isNotEmpty)
                                 Padding(
                                   padding: EdgeInsets.only(left: isDetail ? 12.0 : 0),
