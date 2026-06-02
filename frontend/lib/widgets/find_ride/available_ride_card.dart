@@ -27,7 +27,8 @@ class AvailableRideCard extends StatelessWidget {
     final computedDistance = ride['computedDistance'] != null ? ride['computedDistance'].toStringAsFixed(1) : "?";
     final driverName = ride['riderName'] ?? "Driver";
     final vehicle = ride['vehicleType'] ?? 'Sedan';
-    final routePref = ride['routePreference'] == 'nonstop' ? 'Nonstop' : 'Flexible Route';
+    final prefRaw = ride['routePreference'] ?? '';
+    final routePref = prefRaw == 'nonstop' ? 'Nonstop' : (prefRaw == 'shared_start' ? 'Shared Start' : 'Flexible Route');
     final departs = ride['departureTime'] ?? "Now";
     final totalSeats = ride['totalSeats'] ?? 4;
     final seatsLeft = totalSeats - (ride['boardedPassengers'] as List? ?? []).length;

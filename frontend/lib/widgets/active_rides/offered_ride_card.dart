@@ -94,6 +94,14 @@ class OfferedRideCard extends StatelessWidget {
     final List passengers = ride['passengers'] as List? ?? [];
     final bool isDark = Theme.of(context).brightness == Brightness.dark;
 
+    final prefRaw = ride['routePreference'] ?? '';
+    final routePref = prefRaw == 'nonstop' ? 'Nonstop' : (prefRaw == 'shared_start' ? 'Shared Start' : 'Flexible Route');
+
+    IconData vehicleIcon = Icons.directions_car;
+    final vType = (ride['vehicleType']?.toString() ?? '').toLowerCase();
+    if (vType == 'bike') vehicleIcon = Icons.motorcycle;
+    else if (vType == 'suv') vehicleIcon = Icons.airport_shuttle;
+
     return GestureDetector(
       onTap: onTap,
       child: Container(
@@ -116,7 +124,7 @@ class OfferedRideCard extends StatelessWidget {
                     children: [
                       Row(
                         children: [
-                          Icon(Icons.directions_car, size: 28, color: isDark ? Colors.white : Colors.black),
+                          Icon(vehicleIcon, size: 28, color: isDark ? Colors.white : Colors.black),
                           const SizedBox(width: 12),
                           Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
@@ -127,7 +135,7 @@ class OfferedRideCard extends StatelessWidget {
                               ),
                               const SizedBox(height: 4),
                               Text(
-                                ride['departureTime'].toString().replaceAll(' at ', ' • '),
+                                "${ride['departureTime'].toString().replaceAll(' at ', ' • ')} • $routePref",
                                 style: const TextStyle(color: Colors.grey, fontSize: 13, fontWeight: FontWeight.w600),
                               ),
                             ],
