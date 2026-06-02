@@ -99,8 +99,11 @@ class OfferedRideCard extends StatelessWidget {
 
     IconData vehicleIcon = Icons.directions_car;
     final vType = (ride['vehicleType']?.toString() ?? '').toLowerCase();
-    if (vType == 'bike') vehicleIcon = Icons.motorcycle;
-    else if (vType == 'suv') vehicleIcon = Icons.airport_shuttle;
+    if (vType == 'bike') {
+      vehicleIcon = Icons.motorcycle;
+    } else if (vType == 'suv') {
+      vehicleIcon = Icons.airport_shuttle;
+    }
 
     return GestureDetector(
       onTap: onTap,
@@ -129,13 +132,29 @@ class OfferedRideCard extends StatelessWidget {
                           Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              Text(
-                                "${ride['availableSeats']} Seats",
-                                style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18, color: isDark ? Colors.white : Colors.black),
+                              Row(
+                                children: [
+                                  Text(
+                                    "${ride['availableSeats']} Seats",
+                                    style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18, color: isDark ? Colors.white : Colors.black),
+                                  ),
+                                  const SizedBox(width: 8),
+                                  Container(
+                                    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                                    decoration: BoxDecoration(
+                                      color: isDark ? Colors.white12 : Colors.grey[200],
+                                      borderRadius: BorderRadius.circular(12),
+                                    ),
+                                    child: Text(
+                                      routePref,
+                                      style: TextStyle(fontSize: 12, fontWeight: FontWeight.w600, color: isDark ? Colors.white70 : Colors.black87),
+                                    ),
+                                  ),
+                                ],
                               ),
                               const SizedBox(height: 4),
                               Text(
-                                "${ride['departureTime'].toString().replaceAll(' at ', ' • ')} • $routePref",
+                                ride['departureTime'].toString().replaceAll(' at ', ' • '),
                                 style: const TextStyle(color: Colors.grey, fontSize: 13, fontWeight: FontWeight.w600),
                               ),
                             ],
