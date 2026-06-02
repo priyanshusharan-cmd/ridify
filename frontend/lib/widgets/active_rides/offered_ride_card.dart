@@ -93,7 +93,7 @@ class OfferedRideCard extends StatelessWidget {
     final int reqCount = requests.length;
     final List passengers = ride['passengers'] as List? ?? [];
     final bool isDark = Theme.of(context).brightness == Brightness.dark;
-    final bool isDriver = userEmail != null && ride['riderEmail']?.toString().toLowerCase().trim() == userEmail!.toLowerCase().trim();
+    final bool isDriver = userEmail == null || ride['riderEmail']?.toString().toLowerCase().trim() == userEmail!.toLowerCase().trim();
 
     final prefRaw = ride['routePreference'] ?? '';
     final routePref = prefRaw == 'nonstop' ? 'Nonstop' : (prefRaw == 'shared_start' ? 'Shared Start' : 'Flexible Route');
