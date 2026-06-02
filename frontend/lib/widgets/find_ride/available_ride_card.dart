@@ -31,7 +31,30 @@ class AvailableRideCard extends StatelessWidget {
     final routePref = prefRaw == 'nonstop' ? 'Nonstop' : (prefRaw == 'shared_start' ? 'Shared Start' : 'Flexible Route');
     final departs = ride['departureTime']?.toString() ?? "Now";
     final totalSeats = int.tryParse(ride['totalSeats']?.toString() ?? '4') ?? 4;
-    final seatsLeft = totalSeats - (ride['boardedPassengers'] as List? ?? []).length;
+    int occupiedSeats = 0;
+    final riderDetails = ride['riderDetails'] as Map<String, dynamic>? ?? {};
+    final seatAllocations = ride['seatAllocations'] as Map<String, dynamic>? ?? {};
+    final allRiders = [
+      ...(ride['passengers'] as List? ?? []),
+      ...(ride['boardedPassengers'] as List? ?? []),
+      ...(ride['droppedPassengers'] as List? ?? [])
+    ];
+    for (var r in allRiders) {
+      final email = r.toString().toLowerCase().trim();
+      final uemailDot = email.replaceAll('.', '_dot_');
+      final details = riderDetails[email] ?? riderDetails[uemailDot];
+      if (details != null && details['seats'] != null) {
+        occupiedSeats += (details['seats'] as num).toInt();
+      } else if (seatAllocations[email] != null) {
+        occupiedSeats += (seatAllocations[email] as num).toInt();
+      } else if (seatAllocations[uemailDot] != null) {
+        occupiedSeats += (seatAllocations[uemailDot] as num).toInt();
+      } else {
+        occupiedSeats += 1;
+      }
+    }
+    int seatsLeft = totalSeats - occupiedSeats;
+    if (seatsLeft < 0) seatsLeft = 0;
 
     return Container(
       margin: const EdgeInsets.only(bottom: 16),

@@ -105,6 +105,32 @@ class OfferedRideCard extends StatelessWidget {
       vehicleIcon = Icons.airport_shuttle;
     }
 
+    int totalSeats = int.tryParse(ride['totalSeats']?.toString() ?? '0') ?? 0;
+    int occupiedSeats = 0;
+    final riderDetails = ride['riderDetails'] as Map<String, dynamic>? ?? {};
+    final seatAllocations = ride['seatAllocations'] as Map<String, dynamic>? ?? {};
+    final allRiders = [
+      ...(ride['passengers'] as List? ?? []),
+      ...(ride['boardedPassengers'] as List? ?? []),
+      ...(ride['droppedPassengers'] as List? ?? [])
+    ];
+    for (var r in allRiders) {
+      final email = r.toString().toLowerCase().trim();
+      final uemailDot = email.replaceAll('.', '_dot_');
+      final details = riderDetails[email] ?? riderDetails[uemailDot];
+      if (details != null && details['seats'] != null) {
+        occupiedSeats += (details['seats'] as num).toInt();
+      } else if (seatAllocations[email] != null) {
+        occupiedSeats += (seatAllocations[email] as num).toInt();
+      } else if (seatAllocations[uemailDot] != null) {
+        occupiedSeats += (seatAllocations[uemailDot] as num).toInt();
+      } else {
+        occupiedSeats += 1;
+      }
+    }
+    int seatsLeft = totalSeats - occupiedSeats;
+    if (seatsLeft < 0) seatsLeft = 0;
+
     return GestureDetector(
       onTap: onTap,
       child: Container(
@@ -133,7 +159,7 @@ class OfferedRideCard extends StatelessWidget {
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               Text(
-                                "${ride['availableSeats']} Seats",
+                                "$seatsLeft Seats Left",
                                 style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18, color: isDark ? Colors.white : Colors.black),
                               ),
                               const SizedBox(height: 4),
@@ -152,43 +178,46 @@ class OfferedRideCard extends StatelessWidget {
                       ),
                       Builder(
                         builder: (context) {
-                          bool hasRightIcon = (passengers.isEmpty && isDetail) || (!isOngoing && passengers.isNotEmpty);
+                          bool hasRightIcon = (isDetail) || (!isOngoing && passengers.isNotEmpty);
                           return Row(
                             mainAxisSize: MainAxisSize.min,
                             children: [
                               if (!isDetail && reqCount > 0)
                                 Container(
                                   margin: EdgeInsets.only(right: hasRightIcon ? 12 : 0),
-                              padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
-                              decoration: BoxDecoration(
-                                color: Colors.green.withValues(alpha: 0.1),
-                                borderRadius: BorderRadius.circular(20),
-                              ),
-                              child: Text(
-                                "$reqCount Request${reqCount == 1 ? '' : 's'}",
-                                style: const TextStyle(color: Colors.green, fontWeight: FontWeight.bold, fontSize: 13),
-                              ),
-                            ),
-                          if (passengers.isEmpty && isDetail)
-                            GestureDetector(
-                              onTap: isCancelProcessing ? null : onCancelOffer,
-                              child: isCancelProcessing
-                                  ? const SizedBox(width: 24, height: 24, child: CircularProgressIndicator(strokeWidth: 2, color: Colors.grey))
-                                  : const Icon(Icons.close, color: Colors.grey, size: 28),
-                            )
-                          else if (!isOngoing && passengers.isNotEmpty)
-                            Material(
-                              color: isDark ? Colors.grey[800] : Colors.grey[200],
-                              borderRadius: BorderRadius.circular(20),
-                              child: InkWell(
-                                onTap: onOpenMap,
-                                borderRadius: BorderRadius.circular(20),
-                                child: Container(
-                                  padding: const EdgeInsets.all(12),
-                                  child: Icon(Icons.map, size: 22, color: isDark ? Colors.white : Colors.black),
+                                  padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
+                                  decoration: BoxDecoration(
+                                    color: Colors.green.withValues(alpha: 0.1),
+                                    borderRadius: BorderRadius.circular(20),
+                                  ),
+                                  child: Text(
+                                    "$reqCount Request${reqCount == 1 ? '' : 's'}",
+                                    style: const TextStyle(color: Colors.green, fontWeight: FontWeight.bold, fontSize: 13),
+                                  ),
                                 ),
-                              ),
-                            ),
+                              if (isDetail)
+                                GestureDetector(
+                                  onTap: isCancelProcessing ? null : onCancelOffer,
+                                  child: isCancelProcessing
+                                      ? const SizedBox(width: 24, height: 24, child: CircularProgressIndicator(strokeWidth: 2, color: Colors.grey))
+                                      : const Icon(Icons.close, color: Colors.grey, size: 28),
+                                ),
+                              if (!isOngoing && passengers.isNotEmpty)
+                                Padding(
+                                  padding: EdgeInsets.only(left: isDetail ? 12.0 : 0),
+                                  child: Material(
+                                    color: isDark ? Colors.grey[800] : Colors.grey[200],
+                                    borderRadius: BorderRadius.circular(20),
+                                    child: InkWell(
+                                      onTap: onOpenMap,
+                                      borderRadius: BorderRadius.circular(20),
+                                      child: Container(
+                                        padding: const EdgeInsets.all(12),
+                                        child: Icon(Icons.map, size: 22, color: isDark ? Colors.white : Colors.black),
+                                      ),
+                                    ),
+                                  ),
+                                ),
                         ],
                       );
                      }
