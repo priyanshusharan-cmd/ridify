@@ -206,10 +206,15 @@ class _AvailableRidesScreenState extends State<AvailableRidesScreen> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               const Text(
-                "Sort Options",
+                "Filters",
                 style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
               ),
               const SizedBox(height: 20),
+              const Text(
+                "Price",
+                style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+              ),
+              const SizedBox(height: 10),
               ListTile(
                 contentPadding: EdgeInsets.zero,
                 leading: Icon(Icons.arrow_upward, color: isDark ? Colors.white : Colors.black),
@@ -238,8 +243,8 @@ class _AvailableRidesScreenState extends State<AvailableRidesScreen> {
               ),
               const Divider(height: 20),
               const Text(
-                "Filter by Route Preference",
-                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                "Route Preference",
+                style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
               ),
               const SizedBox(height: 10),
               ListTile(

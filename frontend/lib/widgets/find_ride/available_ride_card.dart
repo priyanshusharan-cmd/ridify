@@ -23,14 +23,14 @@ class AvailableRideCard extends StatelessWidget {
     final primaryTextColor = Theme.of(context).textTheme.bodyLarge?.color;
     final subtitleColor = isDark ? Colors.white54 : Colors.grey[600];
 
-    final computedFare = ride['computedFare'] ?? ride['fare'];
-    final computedDistance = ride['computedDistance'] != null ? ride['computedDistance'].toStringAsFixed(1) : "?";
-    final driverName = ride['riderName'] ?? "Driver";
-    final vehicle = ride['vehicleType'] ?? 'Sedan';
-    final prefRaw = ride['routePreference'] ?? '';
+    final computedFare = (ride['computedFare'] ?? ride['fare'])?.toString() ?? "0";
+    final computedDistance = ride['computedDistance'] != null ? (ride['computedDistance'] as num).toStringAsFixed(1) : "?";
+    final driverName = ride['riderName']?.toString() ?? "Driver";
+    final vehicle = ride['vehicleType']?.toString() ?? 'Sedan';
+    final prefRaw = ride['routePreference']?.toString() ?? '';
     final routePref = prefRaw == 'nonstop' ? 'Nonstop' : (prefRaw == 'shared_start' ? 'Shared Start' : 'Flexible Route');
-    final departs = ride['departureTime'] ?? "Now";
-    final totalSeats = ride['totalSeats'] ?? 4;
+    final departs = ride['departureTime']?.toString() ?? "Now";
+    final totalSeats = int.tryParse(ride['totalSeats']?.toString() ?? '4') ?? 4;
     final seatsLeft = totalSeats - (ride['boardedPassengers'] as List? ?? []).length;
 
     return Container(
@@ -114,7 +114,7 @@ class AvailableRideCard extends StatelessWidget {
                         const SizedBox(width: 12),
                         Expanded(
                           child: Text(
-                            ride['pickupLocation'] ?? fallbackPickup,
+                            ride['pickupLocation']?.toString() ?? fallbackPickup,
                             style: TextStyle(color: primaryTextColor, fontSize: 13),
                             maxLines: 1,
                             overflow: TextOverflow.ellipsis,
@@ -132,7 +132,7 @@ class AvailableRideCard extends StatelessWidget {
                         const SizedBox(width: 12),
                         Expanded(
                           child: Text(
-                            ride['destination'] ?? fallbackDestination,
+                            ride['destination']?.toString() ?? fallbackDestination,
                             style: TextStyle(color: primaryTextColor, fontSize: 13),
                             maxLines: 1,
                             overflow: TextOverflow.ellipsis,
