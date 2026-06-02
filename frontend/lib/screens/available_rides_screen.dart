@@ -40,6 +40,8 @@ class AvailableRidesScreen extends StatefulWidget {
 }
 
 class _AvailableRidesScreenState extends State<AvailableRidesScreen> {
+  late Timer? _pricePollTimer;
+  final List<String> _joinedRides = [];
   late List<dynamic> allRides;
   late List<dynamic> displayedRides;
   String selectedFilter = 'Any'; // Any, Sedan, Bike, SUV
@@ -60,6 +62,14 @@ class _AvailableRidesScreenState extends State<AvailableRidesScreen> {
     allRides = List.from(widget.initialRides);
     _applyFiltersAndSort();
     _initSocketListeners();
+    
+    for (var ride in allRides) {
+      final id = ride['_id']?.toString();
+      if (id != null) {
+        SocketService().joinRide(id);
+        _joinedRides.add(id);
+      }
+    }
   }
 
   @override
@@ -75,11 +85,18 @@ class _AvailableRidesScreenState extends State<AvailableRidesScreen> {
 
   @override
   void dispose() {
+    _pricePollTimer?.cancel();
+    
     final svc = SocketService();
     for (final entry in _socketListeners) {
       svc.off(entry.key, entry.value);
     }
     _socketListeners.clear();
+    
+    for (var id in _joinedRides) {
+      SocketService().leaveRide(id);
+    }
+    
     super.dispose();
   }
 

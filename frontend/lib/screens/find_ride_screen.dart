@@ -426,61 +426,6 @@ class _FindRideScreenState extends State<FindRideScreen> {
             ),
             const SizedBox(height: 20),
 
-            const Text(
-              "Preferred Vehicle",
-              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-            ),
-            const SizedBox(height: 10),
-            Row(
-              children: ['Any', 'Bike', 'Sedan', 'SUV'].map((type) {
-                bool isSelected = selectedVehicle == type;
-                IconData icon = type == 'Any'
-                    ? Icons.grid_view
-                    : type == 'Bike'
-                    ? Icons.motorcycle
-                    : type == 'Sedan'
-                    ? Icons.directions_car
-                    : Icons.airport_shuttle;
-                return Expanded(
-                  child: GestureDetector(
-                    onTap: () => _onVehicleChanged(type),
-                    child: Container(
-                      height: 85,
-                      margin: const EdgeInsets.symmetric(horizontal: 4),
-                      padding: const EdgeInsets.symmetric(vertical: 12),
-                      decoration: BoxDecoration(
-                        color: isSelected
-                            ? (Theme.of(context).brightness == Brightness.dark ? const Color(0xFF2C2C2C) : Colors.black)
-                            : Theme.of(context).cardColor,
-                        borderRadius: BorderRadius.circular(15),
-                        border: Border.all(
-                          color: isSelected ? Colors.white : Colors.transparent,
-                          width: 2.0,
-                        ),
-                      ),
-                      child: Column(
-                        children: [
-                          Icon(
-                            icon,
-                            color: isSelected ? Colors.white : Theme.of(context).textTheme.bodyMedium?.color?.withValues(alpha: 0.5),
-                          ),
-                          const SizedBox(height: 5),
-                          Text(
-                            type,
-                            style: TextStyle(
-                              color: isSelected ? Colors.white : Theme.of(context).textTheme.bodyLarge?.color,
-                              fontWeight: FontWeight.bold,
-                              fontSize: 13,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
-                );
-              }).toList(),
-            ),
-            const SizedBox(height: 20),
 
             const Text(
               "Schedule",

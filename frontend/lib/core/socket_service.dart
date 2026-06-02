@@ -26,7 +26,7 @@ class SocketService {
   io.Socket _createSocket() {
     final accessToken = _accessToken ?? '';
     final s = io.io(kBaseUrl, <String, dynamic>{
-      'transports': ['websocket', 'polling'],
+      'transports': ['polling', 'websocket'], // Use polling first for maximum network compatibility (e.g. school wifi, hotspots)
       'autoConnect': false, // Don't auto-connect until token is set
       'forceNew': true,
       'auth': {'token': accessToken},
@@ -80,9 +80,17 @@ class SocketService {
   }
 
   void off(String event, void Function(dynamic) handler) {
-    _eventListeners[event]?.remove(handler);
-    if (_socket != null) {
-      _socket!.off(event, handler);
+    final list = _eventListeners[event];
+    if (list != null) {
+      list.remove(handler);
+      if (_socket != null) {
+        // Since socket.off() in Dart socket_io_client removes ALL listeners for the event,
+        // we must clear it entirely and re-attach only the remaining ones.
+        _socket!.off(event);
+        for (final h in list) {
+          _socket!.on(event, h);
+        }
+      }
     }
   }
 
@@ -120,6 +128,7 @@ class SocketService {
     _socket?.dispose();
     _socket = null;
     _joinedRidesCount.clear();
+    _eventListeners.clear();
     _userEmail = null;
     _accessToken = null;
   }

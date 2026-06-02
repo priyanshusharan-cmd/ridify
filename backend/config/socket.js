@@ -78,20 +78,7 @@ function initSocket(server, app) {
 
   const locationUpdateCooldowns = new Map();
 
-  // Rate Limiting Middleware (M7)
-  const connectionCounts = new Map();
-  io.use((socket, next) => {
-    const ip = socket.handshake.address;
-    const count = (connectionCounts.get(ip) || 0) + 1;
-    if (count > 1000) return next(new Error('Too many connections from this IP'));
-    connectionCounts.set(ip, count);
-    socket.on('disconnect', () => {
-      const current = connectionCounts.get(ip);
-      if (current > 1) connectionCounts.set(ip, current - 1);
-      else connectionCounts.delete(ip);
-    });
-    next();
-  });
+  // Rate limiting removed per user request to allow connections from all networks
 
   io.on('connection', async (socket) => {
     logger.info(`Socket connected: ${socket.id}`);
