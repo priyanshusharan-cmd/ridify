@@ -159,7 +159,7 @@ class OfferedRideCard extends StatelessWidget {
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               Text(
-                                "$seatsLeft Seats Left",
+                                "$totalSeats Seats",
                                 style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18, color: isDark ? Colors.white : Colors.black),
                               ),
                               const SizedBox(height: 4),
