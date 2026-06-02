@@ -45,6 +45,7 @@ class _AvailableRidesScreenState extends State<AvailableRidesScreen> {
   late List<dynamic> allRides;
   late List<dynamic> displayedRides;
   String selectedFilter = 'Any'; // Any, Sedan, Bike, SUV
+  String routePrefFilter = 'Any'; // Any, nonstop, shared_start, flexible
   String sortOption = 'low_to_high'; // low_to_high, high_to_low
 
   String? _sendingRideId;
@@ -163,9 +164,17 @@ class _AvailableRidesScreenState extends State<AvailableRidesScreen> {
         final List<String> pass = (ride['passengers'] as List?)?.map((e) => e.toString().toLowerCase().trim()).toList() ?? [];
         if (reqs.contains(myEmailLower) || pass.contains(myEmailLower)) return false;
 
-        if (selectedFilter == 'Any') return true;
-        final vehicleType = ride['vehicleType']?.toString().toLowerCase() ?? '';
-        return vehicleType.contains(selectedFilter.toLowerCase());
+        if (selectedFilter != 'Any') {
+          final vehicleType = ride['vehicleType']?.toString().toLowerCase() ?? '';
+          if (!vehicleType.contains(selectedFilter.toLowerCase())) return false;
+        }
+
+        if (routePrefFilter != 'Any') {
+          final pref = ride['routePreference']?.toString() ?? 'flexible'; // Default flexible
+          if (pref != routePrefFilter) return false;
+        }
+
+        return true;
       }).toList();
 
       displayedRides.sort((a, b) {
@@ -222,6 +231,51 @@ class _AvailableRidesScreenState extends State<AvailableRidesScreen> {
                 onTap: () {
                   setState(() {
                     sortOption = 'high_to_low';
+                  });
+                  _applyFiltersAndSort();
+                  Navigator.pop(context);
+                },
+              ),
+              const Divider(height: 20),
+              const Text(
+                "Filter by Route Preference",
+                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+              ),
+              const SizedBox(height: 10),
+              ListTile(
+                contentPadding: EdgeInsets.zero,
+                leading: Icon(Icons.arrow_upward, color: isDark ? Colors.white : Colors.black),
+                title: const Text("Nonstop"),
+                trailing: routePrefFilter == 'nonstop' ? const Icon(Icons.check, color: Colors.green) : null,
+                onTap: () {
+                  setState(() {
+                    routePrefFilter = routePrefFilter == 'nonstop' ? 'Any' : 'nonstop';
+                  });
+                  _applyFiltersAndSort();
+                  Navigator.pop(context);
+                },
+              ),
+              ListTile(
+                contentPadding: EdgeInsets.zero,
+                leading: Icon(Icons.route, color: isDark ? Colors.white : Colors.black),
+                title: const Text("Shared Start"),
+                trailing: routePrefFilter == 'shared_start' ? const Icon(Icons.check, color: Colors.green) : null,
+                onTap: () {
+                  setState(() {
+                    routePrefFilter = routePrefFilter == 'shared_start' ? 'Any' : 'shared_start';
+                  });
+                  _applyFiltersAndSort();
+                  Navigator.pop(context);
+                },
+              ),
+              ListTile(
+                contentPadding: EdgeInsets.zero,
+                leading: Icon(Icons.alt_route, color: isDark ? Colors.white : Colors.black),
+                title: const Text("Flexible Route"),
+                trailing: routePrefFilter == 'flexible' ? const Icon(Icons.check, color: Colors.green) : null,
+                onTap: () {
+                  setState(() {
+                    routePrefFilter = routePrefFilter == 'flexible' ? 'Any' : 'flexible';
                   });
                   _applyFiltersAndSort();
                   Navigator.pop(context);
