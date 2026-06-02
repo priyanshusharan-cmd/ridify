@@ -134,13 +134,12 @@ class _FindRideScreenState extends State<FindRideScreen> {
   }
 
   Future<void> startSearch() async {
+    FocusScope.of(context).unfocus(); // Close keyboard before searching
+
     if (pickupController.text.trim().isEmpty ||
         destinationController.text.trim().isEmpty || pickupLat == null || destLat == null) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text("Please select valid locations for both Pickup and Destination!"),
-          backgroundColor: Colors.redAccent,
-        ),
+        const SnackBar(content: Text("Please select valid pickup and destination from suggestions."), backgroundColor: Colors.red),
       );
       return;
     }
@@ -189,14 +188,19 @@ class _FindRideScreenState extends State<FindRideScreen> {
       );
 
       if (mounted) {
-        if (validRides.isEmpty && _searchResults == null) {
+        if (validRides.isEmpty) {
           ScaffoldMessenger.of(context).clearSnackBars();
           ScaffoldMessenger.of(context).showSnackBar(
             const SnackBar(
               content: Text("No rides found matching your route and criteria."),
               backgroundColor: Colors.orange,
+              behavior: SnackBarBehavior.floating,
+              duration: Duration(seconds: 4),
             ),
           );
+          setState(() {
+            _searchResults = null;
+          });
         } else {
           setState(() {
             _searchResults = validRides;
