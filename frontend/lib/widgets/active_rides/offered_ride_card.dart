@@ -141,17 +141,10 @@ class OfferedRideCard extends StatelessWidget {
                                 ride['departureTime'].toString().replaceAll(' at ', ' • '),
                                 style: const TextStyle(color: Colors.grey, fontSize: 13, fontWeight: FontWeight.w600),
                               ),
-                              const SizedBox(height: 6),
-                              Container(
-                                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                                decoration: BoxDecoration(
-                                  color: isDark ? Colors.white12 : Colors.grey[200],
-                                  borderRadius: BorderRadius.circular(6),
-                                ),
-                                child: Text(
-                                  routePref,
-                                  style: TextStyle(fontSize: 11, fontWeight: FontWeight.w600, color: isDark ? Colors.white70 : Colors.black87),
-                                ),
+                              const SizedBox(height: 2),
+                              Text(
+                                routePref,
+                                style: const TextStyle(color: Colors.grey, fontSize: 13, fontWeight: FontWeight.w600),
                               ),
                             ],
                           ),
