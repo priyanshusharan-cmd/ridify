@@ -183,9 +183,21 @@ class _ActiveRidesTabState extends State<ActiveRidesTab> {
 
   @override
   Widget build(BuildContext context) {
+    final String myEmailLower = widget.myEmail.trim().toLowerCase();
+    
     final List<dynamic> activeRidesOnly = widget.rides
         .where((r) {
-          if (r['status'] == 'cancelled' || r['status'] == 'completed') return false;
+          if (r['status'] == 'cancelled') return false;
+          if (r['status'] == 'completed') {
+             final uemailDot = myEmailLower.replaceAll('.', '_dot_');
+             final details = r['riderDetails']?[myEmailLower] ?? r['riderDetails']?[uemailDot];
+             final List dropped = r['droppedPassengers'] ?? [];
+             bool isDropped = dropped.map((e) => e.toString().toLowerCase().trim()).contains(myEmailLower);
+             bool hasPaid = details?['paid'] == true;
+             
+             if (isDropped && !hasPaid) return true;
+             return false;
+          }
           
           // Check if expired
           if (r['expiresAt'] != null) {
@@ -200,7 +212,6 @@ class _ActiveRidesTabState extends State<ActiveRidesTab> {
         })
         .toList();
 
-    final String myEmailLower = widget.myEmail.trim().toLowerCase();
 
     final List<dynamic> myOfferedRides = activeRidesOnly.where((r) {
       return (r['riderEmail']?.toString().toLowerCase().trim() == myEmailLower) &&
@@ -216,14 +227,17 @@ class _ActiveRidesTabState extends State<ActiveRidesTab> {
     final List<dynamic> liveRides = activeRidesOnly.where((r) {
       final bool isDriver = r['riderEmail']?.toString().toLowerCase().trim() == myEmailLower;
       final bool isPassenger = (r['passengers'] as List?)?.map((e) => e.toString().toLowerCase().trim()).contains(myEmailLower) ?? false;
+      final bool isBoarded = (r['boardedPassengers'] as List?)?.map((e) => e.toString().toLowerCase().trim()).contains(myEmailLower) ?? false;
+      final bool isDropped = (r['droppedPassengers'] as List?)?.map((e) => e.toString().toLowerCase().trim()).contains(myEmailLower) ?? false;
 
       if (isDriver) {
         return r['status'] == 'started';
-      } else if (isPassenger) {
+      } else if (isPassenger || isBoarded || isDropped) {
         return r['status'] == 'available' ||
             r['status'] == 'accepted' ||
             r['status'] == 'full' ||
-            r['status'] == 'started';
+            r['status'] == 'started' ||
+            r['status'] == 'completed';
       }
       return false;
     }).toList();

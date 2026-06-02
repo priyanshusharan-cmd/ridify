@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
 import '../../core/utils.dart';
 import 'stat_chip.dart';
-import '../screens/driver_completing_screen.dart';
-import '../screens/rider_completing_screen.dart';
 
 class RideHistoryCard extends StatelessWidget {
   final dynamic ride;
@@ -233,43 +231,7 @@ class RideHistoryCard extends StatelessWidget {
       fare = ride['fare']?.toString() ?? '0';
     }
 
-    return GestureDetector(
-      onTap: () {
-        if (isCancelled || wasDeclined || wasKicked || (isExpired && !rideWasStarted)) return;
-        
-        final rideId = ride['_id']?.toString() ?? ride['rideId']?.toString();
-        if (rideId == null) return;
-        
-        if (wasIDriver) {
-          Navigator.push(
-            context,
-            MaterialPageRoute(
-              builder: (_) => DriverCompletingScreen(rideId: rideId, initialRideData: ride),
-            ),
-          );
-        } else {
-          final uemailDot = uemail.replaceAll('.', '_dot_');
-          final details = ride['riderDetails']?[uemail] ?? ride['riderDetails']?[uemailDot];
-          int fareAmount = (details?['fare'] as num?)?.toInt() ?? (ride['fare'] as num?)?.toInt() ?? 0;
-          
-          String myName = details?['riderName'] ?? userEmail.split('@')[0];
-          
-          Navigator.push(
-            context,
-            MaterialPageRoute(
-              builder: (_) => RiderCompletingScreen(
-                isDriver: false,
-                rideId: rideId,
-                myName: myName,
-                myEmail: userEmail,
-                fareAmount: fareAmount,
-                initialRideData: ride,
-              ),
-            ),
-          );
-        }
-      },
-      child: Container(
+    return Container(
       margin: const EdgeInsets.only(bottom: 20),
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
@@ -472,7 +434,6 @@ class RideHistoryCard extends StatelessWidget {
             ],
           ),
         ],
-      ),
       ),
     );
   }
