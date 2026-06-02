@@ -1,4 +1,5 @@
 import 'package:flutter/foundation.dart';
+import 'dart:async';
 import 'package:socket_io_client/socket_io_client.dart' as io;
 import 'constants.dart';
 
@@ -14,6 +15,7 @@ class SocketService {
   String? _accessToken;
   final Map<String, int> _joinedRidesCount = {};
   final Map<String, List<void Function(dynamic)>> _eventListeners = {};
+  Timer? _healthCheckTimer;
 
   /// The single shared socket. Created lazily on first access.
   io.Socket get socket {
@@ -30,6 +32,10 @@ class SocketService {
       'autoConnect': false, // Don't auto-connect until token is set
       'forceNew': true,
       'auth': {'token': accessToken},
+      'reconnection': true,
+      'reconnectionDelay': 1000,
+      'reconnectionDelayMax': 5000,
+      'reconnectionAttempts': 9999, // Keep trying to reconnect on mobile data
     });
 
     s.onConnect((_) {
@@ -62,14 +68,26 @@ class SocketService {
     final needsRecreate = _userEmail != userEmail || _accessToken != accessToken;
     _userEmail = userEmail;
     _accessToken = accessToken;
-    
+
     if (_socket != null && needsRecreate) {
       _socket!.disconnect();
       _socket!.dispose();
       _socket = null;
     }
-    
+
     if (!socket.connected) socket.connect();
+    _startHealthCheck();
+  }
+
+  void _startHealthCheck() {
+    _healthCheckTimer?.cancel();
+    // Check socket health every 10 seconds
+    _healthCheckTimer = Timer.periodic(const Duration(seconds: 10), (_) {
+      if (_socket != null && !_socket!.connected && _userEmail != null) {
+        debugPrint('🔌 Health check: Socket disconnected, attempting reconnection...');
+        _socket!.connect();
+      }
+    });
   }
 
   void on(String event, void Function(dynamic) handler) {
@@ -121,6 +139,8 @@ class SocketService {
 
   /// Full cleanup (e.g., on logout).
   void dispose() {
+    _healthCheckTimer?.cancel();
+    _healthCheckTimer = null;
     for (final rideId in List.from(_joinedRidesCount.keys)) {
       _socket?.emit('leave_ride', {'rideId': rideId});
     }
@@ -141,6 +161,20 @@ class SocketService {
       _socket = null;
       if (_userEmail != null) {
          Future.delayed(const Duration(milliseconds: 300), () => socket.connect());
+      }
+    }
+  }
+
+  /// Force reconnect socket (e.g., when app resumes from background on mobile data)
+  void forceReconnect() {
+    if (_socket != null && !_socket!.connected) {
+      debugPrint('🔌 Forcing socket reconnection...');
+      _socket!.disconnect();
+      _socket!.dispose();
+      _socket = null;
+      // Re-create and connect
+      if (_userEmail != null && _accessToken != null) {
+        Future.delayed(const Duration(milliseconds: 200), () => socket.connect());
       }
     }
   }

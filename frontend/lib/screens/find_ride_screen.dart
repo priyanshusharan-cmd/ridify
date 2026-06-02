@@ -70,12 +70,7 @@ class _FindRideScreenState extends State<FindRideScreen> {
     return 6; // SUV or Any
   }
 
-  void _onVehicleChanged(String vehicle) {
-    setState(() {
-      selectedVehicle = vehicle;
-      selectedSeats = 1;
-    });
-  }
+
 
   void _swapLocations() {
     setState(() {

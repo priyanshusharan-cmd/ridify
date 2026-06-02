@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 import 'services/health_service.dart';
 import 'core/theme_provider.dart';
 import 'core/app_theme.dart';
+import 'core/socket_service.dart';
 import 'screens/splash_screen.dart';
 
 import 'package:flutter_dotenv/flutter_dotenv.dart';
@@ -41,8 +42,10 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
     if (state == AppLifecycleState.resumed) {
-      // User came back to the app from background, ping immediately to wake/check server
+      // User came back to the app from background
       _pingBackend();
+      // Force socket reconnection in case connection was lost on mobile data
+      SocketService().forceReconnect();
     }
   }
 

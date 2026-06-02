@@ -9,8 +9,8 @@ function initSocket(server, app) {
 
   const io = new Server(server, {
     cors: { origin: allowedOrigin ? allowedOrigin : '*' },
-    pingInterval: parseInt(process.env.SOCKET_PING_INTERVAL) || 10000,
-    pingTimeout: parseInt(process.env.SOCKET_PING_TIMEOUT) || 5000,
+    pingInterval: parseInt(process.env.SOCKET_PING_INTERVAL) || 25000, // 25s for mobile data tolerance
+    pingTimeout: parseInt(process.env.SOCKET_PING_TIMEOUT) || 20000, // 20s timeout (more forgiving for mobile)
   });
 
   // =============================================
