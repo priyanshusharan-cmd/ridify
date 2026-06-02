@@ -193,6 +193,7 @@ class _AvailableRidesScreenState extends State<AvailableRidesScreen> {
     final isDark = Theme.of(context).brightness == Brightness.dark;
     showModalBottomSheet(
       context: context,
+      isScrollControlled: true,
       backgroundColor: Colors.transparent,
       builder: (context) {
         return Container(
@@ -201,11 +202,12 @@ class _AvailableRidesScreenState extends State<AvailableRidesScreen> {
             color: Theme.of(context).scaffoldBackgroundColor,
             borderRadius: const BorderRadius.vertical(top: Radius.circular(24)),
           ),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              const Text(
+          child: SingleChildScrollView(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const Text(
                 "Filters",
                 style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
               ),
@@ -241,7 +243,6 @@ class _AvailableRidesScreenState extends State<AvailableRidesScreen> {
                   Navigator.pop(context);
                 },
               ),
-              const Divider(height: 20),
               const Text(
                 "Route Preference",
                 style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
@@ -287,7 +288,8 @@ class _AvailableRidesScreenState extends State<AvailableRidesScreen> {
                 },
               ),
               const SizedBox(height: 20),
-            ],
+              ],
+            ),
           ),
         );
       },
