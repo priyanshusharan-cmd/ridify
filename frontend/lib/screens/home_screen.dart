@@ -337,9 +337,9 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
             if (driverEmail == myEmailLower) {
               navigatedRides.add(rideId);
               if (navigatorKey.currentState != null) {
-                navigatorKey.currentState!.push(MaterialPageRoute(
+                navigatorKey.currentState!.pushAndRemoveUntil(MaterialPageRoute(
                   builder: (_) => DriverCompletingScreen(rideId: rideId, initialRideData: ride)
-                ));
+                ), (route) => route.isFirst);
               }
             } else {
               // Check if I was a passenger
@@ -354,11 +354,11 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                   final details = riderDetails?[myEmailLower] ?? riderDetails?[uemailDot];
                   int fare = (details?['fare'] as num?)?.toInt() ?? (ride['fare'] as num?)?.toInt() ?? 0;
                   
-                  navigatorKey.currentState!.push(MaterialPageRoute(
+                  navigatorKey.currentState!.pushAndRemoveUntil(MaterialPageRoute(
                     builder: (_) => RiderCompletingScreen(
                       isDriver: false, rideId: rideId, myName: widget.userName, myEmail: widget.userEmail, fareAmount: fare, initialRideData: ride
                     )
-                  ));
+                  ), (route) => route.isFirst);
                 }
               }
             }

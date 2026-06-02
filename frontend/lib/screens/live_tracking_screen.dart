@@ -192,8 +192,17 @@ class _LiveTrackingScreenState extends State<LiveTrackingScreen> {
       setState(() {
         final bool isFirstLoad = rideData == null;
         rideData = data;
-        if (data['status'] == 'completed' && widget.isDriver) {
-          _triggerCompletionScreen();
+        if (data['status'] == 'completed') {
+          if (widget.isDriver) {
+            _triggerCompletionScreen();
+          } else {
+            int fare = 0;
+            final details = data['riderDetails'];
+            if (details != null && details[myEmailLower] != null) {
+              fare = (details[myEmailLower]['fare'] as num?)?.toInt() ?? 0;
+            }
+            _triggerPaymentScreen(fare);
+          }
           return;
         }
         if (data['status'] == 'started' && !isStarted) isStarted = true;
