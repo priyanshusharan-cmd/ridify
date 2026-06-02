@@ -190,6 +190,7 @@ class _FindRideScreenState extends State<FindRideScreen> {
 
       if (mounted) {
         if (validRides.isEmpty && _searchResults == null) {
+          ScaffoldMessenger.of(context).clearSnackBars();
           ScaffoldMessenger.of(context).showSnackBar(
             const SnackBar(
               content: Text("No rides found matching your route and criteria."),
@@ -204,6 +205,7 @@ class _FindRideScreenState extends State<FindRideScreen> {
       }
     } on TimeoutException {
       if (mounted) {
+        ScaffoldMessenger.of(context).clearSnackBars();
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
             content: Text("Search timed out. Please try again."),
@@ -214,6 +216,7 @@ class _FindRideScreenState extends State<FindRideScreen> {
     } catch (e) {
       debugPrint("❌ Network Error: $e");
       if (mounted) {
+        ScaffoldMessenger.of(context).clearSnackBars();
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
             content: Text("Network error. Check your connection."),
