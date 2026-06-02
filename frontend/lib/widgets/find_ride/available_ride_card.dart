@@ -39,18 +39,36 @@ class AvailableRideCard extends StatelessWidget {
       ...(ride['boardedPassengers'] as List? ?? []),
       ...(ride['droppedPassengers'] as List? ?? [])
     ];
+    final searchStart = ride['startIndex'] != null ? (ride['startIndex'] as num).toInt() : null;
+    final searchEnd = ride['endIndex'] != null ? (ride['endIndex'] as num).toInt() : null;
+
     for (var r in allRiders) {
       final email = r.toString().toLowerCase().trim();
       final uemailDot = email.replaceAll('.', '_dot_');
       final details = riderDetails[email] ?? riderDetails[uemailDot];
-      if (details != null && details['seats'] != null) {
-        occupiedSeats += (details['seats'] as num).toInt();
-      } else if (seatAllocations[email] != null) {
-        occupiedSeats += (seatAllocations[email] as num).toInt();
-      } else if (seatAllocations[uemailDot] != null) {
-        occupiedSeats += (seatAllocations[uemailDot] as num).toInt();
-      } else {
-        occupiedSeats += 1;
+      
+      bool overlaps = true;
+      if (prefRaw != 'nonstop' && prefRaw != 'shared_start' && searchStart != null && searchEnd != null && details != null) {
+         final pStart = details['startIndex'] != null ? (details['startIndex'] as num).toInt() : -1;
+         final pEnd = details['endIndex'] != null ? (details['endIndex'] as num).toInt() : -1;
+         
+         if (pStart != -1 && pEnd != -1) {
+            if (pEnd <= searchStart || pStart >= searchEnd) {
+               overlaps = false;
+            }
+         }
+      }
+
+      if (overlaps) {
+        if (details != null && details['seats'] != null) {
+          occupiedSeats += (details['seats'] as num).toInt();
+        } else if (seatAllocations[email] != null) {
+          occupiedSeats += (seatAllocations[email] as num).toInt();
+        } else if (seatAllocations[uemailDot] != null) {
+          occupiedSeats += (seatAllocations[uemailDot] as num).toInt();
+        } else {
+          occupiedSeats += 1;
+        }
       }
     }
     int seatsLeft = totalSeats - occupiedSeats;
