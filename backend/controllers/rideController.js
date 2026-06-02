@@ -5,11 +5,11 @@ const { isValidEmail, isValidObjectId } = require('../utils/validators');
 const { emailToKey, keyToEmail } = require('../utils/emailKey');
 const asyncHandler = require('../utils/asyncHandler');
 const sanitizeHtml = require('sanitize-html');
-const { 
-  getDepartureTimeEpoch, 
-  getRiderDetail, 
-  checkCapacityForSearch, 
-  checkCapacityForRequest, 
+const {
+  getDepartureTimeEpoch,
+  getRiderDetail,
+  checkCapacityForSearch,
+  checkCapacityForRequest,
   checkCapacity,
   decodeRiderDetailsForSocket,
   sanitizeRideForBroadcast
@@ -40,7 +40,7 @@ exports.searchRides = async (req, res) => {
     if (date) matchQuery.departureTime = { $regex: new RegExp(`^${date}`, 'i') };
 
     const activeRides = await Ride.find(matchQuery).lean();
-    
+
     // Decode map keys since toJSON transform doesn't run on lean objects
     activeRides.forEach(ride => {
       if (ride.riderDetails) {
@@ -91,13 +91,13 @@ exports.searchRides = async (req, res) => {
         for (let i = 0; i < ride.routePath.length; i += step) {
           const pt = ride.routePath[i];
           const ptPoint = turf.point([pt.lng, pt.lat]);
-          
+
           const distToPickup = turf.distance(pickupPoint, ptPoint, { units: 'meters' });
           if (distToPickup < minPickupDist) {
             minPickupDist = distToPickup;
             startIndex = i;
           }
-          
+
           const distToDest = turf.distance(destPoint, ptPoint, { units: 'meters' });
           if (distToDest < minDestDist) {
             minDestDist = distToDest;
@@ -139,7 +139,7 @@ exports.searchRides = async (req, res) => {
           // Preferences check
           const isStartClose = startIndex < (ride.routePath.length * 0.1);
           const isEndClose = endIndex > (ride.routePath.length * 0.9);
-          
+
           if (ride.routePreference === 'shared_start' && !isStartClose) continue;
           if (ride.routePreference === 'nonstop' && (!isStartClose || !isEndClose)) continue;
 
@@ -228,7 +228,7 @@ exports.createRide = async (req, res) => {
   try {
     const data = req.body;
     data.riderEmail = req.user.email.trim().toLowerCase();
-    
+
     if (data.riderName) {
       data.riderName = String(data.riderName).trim().replace(/<[^>]*>/g, '').substring(0, 200);
     }
@@ -236,7 +236,7 @@ exports.createRide = async (req, res) => {
     if (!data.routePath || !Array.isArray(data.routePath) || data.routePath.length < 2) {
       return res.status(400).json({ error: "Invalid routePath." });
     }
-    
+
     const validCoord = (p) =>
       p !== null && typeof p === 'object' &&
       isFinite(p.lat) && isFinite(p.lng) &&
@@ -245,7 +245,7 @@ exports.createRide = async (req, res) => {
     if (!data.routePath.every(validCoord)) {
       return res.status(400).json({ error: "routePath contains one or more invalid coordinates." });
     }
-    
+
     const isValidCoord = (lat, lng) => isFinite(lat) && isFinite(lng) && lat >= -90 && lat <= 90 && lng >= -180 && lng <= 180;
     if (!isValidCoord(data.pickupLat, data.pickupLng) || !isValidCoord(data.destLat, data.destLng)) {
       return res.status(400).json({ error: "Invalid coordinates." });
@@ -254,11 +254,11 @@ exports.createRide = async (req, res) => {
     if (!Number.isInteger(Number(data.totalSeats)) || data.totalSeats < 1 || data.totalSeats > 8) {
       return res.status(400).json({ error: "Total seats must be an integer between 1 and 8." });
     }
-    
+
     if (!['Bike', 'Sedan', 'SUV'].includes(data.vehicleType)) {
       return res.status(400).json({ error: "Invalid vehicle type." });
     }
-    
+
     if (!['flexible', 'shared_start', 'nonstop'].includes(data.routePreference)) {
       return res.status(400).json({ error: "Invalid route preference." });
     }
@@ -272,12 +272,12 @@ exports.createRide = async (req, res) => {
     const reqDeparture = data.departureEpoch;
     let depEpoch = reqDeparture && typeof reqDeparture === 'number'
       ? reqDeparture : Date.now();
-      
+
     const now = Date.now();
     // Allow rides to be scheduled up to 7 days in advance
     depEpoch = Math.max(depEpoch, now); // Can't depart in the past
     depEpoch = Math.min(depEpoch, now + 7 * 24 * 60 * 60 * 1000);
-    
+
     // Ride expires exactly 15 minutes after the departure time
     data.expiresAt = depEpoch + (15 * 60 * 1000);
     data.departureEpoch = depEpoch; // Save actual departure epoch
@@ -343,9 +343,9 @@ exports.cancelRide = async (req, res) => {
 
     ride.status = 'cancelled';
     await ride.save();
-    
+
     const finalPayload = { rideId: req.params.id, ride: decodeRiderDetailsForSocket(ride.toJSON()) };
-    
+
     for (const requester of notifiedRequesters) {
       req.emitToUser(requester, 'ride_cancelled', finalPayload);
     }
@@ -370,7 +370,7 @@ exports.requestRide = async (req, res) => {
     try {
       const { riderName, seats, computedFare, computedDistance, startIndex, endIndex, pickupLat, pickupLng, destLat, destLng, pickupLocation, destination } = req.body;
       const riderEmail = req.user.email;
-      
+
       const seatCount = parseInt(seats);
       if (isNaN(seatCount) || seatCount <= 0 || seatCount > 8) {
         return res.status(400).json({ error: "Seats must be an integer between 1 and 8." });
@@ -446,13 +446,13 @@ exports.requestRide = async (req, res) => {
         serverFare = percentage >= 0.99 ? ride.fare : Math.round(ride.fare * percentage);
       }
       if (serverFare < 1) serverFare = 1;
-      
+
       ride.riderDetails.set(safeEmail, {
         pickupLat, pickupLng, destLat, destLng, pickupLocation, destination,
         fare: serverFare, distance: computedDistance, seats: seatCount,
         startIndex: parsedStart, endIndex: parsedEnd, paid: false, riderName: riderName || ''
       });
-      
+
       const updateResult = await Ride.findOneAndUpdate(
         { _id: ride._id, optimisticLock: ride.optimisticLock },
         {
@@ -480,14 +480,14 @@ exports.requestRide = async (req, res) => {
 
       const rideId = updateResult._id.toString();
       req.joinUserToRide(riderEmail, rideId);
-      
+
       const ridePayload = decodeRiderDetailsForSocket(updateResult.toJSON());
       req.io.to(rideId).emit('new_ride_request', { rideId, ride: ridePayload });
       req.emitToUser(ride.riderEmail, 'new_ride_request', { rideId, ride: ridePayload });
 
       return res.status(200).json({ success: true });
-    } catch (err) { 
-      return res.status(500).json({ error: err.message }); 
+    } catch (err) {
+      return res.status(500).json({ error: err.message });
     }
   }
 };
@@ -524,7 +524,7 @@ exports.acceptRider = async (req, res) => {
       // Move from requests to passengers
       ride.requests = ride.requests.filter(r => r !== passengerEmail);
       ride.passengers.push(passengerEmail);
-      
+
       // Update paid status if needed (though driver accept usually doesn't set paid = true)
       // riderDetail is updated inside the Map indirectly if we use set
       ride.riderDetails.set(emailToKey(passengerEmail), riderDetail);
@@ -631,73 +631,73 @@ exports.acceptRider = async (req, res) => {
             for (let i = 0; i < segChanges.length; i++) {
               occ += segChanges[i].change;
               if (i < segChanges.length - 1 && segChanges[i + 1].index > segChanges[i].index) {
-              if (occ < ride.totalSeats) {
-                allFull = false;
-                break;
+                if (occ < ride.totalSeats) {
+                  allFull = false;
+                  break;
+                }
               }
             }
+            isFull = allFull && maxOccupancy >= ride.totalSeats;
           }
-          isFull = allFull && maxOccupancy >= ride.totalSeats;
+        }
+        if (isFull) {
+          ride.status = 'full';
         }
       }
-      if (isFull) {
-        ride.status = 'full';
-      }
-    }
 
-    const updateResult = await Ride.findOneAndUpdate(
-      {
-        _id: ride._id,
-        optimisticLock: ride.optimisticLock,
-        requests: passengerEmail
-      },
-      {
-        $set: {
-          status: ride.status,
-          passengers: ride.passengers,
-          requests: ride.requests,
-          declined: ride.declined,
-          riderDetails: ride.riderDetails,
+      const updateResult = await Ride.findOneAndUpdate(
+        {
+          _id: ride._id,
+          optimisticLock: ride.optimisticLock,
+          requests: passengerEmail
         },
-        $inc: { optimisticLock: 1 }
-      },
-      { new: true }
-    );
+        {
+          $set: {
+            status: ride.status,
+            passengers: ride.passengers,
+            requests: ride.requests,
+            declined: ride.declined,
+            riderDetails: ride.riderDetails,
+          },
+          $inc: { optimisticLock: 1 }
+        },
+        { new: true }
+      );
 
-    if (!updateResult) {
-      retries--;
-      if (retries === 0) {
-        return res.status(409).json({
-          error: 'Concurrent modification detected. The ride state changed. Please retry.',
-          code: 'OPTIMISTIC_LOCK_CONFLICT'
+      if (!updateResult) {
+        retries--;
+        if (retries === 0) {
+          return res.status(409).json({
+            error: 'Concurrent modification detected. The ride state changed. Please retry.',
+            code: 'OPTIMISTIC_LOCK_CONFLICT'
+          });
+        }
+        await new Promise(r => setTimeout(r, Math.random() * 80 + 20));
+        continue;
+      }
+
+      const rideId = updateResult._id.toString();
+      const decodedFullRide = decodeRiderDetailsForSocket(updateResult.toJSON());
+
+      const participants = new Set([
+        decodedFullRide.riderEmail,
+        ...(decodedFullRide.passengers || []),
+        ...(decodedFullRide.requests || [])
+      ]);
+
+      for (const p of participants) {
+        req.emitToUser(p, 'ride_accepted', {
+          rideId,
+          ride: sanitizeRideForBroadcast(decodedFullRide, p)
         });
       }
-      await new Promise(r => setTimeout(r, Math.random() * 80 + 20));
-      continue;
-    }
 
-    const rideId = updateResult._id.toString();
-    const decodedFullRide = decodeRiderDetailsForSocket(updateResult.toJSON());
-    
-    const participants = new Set([
-      decodedFullRide.riderEmail,
-      ...(decodedFullRide.passengers || []),
-      ...(decodedFullRide.requests || [])
-    ]);
+      // Also broadcast to the ride room so that active listeners (e.g. LiveTrackingScreen) update immediately
+      req.io.to(rideId).emit('ride_updated', { rideId, ride: decodedFullRide });
 
-    for (const p of participants) {
-      req.emitToUser(p, 'ride_accepted', {
-        rideId,
-        ride: sanitizeRideForBroadcast(decodedFullRide, p)
-      });
-    }
-    
-    // Also broadcast to the ride room so that active listeners (e.g. LiveTrackingScreen) update immediately
-    req.io.to(rideId).emit('ride_updated', { rideId, ride: decodedFullRide });
-
-    return res.status(200).json(updateResult);
-    } catch (err) { 
-      return res.status(500).json({ error: err.message }); 
+      return res.status(200).json(updateResult);
+    } catch (err) {
+      return res.status(500).json({ error: err.message });
     }
   }
 };
@@ -724,11 +724,11 @@ exports.declineRider = async (req, res) => {
     if (req.user.email === ride.riderEmail && !ride.declined.includes(passengerEmail)) {
       ride.declined.push(passengerEmail);
     }
-    
+
     if (ride.requests.length === 0 && ride.passengers.length === 0 && ride.status !== 'started') {
       ride.status = 'available';
     }
-    
+
     await ride.save();
     const rideId = ride._id.toString();
     const ridePayload = decodeRiderDetailsForSocket(ride.toJSON());
@@ -834,14 +834,14 @@ exports.driverArrived = async (req, res) => {
       arrivedAt.push(passengerEmail);
     } else if (ride.routePreference === 'nonstop' || ride.routePreference === 'shared_start') {
       for (const pName of ride.passengers) {
-        if (!arrivedAt.includes(pName) && 
-            !ride.boardedPassengers.includes(pName) && 
-            !ride.droppedPassengers.includes(pName)) {
+        if (!arrivedAt.includes(pName) &&
+          !ride.boardedPassengers.includes(pName) &&
+          !ride.droppedPassengers.includes(pName)) {
           arrivedAt.push(pName);
         }
       }
     }
-    
+
     const updateResult = await Ride.findOneAndUpdate(
       {
         _id: ride._id,
@@ -862,7 +862,19 @@ exports.driverArrived = async (req, res) => {
     }
 
     const rideId = updateResult._id.toString();
-    req.io.to(rideId).emit('driver_arrived', { rideId, riderName: passengerEmail, ride: decodeRiderDetailsForSocket(updateResult.toJSON()) });
+    const payload = { rideId, riderName: passengerEmail, ride: decodeRiderDetailsForSocket(updateResult.toJSON()) };
+    req.io.to(rideId).emit('driver_arrived', payload);
+
+    // Notify all participants individually so they get the update regardless of room state
+    const allParticipants = new Set([
+      updateResult.riderEmail,
+      ...(updateResult.passengers || []),
+      ...(updateResult.requests || [])
+    ]);
+    for (const p of allParticipants) {
+      req.emitToUser(p, 'driver_arrived', payload);
+    }
+
     res.status(200).json(updateResult);
   } catch (err) { res.status(500).json({ error: err.message }); }
 };
@@ -893,7 +905,7 @@ exports.boardPassenger = async (req, res) => {
     const toBoard = getRiderDetail(ride, passengerEmail)?.seats || 1;
 
     if (currentlyOccupied + toBoard > ride.totalSeats) {
-       return res.status(400).json({ error: "Physical car is full!" });
+      return res.status(400).json({ error: "Physical car is full!" });
     }
 
     // Prepare updated fields
@@ -931,7 +943,19 @@ exports.boardPassenger = async (req, res) => {
     }
 
     const rideId = updateResult._id.toString();
-    req.io.to(rideId).emit('passenger_boarded', { rideId, riderName: passengerEmail, ride: decodeRiderDetailsForSocket(updateResult.toJSON()) });
+    const payload = { rideId, riderName: passengerEmail, ride: decodeRiderDetailsForSocket(updateResult.toJSON()) };
+    req.io.to(rideId).emit('passenger_boarded', payload);
+
+    // Notify all participants individually
+    const allParticipants = new Set([
+      updateResult.riderEmail,
+      ...(updateResult.passengers || []),
+      ...(updateResult.requests || [])
+    ]);
+    for (const p of allParticipants) {
+      req.emitToUser(p, 'passenger_boarded', payload);
+    }
+
     res.status(200).json(updateResult);
   } catch (err) { res.status(500).json({ error: err.message }); }
 };
@@ -956,7 +980,7 @@ exports.dropOffPassenger = async (req, res) => {
 
     const boardedPassengers = ride.boardedPassengers.filter(p => p !== passengerEmail);
     const passengers = ride.passengers.filter(p => p !== passengerEmail);
-    
+
     const droppedPassengers = [...(ride.droppedPassengers || [])];
     if (!droppedPassengers.includes(passengerEmail)) {
       droppedPassengers.push(passengerEmail);
@@ -995,13 +1019,25 @@ exports.dropOffPassenger = async (req, res) => {
 
     const rideId = updateResult._id.toString();
     const fare = getRiderDetail(updateResult, passengerEmail)?.fare;
-    const payload = { 
-      rideId, 
-      riderName: passengerEmail, 
+    const payload = {
+      rideId,
+      riderName: passengerEmail,
       fare,
       ride: decodeRiderDetailsForSocket(updateResult.toJSON())
     };
     req.io.to(rideId).emit('passenger_dropped', payload);
+
+    // Notify all participants individually
+    const allParticipants = new Set([
+      updateResult.riderEmail,
+      ...(updateResult.passengers || []),
+      ...(updateResult.requests || []),
+      ...(updateResult.droppedPassengers || [])
+    ]);
+    for (const p of allParticipants) {
+      req.emitToUser(p, 'passenger_dropped', payload);
+    }
+
     req.removeUserFromRide(passengerEmail, rideId);
     res.status(200).json(updateResult);
   } catch (err) { res.status(500).json({ error: err.message }); }
@@ -1029,7 +1065,7 @@ exports.passengerPays = async (req, res) => {
     detail.paid = true;
     const safeName = emailToKey(passengerEmail);
     ride.riderDetails.set(safeName, detail);
-    
+
     if (!ride.paidPassengers) ride.paidPassengers = [];
     if (!ride.paidPassengers.includes(passengerEmail)) {
       ride.paidPassengers.push(passengerEmail);
@@ -1066,9 +1102,9 @@ exports.startRide = async (req, res) => {
     const arrivedAt = [...(ride.arrivedAt || [])];
     if (ride.routePreference === 'nonstop' || ride.routePreference === 'shared_start') {
       for (const pName of ride.passengers) {
-        if (!arrivedAt.includes(pName) && 
-            !ride.boardedPassengers.includes(pName) && 
-            !ride.droppedPassengers.includes(pName)) {
+        if (!arrivedAt.includes(pName) &&
+          !ride.boardedPassengers.includes(pName) &&
+          !ride.droppedPassengers.includes(pName)) {
           arrivedAt.push(pName);
         }
       }
@@ -1109,7 +1145,19 @@ exports.startRide = async (req, res) => {
     }
 
     const rideId = updateResult._id.toString();
-    req.io.to(rideId).emit('ride_started', { rideId, ride: decodeRiderDetailsForSocket(updateResult.toJSON()) });
+    const payload = { rideId, ride: decodeRiderDetailsForSocket(updateResult.toJSON()) };
+    req.io.to(rideId).emit('ride_started', payload);
+
+    // Notify all participants individually
+    const allParticipants = new Set([
+      updateResult.riderEmail,
+      ...(updateResult.passengers || []),
+      ...(updateResult.requests || [])
+    ]);
+    for (const p of allParticipants) {
+      req.emitToUser(p, 'ride_started', payload);
+    }
+
     res.status(200).json(updateResult);
   } catch (err) { res.status(500).json({ error: err.message }); }
 };
@@ -1184,15 +1232,29 @@ exports.endRide = async (req, res) => {
       logger.warn(`Ride ${ride._id} ended with ${unpaid.length} unpaid passenger(s):`, unpaid);
     }
 
-    req.io.to(rideId).emit('ride_ended', {
-        rideId,
-        ride: decodeRiderDetailsForSocket(ride.toJSON()),
-        passengers: ride.droppedPassengers,
-        riderName: ride.riderName,
-        riderEmail: ride.riderEmail,
-        boardedPassengers: ride.boardedPassengers,
-        unpaidPassengers: unpaid
-    });
+    const payload = {
+      rideId,
+      ride: decodeRiderDetailsForSocket(ride.toJSON()),
+      passengers: ride.droppedPassengers,
+      riderName: ride.riderName,
+      riderEmail: ride.riderEmail,
+      boardedPassengers: ride.boardedPassengers,
+      unpaidPassengers: unpaid
+    };
+
+    req.io.to(rideId).emit('ride_ended', payload);
+
+    // Notify all participants individually
+    const allParticipants = new Set([
+      ride.riderEmail,
+      ...(ride.passengers || []),
+      ...(ride.requests || []),
+      ...(ride.droppedPassengers || [])
+    ]);
+    for (const p of allParticipants) {
+      req.emitToUser(p, 'ride_ended', payload);
+    }
+
     res.status(200).json(ride);
   } catch (err) { res.status(500).json({ error: err.message }); }
 };
@@ -1205,12 +1267,12 @@ exports.sendChatMessage = async (req, res) => {
     if (!text || !text.trim()) {
       return res.status(400).json({ error: "Text is required." });
     }
-    
+
     const User = require('../models/user');
     const senderUser = await User.findOne({ email: req.user.email }, 'name').lean();
     const sender = senderUser?.name || req.user.email.split('@')[0];
     const senderEmail = req.user.email;
-    
+
     // Message length limit and HTML stripping
     const trimmedText = sanitizeHtml(text.trim(), { allowedTags: [], allowedAttributes: {} });
     if (trimmedText.length > CHAT_MAX_LENGTH) {
@@ -1245,10 +1307,11 @@ exports.getDriverStats = async (req, res) => {
     const driverEmail = req.user.email;
     const lowerDriverEmail = driverEmail ? driverEmail.toLowerCase() : '';
     const stats = await Ride.aggregate([
-      { $match: { 
+      {
+        $match: {
           $or: [{ riderEmail: driverEmail }, { riderEmail: lowerDriverEmail }],
-          status: 'completed' 
-        } 
+          status: 'completed'
+        }
       },
       {
         $group: {
@@ -1258,7 +1321,7 @@ exports.getDriverStats = async (req, res) => {
           totalDurationMs: {
             $sum: {
               $cond: [
-                { $and: [ { $gt: ['$startedAt', null] }, { $gt: ['$completedAt', null] } ] },
+                { $and: [{ $gt: ['$startedAt', null] }, { $gt: ['$completedAt', null] }] },
                 { $subtract: ['$completedAt', '$startedAt'] },
                 0
               ]

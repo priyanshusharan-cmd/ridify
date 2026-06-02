@@ -225,8 +225,9 @@ class _LiveTrackingScreenState extends State<LiveTrackingScreen> {
     _removeAllListeners();
     final socketService = SocketService();
     socket = socketService.socket;
-    socketService.joinRide(widget.rideId);
 
+    // Set up ALL listeners FIRST before joining the ride, to prevent race conditions
+    // where events arrive before listeners are ready
     if (!widget.isDriver) {
       SocketService().socket.emit('request_driver_location', {'rideId': widget.rideId});
     }
@@ -302,7 +303,6 @@ class _LiveTrackingScreenState extends State<LiveTrackingScreen> {
         if (map['ride'] != null) {
           setState(() {
             rideData = SocketService.deepConvertMap(map['ride']);
-            // Proactively mark as arrived for instantaneous UI update
             if (map['riderName'] == myEmailLower) {
               List arrived = List.from(rideData!['arrivedAt'] ?? []);
               if (!arrived.contains(myEmailLower)) arrived.add(myEmailLower);
@@ -310,9 +310,7 @@ class _LiveTrackingScreenState extends State<LiveTrackingScreen> {
             }
           });
         }
-        syncRideStatus(); // Robust fetch to guarantee state is perfectly synced
-        // Only show the banner if this event is specifically for this passenger
-        // AND they haven't already boarded (prevents stale re-notifications)
+        syncRideStatus();
         if (!widget.isDriver &&
             map['riderName'] == myEmailLower &&
             !(rideData?['boardedPassengers'] ?? []).contains(myEmailLower)) {
@@ -377,7 +375,6 @@ class _LiveTrackingScreenState extends State<LiveTrackingScreen> {
         }
       }
     });
-    // ride_ended: only driver sees the green completion screen
     _on('ride_ended', (data) {
       if (data == null) return;
       final map = SocketService.deepConvertMap(data);
@@ -425,6 +422,9 @@ class _LiveTrackingScreenState extends State<LiveTrackingScreen> {
         ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("Ride cancelled"), backgroundColor: Colors.red));
       }
     });
+
+    // NOW join the ride room after all listeners are attached
+    socketService.joinRide(widget.rideId);
   }
 
   // Driver-only green completion screen
