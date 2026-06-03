@@ -919,6 +919,7 @@ class _LiveTrackingScreenState extends State<LiveTrackingScreen> {
           onConfirmKickPassenger: _confirmKickPassenger,
           onDriverArriveForPassenger: driverArriveForPassenger,
           onRefresh: syncRideStatus,
+          isSyncing: _syncInProgress,
         ),
       ]),
     );

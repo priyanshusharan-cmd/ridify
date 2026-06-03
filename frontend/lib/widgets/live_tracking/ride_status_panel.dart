@@ -28,6 +28,7 @@ class RideStatusPanel extends StatelessWidget {
   final void Function(String) onConfirmKickPassenger;
   final void Function(String) onDriverArriveForPassenger;
   final Future<void> Function()? onRefresh;
+  final bool isSyncing;
 
   const RideStatusPanel({
     super.key,
@@ -55,6 +56,7 @@ class RideStatusPanel extends StatelessWidget {
     required this.onConfirmKickPassenger,
     required this.onDriverArriveForPassenger,
     this.onRefresh,
+    this.isSyncing = false,
   });
 
   @override
@@ -260,14 +262,20 @@ class RideStatusPanel extends StatelessWidget {
                       ),
                       if (onRefresh != null) 
                         GestureDetector(
-                          onTap: onRefresh,
+                          onTap: isSyncing ? null : onRefresh,
                           child: Container(
                             padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                             decoration: BoxDecoration(
                               color: isDark ? Colors.white10 : Colors.black.withOpacity(0.05),
                               borderRadius: BorderRadius.circular(8),
                             ),
-                            child: Icon(Icons.sync, size: 18, color: panelText),
+                            child: isSyncing
+                                ? const SizedBox(
+                                    width: 18,
+                                    height: 18,
+                                    child: CircularProgressIndicator(strokeWidth: 2, color: Colors.blue),
+                                  )
+                                : Icon(Icons.sync, size: 18, color: panelText),
                           ),
                         ),
                     ]),
