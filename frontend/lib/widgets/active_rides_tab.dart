@@ -361,6 +361,7 @@ class _ActiveRidesTabState extends State<ActiveRidesTab> {
                 );
               }),
             ],
+          ],
         ),
       ),
       ),
