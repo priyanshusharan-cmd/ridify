@@ -457,7 +457,12 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
         onRefresh: fetchRides,
         onGoHome: () => setState(() => _currentIndex = 0),
       ),
-      RideHistoryScreen(userName: widget.userName, userEmail: widget.userEmail, allRides: allRides),
+      RideHistoryScreen(
+        userName: widget.userName,
+        userEmail: widget.userEmail,
+        allRides: allRides,
+        onRefresh: fetchRides,
+      ),
       ProfileScreen(
         userName: widget.userName,
         userAge: widget.userAge,

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/gestures.dart';
 import 'package:socket_io_client/socket_io_client.dart' as io;
 import '../core/socket_service.dart';
 import 'dart:async';
@@ -806,8 +807,23 @@ class _LiveTrackingScreenState extends State<LiveTrackingScreen> {
 
     return Scaffold(
       appBar: AppBar(backgroundColor: Colors.black, title: const Text("Live Ride Map", style: TextStyle(color: Colors.white)), iconTheme: const IconThemeData(color: Colors.white)),
-      body: Stack(children: [
-        Positioned.fill(
+      body: ScrollConfiguration(
+        behavior: ScrollConfiguration.of(context).copyWith(
+          dragDevices: {
+            PointerDeviceKind.touch,
+            PointerDeviceKind.mouse,
+            PointerDeviceKind.trackpad,
+          },
+        ),
+        child: RefreshIndicator(
+          onRefresh: syncRideStatus,
+          child: LayoutBuilder(
+            builder: (context, constraints) => SingleChildScrollView(
+              physics: const AlwaysScrollableScrollPhysics(),
+              child: SizedBox(
+                height: constraints.maxHeight,
+                child: Stack(children: [
+                  Positioned.fill(
           child: driverPosition == null
               ? Center(child: _locationTimedOut
                   ? Column(mainAxisAlignment: MainAxisAlignment.center, children: [
@@ -836,6 +852,11 @@ class _LiveTrackingScreenState extends State<LiveTrackingScreen> {
               ]),
             ],
           ),
+        ),
+        // Pull to refresh trigger zone (transparent overlay at top)
+        Positioned(
+          top: 0, left: 0, right: 0, height: 80,
+          child: Container(color: Colors.transparent),
         ),
         // Locate button
         Positioned(top: 20, right: 20, child: Column(mainAxisSize: MainAxisSize.min, children: [
@@ -918,11 +939,9 @@ class _LiveTrackingScreenState extends State<LiveTrackingScreen> {
           onDropOffPassenger: dropOffPassenger,
           onConfirmKickPassenger: _confirmKickPassenger,
           onDriverArriveForPassenger: driverArriveForPassenger,
-          onRefresh: syncRideStatus,
-          isSyncing: _syncInProgress,
         ),
       ]),
-    );
+    ))));
   }
 }
 

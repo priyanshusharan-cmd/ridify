@@ -27,8 +27,6 @@ class RideStatusPanel extends StatelessWidget {
   final void Function(String) onDropOffPassenger;
   final void Function(String) onConfirmKickPassenger;
   final void Function(String) onDriverArriveForPassenger;
-  final Future<void> Function()? onRefresh;
-  final bool isSyncing;
 
   const RideStatusPanel({
     super.key,
@@ -55,8 +53,6 @@ class RideStatusPanel extends StatelessWidget {
     required this.onDropOffPassenger,
     required this.onConfirmKickPassenger,
     required this.onDriverArriveForPassenger,
-    this.onRefresh,
-    this.isSyncing = false,
   });
 
   @override
@@ -253,31 +249,7 @@ class RideStatusPanel extends StatelessWidget {
                     child: Row(children: [
                       Icon(Icons.airline_seat_recline_normal, size: 20, color: Colors.blue.shade400),
                       const SizedBox(width: 8),
-                      Expanded(
-                        child: Text(
-                          "$currentlyOccupied / $totalCap seats occupied", 
-                          style: TextStyle(color: panelText, fontSize: 14, fontWeight: FontWeight.w600),
-                          overflow: TextOverflow.ellipsis,
-                        ),
-                      ),
-                      if (onRefresh != null) 
-                        GestureDetector(
-                          onTap: isSyncing ? null : onRefresh,
-                          child: Container(
-                            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                            decoration: BoxDecoration(
-                              color: isDark ? Colors.white10 : Colors.black.withOpacity(0.05),
-                              borderRadius: BorderRadius.circular(8),
-                            ),
-                            child: isSyncing
-                                ? const SizedBox(
-                                    width: 18,
-                                    height: 18,
-                                    child: CircularProgressIndicator(strokeWidth: 2, color: Colors.blue),
-                                  )
-                                : Icon(Icons.sync, size: 18, color: panelText),
-                          ),
-                        ),
+                      Text("$currentlyOccupied / $totalCap seats occupied", style: TextStyle(color: panelText, fontSize: 14, fontWeight: FontWeight.w600)),
                     ]),
                   ),
                 ],

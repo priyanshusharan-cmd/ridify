@@ -6,12 +6,14 @@ class RideHistoryScreen extends StatelessWidget {
   final String userName;
   final String userEmail;
   final List<dynamic> allRides;
+  final Future<void> Function()? onRefresh;
 
   const RideHistoryScreen({
     super.key, 
     required this.userName, 
     required this.userEmail,
     required this.allRides,
+    this.onRefresh,
   });
 
   @override
@@ -79,25 +81,37 @@ class RideHistoryScreen extends StatelessWidget {
               ),
             ),
             Expanded(
-              child: myCompletedRides.isEmpty
-                  ? Center(
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Icon(Icons.history_rounded, size: 80, color: isDark ? Colors.white10 : Colors.grey.shade300),
-                          const SizedBox(height: 16),
-                          Text("No completed rides yet.", style: TextStyle(color: isDark ? Colors.white54 : Colors.grey, fontSize: 18, fontWeight: FontWeight.w500)),
-                        ],
+              child: RefreshIndicator(
+                onRefresh: onRefresh ?? () async {},
+                child: myCompletedRides.isEmpty
+                    ? LayoutBuilder(
+                        builder: (context, constraints) => SingleChildScrollView(
+                          physics: const AlwaysScrollableScrollPhysics(),
+                          child: SizedBox(
+                            height: constraints.maxHeight,
+                            child: Center(
+                              child: Column(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  Icon(Icons.history_rounded, size: 80, color: isDark ? Colors.white10 : Colors.grey.shade300),
+                                  const SizedBox(height: 16),
+                                  Text("No completed rides yet.", style: TextStyle(color: isDark ? Colors.white54 : Colors.grey, fontSize: 18, fontWeight: FontWeight.w500)),
+                                ],
+                              ),
+                            ),
+                          ),
+                        ),
+                      )
+                    : ListView.builder(
+                        physics: const AlwaysScrollableScrollPhysics(),
+                        padding: const EdgeInsets.only(left: 24, right: 24, bottom: 24),
+                        itemCount: myCompletedRides.length,
+                        itemBuilder: (context, index) {
+                          final ride = myCompletedRides[index];
+                          return RideHistoryCard(ride: ride, isDark: isDark, userEmail: userEmail);
+                        },
                       ),
-                    )
-                  : ListView.builder(
-                      padding: const EdgeInsets.only(left: 24, right: 24, bottom: 24),
-                      itemCount: myCompletedRides.length,
-                      itemBuilder: (context, index) {
-                        final ride = myCompletedRides[index];
-                        return RideHistoryCard(ride: ride, isDark: isDark, userEmail: userEmail);
-                      },
-                    ),
+              ),
             ),
           ],
         ),
