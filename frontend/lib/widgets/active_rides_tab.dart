@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/gestures.dart';
 import '../services/ride_service.dart';
 import '../screens/live_tracking_screen.dart';
 import 'active_rides/offered_ride_card.dart';
@@ -289,7 +290,11 @@ class _ActiveRidesTabState extends State<ActiveRidesTab> {
 
     return SafeArea(
       key: const ValueKey('detail_view'),
-      child: RefreshIndicator(
+      child: ScrollConfiguration(
+        behavior: ScrollConfiguration.of(context).copyWith(
+          dragDevices: { PointerDeviceKind.touch, PointerDeviceKind.mouse, PointerDeviceKind.trackpad },
+        ),
+        child: RefreshIndicator(
         onRefresh: () async {
           widget.onRefresh();
           await Future.delayed(const Duration(milliseconds: 500));
@@ -356,8 +361,8 @@ class _ActiveRidesTabState extends State<ActiveRidesTab> {
                 );
               }),
             ],
-          ],
         ),
+      ),
       ),
       ),
     );
@@ -368,15 +373,38 @@ class _ActiveRidesTabState extends State<ActiveRidesTab> {
         myOfferedRides.isEmpty && myPendingRequests.isEmpty && liveRides.isEmpty;
 
     if (isEmpty) {
-      return const SafeArea(
-        key: ValueKey('list_view'),
-        child: EmptyState(),
+      return SafeArea(
+        key: const ValueKey('list_view'),
+        child: ScrollConfiguration(
+          behavior: ScrollConfiguration.of(context).copyWith(
+            dragDevices: { PointerDeviceKind.touch, PointerDeviceKind.mouse, PointerDeviceKind.trackpad },
+          ),
+          child: RefreshIndicator(
+            onRefresh: () async {
+              widget.onRefresh();
+              await Future.delayed(const Duration(milliseconds: 500));
+            },
+            child: LayoutBuilder(
+              builder: (context, constraints) => SingleChildScrollView(
+                physics: const AlwaysScrollableScrollPhysics(),
+                child: SizedBox(
+                  height: constraints.maxHeight,
+                  child: const EmptyState(),
+                ),
+              ),
+            ),
+          ),
+        ),
       );
     }
 
     return SafeArea(
       key: const ValueKey('list_view'),
-      child: RefreshIndicator(
+      child: ScrollConfiguration(
+        behavior: ScrollConfiguration.of(context).copyWith(
+          dragDevices: { PointerDeviceKind.touch, PointerDeviceKind.mouse, PointerDeviceKind.trackpad },
+        ),
+        child: RefreshIndicator(
         onRefresh: () async {
           widget.onRefresh();
           await Future.delayed(const Duration(milliseconds: 500));
@@ -450,6 +478,7 @@ class _ActiveRidesTabState extends State<ActiveRidesTab> {
             ],
           ],
         ),
+      ),
       ),
       ),
     );
