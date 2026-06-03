@@ -807,7 +807,9 @@ class _LiveTrackingScreenState extends State<LiveTrackingScreen> {
 
     return Scaffold(
       appBar: AppBar(backgroundColor: Colors.black, title: const Text("Live Ride Map", style: TextStyle(color: Colors.white)), iconTheme: const IconThemeData(color: Colors.white)),
-      body: Stack(children: [
+      body: RefreshIndicator(
+        onRefresh: syncRideStatus,
+        child: Stack(children: [
         // 1. Map and markers (Base layer)
         Positioned.fill(
           child: driverPosition == null
@@ -842,15 +844,12 @@ class _LiveTrackingScreenState extends State<LiveTrackingScreen> {
             behavior: ScrollConfiguration.of(context).copyWith(
               dragDevices: { PointerDeviceKind.touch, PointerDeviceKind.mouse, PointerDeviceKind.trackpad },
             ),
-            child: RefreshIndicator(
-              onRefresh: syncRideStatus,
-              child: ListView(
-                physics: const AlwaysScrollableScrollPhysics(),
-                padding: EdgeInsets.zero,
-                children: [
-                  Container(height: 150, color: Colors.transparent),
-                ],
-              ),
+            child: ListView(
+              physics: const AlwaysScrollableScrollPhysics(),
+              padding: EdgeInsets.zero,
+              children: [
+                Container(height: 150, color: Colors.transparent),
+              ],
             ),
           ),
         ),
@@ -937,6 +936,7 @@ class _LiveTrackingScreenState extends State<LiveTrackingScreen> {
           onDriverArriveForPassenger: driverArriveForPassenger,
         ),
       ]),
+      ),
     );
   }
 }
