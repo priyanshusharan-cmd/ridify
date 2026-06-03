@@ -372,7 +372,6 @@ class _ActiveRidesTabState extends State<ActiveRidesTab> {
         ),
       ),
       ),
-      ),
     );
   }
 
@@ -389,12 +388,13 @@ class _ActiveRidesTabState extends State<ActiveRidesTab> {
           ),
           child: LayoutBuilder(
             builder: (context, constraints) => SingleChildScrollView(
-                physics: const AlwaysScrollableScrollPhysics(),
-                child: SizedBox(
-                  height: constraints.maxHeight,
-                  child: const EmptyState(),
-                ),
+              physics: const AlwaysScrollableScrollPhysics(),
+              child: SizedBox(
+                height: constraints.maxHeight,
+                child: const EmptyState(),
               ),
+            ),
+          ),
         ),
       );
     }
