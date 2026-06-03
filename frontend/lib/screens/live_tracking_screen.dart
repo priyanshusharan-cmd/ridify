@@ -807,56 +807,52 @@ class _LiveTrackingScreenState extends State<LiveTrackingScreen> {
 
     return Scaffold(
       appBar: AppBar(backgroundColor: Colors.black, title: const Text("Live Ride Map", style: TextStyle(color: Colors.white)), iconTheme: const IconThemeData(color: Colors.white)),
-      body: ScrollConfiguration(
-        behavior: ScrollConfiguration.of(context).copyWith(
-          dragDevices: {
-            PointerDeviceKind.touch,
-            PointerDeviceKind.mouse,
-            PointerDeviceKind.trackpad,
-          },
-        ),
-        child: RefreshIndicator(
-          onRefresh: syncRideStatus,
-          child: LayoutBuilder(
-            builder: (context, constraints) => SingleChildScrollView(
-              physics: const AlwaysScrollableScrollPhysics(),
-              child: SizedBox(
-                height: constraints.maxHeight,
-                child: Stack(children: [
-                  Positioned.fill(
+      body: Stack(children: [
+        // 1. Map and markers (Base layer)
+        Positioned.fill(
           child: driverPosition == null
               ? Center(child: _locationTimedOut
                   ? Column(mainAxisAlignment: MainAxisAlignment.center, children: [
                       const Icon(Icons.location_off, size: 48, color: Colors.grey),
                       const SizedBox(height: 16),
-                      const Text('Could not get location.\nCheck GPS permissions.',
-                        textAlign: TextAlign.center,
-                        style: TextStyle(color: Colors.grey)),
+                      const Text('Could not get location.\nCheck GPS permissions.', textAlign: TextAlign.center, style: TextStyle(color: Colors.grey)),
                       const SizedBox(height: 16),
-                      ElevatedButton(
-                        onPressed: _initLocationTracking,
-                        child: const Text('Retry'),
-                      ),
+                      ElevatedButton(onPressed: _initLocationTracking, child: const Text('Retry')),
                     ])
                   : CircularProgressIndicator(color: isDark ? Colors.white : Colors.black))
               : FlutterMap(
-            mapController: mapController, options: MapOptions(initialCenter: driverPosition!, initialZoom: 15.0),
-            children: [
-              TileLayer(urlTemplate: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png', userAgentPackageName: 'com.example.ridify', tileProvider: CancellableNetworkTileProvider()),
-              if (routePoints.isNotEmpty) PolylineLayer(polylines: [Polyline(points: routePoints, strokeWidth: 5.0, color: Colors.blueAccent)]),
-              MarkerLayer(markers: [
-                if (!widget.isDriver && myPosition != null) Marker(point: myPosition!, width: 20, height: 20, child: const AnimatedPassengerMarker()),
-                if (riderPickupPosition != null) Marker(point: riderPickupPosition, width: 40, height: 40, child: const Icon(Icons.location_on, color: Colors.green, size: 40)),
-                if (riderDestPosition != null) Marker(point: riderDestPosition, width: 40, height: 40, child: const Icon(Icons.location_on, color: Colors.red, size: 40)),
-                Marker(point: driverPosition!, width: 120, height: 80, child: AnimatedDriverMarker(driverLabel: driverLabel)),
-              ]),
-            ],
-          ),
+                  mapController: mapController, options: MapOptions(initialCenter: driverPosition!, initialZoom: 15.0),
+                  children: [
+                    TileLayer(urlTemplate: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png', userAgentPackageName: 'com.example.ridify', tileProvider: CancellableNetworkTileProvider()),
+                    if (routePoints.isNotEmpty) PolylineLayer(polylines: [Polyline(points: routePoints, strokeWidth: 5.0, color: Colors.blueAccent)]),
+                    MarkerLayer(markers: [
+                      if (!widget.isDriver && myPosition != null) Marker(point: myPosition!, width: 20, height: 20, child: const AnimatedPassengerMarker()),
+                      if (riderPickupPosition != null) Marker(point: riderPickupPosition, width: 40, height: 40, child: const Icon(Icons.location_on, color: Colors.green, size: 40)),
+                      if (riderDestPosition != null) Marker(point: riderDestPosition, width: 40, height: 40, child: const Icon(Icons.location_on, color: Colors.red, size: 40)),
+                      Marker(point: driverPosition!, width: 120, height: 80, child: AnimatedDriverMarker(driverLabel: driverLabel)),
+                    ]),
+                  ],
+                ),
         ),
-        // Pull to refresh trigger zone (transparent overlay at top)
+        
+        // 2. Pull-to-refresh trigger zone (Transparent overlay at top)
         Positioned(
-          top: 0, left: 0, right: 0, height: 80,
-          child: Container(color: Colors.transparent),
+          top: 0, left: 0, right: 0, height: 150,
+          child: ScrollConfiguration(
+            behavior: ScrollConfiguration.of(context).copyWith(
+              dragDevices: { PointerDeviceKind.touch, PointerDeviceKind.mouse, PointerDeviceKind.trackpad },
+            ),
+            child: RefreshIndicator(
+              onRefresh: syncRideStatus,
+              child: ListView(
+                physics: const AlwaysScrollableScrollPhysics(),
+                padding: EdgeInsets.zero,
+                children: [
+                  Container(height: 150, color: Colors.transparent),
+                ],
+              ),
+            ),
+          ),
         ),
         // Locate button
         Positioned(top: 20, right: 20, child: Column(mainAxisSize: MainAxisSize.min, children: [
