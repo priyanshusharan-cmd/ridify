@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'dart:async';
 import 'package:socket_io_client/socket_io_client.dart' as io;
 import '../services/chat_service.dart';
 import '../services/ride_service.dart';
@@ -36,6 +37,7 @@ class _ChatScreenState extends State<ChatScreen> {
   final FocusNode _focusNode = FocusNode();
   final List<Map<String, dynamic>> messages = [];
   final List<MapEntry<String, void Function(dynamic)>> _socketListeners = [];
+  Timer? _backgroundRefreshTimer;
   Map<String, dynamic>? replyToMessage;
 
   /// Unique local ID counter for optimistic messages so we can reconcile them
@@ -43,7 +45,7 @@ class _ChatScreenState extends State<ChatScreen> {
   int _localMsgId = 0;
 
   void _on(String event, void Function(dynamic) handler) {
-    socket.on(event, handler);
+    SocketService().on(event, handler);
     _socketListeners.add(MapEntry(event, handler));
   }
 
@@ -68,6 +70,18 @@ class _ChatScreenState extends State<ChatScreen> {
     super.initState();
     fetchChatHistory();
     initSocket();
+    _startBackgroundRefresh();
+  }
+
+  /// Silent background refresh every 4 seconds — ensures messages appear
+  /// even if the socket connection is lost on mobile data.
+  void _startBackgroundRefresh() {
+    _backgroundRefreshTimer?.cancel();
+    _backgroundRefreshTimer = Timer.periodic(const Duration(seconds: 4), (_) {
+      if (mounted) {
+        fetchChatHistory();
+      }
+    });
   }
 
   String participantsStr = "Loading...";
@@ -317,10 +331,11 @@ class _ChatScreenState extends State<ChatScreen> {
 
   @override
   void dispose() {
+    _backgroundRefreshTimer?.cancel();
     SocketService().removeReconnectCallback(fetchChatHistory);
     SocketService().leaveRide(widget.rideId);
     for (final entry in _socketListeners) {
-      socket.off(entry.key, entry.value);
+      SocketService().off(entry.key, entry.value);
     }
     _socketListeners.clear();
     _scrollController.dispose();
