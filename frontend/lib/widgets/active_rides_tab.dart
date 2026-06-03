@@ -206,7 +206,12 @@ class _ActiveRidesTabState extends State<ActiveRidesTab> {
                 ? r['expiresAt'] as int 
                 : int.tryParse(r['expiresAt'].toString()) ?? 0;
             if (expiresAt > 0 && DateTime.now().millisecondsSinceEpoch > expiresAt) {
-              return false; // Expired rides shouldn't show in Activity
+              bool hasAcceptedPassengers = (r['passengers'] as List?)?.isNotEmpty == true || 
+                                           (r['boardedPassengers'] as List?)?.isNotEmpty == true || 
+                                           (r['droppedPassengers'] as List?)?.isNotEmpty == true;
+              if (!hasAcceptedPassengers) {
+                return false; // Expired rides shouldn't show in Activity
+              }
             }
           }
           return true;

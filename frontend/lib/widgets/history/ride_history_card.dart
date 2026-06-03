@@ -36,7 +36,12 @@ class RideHistoryCard extends StatelessWidget {
           ? ride['expiresAt'] as int 
           : int.tryParse(ride['expiresAt'].toString()) ?? 0;
       if (expiresAt > 0 && DateTime.now().millisecondsSinceEpoch > expiresAt) {
-        isExpired = true;
+        bool hasAcceptedPassengers = (ride['passengers'] as List?)?.isNotEmpty == true || 
+                                     (ride['boardedPassengers'] as List?)?.isNotEmpty == true || 
+                                     (ride['droppedPassengers'] as List?)?.isNotEmpty == true;
+        if (!hasAcceptedPassengers) {
+          isExpired = true;
+        }
       }
     }
 
