@@ -105,18 +105,32 @@ class _ChatScreenState extends State<ChatScreen> {
 
   void initSocket() {
     socket = SocketService().socket;
+    
+    // Ensure we join the ride room (reference counted)
+    SocketService().joinRide(widget.rideId);
+    
+    // If the socket disconnects and reconnects (especially on mobile), refetch chat history
+    SocketService().addReconnectCallback(fetchChatHistory);
+
     _on('receive_message', (data) {
       if (mounted && data['rideId'] == widget.rideId) {
-        setState(() => messages.add(data));
-        WidgetsBinding.instance.addPostFrameCallback((_) {
-          if (_scrollController.hasClients) {
-            _scrollController.animateTo(
-              0.0,
-              duration: const Duration(milliseconds: 300),
-              curve: Curves.easeOut,
-            );
-          }
-        });
+        // Only add if we don't already have this message by exact timestamp and sender
+        // (to prevent duplicates if fetchChatHistory and receive_message overlap)
+        final isDuplicate = messages.any((m) => 
+          m['timestamp'] == data['timestamp'] && m['senderEmail'] == data['senderEmail'] && m['text'] == data['text']);
+        
+        if (!isDuplicate) {
+          setState(() => messages.add(data));
+          WidgetsBinding.instance.addPostFrameCallback((_) {
+            if (_scrollController.hasClients) {
+              _scrollController.animateTo(
+                0.0,
+                duration: const Duration(milliseconds: 300),
+                curve: Curves.easeOut,
+              );
+            }
+          });
+        }
       }
     });
   }
@@ -194,6 +208,8 @@ class _ChatScreenState extends State<ChatScreen> {
 
   @override
   void dispose() {
+    SocketService().removeReconnectCallback(fetchChatHistory);
+    SocketService().leaveRide(widget.rideId);
     for (final entry in _socketListeners) {
       socket.off(entry.key, entry.value);
     }

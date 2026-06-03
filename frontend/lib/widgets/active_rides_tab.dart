@@ -248,7 +248,13 @@ class _ActiveRidesTabState extends State<ActiveRidesTab> {
       return false;
     }).toList();
 
-    return AnimatedSwitcher(
+    return RefreshIndicator(
+      edgeOffset: 10,
+      onRefresh: () async {
+        widget.onRefresh();
+        await Future.delayed(const Duration(milliseconds: 500));
+      },
+      child: AnimatedSwitcher(
       duration: const Duration(milliseconds: 200),
       layoutBuilder: (Widget? currentChild, List<Widget> previousChildren) {
         return Stack(
@@ -275,6 +281,7 @@ class _ActiveRidesTabState extends State<ActiveRidesTab> {
       child: _selectedRideId != null
           ? _buildDetailView(myOfferedRides)
           : _buildListView(myOfferedRides, myPendingRequests, liveRides),
+      ),
     );
   }
 
@@ -299,11 +306,6 @@ class _ActiveRidesTabState extends State<ActiveRidesTab> {
         behavior: ScrollConfiguration.of(context).copyWith(
           dragDevices: { PointerDeviceKind.touch, PointerDeviceKind.mouse, PointerDeviceKind.trackpad },
         ),
-        child: RefreshIndicator(
-        onRefresh: () async {
-          widget.onRefresh();
-          await Future.delayed(const Duration(milliseconds: 500));
-        },
         child: SingleChildScrollView(
           physics: const AlwaysScrollableScrollPhysics(),
           padding: const EdgeInsets.all(24.0),
@@ -385,21 +387,14 @@ class _ActiveRidesTabState extends State<ActiveRidesTab> {
           behavior: ScrollConfiguration.of(context).copyWith(
             dragDevices: { PointerDeviceKind.touch, PointerDeviceKind.mouse, PointerDeviceKind.trackpad },
           ),
-          child: RefreshIndicator(
-            onRefresh: () async {
-              widget.onRefresh();
-              await Future.delayed(const Duration(milliseconds: 500));
-            },
-            child: LayoutBuilder(
-              builder: (context, constraints) => SingleChildScrollView(
+          child: LayoutBuilder(
+            builder: (context, constraints) => SingleChildScrollView(
                 physics: const AlwaysScrollableScrollPhysics(),
                 child: SizedBox(
                   height: constraints.maxHeight,
                   child: const EmptyState(),
                 ),
               ),
-            ),
-          ),
         ),
       );
     }
@@ -410,11 +405,6 @@ class _ActiveRidesTabState extends State<ActiveRidesTab> {
         behavior: ScrollConfiguration.of(context).copyWith(
           dragDevices: { PointerDeviceKind.touch, PointerDeviceKind.mouse, PointerDeviceKind.trackpad },
         ),
-        child: RefreshIndicator(
-        onRefresh: () async {
-          widget.onRefresh();
-          await Future.delayed(const Duration(milliseconds: 500));
-        },
         child: SingleChildScrollView(
           physics: const AlwaysScrollableScrollPhysics(),
           padding: const EdgeInsets.all(24.0),
@@ -484,7 +474,6 @@ class _ActiveRidesTabState extends State<ActiveRidesTab> {
             ],
           ],
         ),
-      ),
       ),
       ),
     );
