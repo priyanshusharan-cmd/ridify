@@ -100,6 +100,7 @@ class RideStatusPanel extends StatelessWidget {
               },
             ).copyWith(scrollbars: false),
             child: ListView(
+              physics: const BouncingScrollPhysics(parent: AlwaysScrollableScrollPhysics()),
               controller: scrollController,
               padding: const EdgeInsets.fromLTRB(20, 10, 20, 20),
               children: [

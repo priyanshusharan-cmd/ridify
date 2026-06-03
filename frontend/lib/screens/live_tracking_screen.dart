@@ -880,6 +880,26 @@ class _LiveTrackingScreenState extends State<LiveTrackingScreen> {
               ),
             ),
           ),
+          const SizedBox(height: 12),
+          // Refresh button
+          GestureDetector(
+            onTap: () {
+              ScaffoldMessenger.of(context).clearSnackBars();
+              ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("Refreshing ride status...")));
+              syncRideStatus();
+            },
+            child: Container(
+              width: 40, height: 40,
+              decoration: const BoxDecoration(
+                color: Colors.white,
+                shape: BoxShape.circle,
+                boxShadow: [BoxShadow(color: Colors.black26, blurRadius: 6, offset: Offset(0, 3))],
+              ),
+              child: _syncInProgress 
+                  ? const Padding(padding: EdgeInsets.all(10.0), child: CircularProgressIndicator(strokeWidth: 2, color: Colors.black))
+                  : const Icon(Icons.sync, color: Colors.black, size: 20),
+            ),
+          ),
         ])),
         // Next Stop header with dynamic passenger name and address
         if (widget.isDriver && isStarted) Builder(builder: (ctx) {
