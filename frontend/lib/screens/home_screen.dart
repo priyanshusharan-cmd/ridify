@@ -78,6 +78,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
   int _currentIndex = 0;
   List<dynamic> allRides = [];
   Timer? _expirationTimer;
+  Timer? _pollingTimer;
 
 
   // ── Easter Egg state ───────────────────────────────────────────────────────
@@ -122,6 +123,12 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
     // Rebuild every minute to auto-hide expired rides and badges
     _expirationTimer = Timer.periodic(const Duration(minutes: 1), (_) {
       if (mounted) setState(() {});
+    });
+
+    // Periodic polling fallback: fetch rides every 15 seconds.
+    // This guarantees UI updates even if the socket fails on flaky mobile data.
+    _pollingTimer = Timer.periodic(const Duration(seconds: 15), (_) {
+      if (mounted) fetchRides();
     });
 
     // Measure "Ridify" exactly once so parkingX is always pixel-perfect.
@@ -411,6 +418,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
     _socketListeners.clear();
     socketService.removeReconnectCallback(_onSocketReconnect);
     _expirationTimer?.cancel();
+    _pollingTimer?.cancel();
 
     super.dispose();
   }

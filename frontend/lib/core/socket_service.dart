@@ -5,6 +5,7 @@ import 'constants.dart';
 
 /// Singleton Socket.IO service — ONE connection shared across all screens.
 /// Manages user registration, room joining/leaving, and auto-reconnect.
+/// Includes application-level heartbeat to detect zombie connections on mobile data.
 class SocketService {
   static final SocketService _instance = SocketService._internal();
   factory SocketService() => _instance;
@@ -16,6 +17,8 @@ class SocketService {
   final Map<String, int> _joinedRidesCount = {};
   final Map<String, List<void Function(dynamic)>> _eventListeners = {};
   Timer? _healthCheckTimer;
+  Timer? _heartbeatTimer;
+  Timer? _heartbeatTimeout;
   bool _isReconnecting = false;
 
   /// Callbacks invoked whenever the socket (re)connects so screens can re-fetch data.
@@ -56,18 +59,18 @@ class SocketService {
     s.onConnect((_) {
       debugPrint('🔌 Socket connected: ${s.id}');
       _isReconnecting = false;
+      _heartbeatTimeout?.cancel(); // Connection is alive
       // Re-join all ride rooms on reconnect
       for (final rideId in _joinedRidesCount.keys) {
         s.emit('join_ride', {'rideId': rideId});
       }
       // Notify all listeners to re-fetch their data after reconnect
-      for (final cb in List<VoidCallback>.from(_onReconnectCallbacks)) {
-        try {
-          cb();
-        } catch (e) {
-          debugPrint('🔌 Reconnect callback error: $e');
-        }
-      }
+      _fireReconnectCallbacks();
+    });
+
+    // Heartbeat pong — cancel the timeout since the connection is alive
+    s.on('app_pong', (_) {
+      _heartbeatTimeout?.cancel();
     });
 
     s.onDisconnect((_) => debugPrint('🔌 Socket disconnected'));
@@ -101,11 +104,12 @@ class SocketService {
 
     if (!socket.connected) socket.connect();
     _startHealthCheck();
+    _startHeartbeat();
   }
 
   void _startHealthCheck() {
     _healthCheckTimer?.cancel();
-    // Check socket health every 5 seconds (more aggressive for Flutter Web)
+    // Check socket health every 5 seconds
     _healthCheckTimer = Timer.periodic(const Duration(seconds: 5), (_) {
       if (_socket == null && _userEmail != null && _accessToken != null) {
         // Socket was nulled (e.g., after token refresh) but never recreated
@@ -121,6 +125,45 @@ class SocketService {
         socket.connect();
       }
     });
+  }
+
+  // ── Application-level heartbeat ────────────────────────────────────────────
+  // Detects "zombie" connections: the socket reports connected=true but is
+  // actually dead (common on mobile data with NAT timeouts). We send a custom
+  // 'app_ping' event every 30s; the server echoes 'app_pong'. If no pong
+  // arrives within 10s, we force a full reconnect.
+  void _startHeartbeat() {
+    _heartbeatTimer?.cancel();
+    _heartbeatTimeout?.cancel();
+    _heartbeatTimer = Timer.periodic(const Duration(seconds: 30), (_) {
+      _sendHeartbeat();
+    });
+  }
+
+  void _sendHeartbeat() {
+    if (_socket != null && _socket!.connected) {
+      _heartbeatTimeout?.cancel();
+      _socket!.emit('app_ping', {'t': DateTime.now().millisecondsSinceEpoch});
+      _heartbeatTimeout = Timer(const Duration(seconds: 10), () {
+        // No pong received — zombie connection detected
+        debugPrint('🔌 Heartbeat timeout — zombie connection detected, forcing reconnect...');
+        forceReconnect();
+      });
+    }
+  }
+
+  /// Called by main.dart when the app resumes from background or
+  /// the browser tab becomes visible again.
+  void handleAppResumed() {
+    if (_userEmail == null || _accessToken == null) return;
+    if (_socket == null || !_socket!.connected) {
+      forceReconnect();
+    } else {
+      // Socket thinks it's connected — verify with a heartbeat
+      _sendHeartbeat();
+    }
+    // Always re-fetch data regardless (we might have missed events while backgrounded)
+    _fireReconnectCallbacks();
   }
 
   void on(String event, void Function(dynamic) handler) {
@@ -170,10 +213,24 @@ class SocketService {
     }
   }
 
+  void _fireReconnectCallbacks() {
+    for (final cb in List<VoidCallback>.from(_onReconnectCallbacks)) {
+      try {
+        cb();
+      } catch (e) {
+        debugPrint('🔌 Reconnect callback error: $e');
+      }
+    }
+  }
+
   /// Full cleanup (e.g., on logout).
   void dispose() {
     _healthCheckTimer?.cancel();
     _healthCheckTimer = null;
+    _heartbeatTimer?.cancel();
+    _heartbeatTimer = null;
+    _heartbeatTimeout?.cancel();
+    _heartbeatTimeout = null;
     for (final rideId in List.from(_joinedRidesCount.keys)) {
       _socket?.emit('leave_ride', {'rideId': rideId});
     }

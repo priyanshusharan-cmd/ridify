@@ -140,6 +140,11 @@ function initSocket(server, app) {
       } catch (_) {}
     });
 
+    // ── Application-level heartbeat — echo pong so client detects zombies ──
+    socket.on('app_ping', (data) => {
+      socket.emit('app_pong', data || {});
+    });
+
     socket.on('request_driver_location', (data) => {
       if (!data?.rideId) return;
       socket.to(data.rideId).emit('request_driver_location', data);

@@ -44,8 +44,8 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
     if (state == AppLifecycleState.resumed) {
       // User came back to the app from background
       _pingBackend();
-      // Force socket reconnection in case connection was lost on mobile data
-      SocketService().forceReconnect();
+      // Force socket reconnection or heartbeat check
+      SocketService().handleAppResumed();
     }
   }
 
