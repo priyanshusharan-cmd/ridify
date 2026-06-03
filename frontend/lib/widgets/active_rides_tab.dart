@@ -259,8 +259,8 @@ class _ActiveRidesTabState extends State<ActiveRidesTab> {
         return Stack(
           alignment: Alignment.topCenter,
           children: <Widget>[
-            ...previousChildren,
-            ?currentChild,
+            ...previousChildren.map((w) => Positioned.fill(child: w)),
+            if (currentChild != null) Positioned.fill(child: currentChild),
           ],
         );
       },
