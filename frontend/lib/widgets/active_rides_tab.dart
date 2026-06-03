@@ -249,7 +249,6 @@ class _ActiveRidesTabState extends State<ActiveRidesTab> {
     }).toList();
 
     return RefreshIndicator(
-      edgeOffset: 10,
       onRefresh: () async {
         widget.onRefresh();
         await Future.delayed(const Duration(milliseconds: 500));
