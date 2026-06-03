@@ -116,6 +116,9 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
     _initSocket();
     fetchRides();
     
+    // Register reconnect callback so we always re-fetch on socket reconnect
+    SocketService().addReconnectCallback(_onSocketReconnect);
+    
     // Rebuild every minute to auto-hide expired rides and badges
     _expirationTimer = Timer.periodic(const Duration(minutes: 1), (_) {
       if (mounted) setState(() {});
@@ -155,6 +158,10 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
       vsync: this,
       duration: const Duration(milliseconds: 3000),
     );
+  }
+
+  void _onSocketReconnect() {
+    if (mounted) fetchRides();
   }
 
   // ── Animation helpers (extracted to RidifyAppBarTitle) ─────────
@@ -231,10 +238,6 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
     }
 
     // Direct state updates — no re-fetch needed
-    _onSocket('connect', (_) {
-      fetchRides();
-    });
-
     _onSocket('new_ride_request', (data) {
       final ride = rideFromEvent(data);
       if (ride != null) _upsertRide(ride);
@@ -406,6 +409,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
       socketService.off(entry.key, entry.value);
     }
     _socketListeners.clear();
+    socketService.removeReconnectCallback(_onSocketReconnect);
     _expirationTimer?.cancel();
 
     super.dispose();

@@ -349,6 +349,10 @@ exports.cancelRide = async (req, res) => {
     for (const requester of notifiedRequesters) {
       req.emitToUser(requester, 'ride_cancelled', finalPayload);
     }
+    // Notify passengers individually (they may have lost room membership after reconnect)
+    for (const passenger of (ride.passengers || [])) {
+      req.emitToUser(passenger, 'ride_cancelled', finalPayload);
+    }
     req.io.to(req.params.id).emit('ride_cancelled', finalPayload);
     res.status(200).json({ success: true });
   } catch (err) { res.status(500).json({ error: err.message }); }
@@ -680,6 +684,10 @@ exports.acceptRider = async (req, res) => {
       const rideId = updateResult._id.toString();
       const decodedFullRide = decodeRiderDetailsForSocket(updateResult.toJSON());
 
+      // Re-join the accepted passenger into the ride room (they may have
+      // reconnected since their request, losing transient room membership)
+      req.joinUserToRide(passengerEmail, rideId);
+
       const participants = new Set([
         decodedFullRide.riderEmail,
         ...(decodedFullRide.passengers || []),
@@ -738,6 +746,8 @@ exports.declineRider = async (req, res) => {
     req.emitToUser(passengerEmail, 'ride_cancelled', { rideId, ride: ridePayload });
     // Notify the ride room (driver + other participants) so their UI updates in real-time
     req.io.to(rideId).emit('ride_updated', { rideId, ride: ridePayload });
+    // Also notify the driver directly in case they lost room membership
+    req.emitToUser(ride.riderEmail, 'ride_updated', { rideId, ride: ridePayload });
     req.removeUserFromRide(passengerEmail, rideId);
     res.status(200).json(ride);
   } catch (err) { res.status(500).json({ error: err.message }); }
@@ -794,6 +804,8 @@ exports.kickPassenger = async (req, res) => {
     req.io.to(rideId).emit('passenger_kicked', payload);
     // Also target the kicked user directly (they may have left the room)
     req.emitToUser(passengerEmail, 'passenger_kicked', payload);
+    // Notify the driver directly in case they lost room membership
+    req.emitToUser(ride.riderEmail, 'passenger_kicked', payload);
     req.removeUserFromRide(passengerEmail, rideId);
     res.status(200).json(ride);
   } catch (err) { res.status(500).json({ error: err.message }); }
@@ -1074,7 +1086,11 @@ exports.passengerPays = async (req, res) => {
 
     await ride.save();
     const rideId = ride._id.toString();
-    req.io.to(rideId).emit('passenger_paid', { rideId, riderName: passengerEmail, ride: decodeRiderDetailsForSocket(ride.toJSON()) });
+    const paidPayload = { rideId, riderName: passengerEmail, ride: decodeRiderDetailsForSocket(ride.toJSON()) };
+    req.io.to(rideId).emit('passenger_paid', paidPayload);
+    // Notify driver and payer directly in case they lost room membership
+    req.emitToUser(ride.riderEmail, 'passenger_paid', paidPayload);
+    req.emitToUser(passengerEmail, 'passenger_paid', paidPayload);
     res.status(200).json(ride);
   } catch (err) { res.status(500).json({ error: err.message }); }
 };

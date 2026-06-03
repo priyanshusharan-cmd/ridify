@@ -16,6 +16,21 @@ class SocketService {
   final Map<String, int> _joinedRidesCount = {};
   final Map<String, List<void Function(dynamic)>> _eventListeners = {};
   Timer? _healthCheckTimer;
+  bool _isReconnecting = false;
+
+  /// Callbacks invoked whenever the socket (re)connects so screens can re-fetch data.
+  /// These fire AFTER the socket is fully connected and rooms are re-joined.
+  final List<VoidCallback> _onReconnectCallbacks = [];
+
+  /// Register a callback that fires on every socket connect/reconnect.
+  void addReconnectCallback(VoidCallback callback) {
+    _onReconnectCallbacks.add(callback);
+  }
+
+  /// Remove a previously registered reconnect callback.
+  void removeReconnectCallback(VoidCallback callback) {
+    _onReconnectCallbacks.remove(callback);
+  }
 
   /// The single shared socket. Created lazily on first access.
   io.Socket get socket {
@@ -40,19 +55,28 @@ class SocketService {
 
     s.onConnect((_) {
       debugPrint('🔌 Socket connected: ${s.id}');
-      // Re-register user on reconnect
-      if (_userEmail != null) {
-        s.emit('register_user', {'userEmail': _userEmail});
-      }
+      _isReconnecting = false;
       // Re-join all ride rooms on reconnect
       for (final rideId in _joinedRidesCount.keys) {
         s.emit('join_ride', {'rideId': rideId});
+      }
+      // Notify all listeners to re-fetch their data after reconnect
+      for (final cb in List<VoidCallback>.from(_onReconnectCallbacks)) {
+        try {
+          cb();
+        } catch (e) {
+          debugPrint('🔌 Reconnect callback error: $e');
+        }
       }
     });
 
     s.onDisconnect((_) => debugPrint('🔌 Socket disconnected'));
     s.onReconnect((_) => debugPrint('🔌 Socket reconnected'));
     s.onError((e) => debugPrint('❌ Socket Error: $e'));
+    s.onConnectError((e) {
+      debugPrint('❌ Socket Connect Error: $e');
+      _isReconnecting = false;
+    });
 
     // Re-attach all registered listeners
     for (final entry in _eventListeners.entries) {
@@ -81,11 +105,20 @@ class SocketService {
 
   void _startHealthCheck() {
     _healthCheckTimer?.cancel();
-    // Check socket health every 10 seconds
-    _healthCheckTimer = Timer.periodic(const Duration(seconds: 10), (_) {
-      if (_socket != null && !_socket!.connected && _userEmail != null) {
-        debugPrint('🔌 Health check: Socket disconnected, attempting reconnection...');
-        _socket!.connect();
+    // Check socket health every 5 seconds (more aggressive for Flutter Web)
+    _healthCheckTimer = Timer.periodic(const Duration(seconds: 5), (_) {
+      if (_socket == null && _userEmail != null && _accessToken != null) {
+        // Socket was nulled (e.g., after token refresh) but never recreated
+        debugPrint('🔌 Health check: Socket null, recreating...');
+        socket.connect();
+      } else if (_socket != null && !_socket!.connected && _userEmail != null && !_isReconnecting) {
+        debugPrint('🔌 Health check: Socket disconnected, forcing full reconnect...');
+        _isReconnecting = true;
+        // Dispose the dead socket and create a fresh one
+        _socket!.disconnect();
+        _socket!.dispose();
+        _socket = null;
+        socket.connect();
       }
     });
   }
@@ -149,9 +182,12 @@ class SocketService {
     _socket = null;
     _joinedRidesCount.clear();
     _eventListeners.clear();
+    _onReconnectCallbacks.clear();
     _userEmail = null;
     _accessToken = null;
+    _isReconnecting = false;
   }
+
   void updateAccessToken(String newAccessToken) {
     if (_accessToken == newAccessToken) return;
     _accessToken = newAccessToken;
@@ -159,23 +195,28 @@ class SocketService {
       _socket!.disconnect();
       _socket!.dispose();
       _socket = null;
+      // Immediately recreate and connect — no delay to avoid missing events
       if (_userEmail != null) {
-         Future.delayed(const Duration(milliseconds: 300), () => socket.connect());
+        socket.connect();
       }
     }
   }
 
   /// Force reconnect socket (e.g., when app resumes from background on mobile data)
   void forceReconnect() {
-    if (_socket != null && !_socket!.connected) {
-      debugPrint('🔌 Forcing socket reconnection...');
+    if (_isReconnecting) return; // Already attempting
+    debugPrint('🔌 Forcing socket reconnection...');
+    _isReconnecting = true;
+    if (_socket != null) {
       _socket!.disconnect();
       _socket!.dispose();
       _socket = null;
-      // Re-create and connect
-      if (_userEmail != null && _accessToken != null) {
-        Future.delayed(const Duration(milliseconds: 200), () => socket.connect());
-      }
+    }
+    // Immediately re-create and connect
+    if (_userEmail != null && _accessToken != null) {
+      socket.connect();
+    } else {
+      _isReconnecting = false;
     }
   }
 
