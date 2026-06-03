@@ -40,7 +40,7 @@ class AvailableRidesScreen extends StatefulWidget {
 }
 
 class _AvailableRidesScreenState extends State<AvailableRidesScreen> {
-  late Timer? _pricePollTimer;
+  Timer? _pricePollTimer;
   final List<String> _joinedRides = [];
   late List<dynamic> allRides;
   late List<dynamic> displayedRides;
