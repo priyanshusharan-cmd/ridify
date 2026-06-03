@@ -38,9 +38,29 @@ class _ChatScreenState extends State<ChatScreen> {
   final List<MapEntry<String, void Function(dynamic)>> _socketListeners = [];
   Map<String, dynamic>? replyToMessage;
 
+  /// Unique local ID counter for optimistic messages so we can reconcile them
+  /// with the server-confirmed echo later.
+  int _localMsgId = 0;
+
   void _on(String event, void Function(dynamic) handler) {
     socket.on(event, handler);
     _socketListeners.add(MapEntry(event, handler));
+  }
+
+  void _scrollToBottom({bool animate = true}) {
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (_scrollController.hasClients) {
+        if (animate) {
+          _scrollController.animateTo(
+            0.0,
+            duration: const Duration(milliseconds: 300),
+            curve: Curves.easeOut,
+          );
+        } else {
+          _scrollController.jumpTo(0.0);
+        }
+      }
+    });
   }
 
   @override
@@ -74,6 +94,8 @@ class _ChatScreenState extends State<ChatScreen> {
           participantsStr = allParticipants.join(', ');
           if (participantsStr.isEmpty) participantsStr = "Empty Ride";
 
+          // Preserve any unsent optimistic messages across refreshes
+          final pendingMsgs = messages.where((m) => m['_localId'] != null).toList();
           messages.clear();
           if (data['chatMessages'] != null) {
             final allMessages = data['chatMessages'] as List? ?? [];
@@ -91,13 +113,19 @@ class _ChatScreenState extends State<ChatScreen> {
               });
             }
           }
-        });
-        
-        WidgetsBinding.instance.addPostFrameCallback((_) {
-          if (_scrollController.hasClients) {
-            _scrollController.jumpTo(0.0);
+          // Re-add pending optimistic messages that weren't in the server response
+          for (final pending in pendingMsgs) {
+            final alreadyExists = messages.any((m) =>
+              m['senderEmail'] == pending['senderEmail'] &&
+              m['text'] == pending['text'] &&
+              m['timestamp'] == pending['timestamp']);
+            if (!alreadyExists) {
+              messages.add(pending);
+            }
           }
         });
+        
+        _scrollToBottom(animate: false);
     } catch (e) {
       debugPrint(e.toString());
     }
@@ -112,24 +140,28 @@ class _ChatScreenState extends State<ChatScreen> {
     // If the socket disconnects and reconnects (especially on mobile), refetch chat history
     SocketService().addReconnectCallback(fetchChatHistory);
 
-    _on('receive_message', (data) {
+    _on('receive_message', (rawData) {
+      final data = SocketService.deepConvertMap(rawData);
       if (mounted && data['rideId'] == widget.rideId) {
-        // Only add if we don't already have this message by exact timestamp and sender
-        // (to prevent duplicates if fetchChatHistory and receive_message overlap)
-        final isDuplicate = messages.any((m) => 
-          m['timestamp'] == data['timestamp'] && m['senderEmail'] == data['senderEmail'] && m['text'] == data['text']);
+        // Check if this message already exists (optimistic entry or duplicate echo).
+        // On mobile data, both room emit AND personal emit may arrive — dedup by
+        // matching timestamp + senderEmail + text.
+        final existingIdx = messages.indexWhere((m) =>
+          m['timestamp'] == data['timestamp'] &&
+          m['senderEmail'] == data['senderEmail'] &&
+          m['text'] == data['text']);
         
-        if (!isDuplicate) {
-          setState(() => messages.add(data));
-          WidgetsBinding.instance.addPostFrameCallback((_) {
-            if (_scrollController.hasClients) {
-              _scrollController.animateTo(
-                0.0,
-                duration: const Duration(milliseconds: 300),
-                curve: Curves.easeOut,
-              );
-            }
+        if (existingIdx != -1) {
+          // Already have this message (optimistic or earlier echo) — update in place
+          setState(() {
+            // Preserve _localId if it was an optimistic message, but clear sending state
+            final localId = messages[existingIdx]['_localId'];
+            messages[existingIdx] = data;
+            if (localId != null) messages[existingIdx]['_localId'] = localId;
           });
+        } else {
+          setState(() => messages.add(data));
+          _scrollToBottom();
         }
       }
     });
@@ -140,14 +172,52 @@ class _ChatScreenState extends State<ChatScreen> {
     if (text.isEmpty) return;
     _controller.clear();
 
-    final timeString = TimeOfDay.now().format(context);
     final replyTo = replyToMessage;
     setState(() => replyToMessage = null);
 
+    // ── Optimistic update: show the message IMMEDIATELY ──
+    final localId = ++_localMsgId;
+    final optimisticTimestamp = DateTime.now().toUtc().toIso8601String();
+    final optimisticMsg = <String, dynamic>{
+      'sender': widget.myName,
+      'senderEmail': widget.myEmail.toLowerCase().trim(),
+      'text': text,
+      'timestamp': optimisticTimestamp,
+      'replyTo': replyTo,
+      '_localId': localId,
+      '_sending': true,
+    };
+    setState(() => messages.add(optimisticMsg));
+    _scrollToBottom();
+
     try {
-      await ChatService.sendMessage(widget.rideId, widget.myName, widget.myEmail, text, timeString, replyTo: replyTo);
+      final confirmed = await ChatService.sendMessage(
+        widget.rideId, widget.myName, widget.myEmail, text, '', replyTo: replyTo);
+      if (!mounted) return;
+
+      // Reconcile: replace the optimistic message with server-confirmed data
+      if (confirmed.isNotEmpty) {
+        setState(() {
+          final idx = messages.indexWhere((m) => m['_localId'] == localId);
+          if (idx != -1) {
+            messages[idx] = confirmed;
+          }
+        });
+      }
     } catch (e) {
-      debugPrint(e.toString());
+      debugPrint('Send message error: $e');
+      if (!mounted) return;
+      // Mark the optimistic message as failed
+      setState(() {
+        final idx = messages.indexWhere((m) => m['_localId'] == localId);
+        if (idx != -1) {
+          messages[idx]['_sending'] = false;
+          messages[idx]['_failed'] = true;
+        }
+      });
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Failed to send message. Tap to retry.')),
+      );
     }
   }
 
@@ -180,11 +250,50 @@ class _ChatScreenState extends State<ChatScreen> {
       if (!mounted) return;
       
       final text = "LOCATION:${position.latitude},${position.longitude}";
-      final timeString = TimeOfDay.now().format(context);
       final replyTo = replyToMessage;
       setState(() => replyToMessage = null);
-      
-      await ChatService.sendMessage(widget.rideId, widget.myName, widget.myEmail, text, timeString, replyTo: replyTo);
+
+      // ── Optimistic update for location too ──
+      final localId = ++_localMsgId;
+      final optimisticTimestamp = DateTime.now().toUtc().toIso8601String();
+      final optimisticMsg = <String, dynamic>{
+        'sender': widget.myName,
+        'senderEmail': widget.myEmail.toLowerCase().trim(),
+        'text': text,
+        'timestamp': optimisticTimestamp,
+        'replyTo': replyTo,
+        '_localId': localId,
+        '_sending': true,
+      };
+      setState(() => messages.add(optimisticMsg));
+      _scrollToBottom();
+
+      try {
+        final confirmed = await ChatService.sendMessage(
+          widget.rideId, widget.myName, widget.myEmail, text, '', replyTo: replyTo);
+        if (!mounted) return;
+        if (confirmed.isNotEmpty) {
+          setState(() {
+            final idx = messages.indexWhere((m) => m['_localId'] == localId);
+            if (idx != -1) {
+              messages[idx] = confirmed;
+            }
+          });
+        }
+      } catch (e) {
+        debugPrint('Send location error: $e');
+        if (!mounted) return;
+        setState(() {
+          final idx = messages.indexWhere((m) => m['_localId'] == localId);
+          if (idx != -1) {
+            messages[idx]['_sending'] = false;
+            messages[idx]['_failed'] = true;
+          }
+        });
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Failed to send location. Try again.')),
+        );
+      }
     } catch (e) {
       debugPrint(e.toString());
       if (mounted) ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Failed to get location. Try again.')));

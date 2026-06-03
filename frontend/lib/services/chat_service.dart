@@ -11,7 +11,8 @@ class ChatService {
     }
   }
 
-  static Future<void> sendMessage(String rideId, String sender, String senderEmail, String text, String timestamp, {Map<String, dynamic>? replyTo}) async {
+  /// Sends a chat message and returns the server-confirmed message payload.
+  static Future<Map<String, dynamic>> sendMessage(String rideId, String sender, String senderEmail, String text, String timestamp, {Map<String, dynamic>? replyTo}) async {
     final Map<String, dynamic> body = {
       'text': text,
       'timestamp': timestamp,
@@ -23,5 +24,8 @@ class ChatService {
     if (response.statusCode != 200) {
       throw Exception(jsonDecode(response.body)['error'] ?? 'Failed to send message');
     }
+    final decoded = jsonDecode(response.body);
+    return (decoded['message'] as Map<String, dynamic>?) ?? {};
   }
 }
+

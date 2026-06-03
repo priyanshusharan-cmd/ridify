@@ -1313,8 +1313,22 @@ exports.sendChatMessage = async (req, res) => {
     }
     ride.chatMessages.push({ sender: sender.trim(), senderEmail: normalizedEmail, text: trimmedText, timestamp, replyTo });
     await ride.save();
-    req.io.to(req.params.id).emit('receive_message', { rideId: req.params.id, sender: sender.trim(), senderEmail: normalizedEmail, text: trimmedText, timestamp, replyTo });
-    res.status(200).json({ success: true });
+    const messagePayload = { rideId: req.params.id, sender: sender.trim(), senderEmail: normalizedEmail, text: trimmedText, timestamp, replyTo };
+    // Emit to the ride room (covers users with active room membership)
+    req.io.to(req.params.id).emit('receive_message', messagePayload);
+    // ALSO emit directly to ALL participants via their personal socket rooms.
+    // This is critical for mobile data where users silently lose ride room
+    // membership due to NAT timeouts. Matches the pattern used by every
+    // other event (ride_started, passenger_boarded, etc.)
+    const allParticipants = new Set([
+      ride.riderEmail,
+      ...(ride.passengers || []),
+      ...(ride.boardedPassengers || []),
+    ]);
+    for (const p of allParticipants) {
+      req.emitToUser(p, 'receive_message', messagePayload);
+    }
+    res.status(200).json({ success: true, message: messagePayload });
   } catch (err) { res.status(500).json({ error: err.message }); }
 };
 
