@@ -484,6 +484,7 @@ exports.requestRide = async (req, res) => {
       const ridePayload = decodeRiderDetailsForSocket(updateResult.toJSON());
       req.io.to(rideId).emit('new_ride_request', { rideId, ride: ridePayload });
       req.emitToUser(ride.riderEmail, 'new_ride_request', { rideId, ride: ridePayload });
+      req.emitToUser(riderEmail, 'new_ride_request', { rideId, ride: ridePayload });
 
       return res.status(200).json({ success: true });
     } catch (err) {
