@@ -168,6 +168,7 @@ class _DriverCompletingScreenState extends State<DriverCompletingScreen> {
               const SizedBox(height: 24),
               Text(
                 "Ride Completed!",
+                textAlign: TextAlign.center,
                 style: TextStyle(
                   fontSize: 28,
                   fontWeight: FontWeight.bold,
@@ -177,6 +178,7 @@ class _DriverCompletingScreenState extends State<DriverCompletingScreen> {
               const SizedBox(height: 8),
               Text(
                 "Great job! You've completed the ride successfully.",
+                textAlign: TextAlign.center,
                 style: TextStyle(
                   fontSize: 14,
                   color: isDark ? Colors.white54 : Colors.grey[600],

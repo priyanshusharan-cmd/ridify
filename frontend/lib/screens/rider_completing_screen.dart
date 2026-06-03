@@ -165,6 +165,7 @@ class _RiderCompletingScreenState extends State<RiderCompletingScreen> {
               const SizedBox(height: 24),
               Text(
                 "Ride Completed!",
+                textAlign: TextAlign.center,
                 style: TextStyle(
                   fontSize: 28,
                   fontWeight: FontWeight.bold,
@@ -174,6 +175,7 @@ class _RiderCompletingScreenState extends State<RiderCompletingScreen> {
               const SizedBox(height: 8),
               Text(
                 "Thank you for riding with Ridify.",
+                textAlign: TextAlign.center,
                 style: TextStyle(
                   fontSize: 14,
                   color: isDark ? Colors.white54 : Colors.grey[600],
