@@ -116,7 +116,7 @@ class _OfferRideScreenState extends State<OfferRideScreen> {
         });
       } else {
         if (mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(
+          ScaffoldMessenger.of(context)..clearSnackBars()..showSnackBar(
             const SnackBar(
               content: Text("Could not fetch route. Try again."),
               backgroundColor: Colors.orange,
@@ -127,7 +127,7 @@ class _OfferRideScreenState extends State<OfferRideScreen> {
     } catch (e) {
       debugPrint("Failed to fetch route: $e");
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
+        ScaffoldMessenger.of(context)..clearSnackBars()..showSnackBar(
           SnackBar(
             content: Text(
                 e.toString().contains('TimeoutException')
@@ -186,7 +186,7 @@ class _OfferRideScreenState extends State<OfferRideScreen> {
         priceController.text.isEmpty ||
         pickupLat == null ||
         destLat == null) {
-      ScaffoldMessenger.of(context).showSnackBar(
+      ScaffoldMessenger.of(context)..clearSnackBars()..showSnackBar(
         const SnackBar(
           content: Text("Please select valid locations from the dropdown and fill all fields!"),
           backgroundColor: Colors.red,
@@ -196,7 +196,7 @@ class _OfferRideScreenState extends State<OfferRideScreen> {
     }
 
     if (totalDistance < kMinRideDistanceKm) {
-      ScaffoldMessenger.of(context).showSnackBar(
+      ScaffoldMessenger.of(context)..clearSnackBars()..showSnackBar(
         SnackBar(
           content: Text("Ride must be at least $kMinRideDistanceKm km long."),
           backgroundColor: Colors.orange,
@@ -206,7 +206,7 @@ class _OfferRideScreenState extends State<OfferRideScreen> {
     }
 
     if (pickupLat == destLat && pickupLng == destLng) {
-      ScaffoldMessenger.of(context).showSnackBar(
+      ScaffoldMessenger.of(context)..clearSnackBars()..showSnackBar(
         const SnackBar(
           content: Text("Pickup and destination cannot be the same!"),
           backgroundColor: Colors.red,
@@ -217,7 +217,7 @@ class _OfferRideScreenState extends State<OfferRideScreen> {
 
     final int? parsedPrice = int.tryParse(priceController.text);
     if (parsedPrice == null || parsedPrice <= 0 || parsedPrice > kMaxPriceRupees) {
-      ScaffoldMessenger.of(context).showSnackBar(
+      ScaffoldMessenger.of(context)..clearSnackBars()..showSnackBar(
         SnackBar(
           content: Text("Please enter a valid price (max ₹$kMaxPriceRupees)."),
           backgroundColor: Colors.red,
@@ -227,7 +227,7 @@ class _OfferRideScreenState extends State<OfferRideScreen> {
     }
 
     if (routePath.isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(
+      ScaffoldMessenger.of(context)..clearSnackBars()..showSnackBar(
         const SnackBar(
           content: Text("Route not loaded yet. Please wait or re-select locations."),
           backgroundColor: Colors.orange,
@@ -278,14 +278,14 @@ class _OfferRideScreenState extends State<OfferRideScreen> {
 
       if (mounted) {
         Navigator.pop(context, 'ride_posted');
-        ScaffoldMessenger.of(context).showSnackBar(
+        ScaffoldMessenger.of(context)..clearSnackBars()..showSnackBar(
           const SnackBar(content: Text("Ride offered successfully!"), backgroundColor: Colors.green),
         );
       }
     } on TimeoutException {
       debugPrint("Offer ride timed out");
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
+        ScaffoldMessenger.of(context)..clearSnackBars()..showSnackBar(
           const SnackBar(
             content: Text("Server took too long. Please try again."),
             backgroundColor: Colors.red,
@@ -295,7 +295,7 @@ class _OfferRideScreenState extends State<OfferRideScreen> {
     } catch (e) {
       debugPrint("Error: $e");
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
+        ScaffoldMessenger.of(context)..clearSnackBars()..showSnackBar(
           const SnackBar(
             content: Text("Failed to connect. Check your internet."),
             backgroundColor: Colors.red,

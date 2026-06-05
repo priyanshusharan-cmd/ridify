@@ -337,7 +337,7 @@ class _LiveTrackingScreenState extends State<LiveTrackingScreen> {
         if (!widget.isDriver &&
             map['riderName'] == myEmailLower &&
             !(rideData?['boardedPassengers'] ?? []).contains(myEmailLower)) {
-          ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("Driver has arrived! Please board."), backgroundColor: Colors.green));
+          ScaffoldMessenger.of(context)..clearSnackBars()..showSnackBar(const SnackBar(content: Text("Driver has arrived! Please board."), backgroundColor: Colors.green));
         }
       }
     });
@@ -442,7 +442,7 @@ class _LiveTrackingScreenState extends State<LiveTrackingScreen> {
       final map = SocketService.deepConvertMap(data);
       if (mounted && map['rideId'].toString() == widget.rideId && !_isNavigatingToCompletion) {
         Navigator.popUntil(context, (route) => route.isFirst);
-        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("Ride cancelled"), backgroundColor: Colors.red));
+        ScaffoldMessenger.of(context)..clearSnackBars()..showSnackBar(const SnackBar(content: Text("Ride cancelled"), backgroundColor: Colors.red));
       }
     });
 
@@ -522,7 +522,7 @@ class _LiveTrackingScreenState extends State<LiveTrackingScreen> {
       if (mounted) {
         String msg = e.toString().replaceAll('Exception: ', '');
         ScaffoldMessenger.of(context).clearSnackBars();
-        ScaffoldMessenger.of(context).showSnackBar(
+        ScaffoldMessenger.of(context)..clearSnackBars()..showSnackBar(
           SnackBar(content: Text(msg), backgroundColor: Colors.red),
         );
       }
@@ -616,7 +616,7 @@ class _LiveTrackingScreenState extends State<LiveTrackingScreen> {
     if (!canEnd) { 
       if (mounted) {
         ScaffoldMessenger.of(context).clearSnackBars();
-        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("Cannot end trip. Passengers still active."), backgroundColor: Colors.red));
+        ScaffoldMessenger.of(context)..clearSnackBars()..showSnackBar(const SnackBar(content: Text("Cannot end trip. Passengers still active."), backgroundColor: Colors.red));
       }
       return; 
     }
@@ -739,7 +739,7 @@ class _LiveTrackingScreenState extends State<LiveTrackingScreen> {
     if (lat == null || lng == null) {
       // Fallback: use address string for search
       if (address.isEmpty) {
-        if (mounted) ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("No location data available"), backgroundColor: Colors.orange));
+        if (mounted) ScaffoldMessenger.of(context)..clearSnackBars()..showSnackBar(const SnackBar(content: Text("No location data available"), backgroundColor: Colors.orange));
         return;
       }
       final encoded = Uri.encodeComponent(address);

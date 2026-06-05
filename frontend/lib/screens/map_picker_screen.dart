@@ -70,7 +70,7 @@ class _MapPickerScreenState extends State<MapPickerScreen> {
       }
     } catch (e) {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
+        ScaffoldMessenger.of(context)..clearSnackBars()..showSnackBar(
           const SnackBar(content: Text("Failed to get address for this location"), backgroundColor: Colors.red),
         );
       }

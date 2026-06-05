@@ -114,7 +114,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
       if (mounted) {
         setState(() => _verificationStatus = 'none');
         widget.onVerificationStatusChanged?.call('none');
-        ScaffoldMessenger.of(context).showSnackBar(
+        ScaffoldMessenger.of(context)..clearSnackBars()..showSnackBar(
           SnackBar(content: Text(e.toString().replaceAll('Exception: ', '')), backgroundColor: Colors.red),
         );
       }
@@ -164,7 +164,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
         (route) => false,
       );
       if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
+      ScaffoldMessenger.of(context)..clearSnackBars()..showSnackBar(
         const SnackBar(
           content: Text("Account successfully deleted"),
           backgroundColor: Colors.red,
@@ -249,7 +249,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 if (title == 'Age') await prefs.setString('user_age', updated['age'] ?? val);
               } catch (e) {
                 if (!context.mounted) return;
-                ScaffoldMessenger.of(context).showSnackBar(
+                ScaffoldMessenger.of(context)..clearSnackBars()..showSnackBar(
                   SnackBar(content: Text(e.toString().replaceAll('Exception: ', '')), backgroundColor: Colors.red),
                 );
               }
@@ -328,11 +328,11 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   ),
                   onPressed: isSaving ? null : () async {
                     if (currentController.text.trim().isEmpty || newController.text.trim().isEmpty) {
-                       ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("Both fields are required."), backgroundColor: Colors.red));
+                       ScaffoldMessenger.of(context)..clearSnackBars()..showSnackBar(const SnackBar(content: Text("Both fields are required."), backgroundColor: Colors.red));
                        return;
                     }
                     if (newController.text.trim().length < 8) {
-                       ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("New password must be at least 8 characters."), backgroundColor: Colors.red));
+                       ScaffoldMessenger.of(context)..clearSnackBars()..showSnackBar(const SnackBar(content: Text("New password must be at least 8 characters."), backgroundColor: Colors.red));
                        return;
                     }
                     setState(() => isSaving = true);
@@ -340,10 +340,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       await AuthService.changePassword(currentController.text.trim(), newController.text.trim());
                       if (!context.mounted) return;
                       Navigator.pop(context);
-                      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("Password changed successfully."), backgroundColor: Colors.green));
+                      ScaffoldMessenger.of(context)..clearSnackBars()..showSnackBar(const SnackBar(content: Text("Password changed successfully."), backgroundColor: Colors.green));
                     } catch (e) {
                       if (!context.mounted) return;
-                      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(e.toString().replaceAll('Exception: ', '')), backgroundColor: Colors.red));
+                      ScaffoldMessenger.of(context)..clearSnackBars()..showSnackBar(SnackBar(content: Text(e.toString().replaceAll('Exception: ', '')), backgroundColor: Colors.red));
                     } finally {
                       if (context.mounted) setState(() => isSaving = false);
                     }

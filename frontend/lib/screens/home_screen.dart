@@ -534,7 +534,10 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
             ),
         ],
       ),
-      body: pages[_currentIndex],
+      body: IndexedStack(
+        index: _currentIndex,
+        children: pages,
+      ),
       bottomNavigationBar: BottomNavigationBar(
         backgroundColor: Theme.of(context).bottomNavigationBarTheme.backgroundColor,
         currentIndex: _currentIndex,
@@ -615,9 +618,12 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
     }
 
     return SafeArea(
-      child: SingleChildScrollView(
-        padding: const EdgeInsets.all(24),
-        child: Column(
+      child: RefreshIndicator(
+        onRefresh: fetchRides,
+        child: SingleChildScrollView(
+          physics: const AlwaysScrollableScrollPhysics(),
+          padding: const EdgeInsets.all(24),
+          child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
@@ -666,6 +672,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
             const SafetyBanner(),
           ],
         ),
+      ),
       ),
     );
   }

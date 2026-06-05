@@ -78,7 +78,7 @@ class _ActiveRidesTabState extends State<ActiveRidesTab> {
       widget.onRefresh();
     } catch (e) {
       if (context.mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
+        ScaffoldMessenger.of(context)..clearSnackBars()..showSnackBar(
           SnackBar(content: Text(e.toString().replaceAll('Exception: ', '')), backgroundColor: Colors.red),
         );
       }
@@ -99,7 +99,7 @@ class _ActiveRidesTabState extends State<ActiveRidesTab> {
       widget.onRefresh();
     } catch (e) {
       if (context.mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
+        ScaffoldMessenger.of(context)..clearSnackBars()..showSnackBar(
           SnackBar(content: Text(e.toString().replaceAll('Exception: ', '')), backgroundColor: Colors.red),
         );
       }
@@ -116,7 +116,7 @@ class _ActiveRidesTabState extends State<ActiveRidesTab> {
     try {
       await RideService.cancelRide(id, callerEmail: widget.myEmail);
       if (!context.mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
+      ScaffoldMessenger.of(context)..clearSnackBars()..showSnackBar(
         const SnackBar(
           content: Text("Ride offer cancelled"),
           backgroundColor: Colors.red,
@@ -126,7 +126,7 @@ class _ActiveRidesTabState extends State<ActiveRidesTab> {
       widget.onRefresh();
     } catch (e) {
       if (context.mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
+        ScaffoldMessenger.of(context)..clearSnackBars()..showSnackBar(
           SnackBar(content: Text(e.toString().replaceAll('Exception: ', '')), backgroundColor: Colors.red),
         );
       }

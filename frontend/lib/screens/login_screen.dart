@@ -212,7 +212,7 @@ class _LoginScreenState extends State<LoginScreen> {
     if (cleanMsg.contains('ClientFailed to fetch') || cleanMsg.contains('Connection refused')) {
       cleanMsg = "Cannot connect to server. Please ensure the backend is running.";
     }
-    ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(cleanMsg), backgroundColor: color));
+    ScaffoldMessenger.of(context)..clearSnackBars()..showSnackBar(SnackBar(content: Text(cleanMsg), backgroundColor: color));
   }
 
   OutlineInputBorder _border(bool focused) {

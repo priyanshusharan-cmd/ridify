@@ -131,7 +131,7 @@ class _FindRideScreenState extends State<FindRideScreen> {
   Future<void> startSearch() async {
     if (pickupController.text.trim().isEmpty ||
         destinationController.text.trim().isEmpty || pickupLat == null || destLat == null) {
-      ScaffoldMessenger.of(context).showSnackBar(
+      ScaffoldMessenger.of(context)..clearSnackBars()..showSnackBar(
         const SnackBar(
           content: Text("Please select valid locations for both Pickup and Destination!"),
           backgroundColor: Colors.redAccent,
@@ -141,7 +141,7 @@ class _FindRideScreenState extends State<FindRideScreen> {
     }
 
     if (pickupLat == destLat && pickupLng == destLng) {
-      ScaffoldMessenger.of(context).showSnackBar(
+      ScaffoldMessenger.of(context)..clearSnackBars()..showSnackBar(
         const SnackBar(
           content: Text("Pickup and destination cannot be the same!"),
           backgroundColor: Colors.redAccent,
@@ -186,7 +186,7 @@ class _FindRideScreenState extends State<FindRideScreen> {
       if (mounted) {
         if (validRides.isEmpty && _searchResults == null) {
           ScaffoldMessenger.of(context).clearSnackBars();
-          ScaffoldMessenger.of(context).showSnackBar(
+          ScaffoldMessenger.of(context)..clearSnackBars()..showSnackBar(
             const SnackBar(
               content: Text("No rides found matching your route and criteria."),
               backgroundColor: Colors.orange,
@@ -201,7 +201,7 @@ class _FindRideScreenState extends State<FindRideScreen> {
     } on TimeoutException {
       if (mounted) {
         ScaffoldMessenger.of(context).clearSnackBars();
-        ScaffoldMessenger.of(context).showSnackBar(
+        ScaffoldMessenger.of(context)..clearSnackBars()..showSnackBar(
           const SnackBar(
             content: Text("Search timed out. Please try again."),
             backgroundColor: Colors.red,
@@ -212,7 +212,7 @@ class _FindRideScreenState extends State<FindRideScreen> {
       debugPrint("❌ Network Error: $e");
       if (mounted) {
         ScaffoldMessenger.of(context).clearSnackBars();
-        ScaffoldMessenger.of(context).showSnackBar(
+        ScaffoldMessenger.of(context)..clearSnackBars()..showSnackBar(
           const SnackBar(
             content: Text("Network error. Check your connection."),
             backgroundColor: Colors.red,

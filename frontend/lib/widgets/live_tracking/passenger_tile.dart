@@ -141,10 +141,10 @@ class PassengerTile extends StatelessWidget {
               onPressed: isAnyProcessing ? null : () {
                 if (!isStarted) {
                   ScaffoldMessenger.of(context).clearSnackBars();
-                  ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("First start the ride"), backgroundColor: Colors.orange));
+                  ScaffoldMessenger.of(context)..clearSnackBars()..showSnackBar(const SnackBar(content: Text("First start the ride"), backgroundColor: Colors.orange));
                 } else if (!canFit) {
                   ScaffoldMessenger.of(context).clearSnackBars();
-                  ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("Car capacity reached"), backgroundColor: Colors.red));
+                  ScaffoldMessenger.of(context)..clearSnackBars()..showSnackBar(const SnackBar(content: Text("Car capacity reached"), backgroundColor: Colors.red));
                 } else {
                   onArrive();
                 }

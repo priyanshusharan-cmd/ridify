@@ -325,7 +325,7 @@ class _AvailableRidesScreenState extends State<AvailableRidesScreen> {
           Navigator.pop(context); // Pop Available Rides Screen
           Navigator.pop(context); // Pop Find Ride Screen, back to home
         }
-        ScaffoldMessenger.of(context).showSnackBar(
+        ScaffoldMessenger.of(context)..clearSnackBars()..showSnackBar(
           const SnackBar(
             content: Text("Ride Requested!"),
             backgroundColor: Colors.orange,
@@ -334,7 +334,7 @@ class _AvailableRidesScreenState extends State<AvailableRidesScreen> {
       }
     } on TimeoutException {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
+        ScaffoldMessenger.of(context)..clearSnackBars()..showSnackBar(
           const SnackBar(
             content: Text("Request timed out. Please try again."),
             backgroundColor: Colors.red,
@@ -344,7 +344,7 @@ class _AvailableRidesScreenState extends State<AvailableRidesScreen> {
     } catch (e) {
       debugPrint("❌ Request Error: $e");
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
+        ScaffoldMessenger.of(context)..clearSnackBars()..showSnackBar(
           const SnackBar(
             content: Text("Could not send request. Check your connection."),
             backgroundColor: Colors.red,

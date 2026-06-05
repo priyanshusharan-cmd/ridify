@@ -71,7 +71,7 @@ class _RiderCompletingScreenState extends State<RiderCompletingScreen> {
     } catch (e) {
       debugPrint("Error: $e");
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(e.toString().replaceAll("Exception: ", ""))));
+        ScaffoldMessenger.of(context)..clearSnackBars()..showSnackBar(SnackBar(content: Text(e.toString().replaceAll("Exception: ", ""))));
       }
     } finally {
       if (mounted) Navigator.of(context).popUntil((route) => route.isFirst);
