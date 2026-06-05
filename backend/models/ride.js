@@ -47,6 +47,7 @@ const RideSchema = new mongoose.Schema({
       endIndex: Number,
       paid: { type: Boolean, default: false },
       riderName: String,
+      verificationStatus: { type: String, enum: ['none', 'pending', 'verified'], default: 'none' },
       boardedAt: Date,
       droppedAt: Date,
       kickedAt: Date

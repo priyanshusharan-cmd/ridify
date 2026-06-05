@@ -113,10 +113,13 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
   /// X-coordinate of the car's LEFT edge when it is parked (startup Phase 2 final pos).
   late final double _parkingX;
 
+  late String _verificationStatus;
+
   // ── initState ──────────────────────────────────────────────────────────────
   @override
   void initState() {
     super.initState();
+    _verificationStatus = widget.verificationStatus;
     _initSocket();
     fetchRides();
     
@@ -471,7 +474,10 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
         userAge: widget.userAge,
         userEmail: widget.userEmail,
         isAdmin: widget.isAdmin,
-        verificationStatus: widget.verificationStatus,
+        verificationStatus: _verificationStatus,
+        onVerificationStatusChanged: (status) {
+          if (mounted) setState(() => _verificationStatus = status);
+        },
       ),
     ];
 

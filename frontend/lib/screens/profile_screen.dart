@@ -6,8 +6,6 @@ import 'login_screen.dart';
 import 'home_screen.dart';
 import 'dart:convert';
 import 'package:image_picker/image_picker.dart';
-import 'package:http/http.dart' as http;
-import 'package:flutter_dotenv/flutter_dotenv.dart';
 import '../services/auth_service.dart';
 
 import '../core/socket_service.dart';
@@ -19,6 +17,7 @@ class ProfileScreen extends StatefulWidget {
   final String userEmail;
   final bool isAdmin;
   final String verificationStatus;
+  final void Function(String)? onVerificationStatusChanged;
 
   const ProfileScreen({
     super.key,
@@ -27,6 +26,7 @@ class ProfileScreen extends StatefulWidget {
     this.userEmail = "email@example.com",
     this.isAdmin = false,
     this.verificationStatus = 'none',
+    this.onVerificationStatusChanged,
   });
 
   @override
@@ -56,11 +56,13 @@ class _ProfileScreenState extends State<ProfileScreen> {
       final cached = prefs.getString('verification_status');
       if (cached != null && cached != 'none' && mounted) {
         setState(() => _verificationStatus = cached);
+        widget.onVerificationStatusChanged?.call(cached);
       }
       final data = await AuthService.getVerificationStatus(email);
       if (mounted) {
         setState(() => _verificationStatus = data['verificationStatus'] ?? 'none');
         await prefs.setString('verification_status', _verificationStatus);
+        widget.onVerificationStatusChanged?.call(_verificationStatus);
       }
     } catch (_) {}
   }
@@ -86,6 +88,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
       
       if (mounted) {
         setState(() => _verificationStatus = 'pending');
+        widget.onVerificationStatusChanged?.call('pending');
       }
     } catch (e) {
       if (mounted) {
@@ -437,40 +440,46 @@ class _ProfileScreenState extends State<ProfileScreen> {
                         color: Theme.of(context).textTheme.bodyLarge?.color,
                       ),
                     ),
-                    if (_verificationStatus == 'none')
-                      Padding(
-                        padding: const EdgeInsets.only(top: 4),
-                        child: _isUploading
-                            ? const SizedBox(width: 16, height: 16, child: CircularProgressIndicator(strokeWidth: 2))
-                            : Material(
-                                color: Colors.transparent,
-                                child: InkWell(
-                                  borderRadius: BorderRadius.circular(4),
-                                  onTap: _startVerification,
-                                  child: const Padding(
-                                    padding: EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                                    child: Text("Verify your account", style: TextStyle(color: Colors.grey, fontSize: 13)),
-                                  ),
-                                ),
-                              ),
-                      )
-                    else if (_verificationStatus == 'pending')
-                      const Padding(
-                        padding: EdgeInsets.only(top: 4),
-                        child: Text("Waiting for approval", style: TextStyle(color: Colors.grey, fontSize: 13)),
-                      )
-                    else if (_verificationStatus == 'verified')
-                      Padding(
-                        padding: const EdgeInsets.only(top: 4),
-                        child: Row(
-                          mainAxisSize: MainAxisSize.min,
-                          children: const [
-                            Icon(Icons.verified, color: Colors.green, size: 16),
-                            SizedBox(width: 4),
-                            Text("Verified", style: TextStyle(color: Colors.green, fontSize: 13, fontWeight: FontWeight.w600)),
-                          ],
-                        ),
+                    SizedBox(
+                      height: 30,
+                      child: Center(
+                        child: _verificationStatus == 'none'
+                            ? Padding(
+                                padding: const EdgeInsets.only(top: 4),
+                                child: _isUploading
+                                    ? const SizedBox(width: 16, height: 16, child: CircularProgressIndicator(strokeWidth: 2))
+                                    : Material(
+                                        color: Colors.transparent,
+                                        child: InkWell(
+                                          borderRadius: BorderRadius.circular(4),
+                                          onTap: _startVerification,
+                                          child: const Padding(
+                                            padding: EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                                            child: Text("Verify your account", style: TextStyle(color: Colors.grey, fontSize: 13)),
+                                          ),
+                                        ),
+                                      ),
+                              )
+                            : _verificationStatus == 'pending'
+                                ? const Padding(
+                                    padding: EdgeInsets.only(top: 4),
+                                    child: Text("Waiting for approval", style: TextStyle(color: Colors.grey, fontSize: 13)),
+                                  )
+                                : _verificationStatus == 'verified'
+                                    ? Padding(
+                                        padding: const EdgeInsets.only(top: 4),
+                                        child: Row(
+                                          mainAxisSize: MainAxisSize.min,
+                                          children: const [
+                                            Icon(Icons.verified, color: Colors.green, size: 16),
+                                            SizedBox(width: 4),
+                                            Text("Verified", style: TextStyle(color: Colors.green, fontSize: 13, fontWeight: FontWeight.w600)),
+                                          ],
+                                        ),
+                                      )
+                                    : const SizedBox.shrink(),
                       ),
+                    ),
                     const SizedBox(height: 40),
 
                     _editableTile(

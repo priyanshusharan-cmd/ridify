@@ -166,6 +166,70 @@ const updateUser = async (req, res) => {
     );
     if (!user) return res.status(404).json({ error: 'User not found.' });
 
+    // --- Cascade Name/Age to Rides ---
+    if (updateFields.name || updateFields.age) {
+      const Ride = require('../models/ride');
+      const { emailToKey } = require('../utils/emailKey');
+      const email = user.email;
+      const emailKey = emailToKey(email);
+      
+      const rides = await Ride.find({
+        $or: [
+          { riderEmail: email },
+          { passengers: email },
+          { requests: email },
+          { droppedPassengers: email },
+          { declined: email },
+          { kicked: email },
+          { arrivedAt: email },
+          { boardedPassengers: email }
+        ]
+      });
+
+      for (const ride of rides) {
+        let changed = false;
+        
+        // Update driver name
+        if (ride.riderEmail === email && updateFields.name) {
+          ride.riderName = updateFields.name;
+          changed = true;
+        }
+
+        // Update passenger details
+        let details = ride.riderDetails.get(emailKey);
+        if (details) {
+          if (updateFields.name) details.riderName = updateFields.name;
+          ride.riderDetails.set(emailKey, details);
+          changed = true;
+        }
+        
+        // Fallback for legacy keys just in case
+        let legacyKey = email.replaceAll('.', '_dot_');
+        let detailsLegacy = ride.riderDetails.get(legacyKey);
+        if (detailsLegacy) {
+          if (updateFields.name) detailsLegacy.riderName = updateFields.name;
+          ride.riderDetails.set(legacyKey, detailsLegacy);
+          changed = true;
+        }
+
+        // Update chat messages
+        if (updateFields.name) {
+          for (const msg of ride.chatMessages) {
+            if (msg.senderEmail === email) {
+              msg.sender = updateFields.name;
+              changed = true;
+            }
+          }
+        }
+        
+        if (changed) {
+          ride.markModified('riderDetails');
+          ride.markModified('chatMessages');
+          await ride.save();
+        }
+      }
+    }
+
     res.json({ user, message: 'User updated successfully.' });
   } catch (err) {
     logger.error('Admin updateUser error:', err.message);
@@ -441,11 +505,58 @@ const unbanUser = async (req, res) => {
   } catch (err) { res.status(500).json({ error: 'Server error unbanning user' }); }
 };
 
+async function cascadeVerificationStatus(email, newStatus) {
+  const Ride = require('../models/ride');
+  const { emailToKey } = require('../utils/emailKey');
+  const emailKey = emailToKey(email);
+  const rides = await Ride.find({
+    $or: [
+      { riderEmail: email },
+      { passengers: email },
+      { requests: email },
+      { droppedPassengers: email },
+      { declined: email },
+      { kicked: email },
+      { arrivedAt: email },
+      { boardedPassengers: email }
+    ]
+  });
+
+  for (const ride of rides) {
+    let changed = false;
+    if (ride.riderEmail === email && ride.driverVerificationStatus !== newStatus) {
+      ride.driverVerificationStatus = newStatus;
+      changed = true;
+    }
+
+    let details = ride.riderDetails.get(emailKey);
+    if (details) {
+      details.verificationStatus = newStatus;
+      ride.riderDetails.set(emailKey, details);
+      changed = true;
+    }
+    
+    let legacyKey = email.replaceAll('.', '_dot_');
+    let detailsLegacy = ride.riderDetails.get(legacyKey);
+    if (detailsLegacy) {
+      detailsLegacy.verificationStatus = newStatus;
+      ride.riderDetails.set(legacyKey, detailsLegacy);
+      changed = true;
+    }
+    
+    if (changed) {
+      ride.markModified('riderDetails');
+      await ride.save();
+    }
+  }
+}
+
 const verifyDocuments = async (req, res) => {
   try {
     if (!isValidObjectId(req.params.id)) return res.status(400).json({ error: 'Invalid ID' });
     const user = await User.findByIdAndUpdate(req.params.id, { documentsVerified: true, verificationStatus: 'verified' }, { new: true, projection: { password: 0 }});
     if (!user) return res.status(404).json({ error: 'User not found' });
+    await cascadeVerificationStatus(user.email, 'verified');
     res.json({ message: `Documents for ${user.email} verified.`, user });
   } catch (err) { res.status(500).json({ error: 'Server error verifying docs' }); }
 };
@@ -455,6 +566,7 @@ const rejectVerification = async (req, res) => {
     if (!isValidObjectId(req.params.id)) return res.status(400).json({ error: 'Invalid ID' });
     const user = await User.findByIdAndUpdate(req.params.id, { verificationStatus: 'none', idUrl: '' }, { new: true, projection: { password: 0 }});
     if (!user) return res.status(404).json({ error: 'User not found' });
+    await cascadeVerificationStatus(user.email, 'none');
     res.json({ message: `Verification rejected for ${user.email}.`, user });
   } catch (err) { res.status(500).json({ error: 'Server error rejecting verification' }); }
 };

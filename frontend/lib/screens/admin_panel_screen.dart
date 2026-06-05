@@ -858,7 +858,7 @@ class _UsersTabState extends State<_UsersTab> with AutomaticKeepAliveClientMixin
                             if (await canLaunchUrl(url)) {
                               await launchUrl(url, mode: LaunchMode.externalApplication);
                             } else {
-                              if (mounted) {
+                              if (context.mounted) {
                                 ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Could not open link.')));
                               }
                             }
@@ -904,14 +904,14 @@ class _UsersTabState extends State<_UsersTab> with AutomaticKeepAliveClientMixin
                                     user = result['user'];
                                   });
                                   _fetchUsers();
-                                  if (mounted) {
+                                  if (context.mounted) {
                                     ScaffoldMessenger.of(context).showSnackBar(
                                       const SnackBar(content: Text('User updated!'), backgroundColor: Colors.green),
                                     );
                                   }
                                 } catch (e) {
                                   setModalState(() => isSaving = false);
-                                  if (mounted) {
+                                  if (context.mounted) {
                                     ScaffoldMessenger.of(context).showSnackBar(
                                       SnackBar(content: Text(e.toString().replaceAll('Exception: ', '')), backgroundColor: Colors.red),
                                     );

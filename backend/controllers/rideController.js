@@ -458,7 +458,8 @@ exports.requestRide = async (req, res) => {
       ride.riderDetails.set(safeEmail, {
         pickupLat, pickupLng, destLat, destLng, pickupLocation, destination,
         fare: serverFare, distance: computedDistance, seats: seatCount,
-        startIndex: parsedStart, endIndex: parsedEnd, paid: false, riderName: riderName || ''
+        startIndex: parsedStart, endIndex: parsedEnd, paid: false, riderName: riderName || '',
+        verificationStatus: req.user.verificationStatus || 'none'
       });
 
       const updateResult = await Ride.findOneAndUpdate(
