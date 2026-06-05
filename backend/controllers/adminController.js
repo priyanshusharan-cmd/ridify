@@ -152,16 +152,7 @@ const updateUser = async (req, res) => {
       updateFields.age = trimmed;
     }
     if (email !== undefined) {
-      const trimmed = String(email).trim().toLowerCase();
-      if (!isValidEmail(trimmed)) {
-        return res.status(400).json({ error: 'Invalid email format.' });
-      }
-      
-      const existing = await User.findOne({ email: trimmed, _id: { $ne: req.params.id } });
-      if (existing) {
-        return res.status(409).json({ error: 'Email already in use.' });
-      }
-      updateFields.email = trimmed;
+      return res.status(400).json({ error: 'Email cannot be updated due to database cascade complexities.' });
     }
 
     if (Object.keys(updateFields).length === 0) {

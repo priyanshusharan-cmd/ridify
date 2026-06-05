@@ -724,83 +724,230 @@ class _UsersTabState extends State<_UsersTab> with AutomaticKeepAliveClientMixin
     );
   }
 
-  void _showUserDetails(Map<String, dynamic> user) {
+  void _showUserDetails(Map<String, dynamic> initialUser) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
+    Map<String, dynamic> user = Map.from(initialUser);
+    bool isEditing = false;
+    bool isSaving = false;
+    final nameCtrl = TextEditingController(text: user['name'] ?? '');
+    final ageCtrl = TextEditingController(text: user['age'] ?? '');
+
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
       backgroundColor: Colors.transparent,
-      builder: (ctx) => Container(
-        decoration: BoxDecoration(
-          color: isDark ? const Color(0xFF1E1E1E) : Colors.white,
-          borderRadius: const BorderRadius.vertical(top: Radius.circular(20)),
-        ),
-        padding: const EdgeInsets.all(24),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Container(
-              width: 40,
-              height: 4,
-              margin: const EdgeInsets.only(bottom: 20),
-              decoration: BoxDecoration(
-                color: Colors.grey[400],
-                borderRadius: BorderRadius.circular(2),
-              ),
+      builder: (ctx) => StatefulBuilder(
+        builder: (context, setModalState) {
+          return Container(
+            decoration: BoxDecoration(
+              color: isDark ? const Color(0xFF1E1E1E) : Colors.white,
+              borderRadius: const BorderRadius.vertical(top: Radius.circular(20)),
             ),
-            CircleAvatar(
-              radius: 35,
-              backgroundColor: isDark ? Colors.white : Colors.black,
-              child: Text(
-                _getInitials(user['name'] ?? '?'),
-                style: TextStyle(
-                  color: isDark ? Colors.black : Colors.white,
-                  fontWeight: FontWeight.bold,
-                  fontSize: 22,
-                ),
-              ),
+            padding: EdgeInsets.only(
+              left: 24, right: 24, top: 24,
+              bottom: MediaQuery.of(ctx).viewInsets.bottom + 24,
             ),
-            const SizedBox(height: 16),
-            Text(
-              user['name'] ?? 'Unknown',
-              style: TextStyle(
-                fontSize: 20,
-                fontWeight: FontWeight.bold,
-                color: Theme.of(context).textTheme.bodyLarge?.color,
-              ),
-            ),
-            const SizedBox(height: 4),
-            Text(
-              user['email'] ?? '',
-              style: TextStyle(color: isDark ? Colors.white54 : Colors.black54, fontSize: 14),
-            ),
-            const SizedBox(height: 20),
-            _DetailRow(icon: Icons.cake_outlined, label: 'Age', value: user['age'] ?? 'N/A'),
-            _DetailRow(icon: Icons.calendar_today, label: 'Joined', value: _formatDate(user['createdAt'])),
-            _DetailRow(icon: Icons.fingerprint, label: 'ID', value: user['_id'] ?? ''),
-            const SizedBox(height: 24),
-            Row(
-              children: [
-                Expanded(
-                  child: OutlinedButton.icon(
-                    style: OutlinedButton.styleFrom(
-                      side: const BorderSide(color: Colors.red),
-                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-                      padding: const EdgeInsets.symmetric(vertical: 14),
+            child: SingleChildScrollView(
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Container(
+                    width: 40,
+                    height: 4,
+                    margin: const EdgeInsets.only(bottom: 20),
+                    decoration: BoxDecoration(
+                      color: Colors.grey[400],
+                      borderRadius: BorderRadius.circular(2),
                     ),
-                    onPressed: () {
-                      Navigator.pop(ctx);
-                      _deleteUser(user['_id'], user['email']);
-                    },
-                    icon: const Icon(Icons.delete, color: Colors.red),
-                    label: const Text('Delete', style: TextStyle(color: Colors.red, fontWeight: FontWeight.bold)),
                   ),
-                ),
-              ],
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const SizedBox(width: 40), // Balance the edit button
+                      CircleAvatar(
+                        radius: 35,
+                        backgroundColor: isDark ? Colors.white : Colors.black,
+                        child: Text(
+                          _getInitials(user['name'] ?? '?'),
+                          style: TextStyle(
+                            color: isDark ? Colors.black : Colors.white,
+                            fontWeight: FontWeight.bold,
+                            fontSize: 22,
+                          ),
+                        ),
+                      ),
+                      IconButton(
+                        icon: Icon(isEditing ? Icons.close : Icons.edit, color: Colors.blue),
+                        onPressed: () {
+                          setModalState(() {
+                            if (isEditing) {
+                              isEditing = false;
+                              nameCtrl.text = user['name'] ?? '';
+                              ageCtrl.text = user['age'] ?? '';
+                            } else {
+                              isEditing = true;
+                            }
+                          });
+                        },
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 16),
+                  if (isEditing)
+                    TextField(
+                      controller: nameCtrl,
+                      decoration: const InputDecoration(labelText: 'Name'),
+                    )
+                  else
+                    Text(
+                      user['name'] ?? 'Unknown',
+                      style: TextStyle(
+                        fontSize: 20,
+                        fontWeight: FontWeight.bold,
+                        color: Theme.of(context).textTheme.bodyLarge?.color,
+                      ),
+                    ),
+                  const SizedBox(height: 4),
+                  Text(
+                    user['email'] ?? '',
+                    style: TextStyle(color: isDark ? Colors.white54 : Colors.black54, fontSize: 14),
+                  ),
+                  const SizedBox(height: 20),
+                  
+                  if (isEditing)
+                    TextField(
+                      controller: ageCtrl,
+                      keyboardType: TextInputType.number,
+                      decoration: const InputDecoration(labelText: 'Age'),
+                    )
+                  else
+                    _DetailRow(icon: Icons.cake_outlined, label: 'Age', value: user['age'] ?? 'N/A'),
+                    
+                  if (!isEditing) ...[
+                    _DetailRow(icon: Icons.calendar_today, label: 'Joined', value: _formatDate(user['createdAt'])),
+                    _DetailRow(icon: Icons.fingerprint, label: 'ID', value: user['_id'] ?? ''),
+                    
+                    if (user['verificationStatus'] != null && user['verificationStatus'] != 'none')
+                      Padding(
+                        padding: const EdgeInsets.only(bottom: 12),
+                        child: Row(
+                          children: [
+                            Icon(Icons.verified_user, color: user['verificationStatus'] == 'verified' ? Colors.green : Colors.orange, size: 20),
+                            const SizedBox(width: 16),
+                            Expanded(
+                              child: Text(
+                                user['verificationStatus'] == 'verified' ? 'Account Verified' : 'Verification Pending',
+                                style: TextStyle(
+                                  fontSize: 15,
+                                  color: user['verificationStatus'] == 'verified' ? Colors.green : Colors.orange,
+                                  fontWeight: FontWeight.w500,
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                      
+                    if (user['idUrl'] != null && user['idUrl'].toString().isNotEmpty)
+                      Padding(
+                        padding: const EdgeInsets.only(bottom: 12),
+                        child: InkWell(
+                          onTap: () async {
+                            final Uri url = Uri.parse(user['idUrl']);
+                            if (await canLaunchUrl(url)) {
+                              await launchUrl(url, mode: LaunchMode.externalApplication);
+                            } else {
+                              if (mounted) {
+                                ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Could not open link.')));
+                              }
+                            }
+                          },
+                          child: Row(
+                            children: [
+                              const Icon(Icons.image, color: Colors.blue, size: 20),
+                              const SizedBox(width: 16),
+                              const Expanded(
+                                child: Text(
+                                  'View ID Document',
+                                  style: TextStyle(fontSize: 15, color: Colors.blue, decoration: TextDecoration.underline),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                  ],
+
+                  const SizedBox(height: 24),
+                  if (isEditing)
+                    SizedBox(
+                      width: double.infinity,
+                      child: ElevatedButton(
+                        style: ElevatedButton.styleFrom(
+                          padding: const EdgeInsets.symmetric(vertical: 14),
+                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                        ),
+                        onPressed: isSaving
+                            ? null
+                            : () async {
+                                setModalState(() => isSaving = true);
+                                try {
+                                  final result = await AdminService.updateUser(
+                                    user['_id'],
+                                    name: nameCtrl.text.trim(),
+                                    age: ageCtrl.text.trim(),
+                                  );
+                                  setModalState(() {
+                                    isSaving = false;
+                                    isEditing = false;
+                                    user = result['user'];
+                                  });
+                                  _fetchUsers();
+                                  if (mounted) {
+                                    ScaffoldMessenger.of(context).showSnackBar(
+                                      const SnackBar(content: Text('User updated!'), backgroundColor: Colors.green),
+                                    );
+                                  }
+                                } catch (e) {
+                                  setModalState(() => isSaving = false);
+                                  if (mounted) {
+                                    ScaffoldMessenger.of(context).showSnackBar(
+                                      SnackBar(content: Text(e.toString().replaceAll('Exception: ', '')), backgroundColor: Colors.red),
+                                    );
+                                  }
+                                }
+                              },
+                        child: isSaving
+                            ? const SizedBox(width: 20, height: 20, child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white))
+                            : const Text('Save Changes', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+                      ),
+                    )
+                  else
+                    Row(
+                      children: [
+                        Expanded(
+                          child: OutlinedButton.icon(
+                            style: OutlinedButton.styleFrom(
+                              side: const BorderSide(color: Colors.red),
+                              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                              padding: const EdgeInsets.symmetric(vertical: 14),
+                            ),
+                            onPressed: () {
+                              Navigator.pop(ctx);
+                              _deleteUser(user['_id'], user['email']);
+                            },
+                            icon: const Icon(Icons.delete, color: Colors.red),
+                            label: const Text('Delete', style: TextStyle(color: Colors.red, fontWeight: FontWeight.bold)),
+                          ),
+                        ),
+                      ],
+                    ),
+                ],
+              ),
             ),
-            SizedBox(height: MediaQuery.of(ctx).padding.bottom + 8),
-          ],
-        ),
+          );
+        },
       ),
     );
   }

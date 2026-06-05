@@ -52,8 +52,16 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
   Future<void> _fetchVerificationStatus() async {
     try {
+      final prefs = await SharedPreferences.getInstance();
+      final cached = prefs.getString('verification_status');
+      if (cached != null && cached != 'none' && mounted) {
+        setState(() => _verificationStatus = cached);
+      }
       final data = await AuthService.getVerificationStatus(email);
-      if (mounted) setState(() => _verificationStatus = data['verificationStatus'] ?? 'none');
+      if (mounted) {
+        setState(() => _verificationStatus = data['verificationStatus'] ?? 'none');
+        await prefs.setString('verification_status', _verificationStatus);
+      }
     } catch (_) {}
   }
 
@@ -67,16 +75,17 @@ class _ProfileScreenState extends State<ProfileScreen> {
       // 1. Read image bytes and convert to base64
       final bytes = await photo.readAsBytes();
       final base64Data = base64Encode(bytes);
-      final filename = email.replaceAll('@', '_at_').replaceAll('.', '_dot_');
+      final filename = email;
       
       // 2. Upload ID by sending base64 to backend
       await AuthService.uploadIdForVerification(email, base64Data, filename);
       
+      // Save to SharedPreferences so it persists regardless of unmounting
+      final prefs = await SharedPreferences.getInstance();
+      await prefs.setString('verification_status', 'pending');
+      
       if (mounted) {
         setState(() => _verificationStatus = 'pending');
-        // Save to SharedPreferences so it persists
-        final prefs = await SharedPreferences.getInstance();
-        await prefs.setString('verification_status', 'pending');
       }
     } catch (e) {
       if (mounted) {
@@ -429,23 +438,30 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       ),
                     ),
                     if (_verificationStatus == 'none')
-                      GestureDetector(
-                        onTap: _isUploading ? null : _startVerification,
-                        child: Padding(
-                          padding: const EdgeInsets.only(top: 8),
-                          child: _isUploading
-                              ? const SizedBox(width: 16, height: 16, child: CircularProgressIndicator(strokeWidth: 2))
-                              : const Text("Verify your account", style: TextStyle(color: Colors.grey, fontSize: 13, decoration: TextDecoration.underline)),
-                        ),
+                      Padding(
+                        padding: const EdgeInsets.only(top: 4),
+                        child: _isUploading
+                            ? const SizedBox(width: 16, height: 16, child: CircularProgressIndicator(strokeWidth: 2))
+                            : Material(
+                                color: Colors.transparent,
+                                child: InkWell(
+                                  borderRadius: BorderRadius.circular(4),
+                                  onTap: _startVerification,
+                                  child: const Padding(
+                                    padding: EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                                    child: Text("Verify your account", style: TextStyle(color: Colors.grey, fontSize: 13)),
+                                  ),
+                                ),
+                              ),
                       )
                     else if (_verificationStatus == 'pending')
                       const Padding(
-                        padding: EdgeInsets.only(top: 8),
+                        padding: EdgeInsets.only(top: 4),
                         child: Text("Waiting for approval", style: TextStyle(color: Colors.grey, fontSize: 13)),
                       )
                     else if (_verificationStatus == 'verified')
                       Padding(
-                        padding: const EdgeInsets.only(top: 8),
+                        padding: const EdgeInsets.only(top: 4),
                         child: Row(
                           mainAxisSize: MainAxisSize.min,
                           children: const [
