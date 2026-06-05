@@ -1,3 +1,6 @@
+import 'package:provider/provider.dart';
+import '../core/user_provider.dart';
+import '../core/rides_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/gestures.dart';
 import 'package:socket_io_client/socket_io_client.dart' as io;
@@ -179,6 +182,10 @@ class _LiveTrackingScreenState extends State<LiveTrackingScreen> {
   bool _syncInProgress = false;
 
   Future<void> syncRideStatus() async {
+    if (mounted) {
+      Provider.of<UserProvider>(context, listen: false).fetchProfile();
+      Provider.of<RidesProvider>(context, listen: false).fetchRides();
+    }
     if (_syncInProgress) return;
     _syncInProgress = true;
     try {

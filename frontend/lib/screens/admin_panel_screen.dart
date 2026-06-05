@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 import '../services/admin_service.dart';
 import '../services/auth_service.dart';
 import '../core/socket_service.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'package:provider/provider.dart';
+import '../core/user_provider.dart';
+import '../core/rides_provider.dart';
 
 class AdminPanelScreen extends StatefulWidget {
   const AdminPanelScreen({super.key});
@@ -103,6 +105,10 @@ class _DashboardTabState extends State<_DashboardTab> with AutomaticKeepAliveCli
   }
 
   Future<void> _fetchStats() async {
+    if (mounted) {
+      Provider.of<UserProvider>(context, listen: false).fetchProfile();
+      Provider.of<RidesProvider>(context, listen: false).fetchRides();
+    }
     setState(() { _loading = true; _error = null; });
     try {
       final data = await AdminService.getStats();
@@ -477,6 +483,10 @@ class _UsersTabState extends State<_UsersTab> with AutomaticKeepAliveClientMixin
   }
 
   Future<void> _fetchUsers({int page = 1}) async {
+    if (mounted) {
+      Provider.of<UserProvider>(context, listen: false).fetchProfile();
+      Provider.of<RidesProvider>(context, listen: false).fetchRides();
+    }
     setState(() { _loading = true; _error = null; });
     try {
       final data = await AdminService.getAllUsers(
@@ -1304,6 +1314,10 @@ class _RidesTabState extends State<_RidesTab> with AutomaticKeepAliveClientMixin
   }
 
   Future<void> _fetchRides({int page = 1}) async {
+    if (mounted) {
+      Provider.of<UserProvider>(context, listen: false).fetchProfile();
+      Provider.of<RidesProvider>(context, listen: false).fetchRides();
+    }
     setState(() { _loading = true; _error = null; });
     try {
       final query = _searchController.text.trim();
@@ -2079,6 +2093,10 @@ class _VerificationsTabState extends State<_VerificationsTab> with AutomaticKeep
   }
 
   Future<void> _fetchPending() async {
+    if (mounted) {
+      Provider.of<UserProvider>(context, listen: false).fetchProfile();
+      Provider.of<RidesProvider>(context, listen: false).fetchRides();
+    }
     setState(() { _loading = true; _error = null; });
     try {
       final users = await AdminService.getPendingVerifications();

@@ -7,9 +7,7 @@ import 'profile_screen.dart';
 import 'ride_history_screen.dart';
 import '../widgets/active_rides_tab.dart';
 
-import '../services/ride_service.dart';
 import '../services/token_service.dart';
-import '../services/auth_service.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../widgets/home/action_card.dart';
 import '../widgets/home/earnings_display.dart';

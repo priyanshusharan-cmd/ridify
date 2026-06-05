@@ -3,7 +3,6 @@ import 'dart:async';
 import 'dart:ui';
 import '../core/socket_service.dart';
 import '../widgets/find_ride/available_ride_card.dart';
-import '../services/ride_service.dart';
 
 class AvailableRidesScreen extends StatefulWidget {
   final List<dynamic> initialRides;

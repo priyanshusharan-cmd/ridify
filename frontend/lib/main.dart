@@ -5,6 +5,8 @@ import 'core/theme_provider.dart';
 import 'core/app_theme.dart';
 import 'core/socket_service.dart';
 import 'screens/splash_screen.dart';
+import 'core/user_provider.dart';
+import 'core/rides_provider.dart';
 
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'dart:ui';
@@ -73,15 +75,21 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
   Widget build(BuildContext context) {
     return Consumer<ThemeProvider>(
       builder: (context, themeProvider, child) {
-        return MaterialApp(
-          scrollBehavior: AppScrollBehavior(),
-          navigatorKey: navigatorKey,
-          debugShowCheckedModeBanner: false,
-          title: 'Ridify',
-          themeMode: themeProvider.themeMode,
-          theme: AppTheme.lightTheme,
-          darkTheme: AppTheme.darkTheme,
-          home: const SplashScreen(),
+        return MultiProvider(
+          providers: [
+            ChangeNotifierProvider(create: (_) => UserProvider()),
+            ChangeNotifierProvider(create: (_) => RidesProvider()),
+          ],
+          child: MaterialApp(
+            scrollBehavior: AppScrollBehavior(),
+            navigatorKey: navigatorKey,
+            debugShowCheckedModeBanner: false,
+            title: 'Ridify',
+            themeMode: themeProvider.themeMode,
+            theme: AppTheme.lightTheme,
+            darkTheme: AppTheme.darkTheme,
+            home: const SplashScreen(),
+          ),
         );
       },
     );

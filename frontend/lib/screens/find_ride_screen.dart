@@ -3,11 +3,13 @@ import 'dart:async';
 import 'package:latlong2/latlong.dart';
 
 import '../widgets/address_search_widget.dart';
-import '../core/constants.dart';
 import 'map_picker_screen.dart';
 import 'available_rides_screen.dart';
 import '../services/ride_service.dart';
 import '../services/location_service.dart';
+import 'package:provider/provider.dart';
+import '../core/user_provider.dart';
+import '../core/rides_provider.dart';
 
 class FindRideScreen extends StatefulWidget {
   final String userName;
@@ -151,6 +153,10 @@ class _FindRideScreenState extends State<FindRideScreen> {
     }
 
     setState(() => isSearching = true);
+    if (mounted) {
+      Provider.of<UserProvider>(context, listen: false).fetchProfile();
+      Provider.of<RidesProvider>(context, listen: false).fetchRides();
+    }
 
     try {
       DateTime dateToSearch = _selectedDate ?? DateTime.now();

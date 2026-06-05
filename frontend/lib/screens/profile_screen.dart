@@ -1,3 +1,4 @@
+import 'package:image_picker/image_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'admin_panel_screen.dart';
@@ -5,7 +6,9 @@ import 'package:provider/provider.dart';
 import 'login_screen.dart';
 import 'home_screen.dart';
 import 'dart:convert';
-import 'package:image_picker/image_picker.dart';
+import 'package:provider/provider.dart';
+import '../core/user_provider.dart';
+import '../core/rides_provider.dart';
 import '../services/auth_service.dart';
 
 import '../core/socket_service.dart';
@@ -63,6 +66,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
   }
 
   Future<void> _fetchVerificationStatus() async {
+    if (mounted) {
+      await Provider.of<UserProvider>(context, listen: false).fetchProfile();
+      await Provider.of<RidesProvider>(context, listen: false).fetchRides();
+    }
     try {
       final prefs = await SharedPreferences.getInstance();
       final cached = prefs.getString('verification_status');
