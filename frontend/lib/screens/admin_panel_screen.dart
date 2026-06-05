@@ -1024,119 +1024,119 @@ class _UsersTabState extends State<_UsersTab> with AutomaticKeepAliveClientMixin
         backgroundColor: Colors.amber,
         child: const Icon(Icons.person_add, color: Colors.white),
       ),
-      body: Column(
-        children: [
-        // ── Search Bar ────────────────────────────────────────────
-        Padding(
-          padding: const EdgeInsets.fromLTRB(16, 16, 16, 8),
-          child: Row(
-            children: [
-              Expanded(
-                child: TextField(
-                  controller: _searchController,
-                  decoration: InputDecoration(
-                    hintText: 'Search by name or email...',
-                    prefixIcon: const Icon(Icons.search),
-                    suffixIcon: _searchController.text.isNotEmpty
-                        ? IconButton(
-                            icon: const Icon(Icons.clear),
-                            onPressed: () {
-                              _searchController.clear();
-                              _fetchUsers();
-                            },
-                          )
-                        : null,
-                    filled: true,
-                    fillColor: isDark ? const Color(0xFF2A2A2A) : Colors.grey[100],
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(12),
-                      borderSide: BorderSide.none,
+      body: RefreshIndicator(
+        onRefresh: () => _fetchUsers(page: _page),
+        child: CustomScrollView(
+          physics: const AlwaysScrollableScrollPhysics(),
+          slivers: [
+            // ── Search Bar ────────────────────────────────────────────
+            SliverToBoxAdapter(
+              child: Padding(
+                padding: const EdgeInsets.fromLTRB(16, 16, 16, 8),
+                child: Row(
+                  children: [
+                    Expanded(
+                      child: TextField(
+                        controller: _searchController,
+                        decoration: InputDecoration(
+                          hintText: 'Search by name or email...',
+                          prefixIcon: const Icon(Icons.search),
+                          suffixIcon: _searchController.text.isNotEmpty
+                              ? IconButton(
+                                  icon: const Icon(Icons.clear),
+                                  onPressed: () {
+                                    _searchController.clear();
+                                    _fetchUsers();
+                                  },
+                                )
+                              : null,
+                          filled: true,
+                          fillColor: isDark ? const Color(0xFF2A2A2A) : Colors.grey[100],
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(12),
+                            borderSide: BorderSide.none,
+                          ),
+                          contentPadding: const EdgeInsets.symmetric(vertical: 0),
+                        ),
+                        onSubmitted: (_) => _fetchUsers(),
+                      ),
                     ),
-                    contentPadding: const EdgeInsets.symmetric(vertical: 0),
-                  ),
-                  onSubmitted: (_) => _fetchUsers(),
+                    if (_isSelecting) ...[
+                      const SizedBox(width: 8),
+                      IconButton(
+                        icon: const Icon(Icons.delete_sweep, color: Colors.red),
+                        tooltip: 'Delete selected',
+                        onPressed: _bulkDelete,
+                      ),
+                      IconButton(
+                        icon: const Icon(Icons.close),
+                        tooltip: 'Cancel selection',
+                        onPressed: () {
+                          setState(() {
+                            _selectedIds.clear();
+                            _isSelecting = false;
+                          });
+                        },
+                      ),
+                    ],
+                  ],
                 ),
               ),
-              if (_isSelecting) ...[
-                const SizedBox(width: 8),
-                IconButton(
-                  icon: const Icon(Icons.delete_sweep, color: Colors.red),
-                  tooltip: 'Delete selected',
-                  onPressed: _bulkDelete,
-                ),
-                IconButton(
-                  icon: const Icon(Icons.close),
-                  tooltip: 'Cancel selection',
-                  onPressed: () {
-                    setState(() {
-                      _selectedIds.clear();
-                      _isSelecting = false;
-                    });
-                  },
-                ),
-              ],
-            ],
-          ),
-        ),
-
-        if (_isSelecting)
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16),
-            child: Row(
-              children: [
-                Text(
-                  '${_selectedIds.length} selected',
-                  style: const TextStyle(color: Colors.amber, fontWeight: FontWeight.bold),
-                ),
-              ],
             ),
-          ),
-
-        // ── User List ─────────────────────────────────────────────
-        Expanded(
-          child: _loading
-              ? const Center(child: CircularProgressIndicator())
-              : _error != null
-                  ? Center(
-                      child: Column(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          Text(_error!, style: const TextStyle(color: Colors.red)),
-                          const SizedBox(height: 12),
-                          ElevatedButton(onPressed: () => _fetchUsers(), child: const Text('Retry')),
-                        ],
+            if (_isSelecting)
+              SliverToBoxAdapter(
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 16),
+                  child: Row(
+                    children: [
+                      Text(
+                        '${_selectedIds.length} selected',
+                        style: const TextStyle(color: Colors.amber, fontWeight: FontWeight.bold),
                       ),
-                    )
-                  : _users.isEmpty
-                      ? RefreshIndicator(
-                          onRefresh: () => _fetchUsers(page: _page),
-                          child: SingleChildScrollView(
-                            physics: const AlwaysScrollableScrollPhysics(),
-                            child: SizedBox(
-                              height: MediaQuery.of(context).size.height * 0.5,
-                              child: Center(
-                                child: Column(
-                                  mainAxisSize: MainAxisSize.min,
-                                  children: [
-                                    Icon(Icons.people_outline, size: 64, color: isDark ? Colors.white24 : Colors.black26),
-                                    const SizedBox(height: 12),
-                                    Text(
-                                      'No users found',
-                                      style: TextStyle(color: isDark ? Colors.white38 : Colors.black38),
-                                    ),
-                                  ],
-                                ),
-                              ),
-                            ),
-                          ),
-                        )
-                      : RefreshIndicator(
-                          onRefresh: () => _fetchUsers(page: _page),
-                          child: ListView.builder(
-                            physics: const AlwaysScrollableScrollPhysics(),
-                            padding: const EdgeInsets.symmetric(horizontal: 16),
-                            itemCount: _users.length + 1, // +1 for pagination
-                            itemBuilder: (context, index) {
+                    ],
+                  ),
+                ),
+              ),
+            // ── User List ─────────────────────────────────────────────
+            if (_loading)
+              const SliverFillRemaining(
+                child: Center(child: CircularProgressIndicator()),
+              )
+            else if (_error != null)
+              SliverFillRemaining(
+                child: Center(
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Text(_error!, style: const TextStyle(color: Colors.red)),
+                      const SizedBox(height: 12),
+                      ElevatedButton(onPressed: () => _fetchUsers(), child: const Text('Retry')),
+                    ],
+                  ),
+                ),
+              )
+            else if (_users.isEmpty)
+              SliverFillRemaining(
+                child: Center(
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Icon(Icons.people_outline, size: 64, color: isDark ? Colors.white24 : Colors.black26),
+                      const SizedBox(height: 12),
+                      Text(
+                        'No users found',
+                        style: TextStyle(color: isDark ? Colors.white38 : Colors.black38),
+                      ),
+                    ],
+                  ),
+                ),
+              )
+            else
+              SliverPadding(
+                padding: const EdgeInsets.symmetric(horizontal: 16),
+                sliver: SliverList(
+                  delegate: SliverChildBuilderDelegate(
+                    (context, index) {
                               if (index == _users.length) {
                                 // Pagination controls
                                 return Padding(
@@ -1228,11 +1228,13 @@ class _UsersTabState extends State<_UsersTab> with AutomaticKeepAliveClientMixin
                                 ),
                               );
                             },
+                            childCount: _users.length + 1,
                           ),
                         ),
+              ),
+          ],
         ),
-      ],
-    ),
+      ),
     );
   }
 
@@ -1613,120 +1615,122 @@ class _RidesTabState extends State<_RidesTab> with AutomaticKeepAliveClientMixin
     super.build(context);
     final isDark = Theme.of(context).brightness == Brightness.dark;
 
-    return Column(
-      children: [
-        // ── Search Bar ────────────────────────────────────────────
-        Padding(
-          padding: const EdgeInsets.fromLTRB(16, 16, 16, 8),
-          child: Row(
-            children: [
-              Expanded(
-                child: TextField(
-                  controller: _searchController,
-                  decoration: InputDecoration(
-                    hintText: 'Search by driver email...',
-                    prefixIcon: const Icon(Icons.search),
-                    suffixIcon: _searchController.text.isNotEmpty
-                        ? IconButton(
-                            icon: const Icon(Icons.clear),
-                            onPressed: () {
-                              _searchController.clear();
-                              _fetchRides();
-                            },
-                          )
-                        : null,
-                    filled: true,
-                    fillColor: isDark ? const Color(0xFF2A2A2A) : Colors.grey[100],
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(12),
-                      borderSide: BorderSide.none,
+    return RefreshIndicator(
+      onRefresh: () => _fetchRides(page: _page),
+      child: CustomScrollView(
+        physics: const AlwaysScrollableScrollPhysics(),
+        slivers: [
+          // ── Search Bar ────────────────────────────────────────────
+          SliverToBoxAdapter(
+            child: Padding(
+              padding: const EdgeInsets.fromLTRB(16, 16, 16, 8),
+              child: Row(
+                children: [
+                  Expanded(
+                    child: TextField(
+                      controller: _searchController,
+                      decoration: InputDecoration(
+                        hintText: 'Search by driver email...',
+                        prefixIcon: const Icon(Icons.search),
+                        suffixIcon: _searchController.text.isNotEmpty
+                            ? IconButton(
+                                icon: const Icon(Icons.clear),
+                                onPressed: () {
+                                  _searchController.clear();
+                                  _fetchRides();
+                                },
+                              )
+                            : null,
+                        filled: true,
+                        fillColor: isDark ? const Color(0xFF2A2A2A) : Colors.grey[100],
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(12),
+                          borderSide: BorderSide.none,
+                        ),
+                        contentPadding: const EdgeInsets.symmetric(vertical: 0),
+                      ),
+                      onSubmitted: (_) => _fetchRides(),
                     ),
-                    contentPadding: const EdgeInsets.symmetric(vertical: 0),
                   ),
-                  onSubmitted: (_) => _fetchRides(),
+                ],
+              ),
+            ),
+          ),
+
+          // ── Filter Chips ──────────────────────────────────────────
+          SliverToBoxAdapter(
+            child: SizedBox(
+              height: 56,
+              child: ListView.builder(
+                scrollDirection: Axis.horizontal,
+                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                itemCount: _filters.length,
+                itemBuilder: (context, index) {
+                  final isSelected = _statusFilter == _filters[index];
+                  return Padding(
+                    padding: const EdgeInsets.only(right: 8),
+                    child: FilterChip(
+                      selected: isSelected,
+                      label: Text(_filterLabels[index]),
+                      selectedColor: Colors.amber.withAlpha(51),
+                      checkmarkColor: Colors.amber,
+                      backgroundColor: isDark ? const Color(0xFF2A2A2A) : Colors.grey[100],
+                      labelStyle: TextStyle(
+                        color: isSelected ? Colors.amber : (isDark ? Colors.white70 : Colors.black87),
+                        fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
+                      ),
+                      side: isSelected ? const BorderSide(color: Colors.amber) : BorderSide.none,
+                      onSelected: (_) {
+                        setState(() => _statusFilter = _filters[index]);
+                        _fetchRides();
+                      },
+                    ),
+                  );
+                },
+              ),
+            ),
+          ),
+
+          // ── Ride List ─────────────────────────────────────────────
+          if (_loading)
+            const SliverFillRemaining(
+              child: Center(child: CircularProgressIndicator()),
+            )
+          else if (_error != null)
+            SliverFillRemaining(
+              child: Center(
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Text(_error!, style: const TextStyle(color: Colors.red)),
+                    const SizedBox(height: 12),
+                    ElevatedButton(onPressed: () => _fetchRides(), child: const Text('Retry')),
+                  ],
                 ),
               ),
-            ],
-          ),
-        ),
-
-        // ── Filter Chips ──────────────────────────────────────────
-        SizedBox(
-          height: 56,
-          child: ListView.builder(
-            scrollDirection: Axis.horizontal,
-            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-            itemCount: _filters.length,
-            itemBuilder: (context, index) {
-              final isSelected = _statusFilter == _filters[index];
-              return Padding(
-                padding: const EdgeInsets.only(right: 8),
-                child: FilterChip(
-                  selected: isSelected,
-                  label: Text(_filterLabels[index]),
-                  selectedColor: Colors.amber.withAlpha(51),
-                  checkmarkColor: Colors.amber,
-                  backgroundColor: isDark ? const Color(0xFF2A2A2A) : Colors.grey[100],
-                  labelStyle: TextStyle(
-                    color: isSelected ? Colors.amber : (isDark ? Colors.white70 : Colors.black87),
-                    fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
-                  ),
-                  side: isSelected ? const BorderSide(color: Colors.amber) : BorderSide.none,
-                  onSelected: (_) {
-                    setState(() => _statusFilter = _filters[index]);
-                    _fetchRides();
-                  },
+            )
+          else if (_rides.isEmpty)
+            SliverFillRemaining(
+              child: Center(
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Icon(Icons.directions_car_filled, size: 64, color: isDark ? Colors.white24 : Colors.black26),
+                    const SizedBox(height: 12),
+                    Text(
+                      'No rides found',
+                      style: TextStyle(color: isDark ? Colors.white38 : Colors.black38),
+                    ),
+                  ],
                 ),
-              );
-            },
-          ),
-        ),
-
-        // ── Ride List ─────────────────────────────────────────────
-        Expanded(
-          child: _loading
-              ? const Center(child: CircularProgressIndicator())
-              : _error != null
-                  ? Center(
-                      child: Column(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          Text(_error!, style: const TextStyle(color: Colors.red)),
-                          const SizedBox(height: 12),
-                          ElevatedButton(onPressed: () => _fetchRides(), child: const Text('Retry')),
-                        ],
-                      ),
-                    )
-                  : _rides.isEmpty
-                      ? RefreshIndicator(
-                          onRefresh: () => _fetchRides(page: _page),
-                          child: SingleChildScrollView(
-                            physics: const AlwaysScrollableScrollPhysics(),
-                            child: SizedBox(
-                              height: MediaQuery.of(context).size.height * 0.5,
-                              child: Center(
-                                child: Column(
-                                  mainAxisSize: MainAxisSize.min,
-                                  children: [
-                                    Icon(Icons.directions_car_filled, size: 64, color: isDark ? Colors.white24 : Colors.black26),
-                                    const SizedBox(height: 12),
-                                    Text(
-                                      'No rides found',
-                                      style: TextStyle(color: isDark ? Colors.white38 : Colors.black38),
-                                    ),
-                                  ],
-                                ),
-                              ),
-                            ),
-                          ),
-                        )
-                      : RefreshIndicator(
-                          onRefresh: () => _fetchRides(page: _page),
-                          child: ListView.builder(
-                            physics: const AlwaysScrollableScrollPhysics(),
-                            padding: const EdgeInsets.symmetric(horizontal: 16),
-                            itemCount: _rides.length + 1,
-                            itemBuilder: (context, index) {
+              ),
+            )
+          else
+            SliverPadding(
+              padding: const EdgeInsets.symmetric(horizontal: 16),
+              sliver: SliverList(
+                delegate: SliverChildBuilderDelegate(
+                  (context, index) {
                               if (index == _rides.length) {
                                 return Padding(
                                   padding: const EdgeInsets.symmetric(vertical: 16),
@@ -1822,10 +1826,12 @@ class _RidesTabState extends State<_RidesTab> with AutomaticKeepAliveClientMixin
                                 ),
                               );
                             },
+                            childCount: _rides.length + 1,
                           ),
                         ),
+              ),
+          ],
         ),
-      ],
     );
   }
 }
