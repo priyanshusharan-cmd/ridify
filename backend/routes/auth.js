@@ -90,16 +90,16 @@ router.post('/user/:email/upload-id', authenticate, async (req, res) => {
   }
 });
 
-router.get('/user/:email/verification-status', authenticate, async (req, res) => {
+router.get('/user/:email/profile', authenticate, async (req, res) => {
   try {
     const targetEmail = req.params.email.trim().toLowerCase();
     if (req.user.email !== targetEmail) {
       return res.status(403).json({ error: 'Forbidden.' });
     }
     const User = require('../models/user');
-    const user = await User.findOne({ email: targetEmail }, { verificationStatus: 1, idUrl: 1 });
+    const user = await User.findOne({ email: targetEmail }, { name: 1, age: 1, verificationStatus: 1, idUrl: 1 });
     if (!user) return res.status(404).json({ error: 'User not found.' });
-    res.json({ verificationStatus: user.verificationStatus || 'none', idUrl: user.idUrl || '' });
+    res.json({ name: user.name, age: user.age, verificationStatus: user.verificationStatus || 'none', idUrl: user.idUrl || '' });
   } catch (err) {
     res.status(500).json({ error: 'Server error.' });
   }

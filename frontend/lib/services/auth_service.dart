@@ -71,12 +71,12 @@ class AuthService {
     throw Exception(jsonDecode(response.body)['error'] ?? 'Failed to upload ID.');
   }
 
-  static Future<Map<String, dynamic>> getVerificationStatus(String email) async {
-    final response = await ApiClient.get('/api/auth/user/${Uri.encodeComponent(email)}/verification-status');
+  static Future<Map<String, dynamic>> getProfile(String email) async {
+    final response = await ApiClient.get('/api/auth/user/${Uri.encodeComponent(email)}/profile');
     if (response.statusCode == 200) {
       return jsonDecode(response.body);
     }
-    throw Exception(jsonDecode(response.body)['error'] ?? 'Failed to fetch verification status.');
+    throw Exception(jsonDecode(response.body)['error'] ?? 'Failed to fetch profile.');
   }
 
   // verifyOtp and resendOtp removed as they are obsolete in the new flow

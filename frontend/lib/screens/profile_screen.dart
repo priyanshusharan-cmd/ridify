@@ -50,6 +50,18 @@ class _ProfileScreenState extends State<ProfileScreen> {
     _fetchVerificationStatus();
   }
 
+  @override
+  void didUpdateWidget(covariant ProfileScreen oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (widget.userName != oldWidget.userName || widget.userAge != oldWidget.userAge || widget.verificationStatus != oldWidget.verificationStatus) {
+      setState(() {
+        fullName = widget.userName;
+        age = widget.userAge;
+        _verificationStatus = widget.verificationStatus;
+      });
+    }
+  }
+
   Future<void> _fetchVerificationStatus() async {
     try {
       final prefs = await SharedPreferences.getInstance();
@@ -58,10 +70,16 @@ class _ProfileScreenState extends State<ProfileScreen> {
         setState(() => _verificationStatus = cached);
         widget.onVerificationStatusChanged?.call(cached);
       }
-      final data = await AuthService.getVerificationStatus(email);
+      final data = await AuthService.getProfile(email);
       if (mounted) {
-        setState(() => _verificationStatus = data['verificationStatus'] ?? 'none');
+        setState(() {
+          _verificationStatus = data['verificationStatus'] ?? 'none';
+          fullName = data['name'] ?? fullName;
+          age = data['age'] ?? age;
+        });
         await prefs.setString('verification_status', _verificationStatus);
+        await prefs.setString('user_name', fullName);
+        await prefs.setString('user_age', age);
         widget.onVerificationStatusChanged?.call(_verificationStatus);
       }
     } catch (_) {}

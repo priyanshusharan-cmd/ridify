@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'dart:async';
 import '../core/socket_service.dart';
-import '../widgets/verified_badge.dart';
 import 'find_ride_screen.dart';
 import 'offer_ride_screen.dart';
 import 'profile_screen.dart';
@@ -10,6 +9,8 @@ import '../widgets/active_rides_tab.dart';
 
 import '../services/ride_service.dart';
 import '../services/token_service.dart';
+import '../services/auth_service.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import '../widgets/home/action_card.dart';
 import '../widgets/home/earnings_display.dart';
 import '../widgets/home/safety_banner.dart';
@@ -114,14 +115,18 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
   late final double _parkingX;
 
   late String _verificationStatus;
-
+  late String _userName;
+  late String _userAge;
   // ── initState ──────────────────────────────────────────────────────────────
   @override
   void initState() {
     super.initState();
     _verificationStatus = widget.verificationStatus;
+    _userName = widget.userName;
+    _userAge = widget.userAge;
     _initSocket();
     fetchRides();
+    _fetchProfile();
     
     // Register reconnect callback so we always re-fetch on socket reconnect
     SocketService().addReconnectCallback(_onSocketReconnect);
@@ -235,6 +240,25 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
     }
   }
 
+  Future<void> _fetchProfile() async {
+    try {
+      final profile = await AuthService.getProfile(widget.userEmail);
+      if (mounted) {
+        setState(() {
+          _userName = profile['name'];
+          _userAge = profile['age'];
+          _verificationStatus = profile['verificationStatus'];
+        });
+        final prefs = await SharedPreferences.getInstance();
+        await prefs.setString('user_name', _userName);
+        await prefs.setString('user_age', _userAge);
+        await prefs.setString('verification_status', _verificationStatus);
+      }
+    } catch (e) {
+      debugPrint("❌ Fetch Profile Error: $e");
+    }
+  }
+
   Future<void> _initSocket() async {
     final accessToken = await TokenService.getAccessToken();
     if (accessToken == null) return; // Not logged in
@@ -295,7 +319,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                 int fare = (map['fare'] as num?)?.toInt() ?? 0;
                 navigatorKey.currentState!.push(MaterialPageRoute(
                   builder: (_) => RiderCompletingScreen(
-                    isDriver: false, rideId: rideId, myName: widget.userName, myEmail: widget.userEmail, fareAmount: fare, initialRideData: ride
+                    isDriver: false, rideId: rideId, myName: _userName, myEmail: widget.userEmail, fareAmount: fare, initialRideData: ride
                   )
                 ));
               }
@@ -372,7 +396,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                   
                   navigatorKey.currentState!.pushAndRemoveUntil(MaterialPageRoute(
                     builder: (_) => RiderCompletingScreen(
-                      isDriver: false, rideId: rideId, myName: widget.userName, myEmail: widget.userEmail, fareAmount: fare, initialRideData: ride
+                      isDriver: false, rideId: rideId, myName: _userName, myEmail: widget.userEmail, fareAmount: fare, initialRideData: ride
                     )
                   ), (route) => route.isFirst);
                 }
@@ -458,20 +482,20 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
       _buildHomeTab(),
       ActiveRidesTab(
         rides: allRides,
-        myName: widget.userName,
+        myName: _userName,
         myEmail: widget.userEmail,
         onRefresh: fetchRides,
         onGoHome: () => setState(() => _currentIndex = 0),
       ),
       RideHistoryScreen(
-        userName: widget.userName,
+        userName: _userName,
         userEmail: widget.userEmail,
         allRides: allRides,
         onRefresh: fetchRides,
       ),
       ProfileScreen(
-        userName: widget.userName,
-        userAge: widget.userAge,
+        userName: _userName,
+        userAge: _userAge,
         userEmail: widget.userEmail,
         isAdmin: widget.isAdmin,
         verificationStatus: _verificationStatus,
@@ -597,7 +621,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              "Hello, ${widget.userName.split(' ')[0]}! 👋",
+              "Hello, ${_userName.split(' ')[0]}! 👋",
               style: TextStyle(
                 fontSize: 26, 
                 fontWeight: FontWeight.bold,
@@ -614,7 +638,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                     context,
                     MaterialPageRoute(
                       builder: (_) =>
-                          OfferRideScreen(userName: widget.userName, userEmail: widget.userEmail),
+                          OfferRideScreen(userName: _userName, userEmail: widget.userEmail),
                     ),
                   ).then((result) {
                     if (result == 'ride_posted') _triggerVictoryLap();
@@ -629,7 +653,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
               onTap: () => Navigator.push(
                 context,
                 MaterialPageRoute(
-                  builder: (_) => FindRideScreen(userName: widget.userName, userEmail: widget.userEmail),
+                  builder: (_) => FindRideScreen(userName: _userName, userEmail: widget.userEmail),
                 ),
               ).then((_) => fetchRides()),
             ),
