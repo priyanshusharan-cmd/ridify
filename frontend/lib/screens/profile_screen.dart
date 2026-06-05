@@ -97,18 +97,16 @@ class _ProfileScreenState extends State<ProfileScreen> {
       final base64Data = base64Encode(bytes);
       final filename = email;
       
-      // Save to SharedPreferences immediately so it persists if app is closed during upload
-      final prefs = await SharedPreferences.getInstance();
-      await prefs.setString('verification_status', 'pending');
-      if (mounted) {
-        widget.onVerificationStatusChanged?.call('pending');
-      }
-      
       // 2. Upload ID by sending base64 to backend
       await AuthService.uploadIdForVerification(email, base64Data, filename);
       
+      // Save to SharedPreferences only after successful upload
+      final prefs = await SharedPreferences.getInstance();
+      await prefs.setString('verification_status', 'pending');
+      
       if (mounted) {
         setState(() => _verificationStatus = 'pending');
+        widget.onVerificationStatusChanged?.call('pending');
       }
     } catch (e) {
       final prefs = await SharedPreferences.getInstance();
