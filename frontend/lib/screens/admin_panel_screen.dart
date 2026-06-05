@@ -224,16 +224,27 @@ class _DashboardTabState extends State<_DashboardTab> with AutomaticKeepAliveCli
                 margin: const EdgeInsets.only(bottom: 8),
                 shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
                 child: ListTile(
-                  leading: CircleAvatar(
-                    backgroundColor: isDark ? Colors.white : Colors.black,
-                    child: Text(
-                      _getInitials(u['name'] ?? '?'),
-                      style: TextStyle(
-                        color: isDark ? Colors.black : Colors.white,
-                        fontWeight: FontWeight.bold,
-                        fontSize: 14,
+                  leading: Stack(
+                    clipBehavior: Clip.none,
+                    children: [
+                      CircleAvatar(
+                        backgroundColor: isDark ? Colors.white : Colors.black,
+                        child: Text(
+                          _getInitials(u['name'] ?? '?'),
+                          style: TextStyle(
+                            color: isDark ? Colors.black : Colors.white,
+                            fontWeight: FontWeight.bold,
+                            fontSize: 14,
+                          ),
+                        ),
                       ),
-                    ),
+                      if (u['verificationStatus'] == 'verified')
+                        const Positioned(
+                          bottom: -2,
+                          right: -2,
+                          child: Icon(Icons.verified, color: Colors.green, size: 16),
+                        ),
+                    ],
                   ),
                   title: Text(
                     u['name'] ?? 'Unknown',
@@ -926,6 +937,55 @@ class _UsersTabState extends State<_UsersTab> with AutomaticKeepAliveClientMixin
                   else
                     Row(
                       children: [
+                        if (user['verificationStatus'] == 'verified') ...[
+                          Expanded(
+                            child: OutlinedButton.icon(
+                              style: OutlinedButton.styleFrom(
+                                side: const BorderSide(color: Colors.orange),
+                                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                                padding: const EdgeInsets.symmetric(vertical: 14),
+                              ),
+                              onPressed: () async {
+                                final confirmed = await showDialog<bool>(
+                                  context: context,
+                                  builder: (ctx) => AlertDialog(
+                                    title: const Text('Revoke Verification', style: TextStyle(fontWeight: FontWeight.bold)),
+                                    content: const Text('Are you sure you want to revoke verification for this user?'),
+                                    actions: [
+                                      TextButton(onPressed: () => Navigator.pop(ctx, false), child: const Text('Cancel')),
+                                      ElevatedButton(
+                                        style: ElevatedButton.styleFrom(backgroundColor: Colors.orange),
+                                        onPressed: () => Navigator.pop(ctx, true),
+                                        child: const Text('Revoke', style: TextStyle(color: Colors.white)),
+                                      ),
+                                    ],
+                                  ),
+                                );
+                                if (confirmed == true && context.mounted) {
+                                  Navigator.pop(ctx);
+                                  try {
+                                    await AdminService.rejectVerification(user['_id']);
+                                    _fetchUsers();
+                                    if (context.mounted) {
+                                      ScaffoldMessenger.of(context).showSnackBar(
+                                        const SnackBar(content: Text('Verification revoked.'), backgroundColor: Colors.green),
+                                      );
+                                    }
+                                  } catch (e) {
+                                    if (context.mounted) {
+                                      ScaffoldMessenger.of(context).showSnackBar(
+                                        SnackBar(content: Text(e.toString().replaceAll('Exception: ', '')), backgroundColor: Colors.red),
+                                      );
+                                    }
+                                  }
+                                }
+                              },
+                              icon: const Icon(Icons.verified_user_outlined, color: Colors.orange),
+                              label: const Text('Revoke', style: TextStyle(color: Colors.orange, fontWeight: FontWeight.bold)),
+                            ),
+                          ),
+                          const SizedBox(width: 12),
+                        ],
                         Expanded(
                           child: OutlinedButton.icon(
                             style: OutlinedButton.styleFrom(
@@ -1048,22 +1108,32 @@ class _UsersTabState extends State<_UsersTab> with AutomaticKeepAliveClientMixin
                       ),
                     )
                   : _users.isEmpty
-                      ? Center(
-                          child: Column(
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              Icon(Icons.people_outline, size: 64, color: isDark ? Colors.white24 : Colors.black26),
-                              const SizedBox(height: 12),
-                              Text(
-                                'No users found',
-                                style: TextStyle(color: isDark ? Colors.white38 : Colors.black38),
+                      ? RefreshIndicator(
+                          onRefresh: () => _fetchUsers(page: _page),
+                          child: SingleChildScrollView(
+                            physics: const AlwaysScrollableScrollPhysics(),
+                            child: SizedBox(
+                              height: MediaQuery.of(context).size.height * 0.5,
+                              child: Center(
+                                child: Column(
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: [
+                                    Icon(Icons.people_outline, size: 64, color: isDark ? Colors.white24 : Colors.black26),
+                                    const SizedBox(height: 12),
+                                    Text(
+                                      'No users found',
+                                      style: TextStyle(color: isDark ? Colors.white38 : Colors.black38),
+                                    ),
+                                  ],
+                                ),
                               ),
-                            ],
+                            ),
                           ),
                         )
                       : RefreshIndicator(
                           onRefresh: () => _fetchUsers(page: _page),
                           child: ListView.builder(
+                            physics: const AlwaysScrollableScrollPhysics(),
                             padding: const EdgeInsets.symmetric(horizontal: 16),
                             itemCount: _users.length + 1, // +1 for pagination
                             itemBuilder: (context, index) {
@@ -1116,16 +1186,27 @@ class _UsersTabState extends State<_UsersTab> with AutomaticKeepAliveClientMixin
                                           activeColor: Colors.amber,
                                           onChanged: (_) => _toggleSelection(id),
                                         )
-                                      : CircleAvatar(
-                                          backgroundColor: isDark ? Colors.white : Colors.black,
-                                          child: Text(
-                                            _getInitials(user['name'] ?? '?'),
-                                            style: TextStyle(
-                                              color: isDark ? Colors.black : Colors.white,
-                                              fontWeight: FontWeight.bold,
-                                              fontSize: 14,
+                                      : Stack(
+                                          clipBehavior: Clip.none,
+                                          children: [
+                                            CircleAvatar(
+                                              backgroundColor: isDark ? Colors.white : Colors.black,
+                                              child: Text(
+                                                _getInitials(user['name'] ?? '?'),
+                                                style: TextStyle(
+                                                  color: isDark ? Colors.black : Colors.white,
+                                                  fontWeight: FontWeight.bold,
+                                                  fontSize: 14,
+                                                ),
+                                              ),
                                             ),
-                                          ),
+                                            if (user['verificationStatus'] == 'verified')
+                                              const Positioned(
+                                                bottom: -2,
+                                                right: -2,
+                                                child: Icon(Icons.verified, color: Colors.green, size: 16),
+                                              ),
+                                          ],
                                         ),
                                   title: Text(
                                     user['name'] ?? 'Unknown',
@@ -1617,22 +1698,32 @@ class _RidesTabState extends State<_RidesTab> with AutomaticKeepAliveClientMixin
                       ),
                     )
                   : _rides.isEmpty
-                      ? Center(
-                          child: Column(
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              Icon(Icons.directions_car_filled, size: 64, color: isDark ? Colors.white24 : Colors.black26),
-                              const SizedBox(height: 12),
-                              Text(
-                                'No rides found',
-                                style: TextStyle(color: isDark ? Colors.white38 : Colors.black38),
+                      ? RefreshIndicator(
+                          onRefresh: () => _fetchRides(page: _page),
+                          child: SingleChildScrollView(
+                            physics: const AlwaysScrollableScrollPhysics(),
+                            child: SizedBox(
+                              height: MediaQuery.of(context).size.height * 0.5,
+                              child: Center(
+                                child: Column(
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: [
+                                    Icon(Icons.directions_car_filled, size: 64, color: isDark ? Colors.white24 : Colors.black26),
+                                    const SizedBox(height: 12),
+                                    Text(
+                                      'No rides found',
+                                      style: TextStyle(color: isDark ? Colors.white38 : Colors.black38),
+                                    ),
+                                  ],
+                                ),
                               ),
-                            ],
+                            ),
                           ),
                         )
                       : RefreshIndicator(
                           onRefresh: () => _fetchRides(page: _page),
                           child: ListView.builder(
+                            physics: const AlwaysScrollableScrollPhysics(),
                             padding: const EdgeInsets.symmetric(horizontal: 16),
                             itemCount: _rides.length + 1,
                             itemBuilder: (context, index) {
@@ -2035,16 +2126,26 @@ class _VerificationsTabState extends State<_VerificationsTab> with AutomaticKeep
     }
 
     if (_pendingUsers.isEmpty) {
-      return Center(child: Column(mainAxisSize: MainAxisSize.min, children: [
-        Icon(Icons.verified, size: 64, color: isDark ? Colors.white24 : Colors.black26),
-        const SizedBox(height: 12),
-        Text('No pending verifications', style: TextStyle(color: isDark ? Colors.white38 : Colors.black38)),
-      ]));
+      return RefreshIndicator(
+        onRefresh: _fetchPending,
+        child: SingleChildScrollView(
+          physics: const AlwaysScrollableScrollPhysics(),
+          child: SizedBox(
+            height: MediaQuery.of(context).size.height * 0.5,
+            child: Center(child: Column(mainAxisSize: MainAxisSize.min, children: [
+              Icon(Icons.verified, size: 64, color: isDark ? Colors.white24 : Colors.black26),
+              const SizedBox(height: 12),
+              Text('No pending verifications', style: TextStyle(color: isDark ? Colors.white38 : Colors.black38)),
+            ])),
+          ),
+        ),
+      );
     }
 
     return RefreshIndicator(
       onRefresh: _fetchPending,
       child: ListView.builder(
+        physics: const AlwaysScrollableScrollPhysics(),
         padding: const EdgeInsets.all(16),
         itemCount: _pendingUsers.length,
         itemBuilder: (context, index) {

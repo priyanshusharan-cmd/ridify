@@ -7,6 +7,7 @@ import 'core/socket_service.dart';
 import 'screens/splash_screen.dart';
 
 import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'dart:ui';
 
 final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
 final Set<String> navigatedRides = {};
@@ -28,6 +29,15 @@ class MyApp extends StatefulWidget {
 
   @override
   State<MyApp> createState() => _MyAppState();
+}
+
+class AppScrollBehavior extends MaterialScrollBehavior {
+  @override
+  Set<PointerDeviceKind> get dragDevices => {
+        PointerDeviceKind.touch,
+        PointerDeviceKind.mouse,
+        PointerDeviceKind.trackpad,
+      };
 }
 
 class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
@@ -64,6 +74,7 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
     return Consumer<ThemeProvider>(
       builder: (context, themeProvider, child) {
         return MaterialApp(
+          scrollBehavior: AppScrollBehavior(),
           navigatorKey: navigatorKey,
           debugShowCheckedModeBanner: false,
           title: 'Ridify',

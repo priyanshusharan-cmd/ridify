@@ -460,36 +460,28 @@ class _ProfileScreenState extends State<ProfileScreen> {
                         color: Theme.of(context).textTheme.bodyLarge?.color,
                       ),
                     ),
+                    const SizedBox(height: 2),
                     SizedBox(
-                      height: 30,
+                      height: 24,
                       child: Center(
                         child: _verificationStatus == 'none'
-                            ? Padding(
-                                padding: const EdgeInsets.only(top: 4),
-                                child: _isUploading
-                                    ? const SizedBox(width: 16, height: 16, child: CircularProgressIndicator(strokeWidth: 2))
-                                    : Material(
-                                        color: Colors.transparent,
-                                        child: InkWell(
-                                          borderRadius: BorderRadius.circular(4),
-                                          onTap: _startVerification,
-                                          child: const Padding(
-                                            padding: EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                                            child: Text("Verify your account", style: TextStyle(color: Colors.grey, fontSize: 13)),
-                                          ),
-                                        ),
+                            ? (_isUploading
+                                ? const SizedBox(width: 16, height: 16, child: CircularProgressIndicator(strokeWidth: 2))
+                                : Material(
+                                    color: Colors.transparent,
+                                    child: InkWell(
+                                      borderRadius: BorderRadius.circular(4),
+                                      onTap: _startVerification,
+                                      child: const Padding(
+                                        padding: EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+                                        child: Text("Verify your account", style: TextStyle(color: Colors.grey, fontSize: 13)),
                                       ),
-                              )
+                                    ),
+                                  ))
                             : _verificationStatus == 'pending'
-                                ? const Padding(
-                                    padding: EdgeInsets.only(top: 4),
-                                    child: Text("Waiting for approval", style: TextStyle(color: Colors.grey, fontSize: 13)),
-                                  )
+                                ? const Text("Waiting for approval", style: TextStyle(color: Colors.grey, fontSize: 13))
                                 : _verificationStatus == 'verified'
-                                    ? const Padding(
-                                        padding: EdgeInsets.only(top: 4),
-                                        child: Text("Verified", style: TextStyle(color: Colors.green, fontSize: 13, fontWeight: FontWeight.w600)),
-                                      )
+                                    ? const Text("Verified", style: TextStyle(color: Colors.green, fontSize: 13, fontWeight: FontWeight.w600))
                                     : const SizedBox.shrink(),
                       ),
                     ),

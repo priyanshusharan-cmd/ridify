@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../../core/utils.dart';
+import '../verified_badge.dart';
 import 'stat_chip.dart';
 
 class RideHistoryCard extends StatelessWidget {
@@ -17,12 +18,17 @@ class RideHistoryCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     String uemail = userEmail.trim().toLowerCase();
-    
+
     List<String> getLowerList(String key) {
-      return (ride[key] as List?)?.map((e) => e.toString().toLowerCase()).toList() ?? [];
+      return (ride[key] as List?)
+              ?.map((e) => e.toString().toLowerCase())
+              .toList() ??
+          [];
     }
 
-    bool wasIDriver = ride['riderEmail'] != null && ride['riderEmail'].toString().trim().toLowerCase() == uemail;
+    bool wasIDriver =
+        ride['riderEmail'] != null &&
+        ride['riderEmail'].toString().trim().toLowerCase() == uemail;
     bool isCancelled = ride['status'] == 'cancelled';
     bool wasDeclined = getLowerList('declined').contains(uemail);
     bool wasKicked = getLowerList('kicked').contains(uemail);
@@ -31,14 +37,19 @@ class RideHistoryCard extends StatelessWidget {
     bool rideWasStarted = ride['startedAt'] != null;
 
     bool isExpired = false;
-    if (!isCancelled && !wasDeclined && !wasKicked && ride['status'] != 'completed' && ride['expiresAt'] != null) {
-      final expiresAt = ride['expiresAt'] is int 
-          ? ride['expiresAt'] as int 
+    if (!isCancelled &&
+        !wasDeclined &&
+        !wasKicked &&
+        ride['status'] != 'completed' &&
+        ride['expiresAt'] != null) {
+      final expiresAt = ride['expiresAt'] is int
+          ? ride['expiresAt'] as int
           : int.tryParse(ride['expiresAt'].toString()) ?? 0;
       if (expiresAt > 0 && DateTime.now().millisecondsSinceEpoch > expiresAt) {
-        bool hasAcceptedPassengers = (ride['passengers'] as List?)?.isNotEmpty == true || 
-                                     (ride['boardedPassengers'] as List?)?.isNotEmpty == true || 
-                                     (ride['droppedPassengers'] as List?)?.isNotEmpty == true;
+        bool hasAcceptedPassengers =
+            (ride['passengers'] as List?)?.isNotEmpty == true ||
+            (ride['boardedPassengers'] as List?)?.isNotEmpty == true ||
+            (ride['droppedPassengers'] as List?)?.isNotEmpty == true;
         if (!hasAcceptedPassengers) {
           isExpired = true;
         }
@@ -63,7 +74,11 @@ class RideHistoryCard extends StatelessWidget {
       statusColor = Colors.redAccent;
       statusIcon = Icons.remove_circle_outline_rounded;
     }
-    if (isExpired && !isCancelled && !wasDeclined && !wasKicked && ride['status'] != 'completed') {
+    if (isExpired &&
+        !isCancelled &&
+        !wasDeclined &&
+        !wasKicked &&
+        ride['status'] != 'completed') {
       statusText = "Expired";
       statusColor = Colors.grey;
       statusIcon = Icons.timer_off_outlined;
@@ -73,15 +88,23 @@ class RideHistoryCard extends StatelessWidget {
     String pickup;
     String dest;
     final uemailDot = uemail.replaceAll('.', '_dot_');
-    if (!wasIDriver && (ride['riderDetails']?[uemail] != null || ride['riderDetails']?[uemailDot] != null)) {
-      final details = ride['riderDetails']?[uemail] ?? ride['riderDetails']?[uemailDot];
-      pickup = formatAddress(details['pickupLocation']?.toString() ?? ride['pickupLocation']?.toString());
-      dest = formatAddress(details['destination']?.toString() ?? ride['destination']?.toString());
+    if (!wasIDriver &&
+        (ride['riderDetails']?[uemail] != null ||
+            ride['riderDetails']?[uemailDot] != null)) {
+      final details =
+          ride['riderDetails']?[uemail] ?? ride['riderDetails']?[uemailDot];
+      pickup = formatAddress(
+        details['pickupLocation']?.toString() ??
+            ride['pickupLocation']?.toString(),
+      );
+      dest = formatAddress(
+        details['destination']?.toString() ?? ride['destination']?.toString(),
+      );
     } else {
       pickup = formatAddress(ride['pickupLocation']?.toString());
       dest = formatAddress(ride['destination']?.toString());
     }
-    
+
     // Attempt to split date/time nicely
     String rawDate = ride['departureTime']?.toString() ?? "Unknown";
     String datePart = rawDate;
@@ -128,17 +151,19 @@ class RideHistoryCard extends StatelessWidget {
           duration = "${diff < 0 ? 0 : diff} mins";
         } catch (_) {}
       }
-      } else if (isExpired && !rideWasStarted) {
-        // Expired without starting
-        distance = "0.0 km";
-        duration = "0 mins";
-      } else {
-        // Normal completed ride
-        if (wasIDriver) {
-        String d = (ride['totalDistance'] ?? ride['distance'] ?? "0.0").toString();
-        double distValue = double.tryParse(d.replaceAll(RegExp(r'[^0-9.]'), '')) ?? 0.0;
+    } else if (isExpired && !rideWasStarted) {
+      // Expired without starting
+      distance = "0.0 km";
+      duration = "0 mins";
+    } else {
+      // Normal completed ride
+      if (wasIDriver) {
+        String d = (ride['totalDistance'] ?? ride['distance'] ?? "0.0")
+            .toString();
+        double distValue =
+            double.tryParse(d.replaceAll(RegExp(r'[^0-9.]'), '')) ?? 0.0;
         distance = "${distValue.toStringAsFixed(1)} km";
-        
+
         if (ride['startedAt'] != null && ride['completedAt'] != null) {
           try {
             DateTime start = DateTime.parse(ride['startedAt']);
@@ -148,13 +173,30 @@ class RideHistoryCard extends StatelessWidget {
           } catch (_) {}
         }
       } else {
-        String d = (ride['riderDetails']?[uemail.replaceAll('.', '_dot_')]?['distance'] ?? 
-                   ride['riderDetails']?[uemail]?['distance'] ?? "0.0").toString();
-        double distValue = double.tryParse(d.replaceAll(RegExp(r'[^0-9.]'), '')) ?? 0.0;
+        String d =
+            (ride['riderDetails']?[uemail.replaceAll(
+                      '.',
+                      '_dot_',
+                    )]?['distance'] ??
+                    ride['riderDetails']?[uemail]?['distance'] ??
+                    "0.0")
+                .toString();
+        double distValue =
+            double.tryParse(d.replaceAll(RegExp(r'[^0-9.]'), '')) ?? 0.0;
         distance = "${distValue.toStringAsFixed(1)} km";
 
-        String? boardedAt = ride['riderDetails']?[uemail.replaceAll('.', '_dot_')]?['boardedAt'] ?? ride['riderDetails']?[uemail]?['boardedAt'];
-        String? droppedAt = ride['riderDetails']?[uemail.replaceAll('.', '_dot_')]?['droppedAt'] ?? ride['riderDetails']?[uemail]?['droppedAt'];
+        String? boardedAt =
+            ride['riderDetails']?[uemail.replaceAll(
+              '.',
+              '_dot_',
+            )]?['boardedAt'] ??
+            ride['riderDetails']?[uemail]?['boardedAt'];
+        String? droppedAt =
+            ride['riderDetails']?[uemail.replaceAll(
+              '.',
+              '_dot_',
+            )]?['droppedAt'] ??
+            ride['riderDetails']?[uemail]?['droppedAt'];
         if (boardedAt != null && droppedAt != null) {
           try {
             DateTime start = DateTime.parse(boardedAt);
@@ -168,27 +210,37 @@ class RideHistoryCard extends StatelessWidget {
 
     int paxCount = 0;
     Set<String> allInRide = {};
-    if (wasDeclined || wasKicked || isCancelled || (isExpired && !rideWasStarted)) {
+    if (wasDeclined ||
+        wasKicked ||
+        isCancelled ||
+        (isExpired && !rideWasStarted)) {
       paxCount = 0;
     } else if (wasIDriver) {
       Set<String> kickedSet = {};
       for (var p in (ride['kicked'] ?? [])) {
         kickedSet.add(p.toString().toLowerCase());
       }
-      
+
       for (var p in (ride['boardedPassengers'] ?? [])) {
-        if (!kickedSet.contains(p.toString().toLowerCase())) allInRide.add(p.toString().toLowerCase());
+        if (!kickedSet.contains(p.toString().toLowerCase())) {
+          allInRide.add(p.toString().toLowerCase());
+        }
       }
       for (var p in (ride['droppedPassengers'] ?? [])) {
-        if (!kickedSet.contains(p.toString().toLowerCase())) allInRide.add(p.toString().toLowerCase());
+        if (!kickedSet.contains(p.toString().toLowerCase())) {
+          allInRide.add(p.toString().toLowerCase());
+        }
       }
       for (var p in (ride['passengers'] ?? [])) {
-        if (!kickedSet.contains(p.toString().toLowerCase())) allInRide.add(p.toString().toLowerCase());
+        if (!kickedSet.contains(p.toString().toLowerCase())) {
+          allInRide.add(p.toString().toLowerCase());
+        }
       }
-      
+
       paxCount = allInRide.length;
     } else {
-      final details = ride['riderDetails']?[uemail] ?? ride['riderDetails']?[uemailDot];
+      final details =
+          ride['riderDetails']?[uemail] ?? ride['riderDetails']?[uemailDot];
       paxCount = int.tryParse(details?['seats']?.toString() ?? '1') ?? 1;
     }
 
@@ -209,26 +261,32 @@ class RideHistoryCard extends StatelessWidget {
       for (var p in (ride['droppedPassengers'] ?? [])) {
         validPassengers.add(p.toString().toLowerCase());
       }
-      
+
       Map<String, dynamic> rDetails = ride['riderDetails'] ?? {};
       for (String pEmail in rDetails.keys) {
         String pEmailLower = pEmail.toLowerCase();
         if (validPassengers.contains(pEmailLower) && !wasKicked) {
-           bool isPKicked = getLowerList('kicked').contains(pEmailLower);
-           if (!isPKicked) {
-             double pFarePerSeat = double.tryParse(rDetails[pEmail]['fare']?.toString() ?? '0') ?? 0;
-             if (pFarePerSeat == 0) {
-               pFarePerSeat = double.tryParse(ride['fare']?.toString() ?? '0') ?? 0;
-             }
-             int seats = int.tryParse(rDetails[pEmail]['seats']?.toString() ?? '1') ?? 1;
-             driverTotalEarned += (pFarePerSeat * seats);
-           }
+          bool isPKicked = getLowerList('kicked').contains(pEmailLower);
+          if (!isPKicked) {
+            double pFarePerSeat =
+                double.tryParse(rDetails[pEmail]['fare']?.toString() ?? '0') ??
+                0;
+            if (pFarePerSeat == 0) {
+              pFarePerSeat =
+                  double.tryParse(ride['fare']?.toString() ?? '0') ?? 0;
+            }
+            int seats =
+                int.tryParse(rDetails[pEmail]['seats']?.toString() ?? '1') ?? 1;
+            driverTotalEarned += (pFarePerSeat * seats);
+          }
         }
       }
       fare = driverTotalEarned.toInt().toString();
-    } else if (ride['riderDetails']?[uemail]?['fare'] != null || ride['riderDetails']?[uemailDot]?['fare'] != null) {
+    } else if (ride['riderDetails']?[uemail]?['fare'] != null ||
+        ride['riderDetails']?[uemailDot]?['fare'] != null) {
       // For riders: show THEIR computed fare, multiplied by seats they booked
-      final details = ride['riderDetails']?[uemail] ?? ride['riderDetails']?[uemailDot];
+      final details =
+          ride['riderDetails']?[uemail] ?? ride['riderDetails']?[uemailDot];
       double pFarePerSeat = double.tryParse(details['fare'].toString()) ?? 0.0;
       int seats = int.tryParse(details['seats']?.toString() ?? '1') ?? 1;
       fare = (pFarePerSeat * seats).toInt().toString();
@@ -244,7 +302,12 @@ class RideHistoryCard extends StatelessWidget {
         borderRadius: BorderRadius.circular(20),
         border: Border.all(color: isDark ? Colors.white10 : Colors.black12),
         boxShadow: [
-          if (!isDark) BoxShadow(color: Colors.black.withValues(alpha: 0.05), blurRadius: 15, offset: const Offset(0, 8)),
+          if (!isDark)
+            BoxShadow(
+              color: Colors.black.withValues(alpha: 0.05),
+              blurRadius: 15,
+              offset: const Offset(0, 8),
+            ),
         ],
       ),
       child: Column(
@@ -255,25 +318,43 @@ class RideHistoryCard extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Container(
-                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 12,
+                  vertical: 6,
+                ),
                 decoration: BoxDecoration(
-                  color: wasIDriver ? (isDark ? const Color(0xFF1A2633) : Colors.blue.shade50) : (isDark ? const Color(0xFF162B1D) : Colors.green.shade50),
+                  color: wasIDriver
+                      ? (isDark ? const Color(0xFF1A2633) : Colors.blue.shade50)
+                      : (isDark
+                            ? const Color(0xFF162B1D)
+                            : Colors.green.shade50),
                   borderRadius: BorderRadius.circular(8),
                 ),
                 child: Text(
                   wasIDriver ? "Offered (Driver)" : "Requested (Rider)",
                   style: TextStyle(
-                    color: wasIDriver ? (isDark ? Colors.blue.shade400 : Colors.blue.shade700) : (isDark ? Colors.green.shade400 : Colors.green.shade700),
+                    color: wasIDriver
+                        ? (isDark ? Colors.blue.shade400 : Colors.blue.shade700)
+                        : (isDark
+                              ? Colors.green.shade400
+                              : Colors.green.shade700),
                     fontWeight: FontWeight.bold,
                     fontSize: 12,
                   ),
                 ),
               ),
-              Text("₹$fare", style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18, color: const Color(0xFF4ADE80))),
+              Text(
+                "₹$fare",
+                style: TextStyle(
+                  fontWeight: FontWeight.bold,
+                  fontSize: 18,
+                  color: const Color(0xFF4ADE80),
+                ),
+              ),
             ],
           ),
           const SizedBox(height: 20),
-          
+
           // Locations & Date/Time
           Row(
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -287,9 +368,24 @@ class RideHistoryCard extends StatelessWidget {
                     Row(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        const Icon(Icons.location_on, color: Color(0xFF4ADE80), size: 16),
+                        const Icon(
+                          Icons.location_on,
+                          color: Color(0xFF4ADE80),
+                          size: 16,
+                        ),
                         const SizedBox(width: 8),
-                        Expanded(child: Text(pickup, style: TextStyle(fontWeight: FontWeight.w600, fontSize: 13, color: isDark ? Colors.white : Colors.black), maxLines: 1, overflow: TextOverflow.ellipsis)),
+                        Expanded(
+                          child: Text(
+                            pickup,
+                            style: TextStyle(
+                              fontWeight: FontWeight.w600,
+                              fontSize: 13,
+                              color: isDark ? Colors.white : Colors.black,
+                            ),
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                        ),
                       ],
                     ),
                     Padding(
@@ -310,9 +406,24 @@ class RideHistoryCard extends StatelessWidget {
                     Row(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        const Icon(Icons.location_on, color: Colors.redAccent, size: 16),
+                        const Icon(
+                          Icons.location_on,
+                          color: Colors.redAccent,
+                          size: 16,
+                        ),
                         const SizedBox(width: 8),
-                        Expanded(child: Text(dest, style: TextStyle(fontWeight: FontWeight.w600, fontSize: 13, color: isDark ? Colors.white : Colors.black), maxLines: 1, overflow: TextOverflow.ellipsis)),
+                        Expanded(
+                          child: Text(
+                            dest,
+                            style: TextStyle(
+                              fontWeight: FontWeight.w600,
+                              fontSize: 13,
+                              color: isDark ? Colors.white : Colors.black,
+                            ),
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                        ),
                       ],
                     ),
                   ],
@@ -327,18 +438,44 @@ class RideHistoryCard extends StatelessWidget {
                     Row(
                       mainAxisAlignment: MainAxisAlignment.end,
                       children: [
-                        Icon(Icons.calendar_today_rounded, size: 12, color: isDark ? Colors.white54 : Colors.grey[600]),
+                        Icon(
+                          Icons.calendar_today_rounded,
+                          size: 12,
+                          color: isDark ? Colors.white54 : Colors.grey[600],
+                        ),
                         const SizedBox(width: 6),
-                        Flexible(child: Text(datePart, style: TextStyle(color: isDark ? Colors.white70 : Colors.grey[700], fontSize: 11), overflow: TextOverflow.ellipsis)),
+                        Flexible(
+                          child: Text(
+                            datePart,
+                            style: TextStyle(
+                              color: isDark ? Colors.white70 : Colors.grey[700],
+                              fontSize: 11,
+                            ),
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                        ),
                       ],
                     ),
                     const SizedBox(height: 24),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.end,
                       children: [
-                        Icon(Icons.access_time_rounded, size: 12, color: isDark ? Colors.white54 : Colors.grey[600]),
+                        Icon(
+                          Icons.access_time_rounded,
+                          size: 12,
+                          color: isDark ? Colors.white54 : Colors.grey[600],
+                        ),
                         const SizedBox(width: 6),
-                        Flexible(child: Text(timePart, style: TextStyle(color: isDark ? Colors.white70 : Colors.grey[700], fontSize: 11), overflow: TextOverflow.ellipsis)),
+                        Flexible(
+                          child: Text(
+                            timePart,
+                            style: TextStyle(
+                              color: isDark ? Colors.white70 : Colors.grey[700],
+                              fontSize: 11,
+                            ),
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                        ),
                       ],
                     ),
                   ],
@@ -346,28 +483,53 @@ class RideHistoryCard extends StatelessWidget {
               ),
             ],
           ),
-          
+
           const Padding(
             padding: EdgeInsets.symmetric(vertical: 16),
             child: Divider(height: 1),
           ),
-          
+
           // Stats Row
           Row(
             children: [
-              StatChip(icon: Icons.access_time, label: "Duration", value: duration, isDark: isDark),
-              Container(width: 1, height: 30, color: isDark ? Colors.white10 : Colors.black12),
-              StatChip(icon: Icons.add_road, label: "Distance", value: distance, isDark: isDark),
-              Container(width: 1, height: 30, color: isDark ? Colors.white10 : Colors.black12),
-              StatChip(icon: Icons.people_outline, label: "Passengers", value: "$paxCount", isDark: isDark),
+              StatChip(
+                icon: Icons.access_time,
+                label: "Duration",
+                value: duration,
+                isDark: isDark,
+              ),
+              Container(
+                width: 1,
+                height: 30,
+                color: isDark ? Colors.white10 : Colors.black12,
+              ),
+              StatChip(
+                icon: Icons.add_road,
+                label: "Distance",
+                value: distance,
+                isDark: isDark,
+              ),
+              if (wasIDriver)
+                Container(
+                  width: 1,
+                  height: 30,
+                  color: isDark ? Colors.white10 : Colors.black12,
+                ),
+              if (wasIDriver)
+                StatChip(
+                  icon: Icons.people_outline,
+                  label: "Passengers",
+                  value: "$paxCount",
+                  isDark: isDark,
+                ),
             ],
           ),
-          
+
           const Padding(
             padding: EdgeInsets.symmetric(vertical: 16),
             child: Divider(height: 1, color: Colors.white10),
           ),
-          
+
           // Bottom Row
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -384,16 +546,34 @@ class RideHistoryCard extends StatelessWidget {
                       ? Row(
                           children: [
                             Container(
-                              padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 14,
+                                vertical: 8,
+                              ),
                               decoration: BoxDecoration(
-                                color: isDark ? Colors.white.withValues(alpha: 0.1) : Colors.black.withValues(alpha: 0.05),
+                                color: isDark
+                                    ? Colors.white.withValues(alpha: 0.1)
+                                    : Colors.black.withValues(alpha: 0.05),
                                 borderRadius: BorderRadius.circular(20),
                               ),
                               child: Row(
                                 children: [
-                                  Icon(Icons.people_alt_rounded, size: 16, color: isDark ? Colors.white : Colors.black),
+                                  Icon(
+                                    Icons.people_alt_rounded,
+                                    size: 16,
+                                    color: isDark ? Colors.white : Colors.black,
+                                  ),
                                   const SizedBox(width: 8),
-                                  Text("View Passengers", style: TextStyle(fontWeight: FontWeight.bold, fontSize: 12, color: isDark ? Colors.white : Colors.black)),
+                                  Text(
+                                    "View Passengers",
+                                    style: TextStyle(
+                                      fontWeight: FontWeight.bold,
+                                      fontSize: 12,
+                                      color: isDark
+                                          ? Colors.white
+                                          : Colors.black,
+                                    ),
+                                  ),
                                 ],
                               ),
                             ),
@@ -403,21 +583,63 @@ class RideHistoryCard extends StatelessWidget {
                           children: [
                             Container(
                               padding: const EdgeInsets.all(8),
-                              decoration: BoxDecoration(color: isDark ? Colors.white.withValues(alpha: 0.05) : Colors.black.withValues(alpha: 0.05), shape: BoxShape.circle),
-                              child: Icon(Icons.person_rounded, size: 16, color: isDark ? Colors.white70 : Colors.grey[700]),
+                              decoration: BoxDecoration(
+                                color: isDark
+                                    ? Colors.white.withValues(alpha: 0.05)
+                                    : Colors.black.withValues(alpha: 0.05),
+                                shape: BoxShape.circle,
+                              ),
+                              child: Icon(
+                                Icons.person_rounded,
+                                size: 16,
+                                color: isDark
+                                    ? Colors.white70
+                                    : Colors.grey[700],
+                              ),
                             ),
                             const SizedBox(width: 12),
                             Expanded(
                               child: Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
-                                  Text("Driver", style: TextStyle(color: isDark ? Colors.white54 : Colors.grey[600], fontSize: 11)),
-                                  const SizedBox(height: 2),
                                   Text(
-                                    (ride['riderName'] == null || ride['riderName'].toString().trim().isEmpty) ? "Unknown" : ride['riderName'].toString(),
-                                    style: TextStyle(fontWeight: FontWeight.bold, fontSize: 13, color: isDark ? Colors.white : Colors.black),
-                                    maxLines: 1,
-                                    overflow: TextOverflow.ellipsis,
+                                    "Driver",
+                                    style: TextStyle(
+                                      color: isDark
+                                          ? Colors.white54
+                                          : Colors.grey[600],
+                                      fontSize: 11,
+                                    ),
+                                  ),
+                                  const SizedBox(height: 2),
+                                  Row(
+                                    children: [
+                                      Flexible(
+                                        child: Text(
+                                          (ride['riderName'] == null ||
+                                                  ride['riderName']
+                                                      .toString()
+                                                      .trim()
+                                                      .isEmpty)
+                                              ? "Unknown"
+                                              : ride['riderName'].toString(),
+                                          style: TextStyle(
+                                            fontWeight: FontWeight.bold,
+                                            fontSize: 13,
+                                            color: isDark
+                                                ? Colors.white
+                                                : Colors.black,
+                                          ),
+                                          maxLines: 1,
+                                          overflow: TextOverflow.ellipsis,
+                                        ),
+                                      ),
+                                      if (ride['driverVerificationStatus'] ==
+                                          'verified') ...[
+                                        const SizedBox(width: 4),
+                                        const VerifiedBadge(size: 14),
+                                      ],
+                                    ],
                                   ),
                                 ],
                               ),
@@ -433,7 +655,14 @@ class RideHistoryCard extends StatelessWidget {
                 children: [
                   Icon(statusIcon, size: 16, color: statusColor),
                   const SizedBox(width: 6),
-                  Text(statusText, style: TextStyle(color: statusColor, fontWeight: FontWeight.bold, fontSize: 13)),
+                  Text(
+                    statusText,
+                    style: TextStyle(
+                      color: statusColor,
+                      fontWeight: FontWeight.bold,
+                      fontSize: 13,
+                    ),
+                  ),
                 ],
               ),
             ],
@@ -443,37 +672,71 @@ class RideHistoryCard extends StatelessWidget {
     );
   }
 
-
-
-  void _showRideGroupPopup(BuildContext context, dynamic ride, Set<String> allInRide, bool isDark) {
+  void _showRideGroupPopup(
+    BuildContext context,
+    dynamic ride,
+    Set<String> allInRide,
+    bool isDark,
+  ) {
     // Build kicked set
     Set<String> kickedSet = {};
     for (var p in (ride['kicked'] ?? [])) {
       kickedSet.add(p.toString());
     }
 
+    List<Map<String, dynamic>> allNames = [];
+
     // Collect passenger names from riderDetails if available, otherwise just use emails
-    List<String> passengerNames = [];
-    List<String> kickedNames = [];
     if (ride['riderDetails'] != null) {
       for (var email in allInRide) {
-        String name = ride['riderDetails'][email]?['riderName'] ?? email.split('@')[0];
+        String name =
+            ride['riderDetails'][email]?['riderName'] ?? email.split('@')[0];
         int fare = (ride['riderDetails'][email]?['fare'] as num?)?.toInt() ?? 0;
-        passengerNames.add("$name (₹$fare)");
+        bool isVerified =
+            ride['riderDetails'][email]?['verificationStatus'] == 'verified';
+        allNames.add({
+          'displayText': "$name (₹$fare)",
+          'isRemoved': false,
+          'isVerified': isVerified,
+        });
       }
       // Also show kicked passengers separately
       for (var email in kickedSet) {
-        String name = ride['riderDetails'][email]?['riderName'] ?? email.split('@')[0];
-        kickedNames.add("$name (Removed)");
+        String name =
+            ride['riderDetails'][email]?['riderName'] ?? email.split('@')[0];
+        bool isVerified =
+            ride['riderDetails'][email]?['verificationStatus'] == 'verified';
+        allNames.add({
+          'displayText': "$name (Removed)",
+          'isRemoved': true,
+          'isVerified': isVerified,
+        });
       }
     } else {
-      passengerNames = allInRide.map((e) => e.split('@')[0]).toList();
-      kickedNames = kickedSet.map((e) => "${e.split('@')[0]} (Removed)").toList();
+      for (var email in allInRide) {
+        allNames.add({
+          'displayText': email.split('@')[0],
+          'isRemoved': false,
+          'isVerified': false,
+        });
+      }
+      for (var email in kickedSet) {
+        allNames.add({
+          'displayText': "${email.split('@')[0]} (Removed)",
+          'isRemoved': true,
+          'isVerified': false,
+        });
+      }
     }
 
-    List<String> allNames = [...passengerNames, ...kickedNames];
     if (allNames.isEmpty) {
-      allNames = ["No passengers boarded"];
+      allNames = [
+        {
+          'displayText': "No passengers boarded",
+          'isRemoved': false,
+          'isVerified': false,
+        },
+      ];
     }
 
     showModalBottomSheet(
@@ -491,24 +754,63 @@ class RideHistoryCard extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Center(
-                child: Container(width: 40, height: 4, decoration: BoxDecoration(color: isDark ? Colors.white24 : Colors.black26, borderRadius: BorderRadius.circular(2))),
+                child: Container(
+                  width: 40,
+                  height: 4,
+                  decoration: BoxDecoration(
+                    color: isDark ? Colors.white24 : Colors.black26,
+                    borderRadius: BorderRadius.circular(2),
+                  ),
+                ),
               ),
               const SizedBox(height: 24),
-              Text("Passengers Travelled", style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: isDark ? Colors.white : Colors.black)),
+              Text(
+                "Passengers Travelled",
+                style: TextStyle(
+                  fontSize: 20,
+                  fontWeight: FontWeight.bold,
+                  color: isDark ? Colors.white : Colors.black,
+                ),
+              ),
               const SizedBox(height: 16),
-              ...allNames.map((name) {
-                final isRemoved = name.contains("(Removed)");
+              ...allNames.map((passenger) {
+                final isRemoved = passenger['isRemoved'] as bool;
+                final isVerified = passenger['isVerified'] as bool;
+                final displayText = passenger['displayText'] as String;
                 return Padding(
                   padding: const EdgeInsets.only(bottom: 12),
                   child: Row(
                     children: [
                       CircleAvatar(
                         radius: 16,
-                        backgroundColor: isRemoved ? Colors.redAccent.withValues(alpha: 0.15) : (isDark ? Colors.white10 : Colors.black12),
-                        child: Text(name.substring(0, 1).toUpperCase(), style: TextStyle(color: isRemoved ? Colors.redAccent : (isDark ? Colors.white : Colors.black), fontSize: 12, fontWeight: FontWeight.bold)),
+                        backgroundColor: isRemoved
+                            ? Colors.redAccent.withValues(alpha: 0.15)
+                            : (isDark ? Colors.white10 : Colors.black12),
+                        child: Text(
+                          displayText.substring(0, 1).toUpperCase(),
+                          style: TextStyle(
+                            color: isRemoved
+                                ? Colors.redAccent
+                                : (isDark ? Colors.white : Colors.black),
+                            fontSize: 12,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
                       ),
                       const SizedBox(width: 12),
-                      Text(name, style: TextStyle(fontSize: 15, color: isRemoved ? Colors.redAccent : (isDark ? Colors.white70 : Colors.black87))),
+                      Text(
+                        displayText,
+                        style: TextStyle(
+                          fontSize: 15,
+                          color: isRemoved
+                              ? Colors.redAccent
+                              : (isDark ? Colors.white70 : Colors.black87),
+                        ),
+                      ),
+                      if (isVerified) ...[
+                        const SizedBox(width: 4),
+                        const VerifiedBadge(size: 14),
+                      ],
                     ],
                   ),
                 );
