@@ -1,3 +1,4 @@
+import '../services/ride_service.dart';
 import 'package:flutter/material.dart';
 import 'dart:async';
 import 'dart:ui';
