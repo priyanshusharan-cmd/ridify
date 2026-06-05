@@ -160,10 +160,19 @@ class _ChatScreenState extends State<ChatScreen> {
         // Check if this message already exists (optimistic entry or duplicate echo).
         // On mobile data, both room emit AND personal emit may arrive — dedup by
         // matching timestamp + senderEmail + text.
-        final existingIdx = messages.indexWhere((m) =>
+        int existingIdx = messages.indexWhere((m) =>
           m['timestamp'] == data['timestamp'] &&
           m['senderEmail'] == data['senderEmail'] &&
           m['text'] == data['text']);
+          
+        if (existingIdx == -1) {
+          // Fallback: look for an optimistic message that hasn't been confirmed yet
+          existingIdx = messages.indexWhere((m) =>
+            m['_localId'] != null &&
+            m['senderEmail'] == data['senderEmail'] &&
+            m['text'] == data['text']
+          );
+        }
         
         if (existingIdx != -1) {
           // Already have this message (optimistic or earlier echo) — update in place
@@ -215,6 +224,7 @@ class _ChatScreenState extends State<ChatScreen> {
           final idx = messages.indexWhere((m) => m['_localId'] == localId);
           if (idx != -1) {
             messages[idx] = confirmed;
+            messages[idx]['_localId'] = localId;
           }
         });
       }
@@ -291,6 +301,7 @@ class _ChatScreenState extends State<ChatScreen> {
             final idx = messages.indexWhere((m) => m['_localId'] == localId);
             if (idx != -1) {
               messages[idx] = confirmed;
+              messages[idx]['_localId'] = localId;
             }
           });
         }
@@ -588,13 +599,27 @@ class _ChatScreenState extends State<ChatScreen> {
                           }
                         ),
                         const SizedBox(height: 4),
-                        Text(
-                          _formatTimestamp(msg['timestamp']),
-                          textAlign: isMe ? TextAlign.end : TextAlign.start,
-                          style: TextStyle(
-                            color: isMe ? timestampMyColor : timestampOtherColor,
-                            fontSize: 10,
-                          ),
+                        Row(
+                          mainAxisSize: MainAxisSize.min,
+                          mainAxisAlignment: isMe ? MainAxisAlignment.end : MainAxisAlignment.start,
+                          children: [
+                            Text(
+                              _formatTimestamp(msg['timestamp']),
+                              style: TextStyle(
+                                color: isMe ? timestampMyColor : timestampOtherColor,
+                                fontSize: 10,
+                              ),
+                            ),
+                            if (isMe) ...[
+                              const SizedBox(width: 4),
+                              if (msg['_failed'] == true)
+                                const Icon(Icons.error_outline, size: 12, color: Colors.red)
+                              else if (msg['_sending'] == true)
+                                Icon(Icons.access_time, size: 12, color: timestampMyColor)
+                              else
+                                Icon(Icons.check, size: 14, color: timestampMyColor),
+                            ],
+                          ],
                         ),
                       ],
                     ),

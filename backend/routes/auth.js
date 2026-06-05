@@ -59,25 +59,36 @@ router.post('/user/:email/upload-id', authenticate, async (req, res) => {
       return res.status(500).json({ error: 'Server misconfiguration: GOOGLE_APPS_SCRIPT_URL not set.' });
     }
 
-    // Call Google Apps Script from the backend
-    const response = await fetch(scriptUrl, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ filename, base64 })
-    });
+    const User = require('../models/user');
+    // Set status to pending immediately so it persists if the user closes the app while uploading
+    await User.updateOne({ email: targetEmail }, { $set: { verificationStatus: 'pending' } });
+
+    let response;
+    try {
+      // Call Google Apps Script from the backend
+      response = await fetch(scriptUrl, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ filename, base64 })
+      });
+    } catch (fetchErr) {
+      await User.updateOne({ email: targetEmail }, { $set: { verificationStatus: 'none' } });
+      return res.status(500).json({ error: 'Failed to connect to Google Drive.' });
+    }
 
     if (!response.ok && response.status !== 302) {
+      await User.updateOne({ email: targetEmail }, { $set: { verificationStatus: 'none' } });
       return res.status(500).json({ error: 'Failed to upload to Google Drive.' });
     }
 
     const data = await response.json();
     if (data.status !== 'success') {
+      await User.updateOne({ email: targetEmail }, { $set: { verificationStatus: 'none' } });
       return res.status(500).json({ error: data.message || 'Failed to upload to Google Drive.' });
     }
 
     const idUrl = data.url;
 
-    const User = require('../models/user');
     const user = await User.findOneAndUpdate(
       { email: targetEmail },
       { $set: { idUrl, verificationStatus: 'pending' } },
@@ -86,6 +97,10 @@ router.post('/user/:email/upload-id', authenticate, async (req, res) => {
     if (!user) return res.status(404).json({ error: 'User not found.' });
     res.json({ message: 'ID uploaded successfully. Waiting for admin approval.', verificationStatus: user.verificationStatus });
   } catch (err) {
+    try {
+      const User = require('../models/user');
+      await User.updateOne({ email: req.params.email.trim().toLowerCase() }, { $set: { verificationStatus: 'none' } });
+    } catch (e) {}
     res.status(500).json({ error: 'Server error during upload.' });
   }
 });

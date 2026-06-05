@@ -192,7 +192,7 @@ class OfferedRideCard extends StatelessWidget {
                                     borderRadius: BorderRadius.circular(20),
                                   ),
                                   child: Text(
-                                    "$reqCount Request${reqCount == 1 ? '' : 's'}",
+                                    "$reqCount",
                                     style: const TextStyle(color: Colors.green, fontWeight: FontWeight.bold, fontSize: 13),
                                   ),
                                 ),

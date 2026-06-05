@@ -97,19 +97,25 @@ class _ProfileScreenState extends State<ProfileScreen> {
       final base64Data = base64Encode(bytes);
       final filename = email;
       
+      // Save to SharedPreferences immediately so it persists if app is closed during upload
+      final prefs = await SharedPreferences.getInstance();
+      await prefs.setString('verification_status', 'pending');
+      if (mounted) {
+        widget.onVerificationStatusChanged?.call('pending');
+      }
+      
       // 2. Upload ID by sending base64 to backend
       await AuthService.uploadIdForVerification(email, base64Data, filename);
       
-      // Save to SharedPreferences so it persists regardless of unmounting
-      final prefs = await SharedPreferences.getInstance();
-      await prefs.setString('verification_status', 'pending');
-      
       if (mounted) {
         setState(() => _verificationStatus = 'pending');
-        widget.onVerificationStatusChanged?.call('pending');
       }
     } catch (e) {
+      final prefs = await SharedPreferences.getInstance();
+      await prefs.setString('verification_status', 'none');
       if (mounted) {
+        setState(() => _verificationStatus = 'none');
+        widget.onVerificationStatusChanged?.call('none');
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text(e.toString().replaceAll('Exception: ', '')), backgroundColor: Colors.red),
         );
@@ -439,13 +445,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
                           ),
                         ),
                         if (_verificationStatus == 'verified')
-                          Positioned(
+                          const Positioned(
                             bottom: 0, right: 0,
-                            child: Container(
-                              padding: const EdgeInsets.all(2),
-                              decoration: const BoxDecoration(color: Colors.white, shape: BoxShape.circle),
-                              child: const Icon(Icons.verified, color: Colors.green, size: 20),
-                            ),
+                            child: Icon(Icons.verified, color: Colors.green, size: 20),
                           ),
                       ],
                     ),
@@ -484,16 +486,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                     child: Text("Waiting for approval", style: TextStyle(color: Colors.grey, fontSize: 13)),
                                   )
                                 : _verificationStatus == 'verified'
-                                    ? Padding(
-                                        padding: const EdgeInsets.only(top: 4),
-                                        child: Row(
-                                          mainAxisSize: MainAxisSize.min,
-                                          children: const [
-                                            Icon(Icons.verified, color: Colors.green, size: 16),
-                                            SizedBox(width: 4),
-                                            Text("Verified", style: TextStyle(color: Colors.green, fontSize: 13, fontWeight: FontWeight.w600)),
-                                          ],
-                                        ),
+                                    ? const Padding(
+                                        padding: EdgeInsets.only(top: 4),
+                                        child: Text("Verified", style: TextStyle(color: Colors.green, fontSize: 13, fontWeight: FontWeight.w600)),
                                       )
                                     : const SizedBox.shrink(),
                       ),

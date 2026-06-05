@@ -6,10 +6,6 @@ class VerifiedBadge extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.all(1),
-      decoration: const BoxDecoration(color: Colors.white, shape: BoxShape.circle),
-      child: Icon(Icons.verified, color: Colors.green, size: size),
-    );
+    return Icon(Icons.verified, color: Colors.green, size: size);
   }
 }
