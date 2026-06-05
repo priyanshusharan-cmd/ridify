@@ -6,7 +6,6 @@ import 'package:provider/provider.dart';
 import 'login_screen.dart';
 import 'home_screen.dart';
 import 'dart:convert';
-import 'package:provider/provider.dart';
 import '../core/user_provider.dart';
 import '../core/rides_provider.dart';
 import '../services/auth_service.dart';
@@ -66,9 +65,14 @@ class _ProfileScreenState extends State<ProfileScreen> {
   }
 
   Future<void> _fetchVerificationStatus() async {
+    final userProvider = Provider.of<UserProvider>(context, listen: false);
+    final ridesProvider = Provider.of<RidesProvider>(context, listen: false);
+    
     if (mounted) {
-      await Provider.of<UserProvider>(context, listen: false).fetchProfile();
-      await Provider.of<RidesProvider>(context, listen: false).fetchRides();
+      await Future.wait([
+        userProvider.fetchProfile(),
+        ridesProvider.fetchRides(),
+      ]);
     }
     try {
       final prefs = await SharedPreferences.getInstance();
