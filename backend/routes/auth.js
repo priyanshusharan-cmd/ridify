@@ -43,4 +43,66 @@ router.patch('/user/:email', authenticate, async (req, res) => {
   }
 });
 
+router.post('/user/:email/upload-id', authenticate, async (req, res) => {
+  try {
+    const targetEmail = req.params.email.trim().toLowerCase();
+    if (req.user.email !== targetEmail) {
+      return res.status(403).json({ error: 'You can only upload ID for your own profile.' });
+    }
+    const { base64, filename } = req.body;
+    if (!base64 || !filename) {
+      return res.status(400).json({ error: 'Base64 image data and filename are required.' });
+    }
+
+    const scriptUrl = process.env.GOOGLE_APPS_SCRIPT_URL;
+    if (!scriptUrl) {
+      return res.status(500).json({ error: 'Server misconfiguration: GOOGLE_APPS_SCRIPT_URL not set.' });
+    }
+
+    // Call Google Apps Script from the backend
+    const response = await fetch(scriptUrl, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ filename, base64 })
+    });
+
+    if (!response.ok && response.status !== 302) {
+      return res.status(500).json({ error: 'Failed to upload to Google Drive.' });
+    }
+
+    const data = await response.json();
+    if (data.status !== 'success') {
+      return res.status(500).json({ error: data.message || 'Failed to upload to Google Drive.' });
+    }
+
+    const idUrl = data.url;
+
+    const User = require('../models/user');
+    const user = await User.findOneAndUpdate(
+      { email: targetEmail },
+      { $set: { idUrl, verificationStatus: 'pending' } },
+      { new: true }
+    );
+    if (!user) return res.status(404).json({ error: 'User not found.' });
+    res.json({ message: 'ID uploaded successfully. Waiting for admin approval.', verificationStatus: user.verificationStatus });
+  } catch (err) {
+    res.status(500).json({ error: 'Server error during upload.' });
+  }
+});
+
+router.get('/user/:email/verification-status', authenticate, async (req, res) => {
+  try {
+    const targetEmail = req.params.email.trim().toLowerCase();
+    if (req.user.email !== targetEmail) {
+      return res.status(403).json({ error: 'Forbidden.' });
+    }
+    const User = require('../models/user');
+    const user = await User.findOne({ email: targetEmail }, { verificationStatus: 1, idUrl: 1 });
+    if (!user) return res.status(404).json({ error: 'User not found.' });
+    res.json({ verificationStatus: user.verificationStatus || 'none', idUrl: user.idUrl || '' });
+  } catch (err) {
+    res.status(500).json({ error: 'Server error.' });
+  }
+});
+
 module.exports = router;

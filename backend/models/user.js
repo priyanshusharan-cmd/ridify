@@ -20,6 +20,8 @@ const UserSchema = new mongoose.Schema({
   refreshTokens: { type: [String], default: [], select: false },
   isBanned: { type: Boolean, default: false },
   documentsVerified: { type: Boolean, default: false },
+  verificationStatus: { type: String, enum: ['none', 'pending', 'verified'], default: 'none' },
+  idUrl: { type: String },
 }, { timestamps: true });
 
 UserSchema.index({ email: 1 }, { unique: true });

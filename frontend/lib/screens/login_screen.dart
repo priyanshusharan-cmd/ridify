@@ -180,13 +180,14 @@ class _LoginScreenState extends State<LoginScreen> {
 
       final userData = user;
       final prefs = await SharedPreferences.getInstance();
-      await prefs.setString('user_name', userData['name'] ?? "Unknown");
-      await prefs.setString('user_age', userData['age'] ?? "18");
-      await prefs.setString('user_email', userData['email'] ?? "");
-      await prefs.setBool('is_admin', userData['isAdmin'] == true);
+      await prefs.setString('user_name', userData['name'] ?? '');
+      await prefs.setString('user_age', userData['age'] ?? '');
+      await prefs.setString('user_email', userData['email'] ?? '');
+      await prefs.setBool('is_admin', userData['isAdmin'] ?? false);
+      await prefs.setString('verification_status', userData['verificationStatus'] ?? 'none');
 
-      if (mounted) {
-        Navigator.pushReplacement(
+      if (!mounted) return;
+      Navigator.pushReplacement(
           context,
           MaterialPageRoute(
             builder: (_) => HomeScreen(
@@ -194,10 +195,10 @@ class _LoginScreenState extends State<LoginScreen> {
               userAge: userData['age'] ?? "18",
               userEmail: userData['email'] ?? "",
               isAdmin: userData['isAdmin'] == true,
+              verificationStatus: userData['verificationStatus'] ?? 'none',
             ),
           ),
         );
-      }
     } catch (e) {
       _showSnack("Error: ${e.toString().replaceAll('Exception: ', '')}", Colors.red);
     } finally {

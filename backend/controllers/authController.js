@@ -113,7 +113,7 @@ const register = async (req, res) => {
 
     res.status(201).json({
       message: 'Registration successful.',
-      user: { id: user._id, name: user.name, age: user.age, email: user.email, isAdmin },
+      user: { id: user._id, name: user.name, age: user.age, email: user.email, isAdmin, verificationStatus: 'none' },
       accessToken,
       refreshToken,
     });
@@ -174,7 +174,7 @@ const login = async (req, res) => {
     const refreshToken = signRefreshToken({ id: user._id, email: user.email });
     await User.findByIdAndUpdate(user._id, { $push: { refreshTokens: refreshToken } });
     res.json({
-      user: { id: user._id, name: user.name, age: user.age, email: user.email, isAdmin },
+      user: { id: user._id, name: user.name, age: user.age, email: user.email, isAdmin, verificationStatus: user.verificationStatus || 'none' },
       accessToken,
       refreshToken,
     });

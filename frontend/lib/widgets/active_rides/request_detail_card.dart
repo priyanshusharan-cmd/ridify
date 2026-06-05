@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../verified_badge.dart';
 
 class RequestDetailCard extends StatelessWidget {
   final Map<String, dynamic> ride;
@@ -58,7 +59,17 @@ class RequestDetailCard extends StatelessWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(displayName, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
+                    Row(
+                      children: [
+                        Flexible(
+                          child: Text(displayName, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16), overflow: TextOverflow.ellipsis),
+                        ),
+                        if (riderDetail?['verificationStatus'] == 'verified') ...[
+                          const SizedBox(width: 4),
+                          const VerifiedBadge(size: 14),
+                        ],
+                      ],
+                    ),
                     Text(
                       requester,
                       style: TextStyle(color: Theme.of(context).textTheme.bodyMedium?.color?.withValues(alpha: 0.6), fontSize: 12),

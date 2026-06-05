@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'dart:async';
 import '../core/socket_service.dart';
+import '../widgets/verified_badge.dart';
 import 'find_ride_screen.dart';
 import 'offer_ride_screen.dart';
 import 'profile_screen.dart';
@@ -56,13 +57,15 @@ class HomeScreen extends StatefulWidget {
   final String userAge;
   final String userEmail;
   final bool isAdmin;
+  final String verificationStatus;
 
   const HomeScreen({
     super.key,
-    this.userName = "Unknown",
-    this.userAge = "18",
-    this.userEmail = "email@example.com",
+    required this.userName,
+    required this.userAge,
+    required this.userEmail,
     this.isAdmin = false,
+    this.verificationStatus = 'none',
   });
 
   static void resetStartupAnimation() {
@@ -468,6 +471,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
         userAge: widget.userAge,
         userEmail: widget.userEmail,
         isAdmin: widget.isAdmin,
+        verificationStatus: widget.verificationStatus,
       ),
     ];
 
@@ -531,8 +535,18 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
             icon: Icon(Icons.receipt_long),
             label: "History",
           ),
-          const BottomNavigationBarItem(
-            icon: Icon(Icons.person),
+          BottomNavigationBarItem(
+            icon: Stack(
+              clipBehavior: Clip.none,
+              children: [
+                const Icon(Icons.person),
+                if (widget.verificationStatus == 'verified')
+                  const Positioned(
+                    bottom: -2, right: -4,
+                    child: VerifiedBadge(size: 12),
+                  ),
+              ],
+            ),
             label: "Account",
           ),
         ],

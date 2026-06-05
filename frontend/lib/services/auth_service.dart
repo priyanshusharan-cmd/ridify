@@ -60,6 +60,25 @@ class AuthService {
     }
   }
 
+  static Future<Map<String, dynamic>> uploadIdForVerification(String email, String base64Data, String filename) async {
+    final response = await ApiClient.post('/api/auth/user/${Uri.encodeComponent(email)}/upload-id', {
+      'base64': base64Data,
+      'filename': filename,
+    });
+    if (response.statusCode == 200) {
+      return jsonDecode(response.body);
+    }
+    throw Exception(jsonDecode(response.body)['error'] ?? 'Failed to upload ID.');
+  }
+
+  static Future<Map<String, dynamic>> getVerificationStatus(String email) async {
+    final response = await ApiClient.get('/api/auth/user/${Uri.encodeComponent(email)}/verification-status');
+    if (response.statusCode == 200) {
+      return jsonDecode(response.body);
+    }
+    throw Exception(jsonDecode(response.body)['error'] ?? 'Failed to fetch verification status.');
+  }
+
   // verifyOtp and resendOtp removed as they are obsolete in the new flow
 
   static Future<void> deleteAccount(String email) async {

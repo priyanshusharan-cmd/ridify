@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'offered_ride_card.dart';
+import '../verified_badge.dart';
 
 class PendingRequestTile extends StatelessWidget {
   final Map<String, dynamic> request;
@@ -35,14 +36,24 @@ class PendingRequestTile extends StatelessWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(
-                      "Waiting for ${request['riderName']}", 
-                      style: TextStyle(
-                        fontWeight: FontWeight.bold, 
-                        fontSize: 16, 
-                        color: Theme.of(context).textTheme.bodyLarge?.color
-                      ), 
-                      overflow: TextOverflow.ellipsis
+                    Row(
+                      children: [
+                        Flexible(
+                          child: Text(
+                            "Waiting for ${request['riderName']}", 
+                            style: TextStyle(
+                              fontWeight: FontWeight.bold, 
+                              fontSize: 16, 
+                              color: Theme.of(context).textTheme.bodyLarge?.color
+                            ), 
+                            overflow: TextOverflow.ellipsis
+                          ),
+                        ),
+                        if (request['driverVerificationStatus'] == 'verified') ...[
+                          const SizedBox(width: 4),
+                          const VerifiedBadge(size: 14),
+                        ],
+                      ],
                     ),
                     const SizedBox(height: 4),
                     Container(

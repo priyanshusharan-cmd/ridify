@@ -298,6 +298,10 @@ exports.createRide = async (req, res) => {
       sampled.push(raw[raw.length - 1]);
       data.routePath = sampled;
     }
+    const User = require('../models/user');
+    const driver = await User.findOne({ email: data.riderEmail }, { verificationStatus: 1 });
+    data.driverVerificationStatus = driver?.verificationStatus || 'none';
+
     const newRide = new Ride(data);
     await newRide.save();
 

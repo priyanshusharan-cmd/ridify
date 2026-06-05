@@ -83,6 +83,7 @@ const globalLimiter = rateLimit({
   max: 200,
   standardHeaders: true,
   legacyHeaders: false,
+  validate: { xForwardedForHeader: false, ip: false },
   message: { error: 'Too many requests, please slow down.' },
 });
 app.use(globalLimiter);
@@ -94,6 +95,7 @@ const authLimiter = rateLimit({
   keyGenerator: (req) => req.body?.email
     ? `${req.ip}_${req.body.email.toLowerCase()}`
     : req.ip,
+  validate: { xForwardedForHeader: false, ip: false },
   message: { error: 'Too many auth attempts. Please wait 15 minutes.' },
   standardHeaders: true,
   legacyHeaders: false,
@@ -103,6 +105,7 @@ const rideLimiter = rateLimit({
   windowMs: 60 * 1000,
   max: 300,
   keyGenerator: (req) => req.user?.email || req.ip,
+  validate: { xForwardedForHeader: false, ip: false },
   message: { error: 'Too many ride actions. Please slow down.' },
 });
 

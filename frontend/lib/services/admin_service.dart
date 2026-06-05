@@ -155,4 +155,26 @@ class AdminService {
     if (response.statusCode != 200) throw Exception(jsonDecode(response.body)['error'] ?? 'Failed to verify user.');
   }
 
+  static Future<List<dynamic>> getPendingVerifications() async {
+    final response = await ApiClient.get('/api/admin/verifications/pending');
+    if (response.statusCode == 200) {
+      return jsonDecode(response.body)['users'] ?? [];
+    }
+    throw Exception(jsonDecode(response.body)['error'] ?? 'Failed to fetch pending verifications.');
+  }
+
+  static Future<void> approveVerification(String userId) async {
+    final response = await ApiClient.patch('/api/admin/users/$userId/verify', {});
+    if (response.statusCode != 200) {
+      throw Exception(jsonDecode(response.body)['error'] ?? 'Failed to approve verification.');
+    }
+  }
+
+  static Future<void> rejectVerification(String userId) async {
+    final response = await ApiClient.patch('/api/admin/users/$userId/reject-verification', {});
+    if (response.statusCode != 200) {
+      throw Exception(jsonDecode(response.body)['error'] ?? 'Failed to reject verification.');
+    }
+  }
+
 }

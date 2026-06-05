@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../verified_badge.dart';
 
 class AvailableRideCard extends StatelessWidget {
   final dynamic ride;
@@ -101,9 +102,20 @@ class AvailableRideCard extends StatelessWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(
-                      driverName,
-                      style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: primaryTextColor),
+                    Row(
+                      children: [
+                        Flexible(
+                          child: Text(
+                            driverName,
+                            overflow: TextOverflow.ellipsis,
+                            style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: primaryTextColor),
+                          ),
+                        ),
+                        if (ride['driverVerificationStatus'] == 'verified') ...[
+                          const SizedBox(width: 4),
+                          const VerifiedBadge(size: 14),
+                        ],
+                      ],
                     ),
                     const SizedBox(height: 4),
                     Text(

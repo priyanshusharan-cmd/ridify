@@ -16,7 +16,9 @@ const {
   wipeAllRides,
   banUser,
   unbanUser,
-  verifyDocuments
+  verifyDocuments,
+  rejectVerification,
+  listPendingVerifications
 } = require('../controllers/adminController');
 
 const router = express.Router();
@@ -34,6 +36,8 @@ router.post('/users/bulk-delete', bulkDeleteUsers);
 router.post('/users/:id/ban', banUser);
 router.post('/users/:id/unban', unbanUser);
 router.patch('/users/:id/verify', verifyDocuments);
+router.patch('/users/:id/reject-verification', rejectVerification);
+router.get('/verifications/pending', listPendingVerifications);
 
 // ── Ride Management ─────────────────────────────────────────────────────────
 router.get('/rides', listRides);

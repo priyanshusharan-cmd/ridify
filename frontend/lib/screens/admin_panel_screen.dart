@@ -3,6 +3,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import '../services/admin_service.dart';
 import '../services/auth_service.dart';
 import '../core/socket_service.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class AdminPanelScreen extends StatefulWidget {
   const AdminPanelScreen({super.key});
@@ -17,7 +18,7 @@ class _AdminPanelScreenState extends State<AdminPanelScreen> with SingleTickerPr
   @override
   void initState() {
     super.initState();
-    _tabController = TabController(length: 3, vsync: this);
+    _tabController = TabController(length: 4, vsync: this);
   }
 
   @override
@@ -51,6 +52,7 @@ class _AdminPanelScreenState extends State<AdminPanelScreen> with SingleTickerPr
             Tab(icon: Icon(Icons.dashboard), text: 'Dashboard'),
             Tab(icon: Icon(Icons.people), text: 'Users'),
             Tab(icon: Icon(Icons.directions_car), text: 'Rides'),
+            Tab(icon: Icon(Icons.verified_user), text: 'Verify'),
           ],
         ),
       ),
@@ -60,6 +62,7 @@ class _AdminPanelScreenState extends State<AdminPanelScreen> with SingleTickerPr
           _DashboardTab(),
           _UsersTab(),
           _RidesTab(),
+          _VerificationsTab(),
         ],
       ),
     );
@@ -1806,3 +1809,174 @@ class _VehicleIcon extends StatelessWidget {
     );
   }
 }
+
+// ═══════════════════════════════════════════════════════════════════════════════
+//  TAB 4: VERIFICATIONS
+// ═══════════════════════════════════════════════════════════════════════════════
+
+class _VerificationsTab extends StatefulWidget {
+  const _VerificationsTab();
+  @override
+  State<_VerificationsTab> createState() => _VerificationsTabState();
+}
+
+class _VerificationsTabState extends State<_VerificationsTab> with AutomaticKeepAliveClientMixin {
+  List<dynamic> _pendingUsers = [];
+  bool _loading = true;
+  String? _error;
+
+  @override
+  bool get wantKeepAlive => true;
+
+  @override
+  void initState() {
+    super.initState();
+    _fetchPending();
+  }
+
+  Future<void> _fetchPending() async {
+    setState(() { _loading = true; _error = null; });
+    try {
+      final users = await AdminService.getPendingVerifications();
+      if (mounted) setState(() { _pendingUsers = users; _loading = false; });
+    } catch (e) {
+      if (mounted) setState(() { _error = e.toString().replaceAll('Exception: ', ''); _loading = false; });
+    }
+  }
+
+  Future<void> _approve(String userId) async {
+    try {
+      await AdminService.approveVerification(userId);
+      _fetchPending();
+      if (mounted) ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('User verified!'), backgroundColor: Colors.green));
+    } catch (e) {
+      if (mounted) ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(e.toString().replaceAll('Exception: ', '')), backgroundColor: Colors.red));
+    }
+  }
+
+  Future<void> _reject(String userId) async {
+    try {
+      await AdminService.rejectVerification(userId);
+      _fetchPending();
+      if (mounted) ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Verification rejected.'), backgroundColor: Colors.orange));
+    } catch (e) {
+      if (mounted) ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(e.toString().replaceAll('Exception: ', '')), backgroundColor: Colors.red));
+    }
+  }
+
+  void _viewIdImage(String? idUrl) {
+    if (idUrl == null || idUrl.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('No ID image available'), backgroundColor: Colors.orange));
+      return;
+    }
+    // Open Drive URL in browser
+    launchUrl(Uri.parse(idUrl), mode: LaunchMode.externalApplication);
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    super.build(context);
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+
+    if (_loading) return const Center(child: CircularProgressIndicator());
+    if (_error != null) {
+      return Center(child: Column(mainAxisSize: MainAxisSize.min, children: [
+        Text(_error!, style: const TextStyle(color: Colors.red)),
+        const SizedBox(height: 12),
+        ElevatedButton(onPressed: _fetchPending, child: const Text('Retry')),
+      ]));
+    }
+
+    if (_pendingUsers.isEmpty) {
+      return Center(child: Column(mainAxisSize: MainAxisSize.min, children: [
+        Icon(Icons.verified, size: 64, color: isDark ? Colors.white24 : Colors.black26),
+        const SizedBox(height: 12),
+        Text('No pending verifications', style: TextStyle(color: isDark ? Colors.white38 : Colors.black38)),
+      ]));
+    }
+
+    return RefreshIndicator(
+      onRefresh: _fetchPending,
+      child: ListView.builder(
+        padding: const EdgeInsets.all(16),
+        itemCount: _pendingUsers.length,
+        itemBuilder: (context, index) {
+          final user = _pendingUsers[index];
+          return Card(
+            color: isDark ? const Color(0xFF1E1E1E) : Colors.white,
+            margin: const EdgeInsets.only(bottom: 12),
+            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+            child: Padding(
+              padding: const EdgeInsets.all(16),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Row(children: [
+                    CircleAvatar(
+                      backgroundColor: isDark ? Colors.white : Colors.black,
+                      child: Text(
+                        (user['name'] ?? '?').toString().substring(0, 1).toUpperCase(),
+                        style: TextStyle(color: isDark ? Colors.black : Colors.white, fontWeight: FontWeight.bold),
+                      ),
+                    ),
+                    const SizedBox(width: 12),
+                    Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+                      Text(user['name'] ?? 'Unknown', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16, color: Theme.of(context).textTheme.bodyLarge?.color)),
+                      Text(user['email'] ?? '', style: TextStyle(color: isDark ? Colors.white54 : Colors.black54, fontSize: 13)),
+                    ])),
+                    Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                      decoration: BoxDecoration(color: Colors.amber.withAlpha(38), borderRadius: BorderRadius.circular(20)),
+                      child: const Text('Pending', style: TextStyle(color: Colors.amber, fontWeight: FontWeight.bold, fontSize: 12)),
+                    ),
+                  ]),
+                  const SizedBox(height: 12),
+                  // View ID button
+                  SizedBox(
+                    width: double.infinity,
+                    child: OutlinedButton.icon(
+                      style: OutlinedButton.styleFrom(
+                        side: BorderSide(color: isDark ? Colors.white24 : Colors.black26),
+                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                      ),
+                      onPressed: () => _viewIdImage(user['idUrl']),
+                      icon: const Icon(Icons.image, size: 18),
+                      label: const Text('View ID Document'),
+                    ),
+                  ),
+                  const SizedBox(height: 8),
+                  Row(children: [
+                    Expanded(
+                      child: OutlinedButton(
+                        style: OutlinedButton.styleFrom(
+                          side: const BorderSide(color: Colors.red),
+                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                          padding: const EdgeInsets.symmetric(vertical: 12),
+                        ),
+                        onPressed: () => _reject(user['_id']),
+                        child: const Text('Reject', style: TextStyle(color: Colors.red, fontWeight: FontWeight.bold)),
+                      ),
+                    ),
+                    const SizedBox(width: 12),
+                    Expanded(
+                      child: ElevatedButton(
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: Colors.green,
+                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                          padding: const EdgeInsets.symmetric(vertical: 12),
+                        ),
+                        onPressed: () => _approve(user['_id']),
+                        child: const Text('Approve', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
+                      ),
+                    ),
+                  ]),
+                ],
+              ),
+            ),
+          );
+        },
+      ),
+    );
+  }
+}
+

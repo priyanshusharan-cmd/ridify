@@ -4,6 +4,10 @@ import 'admin_panel_screen.dart';
 import 'package:provider/provider.dart';
 import 'login_screen.dart';
 import 'home_screen.dart';
+import 'dart:convert';
+import 'package:image_picker/image_picker.dart';
+import 'package:http/http.dart' as http;
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import '../services/auth_service.dart';
 
 import '../core/socket_service.dart';
@@ -14,6 +18,7 @@ class ProfileScreen extends StatefulWidget {
   final String userAge;
   final String userEmail;
   final bool isAdmin;
+  final String verificationStatus;
 
   const ProfileScreen({
     super.key,
@@ -21,6 +26,7 @@ class ProfileScreen extends StatefulWidget {
     this.userAge = "18",
     this.userEmail = "email@example.com",
     this.isAdmin = false,
+    this.verificationStatus = 'none',
   });
 
   @override
@@ -31,6 +37,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
   late String fullName;
   late String age;
   late String email;
+  String _verificationStatus = 'none';
+  bool _isUploading = false;
 
   @override
   void initState() {
@@ -38,6 +46,47 @@ class _ProfileScreenState extends State<ProfileScreen> {
     fullName = widget.userName;
     age = widget.userAge;
     email = widget.userEmail;
+    _verificationStatus = widget.verificationStatus;
+    _fetchVerificationStatus();
+  }
+
+  Future<void> _fetchVerificationStatus() async {
+    try {
+      final data = await AuthService.getVerificationStatus(email);
+      if (mounted) setState(() => _verificationStatus = data['verificationStatus'] ?? 'none');
+    } catch (_) {}
+  }
+
+  Future<void> _startVerification() async {
+    final picker = ImagePicker();
+    final XFile? photo = await picker.pickImage(source: ImageSource.camera, imageQuality: 70, maxWidth: 1200);
+    if (photo == null) return;
+    
+    setState(() => _isUploading = true);
+    try {
+      // 1. Read image bytes and convert to base64
+      final bytes = await photo.readAsBytes();
+      final base64Data = base64Encode(bytes);
+      final filename = email.replaceAll('@', '_at_').replaceAll('.', '_dot_');
+      
+      // 2. Upload ID by sending base64 to backend
+      await AuthService.uploadIdForVerification(email, base64Data, filename);
+      
+      if (mounted) {
+        setState(() => _verificationStatus = 'pending');
+        // Save to SharedPreferences so it persists
+        final prefs = await SharedPreferences.getInstance();
+        await prefs.setString('verification_status', 'pending');
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(e.toString().replaceAll('Exception: ', '')), backgroundColor: Colors.red),
+        );
+      }
+    } finally {
+      if (mounted) setState(() => _isUploading = false);
+    }
   }
 
   // ── LOGOUT ────────────────────────────────────────────────────────────────
@@ -345,17 +394,30 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 ),
                 child: Column(
                   children: [
-                    CircleAvatar(
-                      radius: 45,
-                      backgroundColor: isDark ? Colors.white : Colors.black,
-                      child: Text(
-                        getInitials(fullName),
-                        style: TextStyle(
-                          color: isDark ? Colors.black : Colors.white,
-                          fontSize: 28,
-                          fontWeight: FontWeight.bold,
+                    Stack(
+                      children: [
+                        CircleAvatar(
+                          radius: 45,
+                          backgroundColor: isDark ? Colors.white : Colors.black,
+                          child: Text(
+                            getInitials(fullName),
+                            style: TextStyle(
+                              color: isDark ? Colors.black : Colors.white,
+                              fontSize: 28,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
                         ),
-                      ),
+                        if (_verificationStatus == 'verified')
+                          Positioned(
+                            bottom: 0, right: 0,
+                            child: Container(
+                              padding: const EdgeInsets.all(2),
+                              decoration: const BoxDecoration(color: Colors.white, shape: BoxShape.circle),
+                              child: const Icon(Icons.verified, color: Colors.green, size: 20),
+                            ),
+                          ),
+                      ],
                     ),
                     const SizedBox(height: 15),
                     Text(
@@ -366,6 +428,33 @@ class _ProfileScreenState extends State<ProfileScreen> {
                         color: Theme.of(context).textTheme.bodyLarge?.color,
                       ),
                     ),
+                    if (_verificationStatus == 'none')
+                      GestureDetector(
+                        onTap: _isUploading ? null : _startVerification,
+                        child: Padding(
+                          padding: const EdgeInsets.only(top: 8),
+                          child: _isUploading
+                              ? const SizedBox(width: 16, height: 16, child: CircularProgressIndicator(strokeWidth: 2))
+                              : const Text("Verify your account", style: TextStyle(color: Colors.grey, fontSize: 13, decoration: TextDecoration.underline)),
+                        ),
+                      )
+                    else if (_verificationStatus == 'pending')
+                      const Padding(
+                        padding: EdgeInsets.only(top: 8),
+                        child: Text("Waiting for approval", style: TextStyle(color: Colors.grey, fontSize: 13)),
+                      )
+                    else if (_verificationStatus == 'verified')
+                      Padding(
+                        padding: const EdgeInsets.only(top: 8),
+                        child: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: const [
+                            Icon(Icons.verified, color: Colors.green, size: 16),
+                            SizedBox(width: 4),
+                            Text("Verified", style: TextStyle(color: Colors.green, fontSize: 13, fontWeight: FontWeight.w600)),
+                          ],
+                        ),
+                      ),
                     const SizedBox(height: 40),
 
                     _editableTile(

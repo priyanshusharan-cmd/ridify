@@ -30,6 +30,10 @@ const listUsers = async (req, res) => {
         ],
       };
     }
+    
+    if (req.query.verificationStatus) {
+      query.verificationStatus = req.query.verificationStatus;
+    }
 
     const [users, total] = await Promise.all([
       User.find(query, { password: 0, refreshTokens: 0 })
@@ -130,7 +134,7 @@ const updateUser = async (req, res) => {
       return res.status(400).json({ error: 'Invalid user ID format.' });
     }
 
-    const { name, age } = req.body;
+    const { name, age, email } = req.body;
     const updateFields = {};
 
     if (name !== undefined) {
@@ -146,6 +150,18 @@ const updateUser = async (req, res) => {
         return res.status(400).json({ error: 'Invalid age.' });
       }
       updateFields.age = trimmed;
+    }
+    if (email !== undefined) {
+      const trimmed = String(email).trim().toLowerCase();
+      if (!isValidEmail(trimmed)) {
+        return res.status(400).json({ error: 'Invalid email format.' });
+      }
+      
+      const existing = await User.findOne({ email: trimmed, _id: { $ne: req.params.id } });
+      if (existing) {
+        return res.status(409).json({ error: 'Email already in use.' });
+      }
+      updateFields.email = trimmed;
     }
 
     if (Object.keys(updateFields).length === 0) {
@@ -437,10 +453,29 @@ const unbanUser = async (req, res) => {
 const verifyDocuments = async (req, res) => {
   try {
     if (!isValidObjectId(req.params.id)) return res.status(400).json({ error: 'Invalid ID' });
-    const user = await User.findByIdAndUpdate(req.params.id, { documentsVerified: true }, { new: true, projection: { password: 0 }});
+    const user = await User.findByIdAndUpdate(req.params.id, { documentsVerified: true, verificationStatus: 'verified' }, { new: true, projection: { password: 0 }});
     if (!user) return res.status(404).json({ error: 'User not found' });
     res.json({ message: `Documents for ${user.email} verified.`, user });
   } catch (err) { res.status(500).json({ error: 'Server error verifying docs' }); }
+};
+
+const rejectVerification = async (req, res) => {
+  try {
+    if (!isValidObjectId(req.params.id)) return res.status(400).json({ error: 'Invalid ID' });
+    const user = await User.findByIdAndUpdate(req.params.id, { verificationStatus: 'none', idUrl: '' }, { new: true, projection: { password: 0 }});
+    if (!user) return res.status(404).json({ error: 'User not found' });
+    res.json({ message: `Verification rejected for ${user.email}.`, user });
+  } catch (err) { res.status(500).json({ error: 'Server error rejecting verification' }); }
+};
+
+const listPendingVerifications = async (req, res) => {
+  try {
+    const users = await User.find({ verificationStatus: 'pending' }, { password: 0, refreshTokens: 0 }).sort({ updatedAt: -1 }).lean();
+    res.json({ users });
+  } catch (err) {
+    logger.error('Admin listPendingVerifications error:', err.message);
+    res.status(500).json({ error: 'Server error fetching pending verifications.' });
+  }
 };
 
 module.exports = {
@@ -458,5 +493,7 @@ module.exports = {
   banUser,
   unbanUser,
   verifyDocuments,
+  rejectVerification,
+  listPendingVerifications,
   wipeAllRides
 };

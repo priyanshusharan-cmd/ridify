@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
+import '../verified_badge.dart';
 
 class PassengerTile extends StatelessWidget {
   final String passengerId;
   final String displayName;
+  final String verificationStatus;
   final String subtitle;
   final String addrText;
   final bool isBoarded;
@@ -21,6 +23,7 @@ class PassengerTile extends StatelessWidget {
     super.key,
     required this.passengerId,
     required this.displayName,
+    this.verificationStatus = 'none',
     required this.subtitle,
     required this.addrText,
     required this.isBoarded,
@@ -74,7 +77,17 @@ class PassengerTile extends StatelessWidget {
         ),
         const SizedBox(width: 16),
         Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-          Text(displayName, style: TextStyle(fontWeight: FontWeight.w700, fontSize: 16, color: panelText)),
+          Row(
+            children: [
+              Flexible(
+                child: Text(displayName, style: TextStyle(fontWeight: FontWeight.w700, fontSize: 16, color: panelText), overflow: TextOverflow.ellipsis),
+              ),
+              if (verificationStatus == 'verified') ...[
+                const SizedBox(width: 4),
+                const VerifiedBadge(size: 14),
+              ],
+            ],
+          ),
           const SizedBox(height: 2),
           Text(subtitle, style: TextStyle(color: isBoarded ? Colors.green.shade600 : Colors.orange.shade600, fontSize: 12, fontWeight: FontWeight.w600)),
           if (addrText.isNotEmpty) ...[

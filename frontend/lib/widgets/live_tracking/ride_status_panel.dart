@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/gestures.dart';
 import '../../screens/chat_screen.dart';
+import '../verified_badge.dart';
 import 'passenger_tile.dart';
 
 class RideStatusPanel extends StatelessWidget {
@@ -132,10 +133,20 @@ class RideStatusPanel extends StatelessWidget {
                   ),
                   const SizedBox(width: 16),
                   Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-                    Text(
-                      isAccepted ? (isDriver ? "Ride Group" : otherUserName) : "Finding Match...",
-                      style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: panelText),
-                      maxLines: 1, overflow: TextOverflow.ellipsis,
+                    Row(
+                      children: [
+                        Flexible(
+                          child: Text(
+                            isAccepted ? (isDriver ? "Ride Group" : otherUserName) : "Finding Match...",
+                            style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: panelText),
+                            maxLines: 1, overflow: TextOverflow.ellipsis,
+                          ),
+                        ),
+                        if (isAccepted && !isDriver && rideData?['driverVerificationStatus'] == 'verified') ...[
+                          const SizedBox(width: 4),
+                          const VerifiedBadge(size: 16),
+                        ],
+                      ],
                     ),
                     const SizedBox(height: 4),
                     Container(
@@ -268,10 +279,12 @@ class RideStatusPanel extends StatelessWidget {
                     String subtitle = isBoarded ? "Boarded ✓" : (isArrived ? "Arrived — waiting to board" : "Picking up soon");
                     String addrText = isBoarded ? (destAddr ?? "") : (pickupAddr ?? "");
                     String displayName = rideData?['riderDetails']?[p]?['riderName'] ?? p.toString();
+                    String verificationStatus = rideData?['riderDetails']?[p]?['verificationStatus'] ?? 'none';
 
                     return PassengerTile(
                       passengerId: p,
                       displayName: displayName,
+                      verificationStatus: verificationStatus,
                       subtitle: subtitle,
                       addrText: addrText,
                       isBoarded: isBoarded,

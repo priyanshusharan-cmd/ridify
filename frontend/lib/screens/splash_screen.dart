@@ -186,6 +186,7 @@ class _SplashScreenState extends State<SplashScreen>
     final savedAge = prefs.getString('user_age');
     final savedEmail = prefs.getString('user_email');
     final savedIsAdmin = prefs.getBool('is_admin') ?? false;
+    final savedVerificationStatus = prefs.getString('verification_status') ?? 'none';
 
     // Check for valid token using TokenService
     final hasToken = await TokenService.hasValidToken();
@@ -207,6 +208,7 @@ class _SplashScreenState extends State<SplashScreen>
                 userAge: savedAge,
                 userEmail: savedEmail,
                 isAdmin: savedIsAdmin,
+                verificationStatus: savedVerificationStatus,
               )
             : const LoginScreen(),
         transitionsBuilder: (context, animation, secondaryAnimation, child) =>

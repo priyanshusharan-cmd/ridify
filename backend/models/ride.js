@@ -5,6 +5,7 @@ const CHAT_MAX_LENGTH = parseInt(process.env.CHAT_MAX_LENGTH) || 1000;
 const RideSchema = new mongoose.Schema({
   riderName:      { type: String, maxlength: 200, trim: true },
   riderEmail:     { type: String, required: true, lowercase: true, trim: true, maxlength: 500 },
+  driverVerificationStatus: { type: String, enum: ['none', 'pending', 'verified'], default: 'none' },
   pickupLocation: { type: String, required: true, maxlength: 500, trim: true },
   pickupLat: Number,
   pickupLng: Number,
