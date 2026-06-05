@@ -541,18 +541,8 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
             icon: Icon(Icons.receipt_long),
             label: "History",
           ),
-          BottomNavigationBarItem(
-            icon: Stack(
-              clipBehavior: Clip.none,
-              children: [
-                const Icon(Icons.person),
-                if (widget.verificationStatus == 'verified')
-                  const Positioned(
-                    bottom: -2, right: -4,
-                    child: VerifiedBadge(size: 12),
-                  ),
-              ],
-            ),
+          const BottomNavigationBarItem(
+            icon: Icon(Icons.person),
             label: "Account",
           ),
         ],
