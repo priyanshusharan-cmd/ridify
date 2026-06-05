@@ -1,14 +1,17 @@
 import 'package:flutter/material.dart';
+import '../verified_badge.dart';
 
 class FareSummary extends StatelessWidget {
   final bool isDark;
   final String driverName;
+  final bool isDriverVerified;
   final int fareAmount;
 
   const FareSummary({
     super.key,
     required this.isDark,
     required this.driverName,
+    this.isDriverVerified = false,
     required this.fareAmount,
   });
 
@@ -66,7 +69,17 @@ class FareSummary extends StatelessWidget {
                           ),
                         ),
                         const SizedBox(width: 10),
-                        Expanded(child: Text(driverName, style: TextStyle(fontWeight: FontWeight.bold, fontSize: 15, color: isDark ? Colors.white : Colors.black), overflow: TextOverflow.ellipsis)),
+                        Expanded(
+                          child: Row(
+                            children: [
+                              Flexible(child: Text(driverName, style: TextStyle(fontWeight: FontWeight.bold, fontSize: 15, color: isDark ? Colors.white : Colors.black), overflow: TextOverflow.ellipsis)),
+                              if (isDriverVerified) ...[
+                                const SizedBox(width: 4),
+                                const VerifiedBadge(size: 14),
+                              ],
+                            ],
+                          ),
+                        ),
                       ],
                     ),
                   ],

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../verified_badge.dart';
 
 class EarningsBreakdownCard extends StatelessWidget {
   final bool isDark;
@@ -59,7 +60,17 @@ class EarningsBreakdownCard extends StatelessWidget {
                             child: Row(
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: [
-                                Expanded(child: Text(e['name'], style: TextStyle(color: isDark ? Colors.white70 : Colors.black87, fontSize: 14), overflow: TextOverflow.ellipsis)),
+                                Expanded(
+                                  child: Row(
+                                    children: [
+                                      Flexible(child: Text(e['name'], style: TextStyle(color: isDark ? Colors.white70 : Colors.black87, fontSize: 14), overflow: TextOverflow.ellipsis)),
+                                      if (e['isVerified'] == true) ...[
+                                        const SizedBox(width: 4),
+                                        const VerifiedBadge(size: 12),
+                                      ],
+                                    ],
+                                  ),
+                                ),
                                 Text("₹${e['fare']}", style: TextStyle(color: isDark ? Colors.white70 : Colors.black87, fontSize: 14, fontWeight: FontWeight.bold)),
                               ],
                             ),

@@ -123,7 +123,8 @@ class _DriverCompletingScreenState extends State<DriverCompletingScreen> {
     for (var p in allInRide) {
       int fare = (rideData?['riderDetails']?[p]?['fare'] as num?)?.toInt() ?? 0;
       String name = rideData?['riderDetails']?[p]?['riderName'] ?? p.toString();
-      earningsList.add({'name': name, 'fare': fare});
+      bool isVerified = rideData?['riderDetails']?[p]?['riderVerificationStatus'] == 'verified';
+      earningsList.add({'name': name, 'fare': fare, 'isVerified': isVerified});
       totalEarnings += fare;
     }
 

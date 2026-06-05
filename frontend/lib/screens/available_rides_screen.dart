@@ -365,222 +365,226 @@ class _AvailableRidesScreenState extends State<AvailableRidesScreen> {
     final primaryTextColor = Theme.of(context).textTheme.bodyLarge?.color;
     final subtitleColor = isDark ? Colors.white54 : Colors.grey[600];
 
-    return Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Padding(
-            padding: const EdgeInsets.only(left: 16, right: 16, top: 16, bottom: 0),
-            child: Row(
-              children: [
-                GestureDetector(
-                  onTap: widget.onBack ?? () => Navigator.pop(context),
-                  child: Container(
-                    padding: const EdgeInsets.all(8),
-                    decoration: BoxDecoration(
-                      shape: BoxShape.circle,
-                      border: Border.all(color: Theme.of(context).dividerColor),
-                    ),
-                    child: Icon(Icons.arrow_back, color: primaryTextColor, size: 20),
-                  ),
-                ),
-                const SizedBox(width: 16),
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      "Available Rides",
-                      style: TextStyle(
-                        fontSize: 22,
-                        fontWeight: FontWeight.bold,
-                        color: primaryTextColor,
-                      ),
-                    ),
-                    Text(
-                      "Choose a ride that fits your journey",
-                      style: TextStyle(
-                        fontSize: 12,
-                        color: subtitleColor,
-                      ),
-                    ),
-                  ],
-                ),
-              ],
-            ),
-          ),
-          // Header Card with Locations
-          Container(
-            width: double.infinity,
-            margin: const EdgeInsets.all(16),
-            padding: const EdgeInsets.all(16),
-            decoration: BoxDecoration(
-              color: cardColor,
-              borderRadius: BorderRadius.circular(16),
-              border: Border.all(color: Colors.transparent),
-              boxShadow: isDark
-                  ? []
-                  : [BoxShadow(color: Colors.black.withValues(alpha: 0.05), blurRadius: 10, offset: const Offset(0, 5))],
-            ),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Row(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    const Icon(Icons.location_on_outlined, color: Colors.green, size: 20),
-                    const SizedBox(width: 12),
-                    Expanded(
-                      child: Text(
-                        widget.pickupLocation,
-                        style: TextStyle(color: primaryTextColor, fontSize: 14, fontWeight: FontWeight.w500),
-                        maxLines: 2,
-                        overflow: TextOverflow.ellipsis,
-                      ),
-                    ),
-                  ],
-                ),
-                Padding(
-                  padding: const EdgeInsets.only(left: 9, top: 4, bottom: 4),
-                  child: Container(width: 2, height: 16, color: Theme.of(context).dividerColor),
-                ),
-                Row(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    const Icon(Icons.flag_outlined, color: Colors.red, size: 20),
-                    const SizedBox(width: 12),
-                    Expanded(
-                      child: Text(
-                        widget.destination,
-                        style: TextStyle(color: primaryTextColor, fontSize: 14, fontWeight: FontWeight.w500),
-                        maxLines: 2,
-                        overflow: TextOverflow.ellipsis,
-                      ),
-                    ),
-                  ],
-                ),
-              ],
-            ),
-          ),
-
-          // Filters Row
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16.0),
-            child: Row(
-              children: [
-                Expanded(
-                  child: SingleChildScrollView(
-                    scrollDirection: Axis.horizontal,
+    return ScrollConfiguration(
+      behavior: ScrollConfiguration.of(context).copyWith(
+        dragDevices: {
+          PointerDeviceKind.touch,
+          PointerDeviceKind.mouse,
+          PointerDeviceKind.trackpad,
+        },
+      ),
+      child: RefreshIndicator(
+        onRefresh: widget.onRefresh ?? () async {},
+        child: CustomScrollView(
+          physics: const AlwaysScrollableScrollPhysics(),
+          slivers: [
+            SliverToBoxAdapter(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Padding(
+                    padding: const EdgeInsets.only(left: 16, right: 16, top: 16, bottom: 0),
                     child: Row(
-                      children: ['Any', 'Sedan', 'Bike', 'SUV'].map((filter) {
-                        bool isSelected = selectedFilter == filter;
-                        return GestureDetector(
-                          onTap: () {
-                            setState(() {
-                              selectedFilter = filter;
-                            });
-                            _applyFiltersAndSort();
-                          },
+                      children: [
+                        GestureDetector(
+                          onTap: widget.onBack ?? () => Navigator.pop(context),
                           child: Container(
-                            margin: const EdgeInsets.only(right: 8),
-                            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+                            padding: const EdgeInsets.all(8),
                             decoration: BoxDecoration(
-                              color: isSelected
-                                  ? (isDark ? Colors.white : Colors.black)
-                                  : cardColor,
-                              borderRadius: BorderRadius.circular(12),
-                              border: Border.all(
-                                color: isSelected ? Colors.transparent : Theme.of(context).dividerColor,
+                              shape: BoxShape.circle,
+                              border: Border.all(color: Theme.of(context).dividerColor),
+                            ),
+                            child: Icon(Icons.arrow_back, color: primaryTextColor, size: 20),
+                          ),
+                        ),
+                        const SizedBox(width: 16),
+                        Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              "Available Rides",
+                              style: TextStyle(
+                                fontSize: 22,
+                                fontWeight: FontWeight.bold,
+                                color: primaryTextColor,
                               ),
                             ),
-                            child: Row(
-                              children: [
-                                if (filter == 'Any') ...[
-                                  Icon(Icons.grid_view, size: 16, color: isSelected ? (isDark ? Colors.black : Colors.white) : primaryTextColor),
-                                  const SizedBox(width: 6),
-                                ] else if (filter == 'Sedan') ...[
-                                  Icon(Icons.directions_car, size: 16, color: isSelected ? (isDark ? Colors.black : Colors.white) : primaryTextColor),
-                                  const SizedBox(width: 6),
-                                ] else if (filter == 'Bike') ...[
-                                  Icon(Icons.motorcycle, size: 16, color: isSelected ? (isDark ? Colors.black : Colors.white) : primaryTextColor),
-                                  const SizedBox(width: 6),
-                                ] else if (filter == 'SUV') ...[
-                                  Icon(Icons.airport_shuttle, size: 16, color: isSelected ? (isDark ? Colors.black : Colors.white) : primaryTextColor),
-                                  const SizedBox(width: 6),
-                                ],
-                                Text(
-                                  filter,
-                                  style: TextStyle(
-                                    color: isSelected ? (isDark ? Colors.black : Colors.white) : primaryTextColor,
-                                    fontWeight: FontWeight.bold,
-                                  ),
-                                ),
-                              ],
+                            Text(
+                              "Choose a ride that fits your journey",
+                              style: TextStyle(
+                                fontSize: 12,
+                                color: subtitleColor,
+                              ),
                             ),
-                          ),
-                        );
-                      }).toList(),
+                          ],
+                        ),
+                      ],
                     ),
                   ),
-                ),
-                GestureDetector(
-                  onTap: _showSortOptions,
-                  child: Container(
-                    padding: const EdgeInsets.all(10),
+                  // Header Card with Locations
+                  Container(
+                    width: double.infinity,
+                    margin: const EdgeInsets.all(16),
+                    padding: const EdgeInsets.all(16),
                     decoration: BoxDecoration(
                       color: cardColor,
-                      borderRadius: BorderRadius.circular(12),
-                      border: Border.all(color: Theme.of(context).dividerColor),
+                      borderRadius: BorderRadius.circular(16),
+                      border: Border.all(color: Colors.transparent),
+                      boxShadow: isDark
+                          ? []
+                          : [BoxShadow(color: Colors.black.withValues(alpha: 0.05), blurRadius: 10, offset: const Offset(0, 5))],
                     ),
-                    child: Icon(Icons.filter_list, color: primaryTextColor, size: 20),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Row(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            const Icon(Icons.location_on_outlined, color: Colors.green, size: 20),
+                            const SizedBox(width: 12),
+                            Expanded(
+                              child: Text(
+                                widget.pickupLocation,
+                                style: TextStyle(color: primaryTextColor, fontSize: 14, fontWeight: FontWeight.w500),
+                                maxLines: 2,
+                                overflow: TextOverflow.ellipsis,
+                              ),
+                            ),
+                          ],
+                        ),
+                        Padding(
+                          padding: const EdgeInsets.only(left: 9, top: 4, bottom: 4),
+                          child: Container(width: 2, height: 16, color: Theme.of(context).dividerColor),
+                        ),
+                        Row(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            const Icon(Icons.flag_outlined, color: Colors.red, size: 20),
+                            const SizedBox(width: 12),
+                            Expanded(
+                              child: Text(
+                                widget.destination,
+                                style: TextStyle(color: primaryTextColor, fontSize: 14, fontWeight: FontWeight.w500),
+                                maxLines: 2,
+                                overflow: TextOverflow.ellipsis,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ],
+                    ),
                   ),
-                ),
-              ],
-            ),
-          ),
-          const SizedBox(height: 16),
-
-          // List of Rides
-          Expanded(
-            child: ScrollConfiguration(
-              behavior: ScrollConfiguration.of(context).copyWith(
-                dragDevices: {
-                  PointerDeviceKind.touch,
-                  PointerDeviceKind.mouse,
-                  PointerDeviceKind.trackpad,
-                },
-              ),
-              child: RefreshIndicator(
-                onRefresh: widget.onRefresh ?? () async {},
-                child: displayedRides.isEmpty
-                    ? Stack(
-                        children: [
-                          ListView(physics: const BouncingScrollPhysics(parent: AlwaysScrollableScrollPhysics())), // required for RefreshIndicator
-                          Center(
-                            child: Text(
-                              "No rides available for this filter.",
-                              style: TextStyle(color: subtitleColor, fontSize: 16),
+                  // Filters Row
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                    child: Row(
+                      children: [
+                        Expanded(
+                          child: SingleChildScrollView(
+                            scrollDirection: Axis.horizontal,
+                            child: Row(
+                              children: ['Any', 'Sedan', 'Bike', 'SUV'].map((filter) {
+                                bool isSelected = selectedFilter == filter;
+                                return GestureDetector(
+                                  onTap: () {
+                                    setState(() {
+                                      selectedFilter = filter;
+                                    });
+                                    _applyFiltersAndSort();
+                                  },
+                                  child: Container(
+                                    margin: const EdgeInsets.only(right: 8),
+                                    padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+                                    decoration: BoxDecoration(
+                                      color: isSelected
+                                          ? (isDark ? Colors.white : Colors.black)
+                                          : cardColor,
+                                      borderRadius: BorderRadius.circular(12),
+                                      border: Border.all(
+                                        color: isSelected ? Colors.transparent : Theme.of(context).dividerColor,
+                                      ),
+                                    ),
+                                    child: Row(
+                                      children: [
+                                        if (filter == 'Any') ...[
+                                          Icon(Icons.grid_view, size: 16, color: isSelected ? (isDark ? Colors.black : Colors.white) : primaryTextColor),
+                                          const SizedBox(width: 6),
+                                        ] else if (filter == 'Sedan') ...[
+                                          Icon(Icons.directions_car, size: 16, color: isSelected ? (isDark ? Colors.black : Colors.white) : primaryTextColor),
+                                          const SizedBox(width: 6),
+                                        ] else if (filter == 'Bike') ...[
+                                          Icon(Icons.motorcycle, size: 16, color: isSelected ? (isDark ? Colors.black : Colors.white) : primaryTextColor),
+                                          const SizedBox(width: 6),
+                                        ] else if (filter == 'SUV') ...[
+                                          Icon(Icons.airport_shuttle, size: 16, color: isSelected ? (isDark ? Colors.black : Colors.white) : primaryTextColor),
+                                          const SizedBox(width: 6),
+                                        ],
+                                        Text(
+                                          filter,
+                                          style: TextStyle(
+                                            color: isSelected ? (isDark ? Colors.black : Colors.white) : primaryTextColor,
+                                            fontWeight: FontWeight.bold,
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                );
+                              }).toList(),
                             ),
                           ),
-                        ],
-                      )
-                    : ListView.builder(
-                        physics: const BouncingScrollPhysics(parent: AlwaysScrollableScrollPhysics()),
-                      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                      itemCount: displayedRides.length,
-                      itemBuilder: (context, index) {
-                        final ride = displayedRides[index];
-                        return AvailableRideCard(
-                          ride: ride,
-                          isSending: _sendingRideId == ride['_id'],
-                          onBook: () => sendRideRequest(ride, ride['riderName'] ?? "Driver"),
-                          fallbackPickup: widget.pickupLocation,
-                          fallbackDestination: widget.destination,
-                        );
-                      },
+                        ),
+                        GestureDetector(
+                          onTap: _showSortOptions,
+                          child: Container(
+                            padding: const EdgeInsets.all(10),
+                            decoration: BoxDecoration(
+                              color: cardColor,
+                              borderRadius: BorderRadius.circular(12),
+                              border: Border.all(color: Theme.of(context).dividerColor),
+                            ),
+                            child: Icon(Icons.filter_list, color: primaryTextColor, size: 20),
+                          ),
+                        ),
+                      ],
                     ),
+                  ),
+                  const SizedBox(height: 16),
+                ],
               ),
             ),
-          ),
-        ],
-      );
+            if (displayedRides.isEmpty)
+              SliverFillRemaining(
+                hasScrollBody: false,
+                child: Center(
+                  child: Text(
+                    "No rides available for this filter.",
+                    style: TextStyle(color: subtitleColor, fontSize: 16),
+                  ),
+                ),
+              )
+            else
+              SliverPadding(
+                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                sliver: SliverList(
+                  delegate: SliverChildBuilderDelegate(
+                    (context, index) {
+                      final ride = displayedRides[index];
+                      return AvailableRideCard(
+                        ride: ride,
+                        isSending: _sendingRideId == ride['_id'],
+                        onBook: () => sendRideRequest(ride, ride['riderName'] ?? "Driver"),
+                        fallbackPickup: widget.pickupLocation,
+                        fallbackDestination: widget.destination,
+                      );
+                    },
+                    childCount: displayedRides.length,
+                  ),
+                ),
+              ),
+          ],
+        ),
+      ),
+    );
   }
 }

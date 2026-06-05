@@ -196,6 +196,7 @@ class _RiderCompletingScreenState extends State<RiderCompletingScreen> {
               FareSummary(
                 isDark: isDark,
                 driverName: driverName,
+                isDriverVerified: rideData?['driverVerificationStatus'] == 'verified',
                 fareAmount: widget.fareAmount,
               ),
               const SizedBox(height: 32),

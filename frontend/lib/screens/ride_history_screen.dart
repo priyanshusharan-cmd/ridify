@@ -58,67 +58,66 @@ class RideHistoryScreen extends StatelessWidget {
     return Scaffold(
       backgroundColor: isDark ? const Color(0xFF111111) : const Color(0xFFF5F5F5),
       body: SafeArea(
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Padding(
-              padding: const EdgeInsets.fromLTRB(24, 24, 24, 16),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    "Ride History",
-                    style: TextStyle(
-                      fontSize: 28, 
-                      fontWeight: FontWeight.bold,
-                      color: isDark ? Colors.white : Colors.black,
-                    ),
-                  ),
-                  const SizedBox(height: 4),
-                  Text(
-                    "Your recent rides and earnings",
-                    style: TextStyle(
-                      fontSize: 14,
-                      color: isDark ? Colors.white54 : Colors.grey[600],
-                    ),
-                  ),
-                ],
-              ),
-            ),
-            Expanded(
-              child: RefreshIndicator(
-                onRefresh: onRefresh ?? () async {},
-                child: myCompletedRides.isEmpty
-                    ? LayoutBuilder(
-                        builder: (context, constraints) => SingleChildScrollView(
-                          physics: const AlwaysScrollableScrollPhysics(),
-                          child: SizedBox(
-                            height: constraints.maxHeight,
-                            child: Center(
-                              child: Column(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: [
-                                  Icon(Icons.history_rounded, size: 80, color: isDark ? Colors.white10 : Colors.grey.shade300),
-                                  const SizedBox(height: 16),
-                                  Text("No completed rides yet.", style: TextStyle(color: isDark ? Colors.white54 : Colors.grey, fontSize: 18, fontWeight: FontWeight.w500)),
-                                ],
-                              ),
-                            ),
-                          ),
+        child: RefreshIndicator(
+          onRefresh: onRefresh ?? () async {},
+          child: CustomScrollView(
+            physics: const AlwaysScrollableScrollPhysics(),
+            slivers: [
+              SliverToBoxAdapter(
+                child: Padding(
+                  padding: const EdgeInsets.fromLTRB(24, 24, 24, 16),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        "Ride History",
+                        style: TextStyle(
+                          fontSize: 28, 
+                          fontWeight: FontWeight.bold,
+                          color: isDark ? Colors.white : Colors.black,
                         ),
-                      )
-                    : ListView.builder(
-                        physics: const AlwaysScrollableScrollPhysics(),
-                        padding: const EdgeInsets.only(left: 24, right: 24, bottom: 24),
-                        itemCount: myCompletedRides.length,
-                        itemBuilder: (context, index) {
-                          final ride = myCompletedRides[index];
-                          return RideHistoryCard(ride: ride, isDark: isDark, userEmail: userEmail);
-                        },
                       ),
+                      const SizedBox(height: 4),
+                      Text(
+                        "Your recent rides and earnings",
+                        style: TextStyle(
+                          fontSize: 14,
+                          color: isDark ? Colors.white54 : Colors.grey[600],
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
               ),
-            ),
-          ],
+              if (myCompletedRides.isEmpty)
+                SliverFillRemaining(
+                  hasScrollBody: false,
+                  child: Center(
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Icon(Icons.history_rounded, size: 80, color: isDark ? Colors.white10 : Colors.grey.shade300),
+                        const SizedBox(height: 16),
+                        Text("No completed rides yet.", style: TextStyle(color: isDark ? Colors.white54 : Colors.grey, fontSize: 18, fontWeight: FontWeight.w500)),
+                      ],
+                    ),
+                  ),
+                )
+              else
+                SliverPadding(
+                  padding: const EdgeInsets.only(left: 24, right: 24, bottom: 24),
+                  sliver: SliverList(
+                    delegate: SliverChildBuilderDelegate(
+                      (context, index) {
+                        final ride = myCompletedRides[index];
+                        return RideHistoryCard(ride: ride, isDark: isDark, userEmail: userEmail);
+                      },
+                      childCount: myCompletedRides.length,
+                    ),
+                  ),
+                ),
+            ],
+          ),
         ),
       ),
     );
