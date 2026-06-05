@@ -55,7 +55,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
   @override
   void didUpdateWidget(covariant ProfileScreen oldWidget) {
     super.didUpdateWidget(oldWidget);
-    if (widget.userName != oldWidget.userName || widget.userAge != oldWidget.userAge || widget.verificationStatus != oldWidget.verificationStatus) {
+    if (widget.userName != oldWidget.userName ||
+        widget.userAge != oldWidget.userAge ||
+        widget.verificationStatus != oldWidget.verificationStatus) {
       setState(() {
         fullName = widget.userName;
         age = widget.userAge;
@@ -67,7 +69,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
   Future<void> _fetchVerificationStatus() async {
     final userProvider = Provider.of<UserProvider>(context, listen: false);
     final ridesProvider = Provider.of<RidesProvider>(context, listen: false);
-    
+
     if (mounted) {
       await Future.wait([
         userProvider.fetchProfile(),
@@ -98,23 +100,27 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
   Future<void> _startVerification() async {
     final picker = ImagePicker();
-    final XFile? photo = await picker.pickImage(source: ImageSource.camera, imageQuality: 70, maxWidth: 1200);
+    final XFile? photo = await picker.pickImage(
+      source: ImageSource.camera,
+      imageQuality: 70,
+      maxWidth: 1200,
+    );
     if (photo == null) return;
-    
+
     setState(() => _isUploading = true);
     try {
       // 1. Read image bytes and convert to base64
       final bytes = await photo.readAsBytes();
       final base64Data = base64Encode(bytes);
       final filename = email;
-      
+
       // 2. Upload ID by sending base64 to backend
       await AuthService.uploadIdForVerification(email, base64Data, filename);
-      
+
       // Save to SharedPreferences only after successful upload
       final prefs = await SharedPreferences.getInstance();
       await prefs.setString('verification_status', 'pending');
-      
+
       if (mounted) {
         setState(() => _verificationStatus = 'pending');
         widget.onVerificationStatusChanged?.call('pending');
@@ -125,9 +131,14 @@ class _ProfileScreenState extends State<ProfileScreen> {
       if (mounted) {
         setState(() => _verificationStatus = 'none');
         widget.onVerificationStatusChanged?.call('none');
-        ScaffoldMessenger.of(context)..clearSnackBars()..showSnackBar(
-          SnackBar(content: Text(e.toString().replaceAll('Exception: ', '')), backgroundColor: Colors.red),
-        );
+        ScaffoldMessenger.of(context)
+          ..clearSnackBars()
+          ..showSnackBar(
+            SnackBar(
+              content: Text(e.toString().replaceAll('Exception: ', '')),
+              backgroundColor: Colors.red,
+            ),
+          );
       }
     } finally {
       if (mounted) setState(() => _isUploading = false);
@@ -138,16 +149,16 @@ class _ProfileScreenState extends State<ProfileScreen> {
   Future<void> _logout() async {
     // Clear JWT tokens from secure storage
     await AuthService.logout(); // calls TokenService.clearTokens()
-    
+
     // Clear SharedPreferences session data
     final prefs = await SharedPreferences.getInstance();
     await prefs.clear();
-    
+
     // Dispose socket connection
     SocketService().dispose();
-    
+
     HomeScreen.resetStartupAnimation();
-    
+
     if (mounted) {
       Navigator.pushAndRemoveUntil(
         context,
@@ -161,13 +172,13 @@ class _ProfileScreenState extends State<ProfileScreen> {
   Future<void> _deleteAccount() async {
     try {
       await AuthService.deleteAccount(email);
-      
+
       final prefs = await SharedPreferences.getInstance();
       await prefs.clear();
-      
+
       SocketService().dispose();
       HomeScreen.resetStartupAnimation();
-      
+
       if (!mounted) return;
       Navigator.pushAndRemoveUntil(
         context,
@@ -175,17 +186,18 @@ class _ProfileScreenState extends State<ProfileScreen> {
         (route) => false,
       );
       if (!mounted) return;
-      ScaffoldMessenger.of(context)..clearSnackBars()..showSnackBar(
-        const SnackBar(
-          content: Text("Account successfully deleted"),
-          backgroundColor: Colors.red,
-        ),
-      );
+      ScaffoldMessenger.of(context)
+        ..clearSnackBars()
+        ..showSnackBar(
+          const SnackBar(
+            content: Text("Account successfully deleted"),
+            backgroundColor: Colors.red,
+          ),
+        );
     } catch (e) {
       debugPrint(e.toString());
     }
   }
-
 
   void _showDeleteConfirmationDialog() {
     showDialog(
@@ -201,7 +213,12 @@ class _ProfileScreenState extends State<ProfileScreen> {
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: Text("Cancel", style: TextStyle(color: Theme.of(context).textTheme.bodyLarge?.color)),
+            child: Text(
+              "Cancel",
+              style: TextStyle(
+                color: Theme.of(context).textTheme.bodyLarge?.color,
+              ),
+            ),
           ),
           ElevatedButton(
             style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
@@ -242,7 +259,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
           ),
           ElevatedButton(
             style: ElevatedButton.styleFrom(
-              backgroundColor: Theme.of(context).brightness == Brightness.dark ? const Color(0xFF2C2C2C) : Colors.black,
+              backgroundColor: Theme.of(context).brightness == Brightness.dark
+                  ? const Color(0xFF2C2C2C)
+                  : Colors.black,
             ),
             onPressed: () async {
               final val = controller.text.trim();
@@ -256,13 +275,20 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 onSave(val);
                 // Persist the updated name to SharedPreferences
                 final prefs = await SharedPreferences.getInstance();
-                if (title == 'Name') await prefs.setString('user_name', updated['name'] ?? val);
-                if (title == 'Age') await prefs.setString('user_age', updated['age'] ?? val);
+                if (title == 'Name')
+                  await prefs.setString('user_name', updated['name'] ?? val);
+                if (title == 'Age')
+                  await prefs.setString('user_age', updated['age'] ?? val);
               } catch (e) {
                 if (!context.mounted) return;
-                ScaffoldMessenger.of(context)..clearSnackBars()..showSnackBar(
-                  SnackBar(content: Text(e.toString().replaceAll('Exception: ', '')), backgroundColor: Colors.red),
-                );
+                ScaffoldMessenger.of(context)
+                  ..clearSnackBars()
+                  ..showSnackBar(
+                    SnackBar(
+                      content: Text(e.toString().replaceAll('Exception: ', '')),
+                      backgroundColor: Colors.red,
+                    ),
+                  );
               }
             },
             child: const Text("Save", style: TextStyle(color: Colors.white)),
@@ -278,7 +304,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
     bool isSaving = false;
     bool obscureCurrent = true;
     bool obscureNew = true;
-    
+
     showDialog(
       context: context,
       builder: (context) {
@@ -296,7 +322,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       hintText: "Current Password",
                       suffixIcon: IconButton(
                         icon: Icon(
-                          obscureCurrent ? Icons.visibility_off : Icons.visibility,
+                          obscureCurrent
+                              ? Icons.visibility_off
+                              : Icons.visibility,
                           color: Colors.grey,
                         ),
                         onPressed: () {
@@ -335,35 +363,91 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 ),
                 ElevatedButton(
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: Theme.of(context).brightness == Brightness.dark ? const Color(0xFF2C2C2C) : Colors.black,
+                    backgroundColor:
+                        Theme.of(context).brightness == Brightness.dark
+                        ? const Color(0xFF2C2C2C)
+                        : Colors.black,
                   ),
-                  onPressed: isSaving ? null : () async {
-                    if (currentController.text.trim().isEmpty || newController.text.trim().isEmpty) {
-                       ScaffoldMessenger.of(context)..clearSnackBars()..showSnackBar(const SnackBar(content: Text("Both fields are required."), backgroundColor: Colors.red));
-                       return;
-                    }
-                    if (newController.text.trim().length < 8) {
-                       ScaffoldMessenger.of(context)..clearSnackBars()..showSnackBar(const SnackBar(content: Text("New password must be at least 8 characters."), backgroundColor: Colors.red));
-                       return;
-                    }
-                    setState(() => isSaving = true);
-                    try {
-                      await AuthService.changePassword(currentController.text.trim(), newController.text.trim());
-                      if (!context.mounted) return;
-                      Navigator.pop(context);
-                      ScaffoldMessenger.of(context)..clearSnackBars()..showSnackBar(const SnackBar(content: Text("Password changed successfully."), backgroundColor: Colors.green));
-                    } catch (e) {
-                      if (!context.mounted) return;
-                      ScaffoldMessenger.of(context)..clearSnackBars()..showSnackBar(SnackBar(content: Text(e.toString().replaceAll('Exception: ', '')), backgroundColor: Colors.red));
-                    } finally {
-                      if (context.mounted) setState(() => isSaving = false);
-                    }
-                  },
-                  child: isSaving ? const SizedBox(width: 16, height: 16, child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2)) : const Text("Save", style: TextStyle(color: Colors.white)),
+                  onPressed: isSaving
+                      ? null
+                      : () async {
+                          if (currentController.text.trim().isEmpty ||
+                              newController.text.trim().isEmpty) {
+                            ScaffoldMessenger.of(context)
+                              ..clearSnackBars()
+                              ..showSnackBar(
+                                const SnackBar(
+                                  content: Text("Both fields are required."),
+                                  backgroundColor: Colors.red,
+                                ),
+                              );
+                            return;
+                          }
+                          if (newController.text.trim().length < 8) {
+                            ScaffoldMessenger.of(context)
+                              ..clearSnackBars()
+                              ..showSnackBar(
+                                const SnackBar(
+                                  content: Text(
+                                    "New password must be at least 8 characters.",
+                                  ),
+                                  backgroundColor: Colors.red,
+                                ),
+                              );
+                            return;
+                          }
+                          setState(() => isSaving = true);
+                          try {
+                            await AuthService.changePassword(
+                              currentController.text.trim(),
+                              newController.text.trim(),
+                            );
+                            if (!context.mounted) return;
+                            Navigator.pop(context);
+                            ScaffoldMessenger.of(context)
+                              ..clearSnackBars()
+                              ..showSnackBar(
+                                const SnackBar(
+                                  content: Text(
+                                    "Password changed successfully.",
+                                  ),
+                                  backgroundColor: Colors.green,
+                                ),
+                              );
+                          } catch (e) {
+                            if (!context.mounted) return;
+                            ScaffoldMessenger.of(context)
+                              ..clearSnackBars()
+                              ..showSnackBar(
+                                SnackBar(
+                                  content: Text(
+                                    e.toString().replaceAll('Exception: ', ''),
+                                  ),
+                                  backgroundColor: Colors.red,
+                                ),
+                              );
+                          } finally {
+                            if (context.mounted)
+                              setState(() => isSaving = false);
+                          }
+                        },
+                  child: isSaving
+                      ? const SizedBox(
+                          width: 16,
+                          height: 16,
+                          child: CircularProgressIndicator(
+                            color: Colors.white,
+                            strokeWidth: 2,
+                          ),
+                        )
+                      : const Text(
+                          "Save",
+                          style: TextStyle(color: Colors.white),
+                        ),
                 ),
               ],
             );
-          }
+          },
         );
       },
     );
@@ -388,7 +472,12 @@ class _ProfileScreenState extends State<ProfileScreen> {
           children: [
             // ── FIXED HEADER — does NOT scroll ──────────────────────
             Padding(
-              padding: const EdgeInsets.only(left: 24, right: 24, top: 24, bottom: 8),
+              padding: const EdgeInsets.only(
+                left: 24,
+                right: 24,
+                top: 24,
+                bottom: 8,
+              ),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
@@ -406,23 +495,26 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       color: Theme.of(context).iconTheme.color,
                     ),
                     onSelected: (ThemeMode mode) {
-                      Provider.of<ThemeProvider>(context, listen: false)
-                          .setThemeMode(mode);
+                      Provider.of<ThemeProvider>(
+                        context,
+                        listen: false,
+                      ).setThemeMode(mode);
                     },
-                    itemBuilder: (BuildContext context) => <PopupMenuEntry<ThemeMode>>[
-                      const PopupMenuItem<ThemeMode>(
-                        value: ThemeMode.light,
-                        child: Text('Light Mode'),
-                      ),
-                      const PopupMenuItem<ThemeMode>(
-                        value: ThemeMode.dark,
-                        child: Text('Dark Mode'),
-                      ),
-                      const PopupMenuItem<ThemeMode>(
-                        value: ThemeMode.system,
-                        child: Text('Use Device Settings'),
-                      ),
-                    ],
+                    itemBuilder: (BuildContext context) =>
+                        <PopupMenuEntry<ThemeMode>>[
+                          const PopupMenuItem<ThemeMode>(
+                            value: ThemeMode.light,
+                            child: Text('Light Mode'),
+                          ),
+                          const PopupMenuItem<ThemeMode>(
+                            value: ThemeMode.dark,
+                            child: Text('Dark Mode'),
+                          ),
+                          const PopupMenuItem<ThemeMode>(
+                            value: ThemeMode.system,
+                            child: Text('Use Device Settings'),
+                          ),
+                        ],
                   ),
                 ],
               ),
@@ -430,165 +522,176 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
             // ── SCROLLABLE CONTENT ──────────────────────────────────
             Expanded(
-              child: SingleChildScrollView(
-                padding: const EdgeInsets.only(
-                  left: 24,
-                  right: 24,
-                  top: 12,
-                  bottom: 24,
-                ),
-                child: Column(
-                  children: [
-                    Stack(
-                      children: [
-                        CircleAvatar(
-                          radius: 45,
-                          backgroundColor: isDark ? Colors.white : Colors.black,
-                          child: Text(
-                            getInitials(fullName),
+              child: RefreshIndicator(
+                onRefresh: _fetchVerificationStatus,
+                child: SingleChildScrollView(
+                  physics: const AlwaysScrollableScrollPhysics(),
+                  padding: const EdgeInsets.only(
+                    left: 24,
+                    right: 24,
+                    top: 12,
+                    bottom: 24,
+                  ),
+                  child: Column(
+                    children: [
+                      Stack(
+                        children: [
+                          CircleAvatar(
+                            radius: 45,
+                            backgroundColor: isDark
+                                ? Colors.white
+                                : Colors.black,
+                            child: Text(
+                              getInitials(fullName),
+                              style: TextStyle(
+                                color: isDark ? Colors.black : Colors.white,
+                                fontSize: 28,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                          ),
+                          if (_verificationStatus == 'verified')
+                            const Positioned(
+                              bottom: 0,
+                              right: 0,
+                              child: Icon(
+                                Icons.verified,
+                                color: Colors.green,
+                                size: 20,
+                              ),
+                            ),
+                        ],
+                      ),
+                      const SizedBox(height: 15),
+                      Text(
+                        fullName,
+                        style: TextStyle(
+                          fontSize: 22,
+                          fontWeight: FontWeight.bold,
+                          color: Theme.of(context).textTheme.bodyLarge?.color,
+                        ),
+                      ),
+                      const SizedBox(height: 2),
+                      SizedBox(
+                        height: 24,
+                        child: Center(
+                          child: _verificationStatus == 'none'
+                              ? (_isUploading
+                                    ? const SizedBox(
+                                        width: 16,
+                                        height: 16,
+                                        child: CircularProgressIndicator(
+                                          strokeWidth: 2,
+                                        ),
+                                      )
+                                    : Material(
+                                        color: Colors.transparent,
+                                        child: InkWell(
+                                          borderRadius: BorderRadius.circular(
+                                            4,
+                                          ),
+                                          onTap: _startVerification,
+                                          child: const Padding(
+                                            padding: EdgeInsets.symmetric(
+                                              horizontal: 8,
+                                              vertical: 2,
+                                            ),
+                                            child: Text(
+                                              "Verify your account",
+                                              style: TextStyle(
+                                                color: Colors.grey,
+                                                fontSize: 13,
+                                              ),
+                                            ),
+                                          ),
+                                        ),
+                                      ))
+                              : _verificationStatus == 'pending'
+                              ? const Text(
+                                  "Waiting for approval",
+                                  style: TextStyle(
+                                    color: Colors.grey,
+                                    fontSize: 13,
+                                  ),
+                                )
+                              : _verificationStatus == 'verified'
+                              ? const Text(
+                                  "Verified",
+                                  style: TextStyle(
+                                    color: Colors.green,
+                                    fontSize: 13,
+                                    fontWeight: FontWeight.w600,
+                                  ),
+                                )
+                              : const SizedBox.shrink(),
+                        ),
+                      ),
+                      const SizedBox(height: 40),
+
+                      _editableTile(
+                        Icons.person_outline,
+                        "Name",
+                        fullName,
+                        (val) => setState(() => fullName = val),
+                      ),
+                      _editableTile(
+                        Icons.cake_outlined,
+                        "Age",
+                        age,
+                        (val) => setState(() => age = val),
+                      ),
+                      _editableTile(
+                        Icons.email_outlined,
+                        "Email",
+                        email,
+                        (val) => setState(() => email = val),
+                      ),
+                      _passwordTile(),
+
+                      const SizedBox(height: 40),
+
+                      // ── LOGOUT ──────────────────────────────────────────────
+                      SizedBox(
+                        width: double.infinity,
+                        height: 55,
+                        child: OutlinedButton.icon(
+                          style: OutlinedButton.styleFrom(
+                            side: const BorderSide(color: Colors.red),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(15),
+                            ),
+                          ),
+                          onPressed: _logout,
+                          icon: const Icon(Icons.logout, color: Colors.red),
+                          label: const Text(
+                            "Logout",
                             style: TextStyle(
-                              color: isDark ? Colors.black : Colors.white,
-                              fontSize: 28,
+                              color: Colors.red,
                               fontWeight: FontWeight.bold,
                             ),
                           ),
                         ),
-                        if (_verificationStatus == 'verified')
-                          const Positioned(
-                            bottom: 0, right: 0,
-                            child: Icon(Icons.verified, color: Colors.green, size: 20),
-                          ),
-                      ],
-                    ),
-                    const SizedBox(height: 15),
-                    Text(
-                      fullName,
-                      style: TextStyle(
-                        fontSize: 22,
-                        fontWeight: FontWeight.bold,
-                        color: Theme.of(context).textTheme.bodyLarge?.color,
                       ),
-                    ),
-                    const SizedBox(height: 2),
-                    SizedBox(
-                      height: 24,
-                      child: Center(
-                        child: _verificationStatus == 'none'
-                            ? (_isUploading
-                                ? const SizedBox(width: 16, height: 16, child: CircularProgressIndicator(strokeWidth: 2))
-                                : Material(
-                                    color: Colors.transparent,
-                                    child: InkWell(
-                                      borderRadius: BorderRadius.circular(4),
-                                      onTap: _startVerification,
-                                      child: const Padding(
-                                        padding: EdgeInsets.symmetric(horizontal: 8, vertical: 2),
-                                        child: Text("Verify your account", style: TextStyle(color: Colors.grey, fontSize: 13)),
-                                      ),
-                                    ),
-                                  ))
-                            : _verificationStatus == 'pending'
-                                ? const Text("Waiting for approval", style: TextStyle(color: Colors.grey, fontSize: 13))
-                                : _verificationStatus == 'verified'
-                                    ? const Text("Verified", style: TextStyle(color: Colors.green, fontSize: 13, fontWeight: FontWeight.w600))
-                                    : const SizedBox.shrink(),
-                      ),
-                    ),
-                    const SizedBox(height: 40),
-
-                    _editableTile(
-                      Icons.person_outline,
-                      "Name",
-                      fullName,
-                      (val) => setState(() => fullName = val),
-                    ),
-                    _editableTile(
-                      Icons.cake_outlined,
-                      "Age",
-                      age,
-                      (val) => setState(() => age = val),
-                    ),
-                    _editableTile(
-                      Icons.email_outlined,
-                      "Email",
-                      email,
-                      (val) => setState(() => email = val),
-                    ),
-                    _passwordTile(),
-
-                    const SizedBox(height: 40),
-
-                    // ── LOGOUT ──────────────────────────────────────────────
-                    SizedBox(
-                      width: double.infinity,
-                      height: 55,
-                      child: OutlinedButton.icon(
-                        style: OutlinedButton.styleFrom(
-                          side: const BorderSide(color: Colors.red),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(15),
-                          ),
-                        ),
-                        onPressed: _logout,
-                        icon: const Icon(Icons.logout, color: Colors.red),
-                        label: const Text(
-                          "Logout",
-                          style: TextStyle(
-                            color: Colors.red,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                      ),
-                    ),
-                    const SizedBox(height: 15),
-
-                    // ── DELETE OWN ACCOUNT ────────────────────────────────
-                    SizedBox(
-                      width: double.infinity,
-                      height: 55,
-                      child: ElevatedButton.icon(
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: Colors.red,
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(15),
-                          ),
-                        ),
-                        onPressed: _showDeleteConfirmationDialog,
-                        icon: const Icon(Icons.delete_forever, color: Colors.white),
-                        label: const Text(
-                          "Delete Account",
-                          style: TextStyle(
-                            color: Colors.white,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                      ),
-                    ),
-
-                    // ── ADMIN-ONLY SECTION ─────────────────────────────────
-                    if (isAdmin) ...[
                       const SizedBox(height: 15),
+
+                      // ── DELETE OWN ACCOUNT ────────────────────────────────
                       SizedBox(
                         width: double.infinity,
                         height: 55,
                         child: ElevatedButton.icon(
                           style: ElevatedButton.styleFrom(
-                            backgroundColor: Theme.of(context).brightness == Brightness.dark
-                                ? const Color(0xFF2C2C2C)
-                                : Colors.black,
+                            backgroundColor: Colors.red,
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(15),
                             ),
                           ),
-                          onPressed: () {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(builder: (_) => const AdminPanelScreen()),
-                            );
-                          },
-                          icon: const Icon(Icons.admin_panel_settings, color: Colors.amber),
+                          onPressed: _showDeleteConfirmationDialog,
+                          icon: const Icon(
+                            Icons.delete_forever,
+                            color: Colors.white,
+                          ),
                           label: const Text(
-                            "Admin Panel",
+                            "Delete Account",
                             style: TextStyle(
                               color: Colors.white,
                               fontWeight: FontWeight.bold,
@@ -596,8 +699,48 @@ class _ProfileScreenState extends State<ProfileScreen> {
                           ),
                         ),
                       ),
+
+                      // ── ADMIN-ONLY SECTION ─────────────────────────────────
+                      if (isAdmin) ...[
+                        const SizedBox(height: 15),
+                        SizedBox(
+                          width: double.infinity,
+                          height: 55,
+                          child: ElevatedButton.icon(
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor:
+                                  Theme.of(context).brightness ==
+                                      Brightness.dark
+                                  ? const Color(0xFF2C2C2C)
+                                  : Colors.black,
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(15),
+                              ),
+                            ),
+                            onPressed: () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (_) => const AdminPanelScreen(),
+                                ),
+                              );
+                            },
+                            icon: const Icon(
+                              Icons.admin_panel_settings,
+                              color: Colors.amber,
+                            ),
+                            label: const Text(
+                              "Admin Panel",
+                              style: TextStyle(
+                                color: Colors.white,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                          ),
+                        ),
+                      ],
                     ],
-                  ],
+                  ),
                 ),
               ),
             ),
@@ -626,7 +769,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
               children: [
                 Text(
                   title,
-                  style: TextStyle(color: isDark ? Colors.white54 : Colors.grey, fontSize: 12),
+                  style: TextStyle(
+                    color: isDark ? Colors.white54 : Colors.grey,
+                    fontSize: 12,
+                  ),
                 ),
                 Text(
                   value,
@@ -654,7 +800,11 @@ class _ProfileScreenState extends State<ProfileScreen> {
       padding: const EdgeInsets.symmetric(vertical: 10),
       child: Row(
         children: [
-          Icon(Icons.lock_outline, color: isDark ? Colors.white70 : Colors.black54, size: 22),
+          Icon(
+            Icons.lock_outline,
+            color: isDark ? Colors.white70 : Colors.black54,
+            size: 22,
+          ),
           const SizedBox(width: 15),
           Expanded(
             child: Column(
@@ -662,7 +812,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
               children: [
                 Text(
                   "Password",
-                  style: TextStyle(color: isDark ? Colors.white54 : Colors.grey, fontSize: 12),
+                  style: TextStyle(
+                    color: isDark ? Colors.white54 : Colors.grey,
+                    fontSize: 12,
+                  ),
                 ),
                 Text(
                   "••••••••",
