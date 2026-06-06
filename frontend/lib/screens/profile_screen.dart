@@ -145,37 +145,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
     }
   }
 
-  void _showImageSourcePicker() {
-    showModalBottomSheet(
-      context: context,
-      shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(15)),
-      ),
-      builder: (context) => SafeArea(
-        child: Wrap(
-          children: [
-            ListTile(
-              leading: const Icon(Icons.camera_alt),
-              title: const Text("Camera"),
-              onTap: () {
-                Navigator.pop(context);
-                _startVerification(ImageSource.camera);
-              },
-            ),
-            ListTile(
-              leading: const Icon(Icons.photo_library),
-              title: const Text("Gallery"),
-              onTap: () {
-                Navigator.pop(context);
-                _startVerification(ImageSource.gallery);
-              },
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
   void _showVerificationDialog() {
     showDialog(
       context: context,
@@ -202,7 +171,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
             ),
             onPressed: () {
               Navigator.pop(context);
-              _showImageSourcePicker();
+              _startVerification(ImageSource.gallery);
             },
             child: const Text("OK", style: TextStyle(color: Colors.white)),
           ),
