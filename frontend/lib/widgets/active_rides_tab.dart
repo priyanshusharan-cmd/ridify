@@ -179,17 +179,22 @@ class _ActiveRidesTabState extends State<ActiveRidesTab> {
     final List<dynamic> activeRidesOnly = widget.rides
         .where((r) {
           if (r['status'] == 'cancelled') return false;
+          
+          final uemailDot = myEmailLower.replaceAll('.', '_dot_');
+          final details = r['riderDetails']?[myEmailLower] ?? r['riderDetails']?[uemailDot];
+          final List dropped = r['droppedPassengers'] ?? [];
+          bool isDropped = dropped.map((e) => e.toString().toLowerCase().trim()).contains(myEmailLower);
+          
+          final List paidPass = r['paidPassengers'] ?? [];
+          bool isPaidInArray = paidPass.map((e) => e.toString().toLowerCase().trim()).contains(myEmailLower);
+          bool hasPaid = details?['paid'] == true || isPaidInArray;
+
           if (r['status'] == 'completed') {
-             final uemailDot = myEmailLower.replaceAll('.', '_dot_');
-             final details = r['riderDetails']?[myEmailLower] ?? r['riderDetails']?[uemailDot];
-             final List dropped = r['droppedPassengers'] ?? [];
-             bool isDropped = dropped.map((e) => e.toString().toLowerCase().trim()).contains(myEmailLower);
-             
-             final List paidPass = r['paidPassengers'] ?? [];
-             bool isPaidInArray = paidPass.map((e) => e.toString().toLowerCase().trim()).contains(myEmailLower);
-             bool hasPaid = details?['paid'] == true || isPaidInArray;
-             
              if (isDropped && !hasPaid) return true;
+             return false;
+          }
+          
+          if (isDropped && hasPaid) {
              return false;
           }
           

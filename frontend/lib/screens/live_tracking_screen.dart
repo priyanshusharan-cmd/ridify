@@ -202,8 +202,27 @@ class _LiveTrackingScreenState extends State<LiveTrackingScreen> {
       }
       if (!widget.isDriver &&
           (data['droppedPassengers'] ?? []).contains(myEmailLower)) {
-        int fare = 0;
+        
+        bool hasPaid = false;
         final details = data['riderDetails'];
+        if (details != null && details[myEmailLower] != null) {
+          hasPaid = details[myEmailLower]['paid'] == true;
+        }
+        final List paidPass = data['paidPassengers'] ?? [];
+        if (paidPass.map((e) => e.toString().toLowerCase().trim()).contains(myEmailLower)) {
+          hasPaid = true;
+        }
+
+        if (hasPaid) {
+          if (mounted) {
+            ScaffoldMessenger.of(context).clearSnackBars();
+            ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("You have already paid for this ride.")));
+            Navigator.popUntil(context, (route) => route.isFirst);
+          }
+          return;
+        }
+
+        int fare = 0;
         if (details != null && details[myEmailLower] != null) {
           fare = (details[myEmailLower]['fare'] as num?)?.toInt() ?? 0;
         }
@@ -217,8 +236,26 @@ class _LiveTrackingScreenState extends State<LiveTrackingScreen> {
           if (widget.isDriver) {
             _triggerCompletionScreen();
           } else {
-            int fare = 0;
+            bool hasPaid = false;
             final details = data['riderDetails'];
+            if (details != null && details[myEmailLower] != null) {
+              hasPaid = details[myEmailLower]['paid'] == true;
+            }
+            final List paidPass = data['paidPassengers'] ?? [];
+            if (paidPass.map((e) => e.toString().toLowerCase().trim()).contains(myEmailLower)) {
+              hasPaid = true;
+            }
+
+            if (hasPaid) {
+              if (mounted) {
+                ScaffoldMessenger.of(context).clearSnackBars();
+                ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("You have already paid for this ride.")));
+                Navigator.popUntil(context, (route) => route.isFirst);
+              }
+              return;
+            }
+
+            int fare = 0;
             if (details != null && details[myEmailLower] != null) {
               fare = (details[myEmailLower]['fare'] as num?)?.toInt() ?? 0;
             }
