@@ -1,6 +1,6 @@
 <div align="center">
 
-  <img src="frontend/assets/iconWithoutBackground.png" alt="Ridify Logo" width="150" style="border-radius: 20px; box-shadow: 0 4px 8px rgba(0,0,0,0.2);"/>
+  <img src="frontend/assets/icon.png" alt="Ridify Logo" width="150" style="border-radius: 20px; box-shadow: 0 4px 8px rgba(0,0,0,0.2);"/>
   
   <h1>🌟 Ridify</h1>
   
