@@ -154,9 +154,13 @@ class AvailableRideCard extends StatelessWidget {
                       children: [
                         Icon(Icons.access_time, size: 14, color: subtitleColor),
                         const SizedBox(width: 8),
-                        Text(
-                          "Departs at $departs",
-                          style: TextStyle(color: subtitleColor, fontSize: 13),
+                        Expanded(
+                          child: Text(
+                            "Departs at $departs",
+                            style: TextStyle(color: subtitleColor, fontSize: 13),
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                          ),
                         ),
                       ],
                     ),

@@ -111,7 +111,7 @@ exports.searchRides = async (req, res) => {
         const pointSpacing = ride.routePath.length > 1
           ? ((ride.totalDistance || 0) * 1000) / ride.routePath.length  // meters between points
           : 0;
-        const effectiveRadius = searchRadius + pointSpacing;
+        const effectiveRadius = searchRadius + (pointSpacing * step);
 
         if (minPickupDist <= effectiveRadius && minDestDist <= effectiveRadius && startIndex < endIndex) {
           // Skip rides where the searching user is the driver, or has been declined, kicked, or is already a passenger/requester
