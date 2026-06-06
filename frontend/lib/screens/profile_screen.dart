@@ -98,10 +98,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
     } catch (_) {}
   }
 
-  Future<void> _startVerification() async {
+  Future<void> _startVerification(ImageSource source) async {
     final picker = ImagePicker();
     final XFile? photo = await picker.pickImage(
-      source: ImageSource.camera,
+      source: source,
       imageQuality: 70,
       maxWidth: 1200,
     );
@@ -145,6 +145,37 @@ class _ProfileScreenState extends State<ProfileScreen> {
     }
   }
 
+  void _showImageSourcePicker() {
+    showModalBottomSheet(
+      context: context,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(15)),
+      ),
+      builder: (context) => SafeArea(
+        child: Wrap(
+          children: [
+            ListTile(
+              leading: const Icon(Icons.camera_alt),
+              title: const Text("Camera"),
+              onTap: () {
+                Navigator.pop(context);
+                _startVerification(ImageSource.camera);
+              },
+            ),
+            ListTile(
+              leading: const Icon(Icons.photo_library),
+              title: const Text("Gallery"),
+              onTap: () {
+                Navigator.pop(context);
+                _startVerification(ImageSource.gallery);
+              },
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
   void _showVerificationDialog() {
     showDialog(
       context: context,
@@ -171,7 +202,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
             ),
             onPressed: () {
               Navigator.pop(context);
-              _startVerification();
+              _showImageSourcePicker();
             },
             child: const Text("OK", style: TextStyle(color: Colors.white)),
           ),
