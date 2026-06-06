@@ -1,5 +1,4 @@
 import 'package:image_picker/image_picker.dart';
-import '../utils/snackbar_util.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'admin_panel_screen.dart';
@@ -276,10 +275,12 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 onSave(val);
                 // Persist the updated name to SharedPreferences
                 final prefs = await SharedPreferences.getInstance();
-                if (title == 'Name')
+                if (title == 'Name') {
                   await prefs.setString('user_name', updated['name'] ?? val);
-                if (title == 'Age')
+                }
+                if (title == 'Age') {
                   await prefs.setString('user_age', updated['age'] ?? val);
+                }
               } catch (e) {
                 if (!context.mounted) return;
                 ScaffoldMessenger.of(context)
@@ -428,8 +429,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                 ),
                               );
                           } finally {
-                            if (context.mounted)
+                            if (context.mounted) {
                               setState(() => isSaving = false);
+                            }
                           }
                         },
                   child: isSaving
