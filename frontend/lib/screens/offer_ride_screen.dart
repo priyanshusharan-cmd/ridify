@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../utils/snackbar_util.dart';
 import 'dart:async';
 import 'package:latlong2/latlong.dart';
 import '../widgets/address_search_widget.dart';
@@ -116,26 +117,16 @@ class _OfferRideScreenState extends State<OfferRideScreen> {
         });
       } else {
         if (mounted) {
-          ScaffoldMessenger.of(context)..clearSnackBars()..showSnackBar(
-            const SnackBar(
-              content: Text("Could not fetch route. Try again."),
-              backgroundColor: Colors.orange,
-            ),
-          );
+          SnackbarUtil.show(context, "Could not fetch route. Try again.", backgroundColor: Colors.orange);
         }
       }
     } catch (e) {
       debugPrint("Failed to fetch route: $e");
       if (mounted) {
-        ScaffoldMessenger.of(context)..clearSnackBars()..showSnackBar(
-          SnackBar(
-            content: Text(
+        SnackbarUtil.show(context, 
                 e.toString().contains('TimeoutException')
                     ? "Route fetch timed out. Please try again."
-                    : "Could not fetch route. Check your connection."),
-            backgroundColor: Colors.orange,
-          ),
-        );
+                    : "Could not fetch route. Check your connection.", backgroundColor: Colors.orange);
       }
     }
   }
@@ -186,53 +177,28 @@ class _OfferRideScreenState extends State<OfferRideScreen> {
         priceController.text.isEmpty ||
         pickupLat == null ||
         destLat == null) {
-      ScaffoldMessenger.of(context)..clearSnackBars()..showSnackBar(
-        const SnackBar(
-          content: Text("Please select valid locations from the dropdown and fill all fields!"),
-          backgroundColor: Colors.red,
-        ),
-      );
+      SnackbarUtil.show(context, "Please select valid locations from the dropdown and fill all fields!", backgroundColor: Colors.red);
       return;
     }
 
     if (totalDistance < kMinRideDistanceKm) {
-      ScaffoldMessenger.of(context)..clearSnackBars()..showSnackBar(
-        SnackBar(
-          content: Text("Ride must be at least $kMinRideDistanceKm km long."),
-          backgroundColor: Colors.orange,
-        ),
-      );
+      SnackbarUtil.show(context, "Ride must be at least $kMinRideDistanceKm km long.", backgroundColor: Colors.orange);
       return;
     }
 
     if (pickupLat == destLat && pickupLng == destLng) {
-      ScaffoldMessenger.of(context)..clearSnackBars()..showSnackBar(
-        const SnackBar(
-          content: Text("Pickup and destination cannot be the same!"),
-          backgroundColor: Colors.red,
-        ),
-      );
+      SnackbarUtil.show(context, "Pickup and destination cannot be the same!", backgroundColor: Colors.red);
       return;
     }
 
     final int? parsedPrice = int.tryParse(priceController.text);
     if (parsedPrice == null || parsedPrice <= 0 || parsedPrice > kMaxPriceRupees) {
-      ScaffoldMessenger.of(context)..clearSnackBars()..showSnackBar(
-        SnackBar(
-          content: Text("Please enter a valid price (max ₹$kMaxPriceRupees)."),
-          backgroundColor: Colors.red,
-        ),
-      );
+      SnackbarUtil.show(context, "Please enter a valid price (max ₹$kMaxPriceRupees).", backgroundColor: Colors.red);
       return;
     }
 
     if (routePath.isEmpty) {
-      ScaffoldMessenger.of(context)..clearSnackBars()..showSnackBar(
-        const SnackBar(
-          content: Text("Route not loaded yet. Please wait or re-select locations."),
-          backgroundColor: Colors.orange,
-        ),
-      );
+      SnackbarUtil.show(context, "Route not loaded yet. Please wait or re-select locations.", backgroundColor: Colors.orange);
       return;
     }
 
@@ -278,29 +244,17 @@ class _OfferRideScreenState extends State<OfferRideScreen> {
 
       if (mounted) {
         Navigator.pop(context, 'ride_posted');
-        ScaffoldMessenger.of(context)..clearSnackBars()..showSnackBar(
-          const SnackBar(content: Text("Ride offered successfully!"), backgroundColor: Colors.green),
-        );
+        SnackbarUtil.show(context, "Ride offered successfully!", backgroundColor: Colors.green);
       }
     } on TimeoutException {
       debugPrint("Offer ride timed out");
       if (mounted) {
-        ScaffoldMessenger.of(context)..clearSnackBars()..showSnackBar(
-          const SnackBar(
-            content: Text("Server took too long. Please try again."),
-            backgroundColor: Colors.red,
-          ),
-        );
+        SnackbarUtil.show(context, "Server took too long. Please try again.", backgroundColor: Colors.red);
       }
     } catch (e) {
       debugPrint("Error: $e");
       if (mounted) {
-        ScaffoldMessenger.of(context)..clearSnackBars()..showSnackBar(
-          const SnackBar(
-            content: Text("Failed to connect. Check your internet."),
-            backgroundColor: Colors.red,
-          ),
-        );
+        SnackbarUtil.show(context, "Failed to connect. Check your internet.", backgroundColor: Colors.red);
       }
     } finally {
       if (mounted) setState(() => isPosting = false);

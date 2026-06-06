@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/gestures.dart';
 import '../../screens/chat_screen.dart';
 import '../verified_badge.dart';
+import '../../utils/snackbar_util.dart';
 import 'passenger_tile.dart';
 
 class RideStatusPanel extends StatelessWidget {
@@ -174,8 +175,7 @@ class RideStatusPanel extends StatelessWidget {
                       ),
                       onPressed: processingActionId != null ? null : () {
                         if (!iAmArrived) {
-                          ScaffoldMessenger.of(context).clearSnackBars();
-                          ScaffoldMessenger.of(context)..clearSnackBars()..showSnackBar(const SnackBar(content: Text("Wait for the driver to arrive"), backgroundColor: Colors.orange));
+                          SnackbarUtil.show(context, "Wait for the driver to arrive", backgroundColor: Colors.orange);
                         } else {
                           onBoardRide();
                         }
@@ -227,8 +227,7 @@ class RideStatusPanel extends StatelessWidget {
                         ),
                         onPressed: processingActionId != null ? null : () {
                           if (!canEnd) {
-                            ScaffoldMessenger.of(context).clearSnackBars();
-                            ScaffoldMessenger.of(context)..clearSnackBars()..showSnackBar(const SnackBar(content: Text("There are passengers still in the car"), backgroundColor: Colors.red));
+                            SnackbarUtil.show(context, "There are passengers still in the car", backgroundColor: Colors.red);
                           } else {
                             onEndRide();
                           }

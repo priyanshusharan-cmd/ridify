@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../utils/snackbar_util.dart';
 import '../services/ride_service.dart';
 import '../core/socket_service.dart';
 import '../widgets/completion/fare_summary.dart';
@@ -71,7 +72,7 @@ class _RiderCompletingScreenState extends State<RiderCompletingScreen> {
     } catch (e) {
       debugPrint("Error: $e");
       if (mounted) {
-        ScaffoldMessenger.of(context)..clearSnackBars()..showSnackBar(SnackBar(content: Text(e.toString().replaceAll("Exception: ", ""))));
+        SnackbarUtil.show(context, e.toString().replaceAll("Exception: ", ""));
       }
     } finally {
       if (mounted) Navigator.of(context).popUntil((route) => route.isFirst);

@@ -1,4 +1,5 @@
 import 'package:shared_preferences/shared_preferences.dart';
+import '../utils/snackbar_util.dart';
 import 'package:flutter/material.dart';
 import '../services/admin_service.dart';
 import '../services/auth_service.dart';
@@ -384,17 +385,10 @@ class _DashboardTabState extends State<_DashboardTab> with AutomaticKeepAliveCli
       if (!context.mounted) return;
       
       _fetchStats();
-      ScaffoldMessenger.of(context)..clearSnackBars()..showSnackBar(
-        const SnackBar(content: Text('All other users deleted.'), backgroundColor: Colors.green),
-      );
+      SnackbarUtil.show(context, 'All other users deleted.', backgroundColor: Colors.green);
     } catch (e) {
       if (context.mounted) {
-        ScaffoldMessenger.of(context)..clearSnackBars()..showSnackBar(
-          SnackBar(
-            content: Text(e.toString().replaceAll('Exception: ', '')),
-            backgroundColor: Colors.red,
-          ),
-        );
+        SnackbarUtil.show(context, e.toString().replaceAll('Exception: ', ''), backgroundColor: Colors.red);
       }
     }
   }
@@ -431,17 +425,10 @@ class _DashboardTabState extends State<_DashboardTab> with AutomaticKeepAliveCli
       await AdminService.wipeAllRides();
       _fetchStats();
       if (!context.mounted) return;
-      ScaffoldMessenger.of(context)..clearSnackBars()..showSnackBar(
-        const SnackBar(content: Text('All rides deleted successfully.'), backgroundColor: Colors.green),
-      );
+      SnackbarUtil.show(context, 'All rides deleted successfully.', backgroundColor: Colors.green);
     } catch (e) {
       if (context.mounted) {
-        ScaffoldMessenger.of(context)..clearSnackBars()..showSnackBar(
-          SnackBar(
-            content: Text(e.toString().replaceAll('Exception: ', '')),
-            backgroundColor: Colors.red,
-          ),
-        );
+        SnackbarUtil.show(context, e.toString().replaceAll('Exception: ', ''), backgroundColor: Colors.red);
       }
     }
   }
@@ -544,15 +531,11 @@ class _UsersTabState extends State<_UsersTab> with AutomaticKeepAliveClientMixin
       _isSelecting = false;
       _fetchUsers(page: _page);
       if (mounted) {
-        ScaffoldMessenger.of(context)..clearSnackBars()..showSnackBar(
-          const SnackBar(content: Text('Users deleted successfully'), backgroundColor: Colors.green),
-        );
+        SnackbarUtil.show(context, 'Users deleted successfully', backgroundColor: Colors.green);
       }
     } catch (e) {
       if (mounted) {
-        ScaffoldMessenger.of(context)..clearSnackBars()..showSnackBar(
-          SnackBar(content: Text(e.toString().replaceAll('Exception: ', '')), backgroundColor: Colors.red),
-        );
+        SnackbarUtil.show(context, e.toString().replaceAll('Exception: ', ''), backgroundColor: Colors.red);
       }
     }
   }
@@ -578,15 +561,11 @@ class _UsersTabState extends State<_UsersTab> with AutomaticKeepAliveClientMixin
       await AdminService.deleteUser(id);
       _fetchUsers(page: _page);
       if (mounted) {
-        ScaffoldMessenger.of(context)..clearSnackBars()..showSnackBar(
-          SnackBar(content: Text('User $email deleted'), backgroundColor: Colors.green),
-        );
+        SnackbarUtil.show(context, 'User $email deleted', backgroundColor: Colors.green);
       }
     } catch (e) {
       if (mounted) {
-        ScaffoldMessenger.of(context)..clearSnackBars()..showSnackBar(
-          SnackBar(content: Text(e.toString().replaceAll('Exception: ', '')), backgroundColor: Colors.red),
-        );
+        SnackbarUtil.show(context, e.toString().replaceAll('Exception: ', ''), backgroundColor: Colors.red);
       }
     }
   }
@@ -698,15 +677,11 @@ class _UsersTabState extends State<_UsersTab> with AutomaticKeepAliveClientMixin
                   ? null
                   : () async {
                       if (nameC.text.trim().isEmpty || emailC.text.trim().isEmpty || passC.text.isEmpty) {
-                        ScaffoldMessenger.of(context)..clearSnackBars()..showSnackBar(
-                          const SnackBar(content: Text('Name, email, and password are required'), backgroundColor: Colors.red),
-                        );
+                        SnackbarUtil.show(context, 'Name, email, and password are required', backgroundColor: Colors.red);
                         return;
                       }
                       if (passC.text.length < 8) {
-                        ScaffoldMessenger.of(context)..clearSnackBars()..showSnackBar(
-                          const SnackBar(content: Text('Password must be at least 8 characters'), backgroundColor: Colors.red),
-                        );
+                        SnackbarUtil.show(context, 'Password must be at least 8 characters', backgroundColor: Colors.red);
                         return;
                       }
                       setDialogState(() => creating = true);
@@ -720,19 +695,12 @@ class _UsersTabState extends State<_UsersTab> with AutomaticKeepAliveClientMixin
                         if (ctx.mounted) Navigator.pop(ctx);
                         _fetchUsers();
                         if (mounted) {
-                          ScaffoldMessenger.of(context)..clearSnackBars()..showSnackBar(
-                            const SnackBar(content: Text('User created successfully!'), backgroundColor: Colors.green),
-                          );
+                          SnackbarUtil.show(context, 'User created successfully!', backgroundColor: Colors.green);
                         }
                       } catch (e) {
                         setDialogState(() => creating = false);
                         if (mounted) {
-                          ScaffoldMessenger.of(context)..clearSnackBars()..showSnackBar(
-                            SnackBar(
-                              content: Text(e.toString().replaceAll('Exception: ', '')),
-                              backgroundColor: Colors.red,
-                            ),
-                          );
+                          SnackbarUtil.show(context, e.toString().replaceAll('Exception: ', ''), backgroundColor: Colors.red);
                         }
                       }
                     },
@@ -881,7 +849,7 @@ class _UsersTabState extends State<_UsersTab> with AutomaticKeepAliveClientMixin
                               await launchUrl(url, mode: LaunchMode.externalApplication);
                             } else {
                               if (context.mounted) {
-                                ScaffoldMessenger.of(context)..clearSnackBars()..showSnackBar(const SnackBar(content: Text('Could not open link.')));
+                                SnackbarUtil.show(context, 'Could not open link.');
                               }
                             }
                           },
@@ -927,16 +895,12 @@ class _UsersTabState extends State<_UsersTab> with AutomaticKeepAliveClientMixin
                                   });
                                   _fetchUsers();
                                   if (context.mounted) {
-                                    ScaffoldMessenger.of(context)..clearSnackBars()..showSnackBar(
-                                      const SnackBar(content: Text('User updated!'), backgroundColor: Colors.green),
-                                    );
+                                    SnackbarUtil.show(context, 'User updated!', backgroundColor: Colors.green);
                                   }
                                 } catch (e) {
                                   setModalState(() => isSaving = false);
                                   if (context.mounted) {
-                                    ScaffoldMessenger.of(context)..clearSnackBars()..showSnackBar(
-                                      SnackBar(content: Text(e.toString().replaceAll('Exception: ', '')), backgroundColor: Colors.red),
-                                    );
+                                    SnackbarUtil.show(context, e.toString().replaceAll('Exception: ', ''), backgroundColor: Colors.red);
                                   }
                                 }
                               },
@@ -978,15 +942,11 @@ class _UsersTabState extends State<_UsersTab> with AutomaticKeepAliveClientMixin
                                     await AdminService.rejectVerification(user['_id']);
                                     _fetchUsers();
                                     if (context.mounted) {
-                                      ScaffoldMessenger.of(context)..clearSnackBars()..showSnackBar(
-                                        const SnackBar(content: Text('Verification revoked.'), backgroundColor: Colors.green),
-                                      );
+                                      SnackbarUtil.show(context, 'Verification revoked.', backgroundColor: Colors.green);
                                     }
                                   } catch (e) {
                                     if (context.mounted) {
-                                      ScaffoldMessenger.of(context)..clearSnackBars()..showSnackBar(
-                                        SnackBar(content: Text(e.toString().replaceAll('Exception: ', '')), backgroundColor: Colors.red),
-                                      );
+                                      SnackbarUtil.show(context, e.toString().replaceAll('Exception: ', ''), backgroundColor: Colors.red);
                                     }
                                   }
                                 }
@@ -1358,15 +1318,11 @@ class _RidesTabState extends State<_RidesTab> with AutomaticKeepAliveClientMixin
       await AdminService.deleteRide(id);
       _fetchRides(page: _page);
       if (mounted) {
-        ScaffoldMessenger.of(context)..clearSnackBars()..showSnackBar(
-          const SnackBar(content: Text('Ride deleted'), backgroundColor: Colors.green),
-        );
+        SnackbarUtil.show(context, 'Ride deleted', backgroundColor: Colors.green);
       }
     } catch (e) {
       if (mounted) {
-        ScaffoldMessenger.of(context)..clearSnackBars()..showSnackBar(
-          SnackBar(content: Text(e.toString().replaceAll('Exception: ', '')), backgroundColor: Colors.red),
-        );
+        SnackbarUtil.show(context, e.toString().replaceAll('Exception: ', ''), backgroundColor: Colors.red);
       }
     }
   }
@@ -1392,15 +1348,11 @@ class _RidesTabState extends State<_RidesTab> with AutomaticKeepAliveClientMixin
       await AdminService.forceCancelRide(id);
       _fetchRides(page: _page);
       if (mounted) {
-        ScaffoldMessenger.of(context)..clearSnackBars()..showSnackBar(
-          const SnackBar(content: Text('Ride force-cancelled'), backgroundColor: Colors.orange),
-        );
+        SnackbarUtil.show(context, 'Ride force-cancelled', backgroundColor: Colors.orange);
       }
     } catch (e) {
       if (mounted) {
-        ScaffoldMessenger.of(context)..clearSnackBars()..showSnackBar(
-          SnackBar(content: Text(e.toString().replaceAll('Exception: ', '')), backgroundColor: Colors.red),
-        );
+        SnackbarUtil.show(context, e.toString().replaceAll('Exception: ', ''), backgroundColor: Colors.red);
       }
     }
   }
@@ -2111,9 +2063,9 @@ class _VerificationsTabState extends State<_VerificationsTab> with AutomaticKeep
     try {
       await AdminService.approveVerification(userId);
       _fetchPending();
-      if (mounted) ScaffoldMessenger.of(context)..clearSnackBars()..showSnackBar(const SnackBar(content: Text('User verified!'), backgroundColor: Colors.green));
+      if (mounted) SnackbarUtil.show(context, 'User verified!', backgroundColor: Colors.green);
     } catch (e) {
-      if (mounted) ScaffoldMessenger.of(context)..clearSnackBars()..showSnackBar(SnackBar(content: Text(e.toString().replaceAll('Exception: ', '')), backgroundColor: Colors.red));
+      if (mounted) SnackbarUtil.show(context, e.toString().replaceAll('Exception: ', ''), backgroundColor: Colors.red);
     }
   }
 
@@ -2121,15 +2073,15 @@ class _VerificationsTabState extends State<_VerificationsTab> with AutomaticKeep
     try {
       await AdminService.rejectVerification(userId);
       _fetchPending();
-      if (mounted) ScaffoldMessenger.of(context)..clearSnackBars()..showSnackBar(const SnackBar(content: Text('Verification rejected.'), backgroundColor: Colors.orange));
+      if (mounted) SnackbarUtil.show(context, 'Verification rejected.', backgroundColor: Colors.orange);
     } catch (e) {
-      if (mounted) ScaffoldMessenger.of(context)..clearSnackBars()..showSnackBar(SnackBar(content: Text(e.toString().replaceAll('Exception: ', '')), backgroundColor: Colors.red));
+      if (mounted) SnackbarUtil.show(context, e.toString().replaceAll('Exception: ', ''), backgroundColor: Colors.red);
     }
   }
 
   void _viewIdImage(String? idUrl) {
     if (idUrl == null || idUrl.isEmpty) {
-      ScaffoldMessenger.of(context)..clearSnackBars()..showSnackBar(const SnackBar(content: Text('No ID image available'), backgroundColor: Colors.orange));
+      SnackbarUtil.show(context, 'No ID image available', backgroundColor: Colors.orange);
       return;
     }
     // Open Drive URL in browser

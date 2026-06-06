@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../utils/snackbar_util.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:latlong2/latlong.dart';
 import '../services/location_service.dart';
@@ -70,9 +71,7 @@ class _MapPickerScreenState extends State<MapPickerScreen> {
       }
     } catch (e) {
       if (mounted) {
-        ScaffoldMessenger.of(context)..clearSnackBars()..showSnackBar(
-          const SnackBar(content: Text("Failed to get address for this location"), backgroundColor: Colors.red),
-        );
+        SnackbarUtil.show(context, "Failed to get address for this location", backgroundColor: Colors.red);
       }
     } finally {
       if (mounted) setState(() => _isLoading = false);

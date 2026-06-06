@@ -5,6 +5,7 @@ import '../screens/live_tracking_screen.dart';
 import 'active_rides/offered_ride_card.dart';
 import 'active_rides/request_detail_card.dart';
 import 'active_rides/pending_request_tile.dart';
+import '../utils/snackbar_util.dart';
 
 class EmptyState extends StatelessWidget {
   const EmptyState({super.key});
@@ -78,9 +79,7 @@ class _ActiveRidesTabState extends State<ActiveRidesTab> {
       widget.onRefresh();
     } catch (e) {
       if (context.mounted) {
-        ScaffoldMessenger.of(context)..clearSnackBars()..showSnackBar(
-          SnackBar(content: Text(e.toString().replaceAll('Exception: ', '')), backgroundColor: Colors.red),
-        );
+        SnackbarUtil.show(context, SnackbarUtil.cleanErrorText(e.toString()), backgroundColor: Colors.red);
       }
       debugPrint(e.toString());
     } finally {
@@ -99,9 +98,7 @@ class _ActiveRidesTabState extends State<ActiveRidesTab> {
       widget.onRefresh();
     } catch (e) {
       if (context.mounted) {
-        ScaffoldMessenger.of(context)..clearSnackBars()..showSnackBar(
-          SnackBar(content: Text(e.toString().replaceAll('Exception: ', '')), backgroundColor: Colors.red),
-        );
+        SnackbarUtil.show(context, SnackbarUtil.cleanErrorText(e.toString()), backgroundColor: Colors.red);
       }
       debugPrint(e.toString());
       debugPrint(e.toString());
@@ -116,19 +113,12 @@ class _ActiveRidesTabState extends State<ActiveRidesTab> {
     try {
       await RideService.cancelRide(id, callerEmail: widget.myEmail);
       if (!context.mounted) return;
-      ScaffoldMessenger.of(context)..clearSnackBars()..showSnackBar(
-        const SnackBar(
-          content: Text("Ride offer cancelled"),
-          backgroundColor: Colors.red,
-        ),
-      );
+      SnackbarUtil.show(context, "Ride offer cancelled", backgroundColor: Colors.red);
       setState(() => _selectedRideId = null);
       widget.onRefresh();
     } catch (e) {
       if (context.mounted) {
-        ScaffoldMessenger.of(context)..clearSnackBars()..showSnackBar(
-          SnackBar(content: Text(e.toString().replaceAll('Exception: ', '')), backgroundColor: Colors.red),
-        );
+        SnackbarUtil.show(context, SnackbarUtil.cleanErrorText(e.toString()), backgroundColor: Colors.red);
       }
       debugPrint(e.toString());
     } finally {
@@ -194,7 +184,10 @@ class _ActiveRidesTabState extends State<ActiveRidesTab> {
              final details = r['riderDetails']?[myEmailLower] ?? r['riderDetails']?[uemailDot];
              final List dropped = r['droppedPassengers'] ?? [];
              bool isDropped = dropped.map((e) => e.toString().toLowerCase().trim()).contains(myEmailLower);
-             bool hasPaid = details?['paid'] == true;
+             
+             final List paidPass = r['paidPassengers'] ?? [];
+             bool isPaidInArray = paidPass.map((e) => e.toString().toLowerCase().trim()).contains(myEmailLower);
+             bool hasPaid = details?['paid'] == true || isPaidInArray;
              
              if (isDropped && !hasPaid) return true;
              return false;

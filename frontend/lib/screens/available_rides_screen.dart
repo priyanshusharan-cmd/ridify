@@ -1,4 +1,5 @@
 import '../services/ride_service.dart';
+import '../utils/snackbar_util.dart';
 import 'package:flutter/material.dart';
 import 'dart:async';
 import 'dart:ui';
@@ -325,31 +326,16 @@ class _AvailableRidesScreenState extends State<AvailableRidesScreen> {
           Navigator.pop(context); // Pop Available Rides Screen
           Navigator.pop(context); // Pop Find Ride Screen, back to home
         }
-        ScaffoldMessenger.of(context)..clearSnackBars()..showSnackBar(
-          const SnackBar(
-            content: Text("Ride Requested!"),
-            backgroundColor: Colors.orange,
-          ),
-        );
+        SnackbarUtil.show(context, "Ride Requested!", backgroundColor: Colors.orange);
       }
     } on TimeoutException {
       if (mounted) {
-        ScaffoldMessenger.of(context)..clearSnackBars()..showSnackBar(
-          const SnackBar(
-            content: Text("Request timed out. Please try again."),
-            backgroundColor: Colors.red,
-          ),
-        );
+        SnackbarUtil.show(context, "Request timed out. Please try again.", backgroundColor: Colors.red);
       }
     } catch (e) {
       debugPrint("❌ Request Error: $e");
       if (mounted) {
-        ScaffoldMessenger.of(context)..clearSnackBars()..showSnackBar(
-          const SnackBar(
-            content: Text("Could not send request. Check your connection."),
-            backgroundColor: Colors.red,
-          ),
-        );
+        SnackbarUtil.show(context, "Could not send request. Check your connection.", backgroundColor: Colors.red);
       }
     } finally {
       if (mounted) {

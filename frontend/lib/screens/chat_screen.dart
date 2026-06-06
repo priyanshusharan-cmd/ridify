@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../utils/snackbar_util.dart';
 import 'dart:async';
 import 'package:socket_io_client/socket_io_client.dart' as io;
 import '../services/chat_service.dart';
@@ -239,9 +240,7 @@ class _ChatScreenState extends State<ChatScreen> {
           messages[idx]['_failed'] = true;
         }
       });
-      ScaffoldMessenger.of(context)..clearSnackBars()..showSnackBar(
-        const SnackBar(content: Text('Failed to send message. Tap to retry.')),
-      );
+      SnackbarUtil.show(context, 'Failed to send message. Tap to retry.');
     }
   }
 
@@ -249,19 +248,19 @@ class _ChatScreenState extends State<ChatScreen> {
     try {
       bool serviceEnabled = await Geolocator.isLocationServiceEnabled();
       if (!serviceEnabled) {
-        if (mounted) ScaffoldMessenger.of(context)..clearSnackBars()..showSnackBar(const SnackBar(content: Text('Location services are disabled.')));
+        if (mounted) SnackbarUtil.show(context, 'Location services are disabled.');
         return;
       }
       LocationPermission permission = await Geolocator.checkPermission();
       if (permission == LocationPermission.denied) {
         permission = await Geolocator.requestPermission();
         if (permission == LocationPermission.denied) {
-          if (mounted) ScaffoldMessenger.of(context)..clearSnackBars()..showSnackBar(const SnackBar(content: Text('Location permissions are denied.')));
+          if (mounted) SnackbarUtil.show(context, 'Location permissions are denied.');
           return;
         }
       }
       if (permission == LocationPermission.deniedForever) {
-        if (mounted) ScaffoldMessenger.of(context)..clearSnackBars()..showSnackBar(const SnackBar(content: Text('Location permissions are permanently denied.')));
+        if (mounted) SnackbarUtil.show(context, 'Location permissions are permanently denied.');
         return;
       }
 
@@ -315,13 +314,11 @@ class _ChatScreenState extends State<ChatScreen> {
             messages[idx]['_failed'] = true;
           }
         });
-        ScaffoldMessenger.of(context)..clearSnackBars()..showSnackBar(
-          const SnackBar(content: Text('Failed to send location. Try again.')),
-        );
+        SnackbarUtil.show(context, 'Failed to send location. Try again.');
       }
     } catch (e) {
       debugPrint(e.toString());
-      if (mounted) ScaffoldMessenger.of(context)..clearSnackBars()..showSnackBar(const SnackBar(content: Text('Failed to get location. Try again.')));
+      if (mounted) SnackbarUtil.show(context, 'Failed to get location. Try again.');
     }
   }
 
