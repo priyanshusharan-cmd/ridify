@@ -1,5 +1,5 @@
 <h1 align="center">
-  <img src="frontend/assets/iconWithoutBackground.png" alt="Ridify Logo" width="120"/>
+  <img src="frontend/assets/icon.png" alt="Ridify Logo" width="120"/>
   <br>
   Ridify
 </h1>
