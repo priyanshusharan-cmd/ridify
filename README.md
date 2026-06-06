@@ -31,42 +31,70 @@
 
 ## 📸 App Showcase
 
-*Top image is Light Mode, bottom image is Dark Mode.*
-
 ### 🚀 Getting Started & Profiles
-| Splash Screen | Home Screen | Profile Screen |
-|:---:|:---:|:---:|
-| <img src="frontend/assets/screenshots/splashScreenLight.png" width="220"><br><img src="frontend/assets/screenshots/splashScreenDark.png" width="220"> | <img src="frontend/assets/screenshots/homeScreenLight.png" width="220"><br><img src="frontend/assets/screenshots/homeScreenDark.png" width="220"> | <img src="frontend/assets/screenshots/profileScreenLight.png" width="220"><br><img src="frontend/assets/screenshots/profileScreenDark.png" width="220"> |
+
+| Light Mode | Dark Mode |
+|:---:|:---:|
+| **Splash Screen**<br><img src="frontend/assets/screenshots/splashScreenLight.png" width="280"> | **Splash Screen**<br><img src="frontend/assets/screenshots/splashScreenDark.png" width="280"> |
+| **Home Screen**<br><img src="frontend/assets/screenshots/homeScreenLight.png" width="280"> | **Home Screen**<br><img src="frontend/assets/screenshots/homeScreenDark.png" width="280"> |
+| **Profile Screen**<br><img src="frontend/assets/screenshots/profileScreenLight.png" width="280"> | **Profile Screen**<br><img src="frontend/assets/screenshots/profileScreenDark.png" width="280"> |
 
 ### 🔍 Find & Offer Rides
-| Find Ride | Filters Popup | Offer Ride | Available Rides |
-|:---:|:---:|:---:|:---:|
-| <img src="frontend/assets/screenshots/findRIdeLight.png" width="220"><br><img src="frontend/assets/screenshots/findRideDark.png" width="220"> | <img src="frontend/assets/screenshots/filtersPopupLight.png" width="220"><br><img src="frontend/assets/screenshots/filtersPopupDark.png" width="220"> | <img src="frontend/assets/screenshots/offerRideLight.png" width="220"><br><img src="frontend/assets/screenshots/offerRideDark.png" width="220"> | <img src="frontend/assets/screenshots/availableRidesScreenLight.png" width="220"><br><img src="frontend/assets/screenshots/availableRidesScreenDark.png" width="220"> |
+
+| Light Mode | Dark Mode |
+|:---:|:---:|
+| **Find Ride**<br><img src="frontend/assets/screenshots/findRIdeLight.png" width="280"> | **Find Ride**<br><img src="frontend/assets/screenshots/findRideDark.png" width="280"> |
+| **Filters Popup**<br><img src="frontend/assets/screenshots/filtersPopupLight.png" width="280"> | **Filters Popup**<br><img src="frontend/assets/screenshots/filtersPopupDark.png" width="280"> |
+| **Offer Ride**<br><img src="frontend/assets/screenshots/offerRideLight.png" width="280"> | **Offer Ride**<br><img src="frontend/assets/screenshots/offerRideDark.png" width="280"> |
+| **Available Rides**<br><img src="frontend/assets/screenshots/availableRidesScreenLight.png" width="280"> | **Available Rides**<br><img src="frontend/assets/screenshots/availableRidesScreenDark.png" width="280"> |
 
 ### 📍 Tracking, Navigation & Details
-| Location Picker | Chat Screen | Ride Details | Activity Screen |
-|:---:|:---:|:---:|:---:|
-| <img src="frontend/assets/screenshots/locationPickerScreenLight.png" width="220"><br><img src="frontend/assets/screenshots/locationPickerScreenDark.png" width="220"> | <img src="frontend/assets/screenshots/chatScreenLight.png" width="220"><br><img src="frontend/assets/screenshots/chatScreenDark.png" width="220"> | <img src="frontend/assets/screenshots/rideDetailScreenLight.png" width="220"><br><img src="frontend/assets/screenshots/rideDetailScreenDark.png" width="220"> | <img src="frontend/assets/screenshots/activityScreenLight.png" width="220"><br><img src="frontend/assets/screenshots/activityScreenDark.png" width="220"> |
 
-### 🚗 Live Ride (Driver View)
-| Route Match | Wait / Navigate | Passenger Pickup | Ride Completed |
-|:---:|:---:|:---:|:---:|
-| <img src="frontend/assets/screenshots/liveRideScreenDriver1Light.png" width="220"><br><img src="frontend/assets/screenshots/liveRideScreenDriver1Dark.png" width="220"> | <img src="frontend/assets/screenshots/liveRideScreenDriver2Light.png" width="220"><br><img src="frontend/assets/screenshots/liveRideScreenDriver2Dark.png" width="220"> | <img src="frontend/assets/screenshots/liveRideScreenDriver3Light.png" width="220"><br><img src="frontend/assets/screenshots/liveRideScreenDriver3Dark.png" width="220"> | <img src="frontend/assets/screenshots/driverCompletionScreenLight.png" width="220"><br><img src="frontend/assets/screenshots/driverCompletionScreenDark.png" width="220"> |
+| Light Mode | Dark Mode |
+|:---:|:---:|
+| **Location Picker**<br><img src="frontend/assets/screenshots/locationPickerScreenLight.png" width="280"> | **Location Picker**<br><img src="frontend/assets/screenshots/locationPickerScreenDark.png" width="280"> |
+| **Chat Screen**<br><img src="frontend/assets/screenshots/chatScreenLight.png" width="280"> | **Chat Screen**<br><img src="frontend/assets/screenshots/chatScreenDark.png" width="280"> |
+| **Ride Details**<br><img src="frontend/assets/screenshots/rideDetailScreenLight.png" width="280"> | **Ride Details**<br><img src="frontend/assets/screenshots/rideDetailScreenDark.png" width="280"> |
+| **Activity Screen**<br><img src="frontend/assets/screenshots/activityScreenLight.png" width="280"> | **Activity Screen**<br><img src="frontend/assets/screenshots/activityScreenDark.png" width="280"> |
 
-### 🚴‍♂️ Live Ride (Rider View)
-| Finding Driver | Driver Assigned | In Transit | Ride Completed |
-|:---:|:---:|:---:|:---:|
-| <img src="frontend/assets/screenshots/liveRideScreenRider1Light.png" width="220"><br><img src="frontend/assets/screenshots/liveRideScreenRider1Dark.png" width="220"> | <img src="frontend/assets/screenshots/liveRideScreenRider2Light.png" width="220"><br><img src="frontend/assets/screenshots/liveRideScreenRider2Dark.png" width="220"> | <img src="frontend/assets/screenshots/liveRideScreenRider3Light.png" width="220"><br><img src="frontend/assets/screenshots/liveRideScreenRider3Dark.png" width="220"> | <img src="frontend/assets/screenshots/riderCompletionScreenLight.png" width="220"><br><img src="frontend/assets/screenshots/riderCompletionScreenDark.png" width="220"> |
+---
+
+### 🚗🚴‍♂️ Live Ride (Light Theme)
+
+| Driver Perspective | Rider Perspective |
+|:---:|:---:|
+| **Route Match**<br><img src="frontend/assets/screenshots/liveRideScreenDriver1Light.png" width="280"> | **Finding Driver**<br><img src="frontend/assets/screenshots/liveRideScreenRider1Light.png" width="280"> |
+| **Wait / Navigate**<br><img src="frontend/assets/screenshots/liveRideScreenDriver2Light.png" width="280"> | **Driver Assigned**<br><img src="frontend/assets/screenshots/liveRideScreenRider2Light.png" width="280"> |
+| **Passenger Pickup**<br><img src="frontend/assets/screenshots/liveRideScreenDriver3Light.png" width="280"> | **In Transit**<br><img src="frontend/assets/screenshots/liveRideScreenRider3Light.png" width="280"> |
+| **Ride Completed**<br><img src="frontend/assets/screenshots/driverCompletionScreenLight.png" width="280"> | **Ride Completed**<br><img src="frontend/assets/screenshots/riderCompletionScreenLight.png" width="280"> |
+
+### 🚗🚴‍♂️ Live Ride (Dark Theme)
+
+| Driver Perspective | Rider Perspective |
+|:---:|:---:|
+| **Route Match**<br><img src="frontend/assets/screenshots/liveRideScreenDriver1Dark.png" width="280"> | **Finding Driver**<br><img src="frontend/assets/screenshots/liveRideScreenRider1Dark.png" width="280"> |
+| **Wait / Navigate**<br><img src="frontend/assets/screenshots/liveRideScreenDriver2Dark.png" width="280"> | **Driver Assigned**<br><img src="frontend/assets/screenshots/liveRideScreenRider2Dark.png" width="280"> |
+| **Passenger Pickup**<br><img src="frontend/assets/screenshots/liveRideScreenDriver3Dark.png" width="280"> | **In Transit**<br><img src="frontend/assets/screenshots/liveRideScreenRider3Dark.png" width="280"> |
+| **Ride Completed**<br><img src="frontend/assets/screenshots/driverCompletionScreenDark.png" width="280"> | **Ride Completed**<br><img src="frontend/assets/screenshots/riderCompletionScreenDark.png" width="280"> |
+
+---
 
 ### 🛡️ Admin Dashboard
-| Dashboard Home | Manage Users | Verify Users | Active Rides |
-|:---:|:---:|:---:|:---:|
-| <img src="frontend/assets/screenshots/adminDashboardLight.png" width="220"><br><img src="frontend/assets/screenshots/adminDashboardDark.png" width="220"> | <img src="frontend/assets/screenshots/adminUsersLight.png" width="220"><br><img src="frontend/assets/screenshots/adminUsersDark.png" width="220"> | <img src="frontend/assets/screenshots/adminVerifyLight.png" width="220"><br><img src="frontend/assets/screenshots/adminVerifyDark.png" width="220"> | <img src="frontend/assets/screenshots/adminRidesLight.png" width="220"><br><img src="frontend/assets/screenshots/adminRidesDark.png" width="220"> |
+
+| Light Mode | Dark Mode |
+|:---:|:---:|
+| **Dashboard Home**<br><img src="frontend/assets/screenshots/adminDashboardLight.png" width="280"> | **Dashboard Home**<br><img src="frontend/assets/screenshots/adminDashboardDark.png" width="280"> |
+| **Manage Users**<br><img src="frontend/assets/screenshots/adminUsersLight.png" width="280"> | **Manage Users**<br><img src="frontend/assets/screenshots/adminUsersDark.png" width="280"> |
+| **Verify Users**<br><img src="frontend/assets/screenshots/adminVerifyLight.png" width="280"> | **Verify Users**<br><img src="frontend/assets/screenshots/adminVerifyDark.png" width="280"> |
+| **Active Rides**<br><img src="frontend/assets/screenshots/adminRidesLight.png" width="280"> | **Active Rides**<br><img src="frontend/assets/screenshots/adminRidesDark.png" width="280"> |
 
 ### 📋 History & Extras Popups
-| Ride History | User Info Popup | Passengers Travelled |
-|:---:|:---:|:---:|
-| <img src="frontend/assets/screenshots/historyScreenLight.png" width="220"><br><img src="frontend/assets/screenshots/historyScreenDark.png" width="220"> | <img src="frontend/assets/screenshots/userPopupLight.png" width="220"><br><img src="frontend/assets/screenshots/userPopupDark.png" width="220"> | <img src="frontend/assets/screenshots/passengersTravelledPopupLight.png" width="220"><br><img src="frontend/assets/screenshots/passengersTravelledPopupDark.png" width="220"> |
+
+| Light Mode | Dark Mode |
+|:---:|:---:|
+| **Ride History**<br><img src="frontend/assets/screenshots/historyScreenLight.png" width="280"> | **Ride History**<br><img src="frontend/assets/screenshots/historyScreenDark.png" width="280"> |
+| **User Info Popup**<br><img src="frontend/assets/screenshots/userPopupLight.png" width="280"> | **User Info Popup**<br><img src="frontend/assets/screenshots/userPopupDark.png" width="280"> |
+| **Passengers Travelled**<br><img src="frontend/assets/screenshots/passengersTravelledPopupLight.png" width="280"> | **Passengers Travelled**<br><img src="frontend/assets/screenshots/passengersTravelledPopupDark.png" width="280"> |
 
 ---
 
