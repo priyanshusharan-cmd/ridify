@@ -268,7 +268,11 @@ class _LiveTrackingScreenState extends State<LiveTrackingScreen> {
       });
     } catch (e) {
       debugPrint('syncRideStatus error: $e');
-      // Don't rethrow — sync failures should not crash the screen
+      if (mounted && rideData == null) {
+         ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("Network error loading ride data. Please try again.")));
+         Navigator.pop(context);
+      }
+      // Don't rethrow — sync failures should not crash the screen if already loaded
     } finally {
       _syncInProgress = false; // ALWAYS reset, even on exception
     }

@@ -64,18 +64,27 @@ class _RiderCompletingScreenState extends State<RiderCompletingScreen> {
   }
 
   Future<void> markAsPaid() async {
+    bool success = false;
+    bool alreadyPaid = false;
     try {
       await RideService.markPaid(widget.rideId, widget.myEmail);
+      success = true;
       setState(() {
         isPaid = true;
       });
     } catch (e) {
       debugPrint("Error: $e");
+      String errorMsg = e.toString().replaceAll("Exception: ", "");
+      if (errorMsg.contains("already paid")) {
+        alreadyPaid = true;
+      }
       if (mounted) {
-        SnackbarUtil.show(context, e.toString().replaceAll("Exception: ", ""));
+        SnackbarUtil.show(context, errorMsg);
       }
     } finally {
-      if (mounted) Navigator.of(context).popUntil((route) => route.isFirst);
+      if (mounted && (success || alreadyPaid)) {
+        Navigator.of(context).popUntil((route) => route.isFirst);
+      }
     }
   }
 
