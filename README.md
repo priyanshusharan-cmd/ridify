@@ -42,7 +42,7 @@ Unlike standard ride-hailing apps, Ridify is built from the ground up to emphasi
 
 | Light Mode | Dark Mode |
 |:---:|:---:|
-| **App Startup & Branding (Splash Screen)**<br><img src="frontend/assets/screenshots/splashScreenLight.png" width="280"> | **App Startup & Branding (Splash Screen)**<br><img src="frontend/assets/screenshots/splashScreenDark.png" width="280"> |
+| **App Startup & Branding (Splash Screen)**<br><img src="frontend/assets/screenshots/splashScreenLightGIF.gif" width="280"> | **App Startup & Branding (Splash Screen)**<br><img src="frontend/assets/screenshots/splashScreenDarkGIF.gif" width="280"> |
 | **Main User Dashboard (Home Screen)**<br><img src="frontend/assets/screenshots/homeScreenLight.png" width="280"> | **Main User Dashboard (Home Screen)**<br><img src="frontend/assets/screenshots/homeScreenDark.png" width="280"> |
 | **Publishing a Journey (Offer Ride)**<br><img src="frontend/assets/screenshots/offerRideLight.png" width="280"> | **Publishing a Journey (Offer Ride)**<br><img src="frontend/assets/screenshots/offerRideDark.png" width="280"> |
 | **Interactive Map Pin-Drop (Location Picker)**<br><img src="frontend/assets/screenshots/locationPickerScreenLight.png" width="280"> | **Interactive Map Pin-Drop (Location Picker)**<br><img src="frontend/assets/screenshots/locationPickerScreenDark.png" width="280"> |
