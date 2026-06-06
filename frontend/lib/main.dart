@@ -40,11 +40,6 @@ class AppScrollBehavior extends MaterialScrollBehavior {
         PointerDeviceKind.mouse,
         PointerDeviceKind.trackpad,
       };
-
-  @override
-  Widget buildOverscrollIndicator(BuildContext context, Widget child, ScrollableDetails details) {
-    return child;
-  }
 }
 
 class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
