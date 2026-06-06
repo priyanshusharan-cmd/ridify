@@ -44,10 +44,10 @@
 | **Activity Screen**<br><img src="frontend/assets/screenshots/activityScreenLight.png" width="280"> | **Activity Screen**<br><img src="frontend/assets/screenshots/activityScreenDark.png" width="280"> |
 | **Ride Details**<br><img src="frontend/assets/screenshots/rideDetailScreenLight.png" width="280"> | **Ride Details**<br><img src="frontend/assets/screenshots/rideDetailScreenDark.png" width="280"> |
 | **Live Tracking (Driver Route Match)**<br><img src="frontend/assets/screenshots/liveRideScreenDriver1Light.png" width="280"> | **Live Tracking (Driver Route Match)**<br><img src="frontend/assets/screenshots/liveRideScreenDriver1Dark.png" width="280"> |
-| **Live Tracking (Driver Wait/Navigate)**<br><img src="frontend/assets/screenshots/liveRideScreenDriver2Light.png" width="280"> | **Live Tracking (Driver Wait/Navigate)**<br><img src="frontend/assets/screenshots/liveRideScreenDriver2Dark.png" width="280"> |
-| **Live Tracking (Driver Passenger Pickup)**<br><img src="frontend/assets/screenshots/liveRideScreenDriver3Light.png" width="280"> | **Live Tracking (Driver Passenger Pickup)**<br><img src="frontend/assets/screenshots/liveRideScreenDriver3Dark.png" width="280"> |
 | **Live Tracking (Rider Finding Driver)**<br><img src="frontend/assets/screenshots/liveRideScreenRider1Light.png" width="280"> | **Live Tracking (Rider Finding Driver)**<br><img src="frontend/assets/screenshots/liveRideScreenRider1Dark.png" width="280"> |
+| **Live Tracking (Driver Wait/Navigate)**<br><img src="frontend/assets/screenshots/liveRideScreenDriver2Light.png" width="280"> | **Live Tracking (Driver Wait/Navigate)**<br><img src="frontend/assets/screenshots/liveRideScreenDriver2Dark.png" width="280"> |
 | **Live Tracking (Rider Driver Assigned)**<br><img src="frontend/assets/screenshots/liveRideScreenRider2Light.png" width="280"> | **Live Tracking (Rider Driver Assigned)**<br><img src="frontend/assets/screenshots/liveRideScreenRider2Dark.png" width="280"> |
+| **Live Tracking (Driver Passenger Pickup)**<br><img src="frontend/assets/screenshots/liveRideScreenDriver3Light.png" width="280"> | **Live Tracking (Driver Passenger Pickup)**<br><img src="frontend/assets/screenshots/liveRideScreenDriver3Dark.png" width="280"> |
 | **Live Tracking (Rider In Transit)**<br><img src="frontend/assets/screenshots/liveRideScreenRider3Light.png" width="280"> | **Live Tracking (Rider In Transit)**<br><img src="frontend/assets/screenshots/liveRideScreenRider3Dark.png" width="280"> |
 | **Chat Screen**<br><img src="frontend/assets/screenshots/chatScreenLight.png" width="280"> | **Chat Screen**<br><img src="frontend/assets/screenshots/chatScreenDark.png" width="280"> |
 | **Driver Completion**<br><img src="frontend/assets/screenshots/driverCompletionScreenLight.png" width="280"> | **Driver Completion**<br><img src="frontend/assets/screenshots/driverCompletionScreenDark.png" width="280"> |
@@ -56,11 +56,11 @@
 | **History Screen**<br><img src="frontend/assets/screenshots/historyScreenLight.png" width="280"> | **History Screen**<br><img src="frontend/assets/screenshots/historyScreenDark.png" width="280"> |
 | **Passengers Travelled**<br><img src="frontend/assets/screenshots/passengersTravelledPopupLight.png" width="280"> | **Passengers Travelled**<br><img src="frontend/assets/screenshots/passengersTravelledPopupDark.png" width="280"> |
 | **Profile Screen**<br><img src="frontend/assets/screenshots/profileScreenLight.png" width="280"> | **Profile Screen**<br><img src="frontend/assets/screenshots/profileScreenDark.png" width="280"> |
-| **User Info Popup**<br><img src="frontend/assets/screenshots/userPopupLight.png" width="280"> | **User Info Popup**<br><img src="frontend/assets/screenshots/userPopupDark.png" width="280"> |
 | **Admin Dashboard Home**<br><img src="frontend/assets/screenshots/adminDashboardLight.png" width="280"> | **Admin Dashboard Home**<br><img src="frontend/assets/screenshots/adminDashboardDark.png" width="280"> |
 | **Admin Manage Users**<br><img src="frontend/assets/screenshots/adminUsersLight.png" width="280"> | **Admin Manage Users**<br><img src="frontend/assets/screenshots/adminUsersDark.png" width="280"> |
-| **Admin Verify Users**<br><img src="frontend/assets/screenshots/adminVerifyLight.png" width="280"> | **Admin Verify Users**<br><img src="frontend/assets/screenshots/adminVerifyDark.png" width="280"> |
+| **User Info Popup**<br><img src="frontend/assets/screenshots/userPopupLight.png" width="280"> | **User Info Popup**<br><img src="frontend/assets/screenshots/userPopupDark.png" width="280"> |
 | **Admin Active Rides**<br><img src="frontend/assets/screenshots/adminRidesLight.png" width="280"> | **Admin Active Rides**<br><img src="frontend/assets/screenshots/adminRidesDark.png" width="280"> |
+| **Admin Verify Users**<br><img src="frontend/assets/screenshots/adminVerifyLight.png" width="280"> | **Admin Verify Users**<br><img src="frontend/assets/screenshots/adminVerifyDark.png" width="280"> |
 
 ---
 
