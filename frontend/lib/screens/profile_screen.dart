@@ -145,6 +145,41 @@ class _ProfileScreenState extends State<ProfileScreen> {
     }
   }
 
+  void _showVerificationDialog() {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text("Verify Account"),
+        content: const Text(
+          "Please upload a clear image of a valid government ID.",
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: Text(
+              "Cancel",
+              style: TextStyle(
+                color: Theme.of(context).textTheme.bodyLarge?.color,
+              ),
+            ),
+          ),
+          ElevatedButton(
+            style: ElevatedButton.styleFrom(
+              backgroundColor: Theme.of(context).brightness == Brightness.dark
+                  ? const Color(0xFF2C2C2C)
+                  : Colors.black,
+            ),
+            onPressed: () {
+              Navigator.pop(context);
+              _startVerification();
+            },
+            child: const Text("OK", style: TextStyle(color: Colors.white)),
+          ),
+        ],
+      ),
+    );
+  }
+
   // ── LOGOUT ────────────────────────────────────────────────────────────────
   Future<void> _logout() async {
     // Clear JWT tokens from secure storage
@@ -593,7 +628,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                           borderRadius: BorderRadius.circular(
                                             4,
                                           ),
-                                          onTap: _startVerification,
+                                          onTap: _showVerificationDialog,
                                           child: const Padding(
                                             padding: EdgeInsets.symmetric(
                                               horizontal: 8,
