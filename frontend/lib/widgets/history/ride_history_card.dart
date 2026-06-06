@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import '../../core/utils.dart';
+import 'package:provider/provider.dart';
+import '../../core/theme_provider.dart';
 import '../verified_badge.dart';
 import 'stat_chip.dart';
 
@@ -539,7 +541,7 @@ class RideHistoryCard extends StatelessWidget {
                 child: GestureDetector(
                   onTap: () {
                     if (wasIDriver) {
-                      _showRideGroupPopup(context, ride, allInRide, isDark);
+                      _showRideGroupPopup(context, ride, allInRide);
                     }
                   },
                   child: wasIDriver
@@ -676,7 +678,6 @@ class RideHistoryCard extends StatelessWidget {
     BuildContext context,
     dynamic ride,
     Set<String> allInRide,
-    bool isDark,
   ) {
     // Build kicked set
     Set<String> kickedSet = {};
@@ -743,10 +744,16 @@ class RideHistoryCard extends StatelessWidget {
       context: context,
       backgroundColor: Colors.transparent,
       builder: (context) {
+        return Builder(
+          builder: (context) {
+            final themeProvider = Provider.of<ThemeProvider>(context);
+            final isSheetDark = themeProvider.themeMode == ThemeMode.dark ||
+                (themeProvider.themeMode == ThemeMode.system &&
+                    MediaQuery.platformBrightnessOf(context) == Brightness.dark);
         return Container(
           padding: const EdgeInsets.all(24),
           decoration: BoxDecoration(
-            color: isDark ? const Color(0xFF1E1E1E) : Colors.white,
+            color: isSheetDark ? const Color(0xFF1E1E1E) : Colors.white,
             borderRadius: const BorderRadius.vertical(top: Radius.circular(24)),
           ),
           child: Column(
@@ -758,7 +765,7 @@ class RideHistoryCard extends StatelessWidget {
                   width: 40,
                   height: 4,
                   decoration: BoxDecoration(
-                    color: isDark ? Colors.white24 : Colors.black26,
+                    color: isSheetDark ? Colors.white24 : Colors.black26,
                     borderRadius: BorderRadius.circular(2),
                   ),
                 ),
@@ -769,7 +776,7 @@ class RideHistoryCard extends StatelessWidget {
                 style: TextStyle(
                   fontSize: 20,
                   fontWeight: FontWeight.bold,
-                  color: isDark ? Colors.white : Colors.black,
+                  color: isSheetDark ? Colors.white : Colors.black,
                 ),
               ),
               const SizedBox(height: 16),
@@ -785,13 +792,13 @@ class RideHistoryCard extends StatelessWidget {
                         radius: 16,
                         backgroundColor: isRemoved
                             ? Colors.redAccent.withValues(alpha: 0.15)
-                            : (isDark ? Colors.white10 : Colors.black12),
+                            : (isSheetDark ? Colors.white10 : Colors.black12),
                         child: Text(
                           displayText.substring(0, 1).toUpperCase(),
                           style: TextStyle(
                             color: isRemoved
                                 ? Colors.redAccent
-                                : (isDark ? Colors.white : Colors.black),
+                                : (isSheetDark ? Colors.white : Colors.black),
                             fontSize: 12,
                             fontWeight: FontWeight.bold,
                           ),
@@ -804,7 +811,7 @@ class RideHistoryCard extends StatelessWidget {
                           fontSize: 15,
                           color: isRemoved
                               ? Colors.redAccent
-                              : (isDark ? Colors.white70 : Colors.black87),
+                              : (isSheetDark ? Colors.white70 : Colors.black87),
                         ),
                       ),
                       if (isVerified) ...[
@@ -818,6 +825,8 @@ class RideHistoryCard extends StatelessWidget {
               const SizedBox(height: 20),
             ],
           ),
+        );
+          },
         );
       },
     );
