@@ -38,11 +38,11 @@ Unlike standard ride-hailing apps, Ridify is built from the ground up to emphasi
 
 ## 📸 Comprehensive App Showcase
 
-*(Note: Old login & signup screenshots are not included as they were recently removed. The flow begins straight from Splash to Home)*
-
 | Light Mode | Dark Mode |
 |:---:|:---:|
 | **App Startup & Branding (Splash Screen)**<br><img src="frontend/assets/screenshots/splashScreenLightGIF.gif" width="280"> | **App Startup & Branding (Splash Screen)**<br><img src="frontend/assets/screenshots/splashScreenDarkGIF.gif" width="280"> |
+| **Authentication (Login Screen)**<br><img src="frontend/assets/screenshots/loginScreenLight.png" width="280"> | **Authentication (Login Screen)**<br><img src="frontend/assets/screenshots/loginScreenDark.png" width="280"> |
+| **Account Creation (Signup Screen)**<br><img src="frontend/assets/screenshots/signupScreenLight.png" width="280"> | **Account Creation (Signup Screen)**<br><img src="frontend/assets/screenshots/signupScreenDark.png" width="280"> |
 | **Main User Dashboard (Home Screen)**<br><img src="frontend/assets/screenshots/homeScreenLightGIF.gif" width="280"> | **Main User Dashboard (Home Screen)**<br><img src="frontend/assets/screenshots/homeScreenDarkGIF.gif" width="280"> |
 | **Publishing a Journey (Offer Ride)**<br><img src="frontend/assets/screenshots/offerRideLight.png" width="280"> | **Publishing a Journey (Offer Ride)**<br><img src="frontend/assets/screenshots/offerRideDark.png" width="280"> |
 | **Interactive Map Pin-Drop (Location Picker)**<br><img src="frontend/assets/screenshots/locationPickerScreenLight.png" width="280"> | **Interactive Map Pin-Drop (Location Picker)**<br><img src="frontend/assets/screenshots/locationPickerScreenDark.png" width="280"> |
