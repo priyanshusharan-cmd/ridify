@@ -1,355 +1,380 @@
 <div align="center">
-
-  <img src="frontend/assets/icon.png" alt="Ridify Logo" width="150" style="border-radius: 20px; box-shadow: 0 4px 8px rgba(0,0,0,0.2);"/>
+  <img src="frontend/assets/icon.png" width="120" height="120" style="border-radius: 24px; box-shadow: 0px 6px 20px rgba(0, 0, 0, 0.15);" alt="Ridify Logo" />
   
-  <h1>🌟 Ridify</h1>
+  # Ridify
   
-  <p>
-    <b>A premium, real-time ride-sharing platform for daily commuters, students, and professionals.<br>Offer or find shared rides, track journeys live on a map, and split travel costs effortlessly.</b>
-  </p>
-
-  <p>
-    <a href="https://flutter.dev/"><img src="https://img.shields.io/badge/Flutter-%2302569B.svg?style=for-the-badge&logo=Flutter&logoColor=white" alt="Flutter"></a>
-    <a href="https://nodejs.org/"><img src="https://img.shields.io/badge/Node.js-43853D?style=for-the-badge&logo=node.js&logoColor=white" alt="Node.js"></a>
-    <a href="https://expressjs.com/"><img src="https://img.shields.io/badge/Express.js-%23404d59.svg?style=for-the-badge&logo=express&logoColor=%2361DAFB" alt="Express"></a>
-    <a href="https://www.mongodb.com/"><img src="https://img.shields.io/badge/MongoDB-%234ea94b.svg?style=for-the-badge&logo=mongodb&logoColor=white" alt="MongoDB"></a>
-    <a href="https://socket.io/"><img src="https://img.shields.io/badge/Socket.io-black?style=for-the-badge&logo=socket.io&badgeColor=010101" alt="Socket.io"></a>
-  </p>
-
-  <p>
-    <a href="#-about-the-project">About</a> •
-    <a href="#-core-features--technical-highlights">Features</a> •
-    <a href="#-app-showcase">Screenshots</a> •
-    <a href="#-technology-architecture">Architecture</a> •
-    <a href="#-getting-started">Getting Started</a>
-  </p>
-
+  ### *Real-Time Peer-to-Peer Ride-Sharing & Cost-Splitting for Students*
+  
+  [![Flutter](https://img.shields.io/badge/Flutter-v3.11.4-02569B?logo=flutter&logoColor=white)](https://flutter.dev)
+  [![NodeJS](https://img.shields.io/badge/Node.js-v20+-339933?logo=node.js&logoColor=white)](https://nodejs.org)
+  [![MongoDB](https://img.shields.io/badge/MongoDB-Latest-47A248?logo=mongodb&logoColor=white)](https://mongodb.com)
+  [![Socket.io](https://img.shields.io/badge/Socket.io-v4.8-010101?logo=socket.io&logoColor=white)](https://socket.io)
+  [![License](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 </div>
 
-<hr>
+---
 
-## 📖 About The Project
+## 📖 Overview
+**Ridify** is a production-grade, secure, real-time ride-sharing and cost-splitting mobile application specifically designed for student communities. Built on a robust mobile-first stack, it empowers students to offer journeys, search for matches, Picker locations via an interactive map, message co-passengers instantly, track rides live with real-time GPS telemetry, and split travel costs automatically. 
 
-> *"Redefining the daily commute through secure, peer-to-peer carpooling."*
-
-**Ridify** is a comprehensive, full-stack mobile application meticulously designed to solve daily transportation challenges for everyone. It provides a secure, real-time platform where individuals can either offer empty seats in their vehicles or find a ride going in their direction. By carpooling, users can drastically reduce travel costs, minimize their carbon footprints, alleviate city parking congestion, and seamlessly network with fellow travelers.
-
-Unlike standard ride-hailing applications, Ridify is built from the ground up to emphasize **safety, community verification, and real-time responsiveness**. It integrates a sophisticated location-tracking engine, peer-to-peer in-app messaging, intelligent routing, and a robust administrative panel to oversee operations and ensure strict compliance with community guidelines.
-
-### 🎯 Motivation
-
-Daily commuters, students, and frequent travelers often face challenges with expensive public transit, limited parking, and the difficulty of finding reliable transportation during peak hours or holidays. Ridify bridges this gap by creating an accessible and secure carpooling network. It fosters a sense of community, encourages sustainable travel habits, and provides a highly economical alternative to traditional taxis for all users.
+The application offers an outstanding user experience featuring full-system **Light Mode** and **Dark Mode** support across every client interaction and a comprehensive administrative suite for platform security and verification.
 
 ---
 
-## ✨ Core Features & Technical Highlights
+## ✨ Features & Screen Showcase
 
-* **🚗 Intelligent Ride Matching:** Uses advanced geospatial querying (via MongoDB `$geoNear` and Turf.js) to accurately match riders with drivers whose routes naturally overlap, ensuring minimal detours and maximum convenience.
-* **📍 High-Frequency Real-Time Tracking:** Leveraging Socket.IO WebSockets, the app streams precise GPS coordinates continuously. Both riders and drivers see the vehicle moving smoothly on the Flutter Map in real-time, completely eliminating the need for manual refreshing and ensuring exact ETA predictions.
-* **💬 Instant In-App Chat:** A fully integrated real-time chat interface allows drivers and passengers to communicate securely to coordinate pickup details, ensuring privacy without exposing personal phone numbers.
-* **🛡️ Extensive Admin Moderation:** A dedicated administrative dashboard provides high-level control. Admins can verify user IDs, suspend malicious accounts, manage disputes, and monitor active rides in real-time to ensure platform safety.
-* **🌗 Premium UI/UX Aesthetics:** The app features a meticulously crafted interface with full support for system-wide Dark and Light modes. It utilizes custom micro-animations, glassmorphic overlays, modern typography, and highly responsive components to deliver a flagship-level user experience.
-* **🔐 Multi-Layer Security:** Features robust email verification, strictly validated JSON Web Tokens (JWT) for all API requests, bcrypt hashing for sensitive data, and comprehensive rate limiting to prevent abuse.
-* **📊 Analytics & History:** Users have access to detailed journey histories, expense tracking, and a list of co-passengers they've traveled with, enhancing trust and record-keeping.
+### 1. App Startup & Branding (Splash Screen)
+A responsive branding animation greeting the user and initializing state management. Session tokens are checked securely in background storage to route users automatically.
+
+| Light Mode | Dark Mode |
+| :---: | :---: |
+| <img src="frontend/assets/screenshots/splashScreenLightGIF.gif" width="320" alt="Splash Screen Light" /> | <img src="frontend/assets/screenshots/splashScreenDarkGIF.gif" width="320" alt="Splash Screen Dark" /> |
 
 ---
 
-## 📸 App Showcase
-
-<details open>
-<summary><b>1. App Startup & Branding</b></summary>
+### 2. User Authentication (Login Screen)
+Secure user login interface utilizing JWT credentials. Features email/password forms with password visibility toggles and direct connections to secure verification APIs.
 
 | Light Mode | Dark Mode |
-|:---:|:---:|
-| **App Startup & Branding (Splash Screen)**<br><img src="frontend/assets/screenshots/splashScreenLightGIF.gif" width="280"> | **App Startup & Branding (Splash Screen)**<br><img src="frontend/assets/screenshots/splashScreenDarkGIF.gif" width="280"> |
-</details>
-
-<details>
-<summary><b>2. User Authentication & Account Registration</b></summary>
-
-| Light Mode | Dark Mode |
-|:---:|:---:|
-| **User Authentication (Login Screen)**<br><img src="frontend/assets/screenshots/loginScreenLight.png" width="280"> | **User Authentication (Login Screen)**<br><img src="frontend/assets/screenshots/loginScreenDark.png" width="280"> |
-| **Account Registration (Sign-Up Screen)**<br><img src="frontend/assets/screenshots/signupScreenLight.png" width="280"> | **Account Registration (Sign-Up Screen)**<br><img src="frontend/assets/screenshots/signupScreenDark.png" width="280"> |
-</details>
-
-<details>
-<summary><b>3. Main User Dashboard</b></summary>
-
-| Light Mode | Dark Mode |
-|:---:|:---:|
-| **Main User Dashboard (Home Screen)**<br><img src="frontend/assets/screenshots/homeScreenLightGIF.gif" width="280"> | **Main User Dashboard (Home Screen)**<br><img src="frontend/assets/screenshots/homeScreenDarkGIF.gif" width="280"> |
-</details>
-
-<details>
-<summary><b>4. Ride Creation and Geospatial Search</b></summary>
-
-| Light Mode | Dark Mode |
-|:---:|:---:|
-| **Publishing a Journey (Offer Ride)**<br><img src="frontend/assets/screenshots/offerRideLight.png" width="280"> | **Publishing a Journey (Offer Ride)**<br><img src="frontend/assets/screenshots/offerRideDark.png" width="280"> |
-| **Interactive Map Pin-Drop (Location Picker)**<br><img src="frontend/assets/screenshots/locationPickerScreenLight.png" width="280"> | **Interactive Map Pin-Drop (Location Picker)**<br><img src="frontend/assets/screenshots/locationPickerScreenDark.png" width="280"> |
-| **Searching for a Journey (Find Ride)**<br><img src="frontend/assets/screenshots/findRIdeLight.png" width="280"> | **Searching for a Journey (Find Ride)**<br><img src="frontend/assets/screenshots/findRideDark.png" width="280"> |
-</details>
-
-<details>
-<summary><b>5. Ride Matching and Itinerary Management</b></summary>
-
-| Light Mode | Dark Mode |
-|:---:|:---:|
-| **Matching Ride Results (Available Rides)**<br><img src="frontend/assets/screenshots/availableRidesScreenLight.png" width="280"> | **Matching Ride Results (Available Rides)**<br><img src="frontend/assets/screenshots/availableRidesScreenDark.png" width="280"> |
-| **Refining Search Criteria (Filters Popup)**<br><img src="frontend/assets/screenshots/filtersPopupLight.png" width="280"> | **Refining Search Criteria (Filters Popup)**<br><img src="frontend/assets/screenshots/filtersPopupDark.png" width="280"> |
-| **Current Ongoing & Requested Rides (Activity Screen)**<br><img src="frontend/assets/screenshots/activityScreenLight.png" width="280"> | **Current Ongoing & Requested Rides (Activity Screen)**<br><img src="frontend/assets/screenshots/activityScreenDark.png" width="280"> |
-| **Comprehensive Itinerary & Passengers (Ride Details)**<br><img src="frontend/assets/screenshots/rideDetailScreenLight.png" width="280"> | **Comprehensive Itinerary & Passengers (Ride Details)**<br><img src="frontend/assets/screenshots/rideDetailScreenDark.png" width="280"> |
-</details>
-
-<details>
-<summary><b>6. Real-Time Telemetry and Peer Communication</b></summary>
-
-| Light Mode | Dark Mode |
-|:---:|:---:|
-| **Live Tracking (Driver: Ride Started)**<br><img src="frontend/assets/screenshots/liveRideScreenDriver1Light.png" width="280"> | **Live Tracking (Driver: Ride Started)**<br><img src="frontend/assets/screenshots/liveRideScreenDriver1Dark.png" width="280"> |
-| **Live Tracking (Rider: Waiting for Driver to Arrive)**<br><img src="frontend/assets/screenshots/liveRideScreenRider1Light.png" width="280"> | **Live Tracking (Rider: Waiting for Driver to Arrive)**<br><img src="frontend/assets/screenshots/liveRideScreenRider1Dark.png" width="280"> |
-| **Live Tracking (Driver: Waiting for Passengers to Board)**<br><img src="frontend/assets/screenshots/liveRideScreenDriver2Light.png" width="280"> | **Live Tracking (Driver: Waiting for Passengers to Board)**<br><img src="frontend/assets/screenshots/liveRideScreenDriver2Dark.png" width="280"> |
-| **Live Tracking (Rider: Driver Arrived)**<br><img src="frontend/assets/screenshots/liveRideScreenRider2Light.png" width="280"> | **Live Tracking (Rider: Driver Arrived)**<br><img src="frontend/assets/screenshots/liveRideScreenRider2Dark.png" width="280"> |
-| **Live Tracking (Driver: Passenger Boarded)**<br><img src="frontend/assets/screenshots/liveRideScreenDriver3Light.png" width="280"> | **Live Tracking (Driver: Passenger Boarded)**<br><img src="frontend/assets/screenshots/liveRideScreenDriver3Dark.png" width="280"> |
-| **Live Tracking (Rider: In Transit)**<br><img src="frontend/assets/screenshots/liveRideScreenRider3Light.png" width="280"> | **Live Tracking (Rider: In Transit)**<br><img src="frontend/assets/screenshots/liveRideScreenRider3Dark.png" width="280"> |
-| **Real-Time Secure Messaging (Chat Screen)**<br><img src="frontend/assets/screenshots/chatScreenLight.png" width="280"> | **Real-Time Secure Messaging (Chat Screen)**<br><img src="frontend/assets/screenshots/chatScreenDark.png" width="280"> |
-</details>
-
-<details>
-<summary><b>7. Post-Ride Logistics and Analytics</b></summary>
-
-| Light Mode | Dark Mode |
-|:---:|:---:|
-| **End of Journey Summary (Driver)**<br><img src="frontend/assets/screenshots/driverCompletionScreenLight.png" width="280"> | **End of Journey Summary (Driver)**<br><img src="frontend/assets/screenshots/driverCompletionScreenDark.png" width="280"> |
-| **End of Journey Receipt (Rider)**<br><img src="frontend/assets/screenshots/riderCompletionScreenLight.png" width="280"> | **End of Journey Receipt (Rider)**<br><img src="frontend/assets/screenshots/riderCompletionScreenDark.png" width="280"> |
-| **Past Journeys & Cost Summary (History Screen)**<br><img src="frontend/assets/screenshots/historyScreenLight.png" width="280"> | **Past Journeys & Cost Summary (History Screen)**<br><img src="frontend/assets/screenshots/historyScreenDark.png" width="280"> |
-| **Co-Passengers Travelled (Popup)**<br><img src="frontend/assets/screenshots/passengersTravelledPopupLight.png" width="280"> | **Co-Passengers Travelled (Popup)**<br><img src="frontend/assets/screenshots/passengersTravelledPopupDark.png" width="280"> |
-| **User Account & Settings (Profile Screen)**<br><img src="frontend/assets/screenshots/profileScreenLight.png" width="280"> | **User Account & Settings (Profile Screen)**<br><img src="frontend/assets/screenshots/profileScreenDark.png" width="280"> |
-</details>
-
-<details>
-<summary><b>8. Administration and Platform Security</b></summary>
-
-| Light Mode | Dark Mode |
-|:---:|:---:|
-| **System Overview Metrics (Admin Dashboard Home)**<br><img src="frontend/assets/screenshots/adminDashboardLight.png" width="280"> | **System Overview Metrics (Admin Dashboard Home)**<br><img src="frontend/assets/screenshots/adminDashboardDark.png" width="280"> |
-| **Directory of Registered Accounts (Admin Manage Users)**<br><img src="frontend/assets/screenshots/adminUsersLight.png" width="280"> | **Directory of Registered Accounts (Admin Manage Users)**<br><img src="frontend/assets/screenshots/adminUsersDark.png" width="280"> |
-| **Detailed User Data Modal (Admin User Info Popup)**<br><img src="frontend/assets/screenshots/userPopupLight.png" width="280"> | **Detailed User Data Modal (Admin User Info Popup)**<br><img src="frontend/assets/screenshots/userPopupDark.png" width="280"> |
-| **Monitoring Ongoing Journeys (Admin Active Rides)**<br><img src="frontend/assets/screenshots/adminRidesLight.png" width="280"> | **Monitoring Ongoing Journeys (Admin Active Rides)**<br><img src="frontend/assets/screenshots/adminRidesDark.png" width="280"> |
-| **KYC & Document Checking (Admin Verify Users)**<br><img src="frontend/assets/screenshots/adminVerifyLight.png" width="280"> | **KYC & Document Checking (Admin Verify Users)**<br><img src="frontend/assets/screenshots/adminVerifyDark.png" width="280"> |
-</details>
+| :---: | :---: |
+| <img src="frontend/assets/screenshots/loginScreenLight.png" width="320" alt="Login Screen Light" /> | <img src="frontend/assets/screenshots/loginScreenDark.png" width="320" alt="Login Screen Dark" /> |
 
 ---
 
-## 🛠️ Technology Architecture
+### 3. Account Registration (Sign-Up Screen)
+Streamlined onboarding form prompting students for details, passwords, and mandatory identity validation metadata.
 
-### **📱 Frontend (Mobile App)**
-* **Framework:** [Flutter](https://flutter.dev/) (Dart) for high-performance cross-platform rendering on both iOS and Android.
-* **State Management:** Provider for scalable, reactive, and predictable UI updates.
-* **Mapping Engine:** `flutter_map` paired with `latlong2` for customizable, open-source vector maps.
-* **Real-time Engine:** `socket_io_client` for instant event listening and bidirectional communication.
-* **Local Storage:** `shared_preferences` for user settings and `flutter_secure_storage` for encrypted storage of JWTs and sensitive data.
-
-### **⚙️ Backend (API Server)**
-* **Runtime Environment:** [Node.js](https://nodejs.org/) optimized for handling highly concurrent I/O operations.
-* **Framework:** Express.js for robust RESTful API endpoint routing and middleware integration.
-* **Database:** MongoDB configured with Mongoose ORM for flexible, document-based data modeling.
-* **Real-time Engine:** Socket.IO to manage persistent TCP connections for live tracking and chat.
-* **Security & Middleware:**
-  * **Authentication:** JSON Web Tokens (JWT)
-  * **Encryption:** bcrypt for password hashing
-  * **Headers:** Helmet.js for securing HTTP headers
-  * **Traffic Control:** `express-rate-limit` to thwart DDoS and brute-force attacks
-* **Geospatial Processing:** Turf.js for complex polygon, intersection, and distance computations.
+| Light Mode | Dark Mode |
+| :---: | :---: |
+| <img src="frontend/assets/screenshots/signupScreenLight.png" width="320" alt="Sign-Up Screen Light" /> | <img src="frontend/assets/screenshots/signupScreenDark.png" width="320" alt="Sign-Up Screen Dark" /> |
 
 ---
 
-## 🚀 Getting Started
+### 4. Main User Dashboard (Home Screen)
+The central student dashboard displaying active maps, current location overlays, and quick access functions for finding or offering rides.
+
+| Light Mode | Dark Mode |
+| :---: | :---: |
+| <img src="frontend/assets/screenshots/homeScreenLightGIF.gif" width="320" alt="Home Screen Light" /> | <img src="frontend/assets/screenshots/homeScreenDarkGIF.gif" width="320" alt="Home Screen Dark" /> |
+
+---
+
+### 5. Publishing a Journey (Offer Ride)
+Drivers can publish upcoming rides specifying origin, destination, routing, intermediate stops, available seats, fare contributions, and car details.
+
+| Light Mode | Dark Mode |
+| :---: | :---: |
+| <img src="frontend/assets/screenshots/offerRideLight.png" width="320" alt="Offer Ride Light" /> | <img src="frontend/assets/screenshots/offerRideDark.png" width="320" alt="Offer Ride Dark" /> |
+
+---
+
+### 6. Interactive Map Pin-Drop (Location Picker)
+A custom mapping layout using OpenStreetMap enabling precise, manual drag-and-drop marker pin placement to select pickup or drop-off coordinate pairs.
+
+| Light Mode | Dark Mode |
+| :---: | :---: |
+| <img src="frontend/assets/screenshots/locationPickerScreenLight.png" width="320" alt="Location Picker Light" /> | <img src="frontend/assets/screenshots/locationPickerScreenDark.png" width="320" alt="Location Picker Dark" /> |
+
+---
+
+### 7. Searching for a Journey (Find Ride)
+An input form enabling users to scan for active journeys by configuring origin, destination, date, and preferred search range parameters.
+
+| Light Mode | Dark Mode |
+| :---: | :---: |
+| <img src="frontend/assets/screenshots/findRIdeLight.png" width="320" alt="Find Ride Light" /> | <img src="frontend/assets/screenshots/findRideDark.png" width="320" alt="Find Ride Dark" /> |
+
+---
+
+### 8. Matching Ride Results (Available Rides)
+Displays a categorized list of all matches, showcasing fares, route maps, vehicle information, driver ratings, and passenger seat counts.
+
+| Light Mode | Dark Mode |
+| :---: | :---: |
+| <img src="frontend/assets/screenshots/availableRidesScreenLight.png" width="320" alt="Available Rides Light" /> | <img src="frontend/assets/screenshots/availableRidesScreenDark.png" width="320" alt="Available Rides Dark" /> |
+
+---
+
+### 9. Refining Search Criteria (Filters Popup)
+A dynamic overlay allowing riders to filter matching results based on departures, pricing thresholds, driver preferences, and rating standards.
+
+| Light Mode | Dark Mode |
+| :---: | :---: |
+| <img src="frontend/assets/screenshots/filtersPopupLight.png" width="320" alt="Filters Popup Light" /> | <img src="frontend/assets/screenshots/filtersPopupDark.png" width="320" alt="Filters Popup Dark" /> |
+
+---
+
+### 10. Current Ongoing & Requested Rides (Activity Screen)
+Tracks all active connections, showing status designations for requested, upcoming, ongoing, and completed trips for the user.
+
+| Light Mode | Dark Mode |
+| :---: | :---: |
+| <img src="frontend/assets/screenshots/activityScreenLight.png" width="320" alt="Activity Screen Light" /> | <img src="frontend/assets/screenshots/activityScreenDark.png" width="320" alt="Activity Screen Dark" /> |
+
+---
+
+### 11. Comprehensive Itinerary & Passengers (Ride Details)
+Displays complete ride logistics, interactive route maps, profiles of co-passengers, luggage specifications, and contact triggers.
+
+| Light Mode | Dark Mode |
+| :---: | :---: |
+| <img src="frontend/assets/screenshots/rideDetailScreenLight.png" width="320" alt="Ride Details Light" /> | <img src="frontend/assets/screenshots/rideDetailScreenDark.png" width="320" alt="Ride Details Dark" /> |
+
+---
+
+### 12. Live Tracking (Driver: Ride Started)
+The driver's live UI rendering current location, telemetry speed tracking, map routes, and navigation statuses after starting the journey.
+
+| Light Mode | Dark Mode |
+| :---: | :---: |
+| <img src="frontend/assets/screenshots/liveRideScreenDriver1Light.png" width="320" alt="Driver Live Tracking - Started Light" /> | <img src="frontend/assets/screenshots/liveRideScreenDriver1Dark.png" width="320" alt="Driver Live Tracking - Started Dark" /> |
+
+---
+
+### 13. Live Tracking (Rider: Waiting for Driver to Arrive)
+Rider view showing real-time GPS telemetry updates of the driver's vehicle heading towards their pick-up coordinate.
+
+| Light Mode | Dark Mode |
+| :---: | :---: |
+| <img src="frontend/assets/screenshots/liveRideScreenRider1Light.png" width="320" alt="Rider Live Tracking - Waiting Light" /> | <img src="frontend/assets/screenshots/liveRideScreenRider1Dark.png" width="320" alt="Rider Live Tracking - Waiting Dark" /> |
+
+---
+
+### 14. Live Tracking (Driver: Waiting for Passengers to Board)
+Once at the pickup coordinate, this interface guides the driver through the passenger check-in and onboarding workflow.
+
+| Light Mode | Dark Mode |
+| :---: | :---: |
+| <img src="frontend/assets/screenshots/liveRideScreenDriver2Light.png" width="320" alt="Driver Live Tracking - Boarding Light" /> | <img src="frontend/assets/screenshots/liveRideScreenDriver2Dark.png" width="320" alt="Driver Live Tracking - Boarding Dark" /> |
+
+---
+
+### 15. Live Tracking (Rider: Driver Arrived)
+A system alert panel updating the rider's UI to confirm the driver has arrived and reached the pickup zone.
+
+| Light Mode | Dark Mode |
+| :---: | :---: |
+| <img src="frontend/assets/screenshots/liveRideScreenRider2Light.png" width="320" alt="Rider Live Tracking - Arrived Light" /> | <img src="frontend/assets/screenshots/liveRideScreenRider2Dark.png" width="320" alt="Rider Live Tracking - Arrived Dark" /> |
+
+---
+
+### 16. Live Tracking (Driver: Passenger Boarded)
+Confirms passenger attendance, dynamically adjusting split balances, maps, and updating trip status records on the backend.
+
+| Light Mode | Dark Mode |
+| :---: | :---: |
+| <img src="frontend/assets/screenshots/liveRideScreenDriver3Light.png" width="320" alt="Driver Live Tracking - Passenger Boarded Light" /> | <img src="frontend/assets/screenshots/liveRideScreenDriver3Dark.png" width="320" alt="Driver Live Tracking - Passenger Boarded Dark" /> |
+
+---
+
+### 17. Live Tracking (Rider: In Transit)
+The passenger tracking console displaying current vehicle path alignment, live speedometer metrics, and destination ETA alerts.
+
+| Light Mode | Dark Mode |
+| :---: | :---: |
+| <img src="frontend/assets/screenshots/liveRideScreenRider3Light.png" width="320" alt="Rider Live Tracking - In Transit Light" /> | <img src="frontend/assets/screenshots/liveRideScreenRider3Dark.png" width="320" alt="Rider Live Tracking - In Transit Dark" /> |
+
+---
+
+### 18. Real-Time Secure Messaging (Chat Screen)
+A peer-to-peer WebSocket messaging room enabling drivers and passengers to coordinate trip logistics securely.
+
+| Light Mode | Dark Mode |
+| :---: | :---: |
+| <img src="frontend/assets/screenshots/chatScreenLight.png" width="320" alt="Chat Screen Light" /> | <img src="frontend/assets/screenshots/chatScreenDark.png" width="320" alt="Chat Screen Dark" /> |
+
+---
+
+### 19. End of Journey Summary (Driver)
+Displays journey metrics for drivers: total distance traveled, total duration, and exact cost division earnings.
+
+| Light Mode | Dark Mode |
+| :---: | :---: |
+| <img src="frontend/assets/screenshots/driverCompletionScreenLight.png" width="320" alt="Driver End Journey Light" /> | <img src="frontend/assets/screenshots/driverCompletionScreenDark.png" width="320" alt="Driver End Journey Dark" /> |
+
+---
+
+### 20. End of Journey Receipt (Rider)
+Breakdown of final fare contributions for riders, complete with feedback submission prompts for driver ratings.
+
+| Light Mode | Dark Mode |
+| :---: | :---: |
+| <img src="frontend/assets/screenshots/riderCompletionScreenLight.png" width="320" alt="Rider End Journey Light" /> | <img src="frontend/assets/screenshots/riderCompletionScreenDark.png" width="320" alt="Rider End Journey Dark" /> |
+
+---
+
+### 21. Past Journeys & Cost Summary (History Screen)
+A comprehensive transaction and travel ledger displaying historical ride parameters, routes, costs split, and role statistics.
+
+| Light Mode | Dark Mode |
+| :---: | :---: |
+| <img src="frontend/assets/screenshots/historyScreenLight.png" width="320" alt="History Screen Light" /> | <img src="frontend/assets/screenshots/historyScreenDark.png" width="320" alt="History Screen Dark" /> |
+
+---
+
+### 22. Co-Passengers Travelled (Popup)
+A safety and profile check detail overlay, displaying past co-passengers, mutual ratings, and fast connection links.
+
+| Light Mode | Dark Mode |
+| :---: | :---: |
+| <img src="frontend/assets/screenshots/passengersTravelledPopupLight.png" width="320" alt="Co-Passengers Popup Light" /> | <img src="frontend/assets/screenshots/passengersTravelledPopupDark.png" width="320" alt="Co-Passengers Popup Dark" /> |
+
+---
+
+### 23. User Account & Settings (Profile Screen)
+Enables users to manage active vehicle profiles, upload documents, verify emails, review reviews, and toggle UI modes.
+
+| Light Mode | Dark Mode |
+| :---: | :---: |
+| <img src="frontend/assets/screenshots/profileScreenLight.png" width="320" alt="Profile Screen Light" /> | <img src="frontend/assets/screenshots/profileScreenDark.png" width="320" alt="Profile Screen Dark" /> |
+
+---
+
+### 24. System Overview Metrics (Admin Dashboard Home)
+High-level administration analytics summarizing total registered users, overall rides matched, active real-time trips, and live system load.
+
+| Light Mode | Dark Mode |
+| :---: | :---: |
+| <img src="frontend/assets/screenshots/adminDashboardLight.png" width="320" alt="Admin Dashboard Light" /> | <img src="frontend/assets/screenshots/adminDashboardDark.png" width="320" alt="Admin Dashboard Dark" /> |
+
+---
+
+### 25. Directory of Registered Accounts (Admin Manage Users)
+An interactive moderation directory displaying accounts, verification status tags, active ride metrics, and ban/unban moderation tools.
+
+| Light Mode | Dark Mode |
+| :---: | :---: |
+| <img src="frontend/assets/screenshots/adminUsersLight.png" width="320" alt="Admin Users Light" /> | <img src="frontend/assets/screenshots/adminUsersDark.png" width="320" alt="Admin Users Dark" /> |
+
+---
+
+### 26. Detailed User Data Modal (Admin User Info Popup)
+An administrative profile inspect tool providing complete detail checks on users, ride safety history, and profile records.
+
+| Light Mode | Dark Mode |
+| :---: | :---: |
+| <img src="frontend/assets/screenshots/userPopupLight.png" width="320" alt="Admin User Modal Light" /> | <img src="frontend/assets/screenshots/userPopupDark.png" width="320" alt="Admin User Modal Dark" /> |
+
+---
+
+### 27. Monitoring Ongoing Journeys (Admin Active Rides)
+A safety panel showcasing real-time geographic plots of all ongoing passenger journeys with system override links.
+
+| Light Mode | Dark Mode |
+| :---: | :---: |
+| <img src="frontend/assets/screenshots/adminRidesLight.png" width="320" alt="Admin Active Rides Light" /> | <img src="frontend/assets/screenshots/adminRidesDark.png" width="320" alt="Admin Active Rides Dark" /> |
+
+---
+
+### 28. KYC & Document Checking (Admin Verify Users)
+A structured moderation interface allowing administrators to review identity documents, cross-reference student credentials, and approve KYC verification badges.
+
+| Light Mode | Dark Mode |
+| :---: | :---: |
+| <img src="frontend/assets/screenshots/adminVerifyLight.png" width="320" alt="Admin Verification Light" /> | <img src="frontend/assets/screenshots/adminVerifyDark.png" width="320" alt="Admin Verification Dark" /> |
+
+---
+
+## 🛠️ Technical Stack & Architecture
+
+### Frontend (Mobile Application)
+* **Framework**: [Flutter (Dart)](https://flutter.dev) for cross-platform iOS and Android support.
+* **State Management**: [Provider](https://pub.dev/packages/provider) for clean, reactive updates and decoupled state controllers.
+* **Maps & GIS**: [flutter_map](https://pub.dev/packages/flutter_map) + [latlong2](https://pub.dev/packages/latlong2) + OpenStreetMap tiles. This offers a highly customized, responsive, and completely cost-free mapping solution.
+* **Real-time Engine**: [socket_io_client](https://pub.dev/packages/socket_io_client) for persistent TCP sockets streaming real-time driver/rider locations and direct messages.
+* **Hardware Sensors**: [geolocator](https://pub.dev/packages/geolocator) for highly accurate location updates.
+* **Secure Storage**: [flutter_secure_storage](https://pub.dev/packages/flutter_secure_storage) for encrypting and persisting JWT session keys on device keychains.
+
+### Backend (API & WebSocket Server)
+* **Runtime**: [Node.js](https://nodejs.org) + [Express](https://expressjs.com) web framework.
+* **Database**: [MongoDB](https://www.mongodb.com) hosted with object mapping handled via [Mongoose](https://mongoosejs.com).
+* **Bi-directional Sync**: [Socket.io](https://socket.io) server orchestrating location events, chat rooms, and real-time state broadcasts.
+* **Geospatial Engine**: [@turf/turf](https://turfjs.org) for performing geometry math (bounding-box search, proximity algorithms, distance splits).
+* **Logging & Monitoring**: [Winston](https://github.com/winstonjs/winston) logger for trace routing and error capture.
+
+### Security & Hardening
+* **Helmet**: Hardens HTTP headers against clickjacking, sniff attacks, and cross-site scripting.
+* **bcrypt**: 10-round salt hashing for database password protection.
+* **JSON Web Tokens (JWT)**: Stateless tokenization validating HTTP requests securely.
+* **express-rate-limit**: Rate limiting middleware applied globally to mitigate DDoS and credential brute-forcing.
+* **sanitize-html**: Sanitizes user inputs to prevent injection attacks and cross-site scripting (XSS).
+
+---
+
+## 📂 Project Structure
+
+```
+ridify/
+├── backend/                  # Node.js Server & Socket Host
+│   ├── config/               # DB & server configs
+│   ├── controllers/          # Business logic handlers (auth, rides, admin)
+│   ├── middleware/           # Auth validation, rate-limiting, error capture
+│   ├── models/               # MongoDB Mongoose Schemas (User, Ride, OTP)
+│   ├── routes/               # API endpoints structure
+│   └── server.js             # Main server entrypoint
+│
+└── frontend/                 # Flutter Client Application
+    ├── assets/               # Local images, icons, and fonts
+    │   ├── screenshots/      # Feature comparison captures & GIFs
+    │   └── icon.png          # App branding asset
+    │
+    └── lib/                  # Dart files
+        ├── core/             # Application constants and themes
+        ├── screens/          # Interactive UI screens (Client + Admin)
+        ├── services/         # API adapters, Socket services, location trackers
+        ├── utils/            # Helper utilities
+        └── widgets/          # Shared components & UI overlays
+```
+
+---
+
+## ⚡ Setup & Installation
 
 ### Prerequisites
-* [Flutter SDK](https://flutter.dev/docs/get-started/install) (v3.11.4+)
-* [Node.js](https://nodejs.org/en/) (v16.x or later)
-* [MongoDB](https://www.mongodb.com/) (Local instance or an Atlas cloud cluster)
-* Git
+* [Flutter SDK](https://docs.flutter.dev/get-started/install) (v3.11.4 or higher recommended)
+* [Node.js](https://nodejs.org/en) (v20.x or higher)
+* [MongoDB](https://www.mongodb.com/try/download/community) running locally or an Atlas connection string
 
-### 1. Backend Server Setup
-```bash
-# Clone the repository
-git clone https://github.com/your-username/ridify.git
+### 1. Backend Setup
+1. Navigate to the backend directory:
+   ```bash
+   cd backend
+   ```
+2. Install dependencies:
+   ```bash
+   npm install
+   ```
+3. Configure environment variables. Copy `.env.example` to `.env` and fill in the values:
+   ```bash
+   cp .env.example .env
+   ```
+   * *Ensure you specify `PORT`, `MONGO_URI`, `JWT_SECRET`, and connection settings.*
+4. Launch the developer server (with hot reload enabled):
+   ```bash
+   npm run dev
+   ```
 
-# Navigate to the backend root directory
-cd ridify/backend
-
-# Install necessary NPM dependencies
-npm install
-
-# Duplicate the environment template
-cp .env.example .env
-
-# Edit the .env file and supply your MongoDB URI, JWT Secret, and other required variables
-nano .env
-
-# Boot up the development server
-npm run dev
-```
-
-### 2. Frontend Application Setup
-```bash
-# Navigate to the frontend directory
-cd ../frontend
-
-# Retrieve Flutter dependencies
-flutter pub get
-
-# Duplicate the environment template
-cp .env.example .env
-
-# Edit .env with your backend API URL
-# For Android emulator pointing to local host, use http://10.0.2.2:5000
-# For iOS simulator pointing to local host, use http://127.0.0.1:5000
-nano .env
-
-# Compile and run the app on a connected device or emulator
-flutter run
-```
+### 2. Frontend Setup
+1. Navigate to the frontend directory:
+   ```bash
+   cd frontend
+   ```
+2. Fetch required Dart dependencies:
+   ```bash
+   flutter pub get
+   ```
+3. Configure your local client configuration. Create a `.env` file referencing your backend server IP:
+   ```env
+   BACKEND_URL=http://<YOUR_LOCAL_IP>:5001
+   ```
+4. Build and execute on your emulator or physical debugging device:
+   ```bash
+   flutter run
+   ```
 
 ---
 
-## 🛡️ Security Measures
+## 📄 License & Attribution
+Distributed under the MIT License. See [LICENSE](LICENSE) for more details. 
 
-Security is paramount in a ride-sharing application. Ridify implements the following:
-- **Data Protection:** All passwords are one-way hashed using bcrypt before being stored.
-- **Session Management:** Stateless authentication via JWT with brief expiration times.
-- **Input Validation:** Strict sanitization of all incoming API requests to prevent NoSQL injections and XSS attacks.
-- **Role-Based Access Control (RBAC):** Distinct permissions separating standard users from administrators.
-
-## 🗺️ Future Roadmap
-
-- [ ] Implementation of a seamless in-app payment gateway (e.g., Stripe) for automated cost-splitting.
-- [ ] Integration with university Single Sign-On (SSO) systems.
-- [ ] Push notifications via Firebase Cloud Messaging (FCM) for offline alerts.
-- [ ] AI-driven route optimization and dynamic pricing suggestions.
-
-## 🤝 Contributing
-
-Contributions, bug reports, and feature requests are highly appreciated! 
-1. Fork the Project
-2. Create your Feature Branch (`git checkout -b feature/AmazingFeature`)
-3. Commit your Changes (`git commit -m 'Add some AmazingFeature'`)
-4. Push to the Branch (`git push origin feature/AmazingFeature`)
-5. Open a Pull Request
-
-## 📝 License
-
-This project is open-sourced under the MIT License - see the [LICENSE](LICENSE) file for details.
-
-<p align="center">
-  <img src="https://img.shields.io/badge/Platform-Android%20%7C%20iOS-blue?style=flat-square">
-  <img src="https://img.shields.io/badge/Architecture-Full%20Stack-success?style=flat-square">
-  <img src="https://img.shields.io/badge/Real--Time-WebSockets-orange?style=flat-square">
-</p>
-
----
-
-## 📖 About Ridify
-
-> **"Redefining daily commuting through secure, intelligent, and community-driven carpooling."**
-
-Ridify is a full-stack ride-sharing platform designed to make transportation more affordable, sustainable, and convenient. Users can either offer available seats in their vehicles or discover rides traveling along similar routes.
-
-The platform combines real-time tracking, intelligent ride matching, secure communication, and comprehensive administrative controls to create a modern carpooling ecosystem that prioritizes safety, reliability, and user experience.
-
-By encouraging ride sharing, Ridify helps reduce travel expenses, traffic congestion, parking demand, and environmental impact while fostering stronger community connections among commuters.
-
----
-
-## 🎯 Project Objectives
-
-- Provide an affordable alternative to traditional ride-hailing services.
-- Encourage sustainable transportation through ride sharing.
-- Improve safety using verification and administrative moderation.
-- Deliver real-time ride visibility and communication.
-- Create a seamless user experience through modern mobile design.
-
----
-
-## ✨ Core Features
-
-### 🚗 Intelligent Ride Matching
-
-Ridify leverages MongoDB Geospatial Queries and Turf.js route analysis to match riders and drivers whose journeys naturally overlap.
-
-**Key Benefits**
-- Route-based matching
-- Minimal driver detours
-- Distance filtering
-- Efficient ride discovery
-
----
-
-### 📍 Real-Time Location Tracking
-
-Using Socket.IO WebSockets, Ridify continuously synchronizes GPS coordinates between riders and drivers.
-
-**Features**
-- Live vehicle tracking
-- Dynamic ETA calculations
-- Arrival notifications
-- Smooth map animations
-
----
-
-### 💬 Secure In-App Messaging
-
-Built-in real-time chat enables riders and drivers to coordinate pickups and communicate without sharing personal contact information.
-
----
-
-### 🛡️ Safety & Verification
-
-Ridify prioritizes community safety through:
-
-- Email Verification
-- JWT Authentication
-- Password Hashing (bcrypt)
-- User Verification
-- Administrative Monitoring
-- Account Suspension Controls
-
----
-
-### 👨‍💼 Administrative Dashboard
-
-Administrators can:
-
-- Monitor active rides
-- Verify user documents
-- Manage user accounts
-- Review ride activity
-- Moderate platform operations
-
----
-
-### 🌗 Modern User Experience
-
-- Dark Mode Support
-- Light Mode Support
-- Glassmorphism UI
-- Responsive Design
-- Custom Animations
-- Modern Flutter Components
-
----
-
-### 📊 Analytics & Travel History
-
-Users gain access to:
-
-- Ride History
-- Cost Summaries
-- Passenger Records
-- Journey Statistics
-- Travel Insights
-
----
+Developed and maintained by **[Priyanshu Sharan](https://github.com/priyanshusharan-cmd)**. For support, issues, or contributions, please open an issue in the repository.
