@@ -472,7 +472,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
         child: RefreshIndicator(
           onRefresh: _fetchVerificationStatus,
           child: SingleChildScrollView(
-            physics: const AlwaysScrollableScrollPhysics(),
+            physics: const ClampingScrollPhysics(parent: AlwaysScrollableScrollPhysics()),
             child: Column(
               children: [
                 // ── HEADER ──────────────────────

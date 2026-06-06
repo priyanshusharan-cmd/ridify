@@ -908,7 +908,7 @@ class _LiveTrackingScreenState extends State<LiveTrackingScreen> {
               dragDevices: { PointerDeviceKind.touch, PointerDeviceKind.mouse, PointerDeviceKind.trackpad },
             ),
             child: ListView(
-              physics: const AlwaysScrollableScrollPhysics(),
+              physics: const ClampingScrollPhysics(parent: AlwaysScrollableScrollPhysics()),
               padding: EdgeInsets.zero,
               children: [
                 Container(height: 150, color: Colors.transparent),

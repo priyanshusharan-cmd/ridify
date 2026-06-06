@@ -304,7 +304,7 @@ class _ActiveRidesTabState extends State<ActiveRidesTab> {
           dragDevices: { PointerDeviceKind.touch, PointerDeviceKind.mouse, PointerDeviceKind.trackpad },
         ),
         child: SingleChildScrollView(
-          physics: const AlwaysScrollableScrollPhysics(),
+          physics: const ClampingScrollPhysics(parent: AlwaysScrollableScrollPhysics()),
           padding: const EdgeInsets.all(24.0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -385,7 +385,7 @@ class _ActiveRidesTabState extends State<ActiveRidesTab> {
           ),
           child: LayoutBuilder(
             builder: (context, constraints) => SingleChildScrollView(
-              physics: const AlwaysScrollableScrollPhysics(),
+              physics: const ClampingScrollPhysics(parent: AlwaysScrollableScrollPhysics()),
               child: SizedBox(
                 height: constraints.maxHeight,
                 child: const EmptyState(),
@@ -403,7 +403,7 @@ class _ActiveRidesTabState extends State<ActiveRidesTab> {
           dragDevices: { PointerDeviceKind.touch, PointerDeviceKind.mouse, PointerDeviceKind.trackpad },
         ),
         child: SingleChildScrollView(
-          physics: const AlwaysScrollableScrollPhysics(),
+          physics: const ClampingScrollPhysics(parent: AlwaysScrollableScrollPhysics()),
           padding: const EdgeInsets.all(24.0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,

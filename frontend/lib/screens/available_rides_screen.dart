@@ -362,7 +362,7 @@ class _AvailableRidesScreenState extends State<AvailableRidesScreen> {
       child: RefreshIndicator(
         onRefresh: widget.onRefresh ?? () async {},
         child: CustomScrollView(
-          physics: const AlwaysScrollableScrollPhysics(),
+          physics: const ClampingScrollPhysics(parent: AlwaysScrollableScrollPhysics()),
           slivers: [
             SliverToBoxAdapter(
               child: Column(

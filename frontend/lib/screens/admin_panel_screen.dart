@@ -153,7 +153,7 @@ class _DashboardTabState extends State<_DashboardTab> with AutomaticKeepAliveCli
     return RefreshIndicator(
       onRefresh: _fetchStats,
       child: SingleChildScrollView(
-        physics: const AlwaysScrollableScrollPhysics(),
+        physics: const ClampingScrollPhysics(parent: AlwaysScrollableScrollPhysics()),
         padding: const EdgeInsets.all(20),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -998,7 +998,7 @@ class _UsersTabState extends State<_UsersTab> with AutomaticKeepAliveClientMixin
       body: RefreshIndicator(
         onRefresh: () => _fetchUsers(page: _page),
         child: CustomScrollView(
-          physics: const AlwaysScrollableScrollPhysics(),
+          physics: const ClampingScrollPhysics(parent: AlwaysScrollableScrollPhysics()),
           slivers: [
             // ── Search Bar ────────────────────────────────────────────
             SliverToBoxAdapter(
@@ -1585,7 +1585,7 @@ class _RidesTabState extends State<_RidesTab> with AutomaticKeepAliveClientMixin
     return RefreshIndicator(
       onRefresh: () => _fetchRides(page: _page),
       child: CustomScrollView(
-        physics: const AlwaysScrollableScrollPhysics(),
+        physics: const ClampingScrollPhysics(parent: AlwaysScrollableScrollPhysics()),
         slivers: [
           // ── Search Bar ────────────────────────────────────────────
           SliverToBoxAdapter(
@@ -2106,7 +2106,7 @@ class _VerificationsTabState extends State<_VerificationsTab> with AutomaticKeep
       return RefreshIndicator(
         onRefresh: _fetchPending,
         child: SingleChildScrollView(
-          physics: const AlwaysScrollableScrollPhysics(),
+          physics: const ClampingScrollPhysics(parent: AlwaysScrollableScrollPhysics()),
           child: SizedBox(
             height: MediaQuery.of(context).size.height * 0.5,
             child: Center(child: Column(mainAxisSize: MainAxisSize.min, children: [
@@ -2122,7 +2122,7 @@ class _VerificationsTabState extends State<_VerificationsTab> with AutomaticKeep
     return RefreshIndicator(
       onRefresh: _fetchPending,
       child: ListView.builder(
-        physics: const AlwaysScrollableScrollPhysics(),
+        physics: const ClampingScrollPhysics(parent: AlwaysScrollableScrollPhysics()),
         padding: const EdgeInsets.all(16),
         itemCount: _pendingUsers.length,
         itemBuilder: (context, index) {

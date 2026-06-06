@@ -61,7 +61,7 @@ class RideHistoryScreen extends StatelessWidget {
         child: RefreshIndicator(
           onRefresh: onRefresh ?? () async {},
           child: CustomScrollView(
-            physics: const AlwaysScrollableScrollPhysics(),
+            physics: const ClampingScrollPhysics(parent: AlwaysScrollableScrollPhysics()),
             slivers: [
               SliverToBoxAdapter(
                 child: Padding(

@@ -621,7 +621,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
       child: RefreshIndicator(
         onRefresh: fetchRides,
         child: SingleChildScrollView(
-          physics: const AlwaysScrollableScrollPhysics(),
+          physics: const ClampingScrollPhysics(parent: AlwaysScrollableScrollPhysics()),
           padding: const EdgeInsets.all(24),
           child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
