@@ -1,11 +1,11 @@
 <h1 align="center">
-  <img src="frontend/assets/icon.png" alt="Ridify Logo" width="120"/>
+  <img src="frontend/assets/iconWithoutBackground.png" alt="Ridify Logo" width="120"/>
   <br>
   Ridify
 </h1>
 
 <p align="center">
-  <b>A real-time ride-sharing app for students. Offer or find shared rides, track journeys live on a map, and split travel costs effortlessly.</b>
+  <b>A premium, real-time ride-sharing platform for daily commuters, students, and professionals. Offer or find shared rides, track journeys live on a map, and split travel costs effortlessly.</b>
 </p>
 
 <p align="center">
@@ -21,22 +21,24 @@
 
 ## 📖 About The Project
 
-**Ridify** is a comprehensive, full-stack mobile application meticulously designed to solve daily transportation challenges for university students. It provides a secure, real-time platform where students can either offer empty seats in their vehicles or find a ride going in their direction. By carpooling, students can drastically reduce travel costs, minimize their carbon footprints, alleviate campus parking congestion, and seamlessly network with their peers.
+> *"Redefining the daily commute through secure, peer-to-peer carpooling."*
+
+**Ridify** is a comprehensive, full-stack mobile application meticulously designed to solve daily transportation challenges for everyone. It provides a secure, real-time platform where individuals can either offer empty seats in their vehicles or find a ride going in their direction. By carpooling, users can drastically reduce travel costs, minimize their carbon footprints, alleviate city parking congestion, and seamlessly network with fellow travelers.
 
 Unlike standard ride-hailing applications, Ridify is built from the ground up to emphasize **safety, community verification, and real-time responsiveness**. It integrates a sophisticated location-tracking engine, peer-to-peer in-app messaging, intelligent routing, and a robust administrative panel to oversee operations and ensure strict compliance with community guidelines.
 
 ### 🎯 Motivation
 
-University students frequently face challenges with expensive public transit, limited campus parking, and the difficulty of finding reliable transportation during peak hours or holidays. Ridify bridges this gap by creating an exclusive, student-only carpooling network. It fosters a sense of community, encourages sustainable travel habits, and provides a highly economical alternative to traditional taxis.
+Daily commuters, students, and frequent travelers often face challenges with expensive public transit, limited parking, and the difficulty of finding reliable transportation during peak hours or holidays. Ridify bridges this gap by creating an accessible and secure carpooling network. It fosters a sense of community, encourages sustainable travel habits, and provides a highly economical alternative to traditional taxis for all users.
 
 ### ✨ Core Features & Technical Highlights
 
 * **🚗 Intelligent Ride Matching:** Uses advanced geospatial querying (via MongoDB `$geoNear` and Turf.js) to accurately match riders with drivers whose routes naturally overlap, ensuring minimal detours and maximum convenience.
 * **📍 High-Frequency Real-Time Tracking:** Leveraging Socket.IO WebSockets, the app streams precise GPS coordinates continuously. Both riders and drivers see the vehicle moving smoothly on the Flutter Map in real-time, completely eliminating the need for manual refreshing and ensuring exact ETA predictions.
 * **💬 Instant In-App Chat:** A fully integrated real-time chat interface allows drivers and passengers to communicate securely to coordinate pickup details, ensuring privacy without exposing personal phone numbers.
-* **🛡️ Extensive Admin Moderation:** A dedicated administrative dashboard provides high-level control. Admins can verify student IDs, suspend malicious users, manage disputes, and monitor active rides in real-time to ensure platform safety.
+* **🛡️ Extensive Admin Moderation:** A dedicated administrative dashboard provides high-level control. Admins can verify user IDs, suspend malicious accounts, manage disputes, and monitor active rides in real-time to ensure platform safety.
 * **🌗 Premium UI/UX Aesthetics:** The app features a meticulously crafted interface with full support for system-wide Dark and Light modes. It utilizes custom micro-animations, glassmorphic overlays, modern typography, and highly responsive components to deliver a flagship-level user experience.
-* **🔐 Multi-Layer Security:** Features OTP-based email verification (locking the platform to `.edu` or university domains), strictly validated JSON Web Tokens (JWT) for all API requests, bcrypt hashing for sensitive data, and comprehensive rate limiting to prevent abuse.
+* **🔐 Multi-Layer Security:** Features robust email verification, strictly validated JSON Web Tokens (JWT) for all API requests, bcrypt hashing for sensitive data, and comprehensive rate limiting to prevent abuse.
 * **📊 Analytics & History:** Users have access to detailed journey histories, expense tracking, and a list of co-passengers they've traveled with, enhancing trust and record-keeping.
 
 ---
