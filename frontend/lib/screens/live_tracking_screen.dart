@@ -62,7 +62,7 @@ class _LiveTrackingScreenState extends State<LiveTrackingScreen> {
     initSocket();
     syncRideStatus();
     _routeTimer = Timer.periodic(const Duration(seconds: 30), (_) => _fetchRoute());
-    _backgroundSyncTimer = Timer.periodic(const Duration(seconds: 20), (_) => syncRideStatus());
+    _backgroundSyncTimer = Timer.periodic(const Duration(seconds: 10), (_) => syncRideStatus());
     _initLocationTracking();
     
     // Register reconnect callback so ride status refreshes when socket reconnects on mobile

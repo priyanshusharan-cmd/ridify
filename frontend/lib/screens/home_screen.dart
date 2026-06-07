@@ -137,7 +137,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
     });
 
     // Fallback polling to guarantee state consistency if sockets miss events
-    _pollingTimer = Timer.periodic(const Duration(seconds: 20), (_) {
+    _pollingTimer = Timer.periodic(const Duration(seconds: 10), (_) {
       if (mounted) fetchRides();
     });
 
