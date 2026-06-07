@@ -46,7 +46,7 @@ class SocketService {
   io.Socket _createSocket() {
     final accessToken = _accessToken ?? '';
     final s = io.io(kBaseUrl, <String, dynamic>{
-      'transports': ['polling', 'websocket'], // Use polling first for maximum network compatibility (e.g. school wifi, hotspots)
+      'transports': ['websocket'], // Force websocket to bypass polling and sticky-session requirements on cloud hosts
       'autoConnect': false, // Don't auto-connect until token is set
       'forceNew': true,
       'auth': {'token': accessToken},
@@ -109,8 +109,8 @@ class SocketService {
 
   void _startHealthCheck() {
     _healthCheckTimer?.cancel();
-    // Check socket health every 5 seconds
-    _healthCheckTimer = Timer.periodic(const Duration(seconds: 5), (_) {
+    // Check socket health every 15 seconds to allow built-in reconnect logic time to work
+    _healthCheckTimer = Timer.periodic(const Duration(seconds: 15), (_) {
       if (_socket == null && _userEmail != null && _accessToken != null) {
         // Socket was nulled (e.g., after token refresh) but never recreated
         debugPrint('🔌 Health check: Socket null, recreating...');
@@ -144,7 +144,7 @@ class SocketService {
     if (_socket != null && _socket!.connected) {
       _heartbeatTimeout?.cancel();
       _socket!.emit('app_ping', {'t': DateTime.now().millisecondsSinceEpoch});
-      _heartbeatTimeout = Timer(const Duration(seconds: 10), () {
+      _heartbeatTimeout = Timer(const Duration(seconds: 15), () {
         // No pong received — zombie connection detected
         debugPrint('🔌 Heartbeat timeout — zombie connection detected, forcing reconnect...');
         forceReconnect();
