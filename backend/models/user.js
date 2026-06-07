@@ -16,6 +16,7 @@ const UserSchema = new mongoose.Schema({
   isVerified: { type: Boolean, default: false },
   otp: { type: String, select: false },
   otpExpiry: { type: Date, select: false },
+  otpAttempts: { type: Number, default: 0, select: false },
   lastOtpSentAt: { type: Date, select: false },
   refreshTokens: { type: [String], default: [], select: false },
   isBanned: { type: Boolean, default: false },

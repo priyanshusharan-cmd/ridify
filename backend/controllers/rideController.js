@@ -229,9 +229,10 @@ exports.createRide = async (req, res) => {
     const data = req.body;
     data.riderEmail = req.user.email.trim().toLowerCase();
 
-    if (data.riderName) {
-      data.riderName = String(data.riderName).trim().replace(/<[^>]*>/g, '').substring(0, 200);
-    }
+    // Always use the name from the database — never trust the client
+    const User = require('../models/user');
+    const driverUser = await User.findOne({ email: data.riderEmail }, { name: 1 });
+    data.riderName = driverUser?.name || data.riderEmail.split('@')[0];
 
     if (!data.routePath || !Array.isArray(data.routePath) || data.routePath.length < 2) {
       return res.status(400).json({ error: "Invalid routePath." });
@@ -270,7 +271,7 @@ exports.createRide = async (req, res) => {
     data.fare = fare;
 
     const reqDeparture = data.departureEpoch;
-    let depEpoch = reqDeparture && typeof reqDeparture === 'number'
+    let depEpoch = (reqDeparture && typeof reqDeparture === 'number' && Number.isFinite(reqDeparture))
       ? reqDeparture : Date.now();
 
     const now = Date.now();
@@ -298,7 +299,6 @@ exports.createRide = async (req, res) => {
       sampled.push(raw[raw.length - 1]);
       data.routePath = sampled;
     }
-    const User = require('../models/user');
     const driver = await User.findOne({ email: data.riderEmail }, { verificationStatus: 1 });
     data.driverVerificationStatus = driver?.verificationStatus || 'none';
 

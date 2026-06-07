@@ -173,6 +173,25 @@ process.on('uncaughtException', (error) => {
   process.exit(1);
 });
 
+// ── Stale Ride Auto-Cleanup ─────────────────────────────────────────────────
+// Runs every 30 minutes. Cancels rides stuck in 'started' for more than 6 hours.
+const STALE_RIDE_THRESHOLD_MS = 6 * 60 * 60 * 1000; // 6 hours
+async function runStaleRideCleanup() {
+  try {
+    const Ride = require('./models/ride');
+    const cutoffTime = new Date(Date.now() - STALE_RIDE_THRESHOLD_MS);
+    const result = await Ride.updateMany(
+      { status: 'started', startedAt: { $lt: cutoffTime } },
+      { $set: { status: 'cancelled' } }
+    );
+    if (result.modifiedCount > 0) {
+      logger.warn(`[StaleRideCleanup] Auto-cancelled ${result.modifiedCount} stale ride(s) that were stuck in started state.`);
+    }
+  } catch (err) {
+    logger.error('[StaleRideCleanup] Error during cleanup:', err.message);
+  }
+}
+
 // ── Start ───────────────────────────────────────────────────────────────────
 let localIp = 'localhost';
 const networkInterfaces = os.networkInterfaces();
@@ -183,9 +202,14 @@ for (const name in networkInterfaces) {
   if (localIp !== 'localhost') break;
 }
 if (require.main === module) {
-  server.listen(PORT, '0.0.0.0', () =>
-    logger.info(`🚀 Server running on http://${localIp}:${PORT}`)
-  );
+  server.listen(PORT, '0.0.0.0', () => {
+    logger.info(`🚀 Server running on http://${localIp}:${PORT}`);
+    // Start stale ride cleanup — first run after 5 min, then every 30 min
+    setTimeout(() => {
+      runStaleRideCleanup();
+      setInterval(runStaleRideCleanup, 30 * 60 * 1000);
+    }, 5 * 60 * 1000);
+  });
 }
 
 module.exports = { app, server };

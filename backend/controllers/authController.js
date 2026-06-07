@@ -10,6 +10,11 @@ const { generateOtp } = require('../utils/otpGenerator');
 const BCRYPT_ROUNDS = parseInt(process.env.BCRYPT_ROUNDS) || 12;
 const ADMIN_EMAILS = (process.env.ADMIN_EMAILS || '').split(',').map(e => e.trim().toLowerCase()).filter(Boolean);
 
+const crypto = require('crypto');
+function hashOtp(otp) {
+  return crypto.createHash('sha256').update(String(otp)).digest('hex');
+}
+
 // ── Request Signup OTP ──────────────────────────────────────────────────────
 const requestSignupOtp = async (req, res) => {
   try {
@@ -21,6 +26,13 @@ const requestSignupOtp = async (req, res) => {
 
     if (!isValidEmail(email)) {
       return res.status(400).json({ error: 'Invalid email format.' });
+    }
+
+    const allowedDomain = process.env.ALLOWED_EMAIL_DOMAIN;
+    if (allowedDomain && allowedDomain.trim() !== '') {
+      if (!email.endsWith(`@${allowedDomain.trim().toLowerCase()}`)) {
+        return res.status(403).json({ error: `Only emails from @${allowedDomain} are allowed.` });
+      }
     }
 
     const existingUser = await User.findOne({ email });
@@ -79,6 +91,13 @@ const register = async (req, res) => {
 
     if (!isValidEmail(email)) {
       return res.status(400).json({ error: 'Invalid email format.' });
+    }
+
+    const allowedDomain = process.env.ALLOWED_EMAIL_DOMAIN;
+    if (allowedDomain && allowedDomain.trim() !== '') {
+      if (!email.endsWith(`@${allowedDomain.trim().toLowerCase()}`)) {
+        return res.status(403).json({ error: `Only emails from @${allowedDomain} are allowed.` });
+      }
     }
 
     const existingUser = await User.findOne({ email });
@@ -143,7 +162,7 @@ const login = async (req, res) => {
       return res.status(400).json({ error: 'Invalid credentials.' });
     }
 
-    const user = await User.findOne({ email }).select('+password +otp +otpExpiry');
+    const user = await User.findOne({ email }).select('+password +otp +otpExpiry +otpAttempts');
     if (!user) {
       return res.status(404).json({ error: 'User not registered. Please sign up first.' });
     }
@@ -153,14 +172,31 @@ const login = async (req, res) => {
     }
 
     if (otp) {
-      if (!user.otp || user.otp !== otp) {
-        return res.status(401).json({ error: 'Invalid OTP.' });
+      // Brute force protection: max 5 wrong attempts
+      if ((user.otpAttempts || 0) >= 5) {
+        user.otp = undefined;
+        user.otpExpiry = undefined;
+        user.otpAttempts = 0;
+        await user.save();
+        return res.status(429).json({ error: 'Too many wrong attempts. Please request a new OTP.' });
+      }
+      const hashedInput = hashOtp(otp);
+      if (!user.otp || user.otp !== hashedInput) {
+        user.otpAttempts = (user.otpAttempts || 0) + 1;
+        await user.save();
+        const attemptsLeft = 5 - user.otpAttempts;
+        return res.status(401).json({ error: `Invalid OTP. ${attemptsLeft} attempt(s) remaining.` });
       }
       if (user.otpExpiry < new Date()) {
+        user.otp = undefined;
+        user.otpExpiry = undefined;
+        user.otpAttempts = 0;
+        await user.save();
         return res.status(401).json({ error: 'OTP has expired. Please request a new one.' });
       }
       user.otp = undefined;
       user.otpExpiry = undefined;
+      user.otpAttempts = 0;
       await user.save();
     } else {
       const isMatch = await bcrypt.compare(password, user.password);
@@ -210,8 +246,9 @@ const requestLoginOtp = async (req, res) => {
     // Attempt to send the email FIRST
     await sendOtpEmail(user.email, otp);
 
-    user.otp = otp;
+    user.otp = hashOtp(otp);
     user.otpExpiry = otpExpiry;
+    user.otpAttempts = 0;
     user.lastOtpSentAt = new Date();
     await user.save();
 
@@ -236,6 +273,44 @@ const deleteUser = async (req, res) => {
 
     const user = await User.findOneAndDelete({ email: targetEmail });
     if (!user) return res.status(404).json({ error: 'User not found.' });
+
+    // Cancel any active rides this user was driving
+    const Ride = require('../models/ride');
+    const activeDriverRides = await Ride.find({
+      riderEmail: targetEmail,
+      status: { $in: ['available', 'accepted', 'full', 'started'] }
+    });
+    for (const ride of activeDriverRides) {
+      ride.status = 'cancelled';
+      // Notify all passengers on those rides
+      const allParticipants = new Set([
+        ...(ride.passengers || []),
+        ...(ride.requests || []),
+        ...(ride.boardedPassengers || [])
+      ]);
+      await ride.save();
+      if (req.io) {
+        req.io.to(ride._id.toString()).emit('ride_cancelled', {
+          rideId: ride._id.toString(),
+          ride: ride.toJSON(),
+          reason: 'driver_account_deleted'
+        });
+      }
+      for (const p of allParticipants) {
+        if (req.emitToUser) req.emitToUser(p, 'ride_cancelled', {
+          rideId: ride._id.toString(),
+          ride: ride.toJSON(),
+          reason: 'driver_account_deleted'
+        });
+      }
+    }
+
+    // Remove this user from pending requests in other rides
+    await Ride.updateMany(
+      { requests: targetEmail },
+      { $pull: { requests: targetEmail } }
+    );
+
     res.json({ message: `User ${targetEmail} deleted.` });
   } catch (err) {
     res.status(500).json({ error: 'Server error during user deletion.' });
@@ -251,13 +326,15 @@ const deleteAllUsers = async (req, res) => {
     logger.warn(`[${new Date().toISOString()}] Admin ${adminEmail} triggered deleteAllUsers`);
 
     // Delete all users EXCEPT the admin who is triggering the wipe
+    const Ride = require('../models/ride');
     await User.deleteMany({ email: { $ne: adminEmail } });
+    await Ride.deleteMany({});
 
     if (req.io) {
       req.io.emit('database_wiped', { success: true, excludedEmail: adminEmail });
     }
 
-    res.json({ message: 'All other users deleted.' });
+    res.json({ message: 'All other users and their rides deleted.' });
   } catch (err) {
     res.status(500).json({ error: 'Server error.' });
   }

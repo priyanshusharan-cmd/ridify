@@ -3,7 +3,7 @@
   
   # Ridify
   
-  ### *Real-Time Peer-to-Peer Ride-Sharing & Cost-Splitting for Students*
+  ### *Real-Time Peer-to-Peer Ride-Sharing & Cost-Splitting*
   
   [![Flutter](https://img.shields.io/badge/Flutter-v3.11.4-02569B?logo=flutter&logoColor=white)](https://flutter.dev)
   [![NodeJS](https://img.shields.io/badge/Node.js-v20+-339933?logo=node.js&logoColor=white)](https://nodejs.org)
@@ -15,7 +15,7 @@
 ---
 
 ## 📖 Overview
-**Ridify** is a production-grade, secure, real-time ride-sharing and cost-splitting mobile application specifically designed for student communities. Built on a robust mobile-first stack, it empowers students to offer journeys, search for matches, Picker locations via an interactive map, message co-passengers instantly, track rides live with real-time GPS telemetry, and split travel costs automatically. 
+**Ridify** is a production-grade, secure, real-time ride-sharing and cost-splitting mobile application. It empowers users to offer journeys, search for matches, pick locations via an interactive map, message co-passengers instantly, track rides live with real-time GPS telemetry, and split travel costs automatically.
 
 The application offers an outstanding user experience featuring full-system **Light Mode** and **Dark Mode** support across every client interaction and a comprehensive administrative suite for platform security and verification.
 
@@ -42,7 +42,7 @@ Secure user login interface utilizing JWT credentials. Features email/password f
 ---
 
 ### 3. Account Registration (Sign-Up Screen)
-Streamlined onboarding form prompting students for details, passwords, and mandatory identity validation metadata.
+Streamlined onboarding form prompting users for details, passwords, and mandatory identity validation metadata.
 
 | Light Mode | Dark Mode |
 | :---: | :---: |
@@ -51,7 +51,7 @@ Streamlined onboarding form prompting students for details, passwords, and manda
 ---
 
 ### 4. Main User Dashboard (Home Screen)
-The central student dashboard displaying active maps, current location overlays, and quick access functions for finding or offering rides.
+The central user dashboard displaying active maps, current location overlays, and quick access functions for finding or offering rides.
 
 | Light Mode | Dark Mode |
 | :---: | :---: |
@@ -267,7 +267,7 @@ A safety panel showcasing real-time geographic plots of all ongoing passenger jo
 ---
 
 ### 28. KYC & Document Checking (Admin Verify Users)
-A structured moderation interface allowing administrators to review identity documents, cross-reference student credentials, and approve KYC verification badges.
+A structured moderation interface allowing administrators to review identity documents, cross-reference user credentials, and approve KYC verification badges.
 
 | Light Mode | Dark Mode |
 | :---: | :---: |

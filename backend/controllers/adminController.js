@@ -247,6 +247,43 @@ const deleteUserById = async (req, res) => {
     const user = await User.findByIdAndDelete(req.params.id);
     if (!user) return res.status(404).json({ error: 'User not found.' });
 
+    const email = user.email;
+
+    // Cancel any active rides this user was driving
+    const activeDriverRides = await Ride.find({
+      riderEmail: email,
+      status: { $in: ['available', 'accepted', 'full', 'started'] }
+    });
+    for (const ride of activeDriverRides) {
+      ride.status = 'cancelled';
+      const allParticipants = new Set([
+        ...(ride.passengers || []),
+        ...(ride.requests || []),
+        ...(ride.boardedPassengers || [])
+      ]);
+      await ride.save();
+      if (req.io) {
+        req.io.to(ride._id.toString()).emit('ride_cancelled', {
+          rideId: ride._id.toString(),
+          ride: ride.toJSON(),
+          reason: 'driver_account_deleted'
+        });
+      }
+      for (const p of allParticipants) {
+        if (req.emitToUser) req.emitToUser(p, 'ride_cancelled', {
+          rideId: ride._id.toString(),
+          ride: ride.toJSON(),
+          reason: 'driver_account_deleted'
+        });
+      }
+    }
+
+    // Remove this user from pending requests in other rides
+    await Ride.updateMany(
+      { requests: email },
+      { $pull: { requests: email } }
+    );
+
     res.json({ message: `User ${user.email} deleted successfully.` });
   } catch (err) {
     logger.error('Admin deleteUserById error:', err.message);

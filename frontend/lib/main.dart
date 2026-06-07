@@ -16,7 +16,11 @@ final Set<String> navigatedRides = {};
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  await dotenv.load(fileName: ".env");
+  try {
+    await dotenv.load(fileName: ".env");
+  } catch (_) {
+    // .env not found — using compile-time constants or defaults
+  }
 
   runApp(
     ChangeNotifierProvider(
