@@ -45,7 +45,7 @@ function getRiderDetail(ride, name) {
   if (typeof ride.riderDetails.get === 'function') {
     return ride.riderDetails.get(safeName) || null;
   }
-  return ride.riderDetails[safeName] || null;
+  return ride.riderDetails[safeName] || ride.riderDetails[name] || null;
 }
 
 /**
