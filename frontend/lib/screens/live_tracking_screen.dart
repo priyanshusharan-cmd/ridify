@@ -1,4 +1,5 @@
 import 'package:provider/provider.dart';
+import 'package:flutter/foundation.dart';
 import '../core/user_provider.dart';
 import '../core/rides_provider.dart';
 import 'package:flutter/material.dart';

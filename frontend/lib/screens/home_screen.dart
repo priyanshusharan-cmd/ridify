@@ -1,6 +1,8 @@
 import '../services/ride_service.dart';
 import '../services/auth_service.dart';
 import 'package:flutter/material.dart';
+import 'dart:math' as math;
+import 'package:flutter/foundation.dart';
 import 'dart:async';
 import '../core/socket_service.dart';
 import 'find_ride_screen.dart';
