@@ -5,6 +5,7 @@ import 'dart:async';
 import 'dart:ui';
 import '../core/socket_service.dart';
 import '../widgets/find_ride/available_ride_card.dart';
+import 'package:flutter/foundation.dart';
 
 class AvailableRidesScreen extends StatefulWidget {
   final List<dynamic> initialRides;
@@ -42,6 +43,7 @@ class AvailableRidesScreen extends StatefulWidget {
 
 class _AvailableRidesScreenState extends State<AvailableRidesScreen> {
   Timer? _pricePollTimer;
+  Timer? _pollingTimer;
   final List<String> _joinedRides = [];
   late List<dynamic> allRides;
   late List<dynamic> displayedRides;
@@ -64,6 +66,11 @@ class _AvailableRidesScreenState extends State<AvailableRidesScreen> {
     allRides = List.from(widget.initialRides);
     _applyFiltersAndSort();
     _initSocketListeners();
+    if (kIsWeb) {
+      _pollingTimer = Timer.periodic(const Duration(seconds: 10), (_) {
+        if (mounted) widget.onRefresh?.call();
+      });
+    }
     
     for (var ride in allRides) {
       final id = ride['_id']?.toString();
@@ -88,6 +95,7 @@ class _AvailableRidesScreenState extends State<AvailableRidesScreen> {
   @override
   void dispose() {
     _pricePollTimer?.cancel();
+    _pollingTimer?.cancel();
     
     final svc = SocketService();
     for (final entry in _socketListeners) {

@@ -12,6 +12,7 @@ import 'package:flutter_map/flutter_map.dart';
 import 'package:latlong2/latlong.dart';
 import '../widgets/swipe_to_reply.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter/foundation.dart';
 
 class ChatScreen extends StatefulWidget {
   final String myName;
@@ -43,6 +44,7 @@ class _ChatScreenState extends State<ChatScreen> {
   /// Unique local ID counter for optimistic messages so we can reconcile them
   /// with the server-confirmed echo later.
   int _localMsgId = 0;
+  Timer? _pollingTimer;
 
   void _on(String event, void Function(dynamic) handler) {
     SocketService().on(event, handler);
@@ -70,6 +72,11 @@ class _ChatScreenState extends State<ChatScreen> {
     super.initState();
     fetchChatHistory();
     initSocket();
+    if (kIsWeb) {
+      _pollingTimer = Timer.periodic(const Duration(seconds: 10), (_) {
+        if (mounted) fetchChatHistory();
+      });
+    }
   }
 
   String participantsStr = "Loading...";
@@ -326,6 +333,7 @@ class _ChatScreenState extends State<ChatScreen> {
 
   @override
   void dispose() {
+    _pollingTimer?.cancel();
     SocketService().removeReconnectCallback(fetchChatHistory);
     SocketService().leaveRide(widget.rideId);
     for (final entry in _socketListeners) {
