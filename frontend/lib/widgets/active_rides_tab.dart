@@ -207,9 +207,8 @@ class _ActiveRidesTabState extends State<ActiveRidesTab> {
               bool hasAcceptedPassengers = (r['passengers'] as List?)?.isNotEmpty == true || 
                                            (r['boardedPassengers'] as List?)?.isNotEmpty == true || 
                                            (r['droppedPassengers'] as List?)?.isNotEmpty == true;
-              bool hasPendingRequests = (r['requests'] as List?)?.isNotEmpty == true;
-              if (!hasAcceptedPassengers && !hasPendingRequests) {
-                return false; // Expired rides shouldn't show in Activity if nobody is in the car and no one is waiting
+              if (!hasAcceptedPassengers) {
+                return false; // Expired rides shouldn't show in Activity
               }
             }
           }

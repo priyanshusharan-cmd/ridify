@@ -82,7 +82,6 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
   int _currentIndex = 0;
   List<dynamic> allRides = [];
   Timer? _expirationTimer;
-  Timer? _pollingTimer;
 
 
   // ── Easter Egg state ───────────────────────────────────────────────────────
@@ -134,11 +133,6 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
     // Rebuild every minute to update "expires in" text
     _expirationTimer = Timer.periodic(const Duration(minutes: 1), (_) {
       if (mounted) setState(() {});
-    });
-
-    // Fallback polling to guarantee state consistency if sockets miss events
-    _pollingTimer = Timer.periodic(const Duration(seconds: 10), (_) {
-      if (mounted) fetchRides();
     });
 
     // Measure "Ridify" exactly once so parkingX is always pixel-perfect.
@@ -447,7 +441,6 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
     _socketListeners.clear();
     socketService.removeReconnectCallback(_onSocketReconnect);
     _expirationTimer?.cancel();
-    _pollingTimer?.cancel();
 
     super.dispose();
   }

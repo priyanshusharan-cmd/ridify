@@ -45,7 +45,6 @@ class _LiveTrackingScreenState extends State<LiveTrackingScreen> {
   LatLng? myPosition;
   List<LatLng> routePoints = [];
   Timer? _routeTimer;
-  Timer? _backgroundSyncTimer;
   final MapController mapController = MapController();
   StreamSubscription<Position>? positionStreamSubscription;
   bool _isNavigatingToCompletion = false;
@@ -62,7 +61,6 @@ class _LiveTrackingScreenState extends State<LiveTrackingScreen> {
     initSocket();
     syncRideStatus();
     _routeTimer = Timer.periodic(const Duration(seconds: 30), (_) => _fetchRoute());
-    _backgroundSyncTimer = Timer.periodic(const Duration(seconds: 10), (_) => syncRideStatus());
     _initLocationTracking();
     
     // Register reconnect callback so ride status refreshes when socket reconnects on mobile
@@ -804,7 +802,6 @@ class _LiveTrackingScreenState extends State<LiveTrackingScreen> {
   void dispose() {
     _locationTimeoutTimer?.cancel();
     _routeTimer?.cancel();
-    _backgroundSyncTimer?.cancel();
     positionStreamSubscription?.cancel();
     SocketService().removeReconnectCallback(syncRideStatus);
     _removeAllListeners();

@@ -45,16 +45,18 @@ class SocketService {
 
   io.Socket _createSocket() {
     final accessToken = _accessToken ?? '';
-    final s = io.io(kBaseUrl, <String, dynamic>{
-      'transports': ['websocket'], // Force websocket to bypass polling and sticky-session requirements on cloud hosts
-      'autoConnect': false, // Don't auto-connect until token is set
-      'forceNew': true,
-      'auth': {'token': accessToken},
-      'reconnection': true,
-      'reconnectionDelay': 1000,
-      'reconnectionDelayMax': 5000,
-      'reconnectionAttempts': 9999, // Keep trying to reconnect on mobile data
-    });
+    final s = io.io(
+      kBaseUrl,
+      io.OptionBuilder()
+        .setTransports(['websocket', 'polling']) // Allow polling fallback for web stability
+        .setAuth({'token': accessToken})
+        .enableReconnection()
+        .setReconnectionDelay(1000)
+        .setReconnectionDelayMax(5000)
+        .setReconnectionAttempts(99999)
+        .disableAutoConnect()
+        .build(),
+    );
 
     s.onConnect((_) {
       debugPrint('🔌 Socket connected: ${s.id}');
