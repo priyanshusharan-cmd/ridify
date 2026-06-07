@@ -49,7 +49,6 @@ class RideHistoryScreen extends StatelessWidget {
       bool amIRider = getLowerList('passengers').contains(uemail) ||
           getLowerList('boardedPassengers').contains(uemail) ||
           getLowerList('droppedPassengers').contains(uemail) ||
-          getLowerList('requests').contains(uemail) ||
           isDeclined || isKicked;
 
       return isFinished && (amIDriver || amIRider);
