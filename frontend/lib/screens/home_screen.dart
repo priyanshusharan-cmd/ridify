@@ -137,9 +137,11 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
     });
 
     // Fallback polling to guarantee state consistency if sockets freeze on Chrome
-    _pollingTimer = Timer.periodic(const Duration(seconds: 10), (_) {
-      if (mounted) fetchRides();
-    });
+    if (kIsWeb) {
+      _pollingTimer = Timer.periodic(const Duration(seconds: 10), (_) {
+        if (mounted) fetchRides();
+      });
+    }
 
     // Measure "Ridify" exactly once so parkingX is always pixel-perfect.
     final tp = TextPainter(
