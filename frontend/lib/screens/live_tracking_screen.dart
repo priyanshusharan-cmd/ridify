@@ -50,7 +50,6 @@ class _LiveTrackingScreenState extends State<LiveTrackingScreen> {
   bool _isNavigatingToCompletion = false;
   String? _processingActionId;
   final List<MapEntry<String, void Function(dynamic)>> _socketListeners = [];
-  Timer? _backgroundSyncTimer;
   
   bool _locationTimedOut = false;
   Timer? _locationTimeoutTimer;
@@ -66,15 +65,6 @@ class _LiveTrackingScreenState extends State<LiveTrackingScreen> {
     
     // Register reconnect callback so ride status refreshes when socket reconnects on mobile
     SocketService().addReconnectCallback(syncRideStatus);
-    
-    // Background sync every 5 seconds — silently polls ride status to catch
-    // missed socket events (e.g. ride_ended, passenger_dropped) on mobile data.
-    // This ensures completion screens appear promptly even if sockets are flaky.
-    _backgroundSyncTimer = Timer.periodic(const Duration(seconds: 5), (_) {
-      if (mounted && !_isNavigatingToCompletion) {
-        syncRideStatus();
-      }
-    });
     
     _locationTimeoutTimer = Timer(const Duration(seconds: 15), () {
       if (mounted && driverPosition == null) {
@@ -810,7 +800,6 @@ class _LiveTrackingScreenState extends State<LiveTrackingScreen> {
 
   @override
   void dispose() {
-    _backgroundSyncTimer?.cancel();
     _locationTimeoutTimer?.cancel();
     _routeTimer?.cancel();
     positionStreamSubscription?.cancel();

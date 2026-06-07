@@ -38,7 +38,6 @@ class _ChatScreenState extends State<ChatScreen> {
   final FocusNode _focusNode = FocusNode();
   final List<Map<String, dynamic>> messages = [];
   final List<MapEntry<String, void Function(dynamic)>> _socketListeners = [];
-  Timer? _backgroundRefreshTimer;
   Map<String, dynamic>? replyToMessage;
 
   /// Unique local ID counter for optimistic messages so we can reconcile them
@@ -71,18 +70,6 @@ class _ChatScreenState extends State<ChatScreen> {
     super.initState();
     fetchChatHistory();
     initSocket();
-    _startBackgroundRefresh();
-  }
-
-  /// Silent background refresh every 4 seconds — ensures messages appear
-  /// even if the socket connection is lost on mobile data.
-  void _startBackgroundRefresh() {
-    _backgroundRefreshTimer?.cancel();
-    _backgroundRefreshTimer = Timer.periodic(const Duration(seconds: 4), (_) {
-      if (mounted) {
-        fetchChatHistory();
-      }
-    });
   }
 
   String participantsStr = "Loading...";
@@ -339,7 +326,6 @@ class _ChatScreenState extends State<ChatScreen> {
 
   @override
   void dispose() {
-    _backgroundRefreshTimer?.cancel();
     SocketService().removeReconnectCallback(fetchChatHistory);
     SocketService().leaveRide(widget.rideId);
     for (final entry in _socketListeners) {

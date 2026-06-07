@@ -1,24 +1,24 @@
-import 'dart:async';
 import 'package:flutter/material.dart';
 import '../services/ride_service.dart';
+import 'socket_service.dart';
 
 class RidesProvider extends ChangeNotifier {
   List<dynamic> _allRides = [];
-  Timer? _pollingTimer;
+  bool _isListening = false;
 
   List<dynamic> get allRides => _allRides;
 
   void startPolling() {
-    if (_pollingTimer != null) return;
+    if (_isListening) return;
+    _isListening = true;
     fetchRides();
-    _pollingTimer = Timer.periodic(const Duration(seconds: 15), (_) {
-      fetchRides();
-    });
+    SocketService().addReconnectCallback(fetchRides);
   }
 
   void stopPolling() {
-    _pollingTimer?.cancel();
-    _pollingTimer = null;
+    if (!_isListening) return;
+    _isListening = false;
+    SocketService().removeReconnectCallback(fetchRides);
   }
 
   void upsertRide(Map<String, dynamic> rideData) {
