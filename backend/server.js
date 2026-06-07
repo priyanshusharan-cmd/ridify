@@ -94,8 +94,8 @@ const authLimiter = rateLimit({
   windowMs: 15 * 60 * 1000,
   max: 1000,
   keyGenerator: (req) => req.body?.email
-    ? `${req.ip}_${req.body.email.toLowerCase()}`
-    : req.ip,
+    ? `${req['ip']}_${req.body.email.toLowerCase()}`
+    : req['ip'],
   validate: { xForwardedForHeader: false, ip: false },
   message: { error: 'Too many auth attempts. Please wait 15 minutes.' },
   standardHeaders: true,
@@ -105,7 +105,7 @@ const authLimiter = rateLimit({
 const rideLimiter = rateLimit({
   windowMs: 60 * 1000,
   max: 300,
-  keyGenerator: (req) => req.user?.email || req.ip,
+  keyGenerator: (req) => req.user?.email || req['ip'],
   validate: { xForwardedForHeader: false, ip: false },
   message: { error: 'Too many ride actions. Please slow down.' },
 });
