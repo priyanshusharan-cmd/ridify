@@ -34,6 +34,7 @@ class RideHistoryCard extends StatelessWidget {
     bool isCancelled = ride['status'] == 'cancelled';
     bool wasDeclined = getLowerList('declined').contains(uemail);
     bool wasKicked = getLowerList('kicked').contains(uemail);
+    bool wasCancelledRequest = getLowerList('cancelledRequests').contains(uemail);
 
     // Did the ride actually start?
     bool rideWasStarted = ride['startedAt'] != null;
@@ -61,7 +62,7 @@ class RideHistoryCard extends StatelessWidget {
     String statusText = "Completed";
     Color statusColor = const Color(0xFF4ADE80);
     IconData statusIcon = Icons.check_circle_outline_rounded;
-    if (isCancelled) {
+    if (isCancelled || wasCancelledRequest) {
       statusText = "Cancelled";
       statusColor = Colors.redAccent;
       statusIcon = Icons.cancel_outlined;
@@ -126,7 +127,8 @@ class RideHistoryCard extends StatelessWidget {
     // KICKED: passenger was removed → distance=0, duration=boardedAt→kickedAt (if boarded)
     // CANCELLED (before start): nobody travelled → all zeros
     // CANCELLED (after start, driver): use startedAt→completedAt
-    if (wasDeclined) {
+    // CANCELLED REQUEST: rider cancelled before accepted → all zeros
+    if (wasDeclined || wasCancelledRequest) {
       distance = "0.0 km";
       duration = "0 mins";
     } else if (wasKicked) {
@@ -215,6 +217,7 @@ class RideHistoryCard extends StatelessWidget {
     if (wasDeclined ||
         wasKicked ||
         isCancelled ||
+        wasCancelledRequest ||
         (isExpired && !rideWasStarted)) {
       paxCount = 0;
     } else if (wasIDriver) {
@@ -247,7 +250,7 @@ class RideHistoryCard extends StatelessWidget {
     }
 
     String fare;
-    if (wasDeclined || wasKicked) {
+    if (wasDeclined || wasKicked || wasCancelledRequest) {
       fare = "0";
     } else if (isCancelled || (isExpired && !rideWasStarted)) {
       fare = "0";

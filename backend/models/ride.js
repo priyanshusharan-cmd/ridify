@@ -62,6 +62,7 @@ const RideSchema = new mongoose.Schema({
   arrivedAt: { type: [String], default: [] },
   declined: { type: [String], default: [] },
   kicked: { type: [String], default: [] },
+  cancelledRequests: { type: [String], default: [] },
   seatAllocations: { type: Map, of: Number, default: {} },
   chatMessages: {
     type: [{

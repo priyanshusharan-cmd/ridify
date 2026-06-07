@@ -739,6 +739,11 @@ exports.declineRider = async (req, res) => {
       ride.declined.push(passengerEmail);
     }
 
+    // If the rider cancels their own request, track it so it shows in their history
+    if (req.user.email === passengerEmail && !ride.cancelledRequests.includes(passengerEmail)) {
+      ride.cancelledRequests.push(passengerEmail);
+    }
+
     if (ride.requests.length === 0 && ride.passengers.length === 0 && ride.status !== 'started') {
       ride.status = 'available';
     }
