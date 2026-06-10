@@ -57,22 +57,14 @@ function initSocket(server, app) {
   // =============================================
   // SOCKET AUTH MIDDLEWARE
   // =============================================
-  io.use(async (socket, next) => {
+  io.use((socket, next) => {
     const token = socket.handshake.auth?.token;
     if (!token || typeof token !== 'string' || token.trim() === '') {
       return next(new Error('Authentication required: provide a JWT token in handshake auth.token'));
     }
     try {
       const payload = verifyAccessToken(token);
-      const User = require('../models/user');
-      const user = await User.findById(payload.id).select('isBanned email').lean();
-      if (!user) {
-        return next(new Error('User account not found. Please re-authenticate.'));
-      }
-      if (user.isBanned) {
-        return next(new Error('Your account has been suspended. Contact support.'));
-      }
-      socket.userEmail = user.email.trim().toLowerCase();
+      socket.userEmail = payload.email.trim().toLowerCase();
       socket.userId = payload.id;
       next();
     } catch (err) {
@@ -89,15 +81,6 @@ function initSocket(server, app) {
   // Rate limiting removed per user request to allow connections from all networks
 
   io.on('connection', async (socket) => {
-    // Per-socket event rate limiter
-    const eventTimestamps = {};
-    function isRateLimited(eventName, limitMs) {
-      const now = Date.now();
-      const last = eventTimestamps[eventName] || 0;
-      if (now - last < limitMs) return true;
-      eventTimestamps[eventName] = now;
-      return false;
-    }
     logger.info(`Socket connected: ${socket.id}`);
 
     // userEmail is now guaranteed by middleware — no event needed
@@ -130,15 +113,13 @@ function initSocket(server, app) {
 
     // ── Explicit room management ───────────────────────────────────────
     socket.on('join_ride', (data) => {
-      if (!socket.userEmail) return;
-      if (isRateLimited('join_ride', 500)) return; // max 2 per second
+      if (!socket.userEmail) return; // Must register first
       if (data?.rideId) {
         socket.join(data.rideId);
       }
     });
 
     socket.on('leave_ride', (data) => {
-      if (isRateLimited('leave_ride', 500)) return; // max 2 per second
       if (data?.rideId) {
         socket.leave(data.rideId);
       }
@@ -159,15 +140,8 @@ function initSocket(server, app) {
       } catch (_) {}
     });
 
-    // ── Application-level heartbeat — echo pong so client detects zombies ──
-    socket.on('app_ping', (data) => {
-      if (isRateLimited('app_ping', 5000)) return; // max once per 5 seconds
-      socket.emit('app_pong', data || {});
-    });
-
     socket.on('request_driver_location', (data) => {
       if (!data?.rideId) return;
-      if (isRateLimited('request_driver_location', 2000)) return; // max once per 2 seconds
       socket.to(data.rideId).emit('request_driver_location', data);
     });
 

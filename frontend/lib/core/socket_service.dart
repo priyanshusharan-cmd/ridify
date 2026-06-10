@@ -5,7 +5,6 @@ import 'constants.dart';
 
 /// Singleton Socket.IO service — ONE connection shared across all screens.
 /// Manages user registration, room joining/leaving, and auto-reconnect.
-/// Includes application-level heartbeat to detect zombie connections on mobile data.
 class SocketService {
   static final SocketService _instance = SocketService._internal();
   factory SocketService() => _instance;
@@ -16,24 +15,8 @@ class SocketService {
   String? _accessToken;
   final Map<String, int> _joinedRidesCount = {};
   final Map<String, List<void Function(dynamic)>> _eventListeners = {};
+  final List<VoidCallback> _reconnectCallbacks = [];
   Timer? _healthCheckTimer;
-  Timer? _heartbeatTimer;
-  Timer? _heartbeatTimeout;
-  bool _isReconnecting = false;
-
-  /// Callbacks invoked whenever the socket (re)connects so screens can re-fetch data.
-  /// These fire AFTER the socket is fully connected and rooms are re-joined.
-  final List<VoidCallback> _onReconnectCallbacks = [];
-
-  /// Register a callback that fires on every socket connect/reconnect.
-  void addReconnectCallback(VoidCallback callback) {
-    _onReconnectCallbacks.add(callback);
-  }
-
-  /// Remove a previously registered reconnect callback.
-  void removeReconnectCallback(VoidCallback callback) {
-    _onReconnectCallbacks.remove(callback);
-  }
 
   /// The single shared socket. Created lazily on first access.
   io.Socket get socket {
@@ -45,43 +28,37 @@ class SocketService {
 
   io.Socket _createSocket() {
     final accessToken = _accessToken ?? '';
-    final s = io.io(
-      kBaseUrl,
-      io.OptionBuilder()
-        .setTransports(['websocket', 'polling']) // Allow polling fallback for web stability
-        .setAuth({'token': accessToken})
-        .enableReconnection()
-        .setReconnectionDelay(1000)
-        .setReconnectionDelayMax(5000)
-        .setReconnectionAttempts(99999)
-        .disableAutoConnect()
-        .build(),
-    );
+    final s = io.io(kBaseUrl, <String, dynamic>{
+      'transports': ['polling', 'websocket'], // Use polling first for maximum network compatibility (e.g. school wifi, hotspots)
+      'autoConnect': false, // Don't auto-connect until token is set
+      'forceNew': true,
+      'auth': {'token': accessToken},
+      'reconnection': true,
+      'reconnectionDelay': 1000,
+      'reconnectionDelayMax': 5000,
+      'reconnectionAttempts': 9999, // Keep trying to reconnect on mobile data
+    });
 
     s.onConnect((_) {
       debugPrint('🔌 Socket connected: ${s.id}');
-      _isReconnecting = false;
-      _heartbeatTimeout?.cancel(); // Connection is alive
+      // Re-register user on reconnect
+      if (_userEmail != null) {
+        s.emit('register_user', {'userEmail': _userEmail});
+      }
       // Re-join all ride rooms on reconnect
       for (final rideId in _joinedRidesCount.keys) {
         s.emit('join_ride', {'rideId': rideId});
       }
-      // Notify all listeners to re-fetch their data after reconnect
-      _fireReconnectCallbacks();
-    });
-
-    // Heartbeat pong — cancel the timeout since the connection is alive
-    s.on('app_pong', (_) {
-      _heartbeatTimeout?.cancel();
     });
 
     s.onDisconnect((_) => debugPrint('🔌 Socket disconnected'));
-    s.onReconnect((_) => debugPrint('🔌 Socket reconnected'));
-    s.onError((e) => debugPrint('❌ Socket Error: $e'));
-    s.onConnectError((e) {
-      debugPrint('❌ Socket Connect Error: $e');
-      _isReconnecting = false;
+    s.onReconnect((_) {
+      debugPrint('🔌 Socket reconnected');
+      for (final callback in _reconnectCallbacks) {
+        callback();
+      }
     });
+    s.onError((e) => debugPrint('❌ Socket Error: $e'));
 
     // Re-attach all registered listeners
     for (final entry in _eventListeners.entries) {
@@ -106,66 +83,17 @@ class SocketService {
 
     if (!socket.connected) socket.connect();
     _startHealthCheck();
-    _startHeartbeat();
   }
 
   void _startHealthCheck() {
     _healthCheckTimer?.cancel();
-    // Check socket health every 15 seconds to allow built-in reconnect logic time to work
-    _healthCheckTimer = Timer.periodic(const Duration(seconds: 15), (_) {
-      if (_socket == null && _userEmail != null && _accessToken != null) {
-        // Socket was nulled (e.g., after token refresh) but never recreated
-        debugPrint('🔌 Health check: Socket null, recreating...');
-        socket.connect();
-      } else if (_socket != null && !_socket!.connected && _userEmail != null && !_isReconnecting) {
-        debugPrint('🔌 Health check: Socket disconnected, forcing full reconnect...');
-        _isReconnecting = true;
-        // Dispose the dead socket and create a fresh one
-        _socket!.disconnect();
-        _socket!.dispose();
-        _socket = null;
-        socket.connect();
+    // Check socket health every 10 seconds
+    _healthCheckTimer = Timer.periodic(const Duration(seconds: 10), (_) {
+      if (_socket != null && !_socket!.connected && _userEmail != null) {
+        debugPrint('🔌 Health check: Socket disconnected, attempting reconnection...');
+        _socket!.connect();
       }
     });
-  }
-
-  // ── Application-level heartbeat ────────────────────────────────────────────
-  // Detects "zombie" connections: the socket reports connected=true but is
-  // actually dead (common on mobile data with NAT timeouts). We send a custom
-  // 'app_ping' event every 30s; the server echoes 'app_pong'. If no pong
-  // arrives within 10s, we force a full reconnect.
-  void _startHeartbeat() {
-    _heartbeatTimer?.cancel();
-    _heartbeatTimeout?.cancel();
-    _heartbeatTimer = Timer.periodic(const Duration(seconds: 30), (_) {
-      _sendHeartbeat();
-    });
-  }
-
-  void _sendHeartbeat() {
-    if (_socket != null && _socket!.connected) {
-      _heartbeatTimeout?.cancel();
-      _socket!.emit('app_ping', {'t': DateTime.now().millisecondsSinceEpoch});
-      _heartbeatTimeout = Timer(const Duration(seconds: 15), () {
-        // No pong received — zombie connection detected
-        debugPrint('🔌 Heartbeat timeout — zombie connection detected, forcing reconnect...');
-        forceReconnect();
-      });
-    }
-  }
-
-  /// Called by main.dart when the app resumes from background or
-  /// the browser tab becomes visible again.
-  void handleAppResumed() {
-    if (_userEmail == null || _accessToken == null) return;
-    if (_socket == null || !_socket!.connected) {
-      forceReconnect();
-    } else {
-      // Socket thinks it's connected — verify with a heartbeat
-      _sendHeartbeat();
-    }
-    // Always re-fetch data regardless (we might have missed events while backgrounded)
-    _fireReconnectCallbacks();
   }
 
   void on(String event, void Function(dynamic) handler) {
@@ -188,6 +116,16 @@ class SocketService {
         }
       }
     }
+  }
+
+  void addReconnectCallback(VoidCallback callback) {
+    if (!_reconnectCallbacks.contains(callback)) {
+      _reconnectCallbacks.add(callback);
+    }
+  }
+
+  void removeReconnectCallback(VoidCallback callback) {
+    _reconnectCallbacks.remove(callback);
   }
 
   /// Join a ride room for targeted events.
@@ -215,24 +153,10 @@ class SocketService {
     }
   }
 
-  void _fireReconnectCallbacks() {
-    for (final cb in List<VoidCallback>.from(_onReconnectCallbacks)) {
-      try {
-        cb();
-      } catch (e) {
-        debugPrint('🔌 Reconnect callback error: $e');
-      }
-    }
-  }
-
   /// Full cleanup (e.g., on logout).
   void dispose() {
     _healthCheckTimer?.cancel();
     _healthCheckTimer = null;
-    _heartbeatTimer?.cancel();
-    _heartbeatTimer = null;
-    _heartbeatTimeout?.cancel();
-    _heartbeatTimeout = null;
     for (final rideId in List.from(_joinedRidesCount.keys)) {
       _socket?.emit('leave_ride', {'rideId': rideId});
     }
@@ -241,12 +165,10 @@ class SocketService {
     _socket = null;
     _joinedRidesCount.clear();
     _eventListeners.clear();
-    _onReconnectCallbacks.clear();
+    _reconnectCallbacks.clear();
     _userEmail = null;
     _accessToken = null;
-    _isReconnecting = false;
   }
-
   void updateAccessToken(String newAccessToken) {
     if (_accessToken == newAccessToken) return;
     _accessToken = newAccessToken;
@@ -254,28 +176,23 @@ class SocketService {
       _socket!.disconnect();
       _socket!.dispose();
       _socket = null;
-      // Immediately recreate and connect — no delay to avoid missing events
       if (_userEmail != null) {
-        socket.connect();
+         Future.delayed(const Duration(milliseconds: 300), () => socket.connect());
       }
     }
   }
 
   /// Force reconnect socket (e.g., when app resumes from background on mobile data)
   void forceReconnect() {
-    if (_isReconnecting) return; // Already attempting
-    debugPrint('🔌 Forcing socket reconnection...');
-    _isReconnecting = true;
-    if (_socket != null) {
+    if (_socket != null && !_socket!.connected) {
+      debugPrint('🔌 Forcing socket reconnection...');
       _socket!.disconnect();
       _socket!.dispose();
       _socket = null;
-    }
-    // Immediately re-create and connect
-    if (_userEmail != null && _accessToken != null) {
-      socket.connect();
-    } else {
-      _isReconnecting = false;
+      // Re-create and connect
+      if (_userEmail != null && _accessToken != null) {
+        Future.delayed(const Duration(milliseconds: 200), () => socket.connect());
+      }
     }
   }
 
