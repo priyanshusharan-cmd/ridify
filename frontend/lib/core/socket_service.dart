@@ -16,7 +16,7 @@ class SocketService {
   final Map<String, int> _joinedRidesCount = {};
   final Map<String, List<void Function(dynamic)>> _eventListeners = {};
   Timer? _healthCheckTimer;
-  final List<VoidCallback> _reconnectCallbacks = [];
+  final List<Function> _reconnectCallbacks = [];
 
   /// The single shared socket. Created lazily on first access.
   io.Socket get socket {
@@ -118,13 +118,13 @@ class SocketService {
     }
   }
 
-  void addReconnectCallback(VoidCallback callback) {
+  void addReconnectCallback(Function callback) {
     if (!_reconnectCallbacks.contains(callback)) {
       _reconnectCallbacks.add(callback);
     }
   }
 
-  void removeReconnectCallback(VoidCallback callback) {
+  void removeReconnectCallback(Function callback) {
     _reconnectCallbacks.remove(callback);
   }
 

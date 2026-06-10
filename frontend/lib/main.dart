@@ -4,6 +4,8 @@ import 'services/health_service.dart';
 import 'core/theme_provider.dart';
 import 'core/app_theme.dart';
 import 'core/socket_service.dart';
+import 'core/user_provider.dart';
+import 'core/rides_provider.dart';
 import 'screens/splash_screen.dart';
 
 import 'package:flutter_dotenv/flutter_dotenv.dart';
@@ -16,8 +18,12 @@ void main() async {
   await dotenv.load(fileName: ".env");
 
   runApp(
-    ChangeNotifierProvider(
-      create: (_) => ThemeProvider(),
+    MultiProvider(
+      providers: [
+        ChangeNotifierProvider(create: (_) => ThemeProvider()),
+        ChangeNotifierProvider(create: (_) => UserProvider()),
+        ChangeNotifierProvider(create: (_) => RidesProvider()),
+      ],
       child: const MyApp(),
     ),
   );
