@@ -15,7 +15,6 @@ class SocketService {
   String? _accessToken;
   final Map<String, int> _joinedRidesCount = {};
   final Map<String, List<void Function(dynamic)>> _eventListeners = {};
-  final List<VoidCallback> _reconnectCallbacks = [];
   Timer? _healthCheckTimer;
 
   /// The single shared socket. Created lazily on first access.
@@ -52,12 +51,7 @@ class SocketService {
     });
 
     s.onDisconnect((_) => debugPrint('🔌 Socket disconnected'));
-    s.onReconnect((_) {
-      debugPrint('🔌 Socket reconnected');
-      for (final callback in _reconnectCallbacks) {
-        callback();
-      }
-    });
+    s.onReconnect((_) => debugPrint('🔌 Socket reconnected'));
     s.onError((e) => debugPrint('❌ Socket Error: $e'));
 
     // Re-attach all registered listeners
@@ -118,16 +112,6 @@ class SocketService {
     }
   }
 
-  void addReconnectCallback(VoidCallback callback) {
-    if (!_reconnectCallbacks.contains(callback)) {
-      _reconnectCallbacks.add(callback);
-    }
-  }
-
-  void removeReconnectCallback(VoidCallback callback) {
-    _reconnectCallbacks.remove(callback);
-  }
-
   /// Join a ride room for targeted events.
   void joinRide(String rideId) {
     if (rideId.isEmpty) return;
@@ -165,7 +149,6 @@ class SocketService {
     _socket = null;
     _joinedRidesCount.clear();
     _eventListeners.clear();
-    _reconnectCallbacks.clear();
     _userEmail = null;
     _accessToken = null;
   }
