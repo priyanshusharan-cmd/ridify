@@ -27,11 +27,16 @@
 	<key>LSApplicationQueriesSchemes</key>
 	<array>
 		<string>comgooglemaps</string>
+		<string>https</string>
 	</array>
 	<key>LSRequiresIPhoneOS</key>
 	<true/>
 	<key>NSLocationWhenInUseUsageDescription</key>
 	<string>This app needs access to location when in the background to show your location on the map and share it with passengers during a ride.</string>
+	<key>NSCameraUsageDescription</key>
+	<string>Ridify needs camera access so you can take a photo of your ID for account verification.</string>
+	<key>NSPhotoLibraryUsageDescription</key>
+	<string>Ridify needs photo library access so you can upload an ID image for account verification.</string>
 	<key>UIApplicationSceneManifest</key>
 	<dict>
 		<key>UIApplicationSupportsMultipleScenes</key>
