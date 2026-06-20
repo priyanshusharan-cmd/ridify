@@ -355,13 +355,7 @@ Copy `backend/.env.example` to `backend/.env` and fill in each value.
 
 ---
 
-## 👨‍💻 Contributors
 
-| Name | Role |
-|---|---|
-| **Priyanshu** | Full-stack Developer — Flutter, Node.js, MongoDB, Socket.IO |
-
----
 
 ## 📄 License
 
@@ -371,6 +365,6 @@ This project is licensed under the **MIT License** — see the [LICENSE](LICENSE
 
 <div align="center">
 
-Made with ❤️ and a lot of `socket.emit()` calls
+Made with ❤️ by Priyanshu and a lot of `socket.emit()` calls
 
 </div>
