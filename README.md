@@ -260,7 +260,7 @@ Copy `backend/.env.example` to `backend/.env` and fill in each value.
 | Variable | Description | How to Generate |
 |---|---|---|
 | `JWT_SECRET` | Access token signing secret | `node -e "console.log(require('crypto').randomBytes(64).toString('hex'))"` |
-| `JWT_REFRESH_SECRET` | Refresh token signing secret | *(same command)* |
+| `JWT_REFRESH_SECRET` | Refresh token signing secret | `node -e "console.log(require('crypto').randomBytes(64).toString('hex'))"` |
 | `JWT_EXPIRY` | Access token TTL | `15m` |
 | `JWT_REFRESH_EXPIRY` | Refresh token TTL | `7d` |
 
