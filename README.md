@@ -1,6 +1,6 @@
 <div align="center">
 
-<img src="frontend/assets/images/ridify_logo.png" alt="Ridify Logo" width="120"/>
+<img src="frontend/assets/iconWithoutBackground.png" alt="Ridify Logo" width="120"/>
 
 # Ridify
 
@@ -95,24 +95,24 @@ Built with Flutter for mobile and Node.js + Express + MongoDB on the backend, Ri
 ┌─────────────────────────────────────────────────────────────────────────┐
 │                           RIDIFY SYSTEM                                 │
 │                                                                         │
-│   ┌───────────────┐        HTTPS / WSS        ┌──────────────────────┐ │
-│   │               │ ◄────────────────────────► │                      │ │
-│   │  Flutter App  │   REST  ──►  /api/*        │  Express + Socket.IO │ │
-│   │  (Provider)   │   WS    ──►  /socket.io    │       Server         │ │
-│   │               │                            │                      │ │
-│   └───────────────┘                            └──────────┬───────────┘ │
-│                                                           │             │
-│                          ┌────────────────────────────────┤             │
-│                          │                    │           │             │
-│                     ┌────▼────┐         ┌─────▼────┐ ┌───▼──────┐     │
-│                     │ MongoDB │         │   OSRM   │ │ EmailJS  │     │
-│                     │  Atlas  │         │ (Routes) │ │  (OTP)   │     │
-│                     └────┬────┘         └──────────┘ └──────────┘     │
-│                          │                                             │
-│               ┌──────────┼──────────────┐                             │
-│          ┌────▼────┐ ┌───▼────┐ ┌───────▼──────┐                     │
-│          │  users  │ │ rides  │ │otpverif. (TTL)│                     │
-│          └─────────┘ └────────┘ └──────────────┘                     │
+│   ┌───────────────┐        HTTPS / WSS        ┌──────────────────────┐  │
+│   │               │ ◄────────────────────────►│                      │  │
+│   │  Flutter App  │   REST  ──►  /api/*       │  Express + Socket.IO │  │
+│   │  (Provider)   │   WS    ──►  /socket.io   │       Server         │  │
+│   │               │                           │                      │  │
+│   └───────────────┘                           └──────────┬───────────┘  │
+│                                                          │              │
+│                          ┌───────────────────────────────┤              │
+│                          │                  │            │              │
+│                     ┌────▼────┐        ┌────▼────┐ ┌─────▼────┐         │
+│                     │ MongoDB │        │  OSRM   │ │ EmailJS  │         │
+│                     │  Atlas  │        │(Routes) │ │  (OTP)   │         │
+│                     └────┬────┘        └─────────┘ └──────────┘         │
+│                          │                                              │
+│               ┌──────────┼──────────────┐                               │
+│          ┌────▼────┐ ┌───▼────┐ ┌───────▼──────┐                        │
+│          │  users  │ │ rides  │ │otpverif.(TTL)│                        │
+│          └─────────┘ └────────┘ └──────────────┘                        │
 └─────────────────────────────────────────────────────────────────────────┘
 ```
 
@@ -296,12 +296,13 @@ Copy `backend/.env.example` to `backend/.env` and fill in each value.
 
 | Light | Dark |
 |:---:|:---:|
-| <img src="frontend/assets/screenshots/splashLight.gif" width="220"/> | <img src="frontend/assets/screenshots/splashDark.gif" width="220"/> |
+| <img src="frontend/assets/screenshots/splashScreenLightGIF.gif" width="220"/> | <img src="frontend/assets/screenshots/splashScreenDarkGIF.gif" width="220"/> |
 | *Splash Screen* | *Splash Screen* |
-| <img src="frontend/assets/screenshots/loginLight.png" width="220"/> | <img src="frontend/assets/screenshots/loginDark.png" width="220"/> |
+| <img src="frontend/assets/screenshots/loginScreenLight.png" width="220"/> | <img src="frontend/assets/screenshots/loginScreenDark.png" width="220"/> |
 | *Login* | *Login* |
-| <img src="frontend/assets/screenshots/signUpLight.png" width="220"/> | <img src="frontend/assets/screenshots/signUpDark.png" width="220"/> |
+| <img src="frontend/assets/screenshots/signupScreenLight.png" width="220"/> | <img src="frontend/assets/screenshots/signupScreenDark.png" width="220"/> |
 | *Sign Up* | *Sign Up* |
+
 
 </details>
 
@@ -312,18 +313,19 @@ Copy `backend/.env.example` to `backend/.env` and fill in each value.
 
 | Light | Dark |
 |:---:|:---:|
-| <img src="frontend/assets/screenshots/homeLight.gif" width="220"/> | <img src="frontend/assets/screenshots/homeDark.gif" width="220"/> |
+| <img src="frontend/assets/screenshots/homeScreenLightGIF.gif" width="220"/> | <img src="frontend/assets/screenshots/homeScreenDarkGIF.gif" width="220"/> |
 | *Home Screen* | *Home Screen* |
 | <img src="frontend/assets/screenshots/offerRideLight.png" width="220"/> | <img src="frontend/assets/screenshots/offerRideDark.png" width="220"/> |
 | *Offer a Ride* | *Offer a Ride* |
-| <img src="frontend/assets/screenshots/locationPickerLight.png" width="220"/> | <img src="frontend/assets/screenshots/locationPickerDark.png" width="220"/> |
+| <img src="frontend/assets/screenshots/locationPickerScreenLight.png" width="220"/> | <img src="frontend/assets/screenshots/locationPickerScreenDark.png" width="220"/> |
 | *Location Picker* | *Location Picker* |
-| <img src="frontend/assets/screenshots/findRIdeLight.png" width="220"/> | <img src="frontend/assets/screenshots/findRIdeDark.png" width="220"/> |
+| <img src="frontend/assets/screenshots/findRIdeLight.png" width="220"/> | <img src="frontend/assets/screenshots/findRideDark.png" width="220"/> |
 | *Find a Ride* | *Find a Ride* |
-| <img src="frontend/assets/screenshots/availableRidesLight.png" width="220"/> | <img src="frontend/assets/screenshots/availableRidesDark.png" width="220"/> |
+| <img src="frontend/assets/screenshots/availableRidesScreenLight.png" width="220"/> | <img src="frontend/assets/screenshots/availableRidesScreenDark.png" width="220"/> |
 | *Available Rides* | *Available Rides* |
-| <img src="frontend/assets/screenshots/filtersLight.png" width="220"/> | <img src="frontend/assets/screenshots/filtersDark.png" width="220"/> |
+| <img src="frontend/assets/screenshots/filtersPopupLight.png" width="220"/> | <img src="frontend/assets/screenshots/filtersPopupDark.png" width="220"/> |
 | *Filters* | *Filters* |
+
 
 </details>
 
@@ -334,10 +336,11 @@ Copy `backend/.env.example` to `backend/.env` and fill in each value.
 
 | Light | Dark |
 |:---:|:---:|
-| <img src="frontend/assets/screenshots/activityLight.png" width="220"/> | <img src="frontend/assets/screenshots/activityDark.png" width="220"/> |
+| <img src="frontend/assets/screenshots/activityScreenLight.png" width="220"/> | <img src="frontend/assets/screenshots/activityScreenDark.png" width="220"/> |
 | *Activity Screen* | *Activity Screen* |
-| <img src="frontend/assets/screenshots/rideDetailsLight.png" width="220"/> | <img src="frontend/assets/screenshots/rideDetailsDark.png" width="220"/> |
+| <img src="frontend/assets/screenshots/rideDetailScreenLight.png" width="220"/> | <img src="frontend/assets/screenshots/rideDetailScreenDark.png" width="220"/> |
 | *Ride Details* | *Ride Details* |
+
 
 </details>
 
@@ -348,24 +351,25 @@ Copy `backend/.env.example` to `backend/.env` and fill in each value.
 
 | Light | Dark |
 |:---:|:---:|
-| <img src="frontend/assets/screenshots/liveDriverStartedLight.png" width="220"/> | <img src="frontend/assets/screenshots/liveDriverStartedDark.png" width="220"/> |
+| <img src="frontend/assets/screenshots/liveRideScreenDriver1Light.png" width="220"/> | <img src="frontend/assets/screenshots/liveRideScreenDriver1Dark.png" width="220"/> |
 | *Driver — Ride Started* | *Driver — Ride Started* |
-| <img src="frontend/assets/screenshots/liveRiderWaitingLight.png" width="220"/> | <img src="frontend/assets/screenshots/liveRiderWaitingDark.png" width="220"/> |
+| <img src="frontend/assets/screenshots/liveRideScreenRider1Light.png" width="220"/> | <img src="frontend/assets/screenshots/liveRideScreenRider1Dark.png" width="220"/> |
 | *Rider — Waiting for Pickup* | *Rider — Waiting for Pickup* |
-| <img src="frontend/assets/screenshots/liveDriverBoardingLight.png" width="220"/> | <img src="frontend/assets/screenshots/liveDriverBoardingDark.png" width="220"/> |
+| <img src="frontend/assets/screenshots/liveRideScreenDriver2Light.png" width="220"/> | <img src="frontend/assets/screenshots/liveRideScreenDriver2Dark.png" width="220"/> |
 | *Driver — At Boarding Point* | *Driver — At Boarding Point* |
-| <img src="frontend/assets/screenshots/liveRiderArrivedLight.png" width="220"/> | <img src="frontend/assets/screenshots/liveRiderArrivedDark.png" width="220"/> |
+| <img src="frontend/assets/screenshots/liveRideScreenRider2Light.png" width="220"/> | <img src="frontend/assets/screenshots/liveRideScreenRider2Dark.png" width="220"/> |
 | *Rider — Driver Arrived* | *Rider — Driver Arrived* |
-| <img src="frontend/assets/screenshots/liveDriverBoardedLight.png" width="220"/> | <img src="frontend/assets/screenshots/liveDriverBoardedDark.png" width="220"/> |
+| <img src="frontend/assets/screenshots/liveRideScreenDriver3Light.png" width="220"/> | <img src="frontend/assets/screenshots/liveRideScreenDriver3Dark.png" width="220"/> |
 | *Driver — Rider Boarded* | *Driver — Rider Boarded* |
-| <img src="frontend/assets/screenshots/liveRiderInTransitLight.png" width="220"/> | <img src="frontend/assets/screenshots/liveRiderInTransitDark.png" width="220"/> |
+| <img src="frontend/assets/screenshots/liveRideScreenRider3Light.png" width="220"/> | <img src="frontend/assets/screenshots/liveRideScreenRider3Dark.png" width="220"/> |
 | *Rider — In Transit* | *Rider — In Transit* |
-| <img src="frontend/assets/screenshots/chatLight.png" width="220"/> | <img src="frontend/assets/screenshots/chatDark.png" width="220"/> |
+| <img src="frontend/assets/screenshots/chatScreenLight.png" width="220"/> | <img src="frontend/assets/screenshots/chatScreenDark.png" width="220"/> |
 | *In-app Chat* | *In-app Chat* |
-| <img src="frontend/assets/screenshots/driverCompletionLight.png" width="220"/> | <img src="frontend/assets/screenshots/driverCompletionDark.png" width="220"/> |
+| <img src="frontend/assets/screenshots/driverCompletionScreenLight.png" width="220"/> | <img src="frontend/assets/screenshots/driverCompletionScreenDark.png" width="220"/> |
 | *Driver — Trip Complete* | *Driver — Trip Complete* |
-| <img src="frontend/assets/screenshots/riderCompletionLight.png" width="220"/> | <img src="frontend/assets/screenshots/riderCompletionDark.png" width="220"/> |
+| <img src="frontend/assets/screenshots/riderCompletionScreenLight.png" width="220"/> | <img src="frontend/assets/screenshots/riderCompletionScreenDark.png" width="220"/> |
 | *Rider — Trip Complete* | *Rider — Trip Complete* |
+
 
 </details>
 
@@ -376,12 +380,13 @@ Copy `backend/.env.example` to `backend/.env` and fill in each value.
 
 | Light | Dark |
 |:---:|:---:|
-| <img src="frontend/assets/screenshots/historyLight.png" width="220"/> | <img src="frontend/assets/screenshots/historyDark.png" width="220"/> |
+| <img src="frontend/assets/screenshots/historyScreenLight.png" width="220"/> | <img src="frontend/assets/screenshots/historyScreenDark.png" width="220"/> |
 | *Ride History* | *Ride History* |
-| <img src="frontend/assets/screenshots/coPassengersLight.png" width="220"/> | <img src="frontend/assets/screenshots/coPassengersDark.png" width="220"/> |
+| <img src="frontend/assets/screenshots/passengersTravelledPopupLight.png" width="220"/> | <img src="frontend/assets/screenshots/passengersTravelledPopupDark.png" width="220"/> |
 | *Co-Passengers* | *Co-Passengers* |
-| <img src="frontend/assets/screenshots/profileLight.png" width="220"/> | <img src="frontend/assets/screenshots/profileDark.png" width="220"/> |
+| <img src="frontend/assets/screenshots/profileScreenLight.png" width="220"/> | <img src="frontend/assets/screenshots/profileScreenDark.png" width="220"/> |
 | *Profile* | *Profile* |
+
 
 </details>
 
@@ -396,12 +401,13 @@ Copy `backend/.env.example` to `backend/.env` and fill in each value.
 | *Admin Dashboard* | *Admin Dashboard* |
 | <img src="frontend/assets/screenshots/adminUsersLight.png" width="220"/> | <img src="frontend/assets/screenshots/adminUsersDark.png" width="220"/> |
 | *Admin — Users* | *Admin — Users* |
-| <img src="frontend/assets/screenshots/adminUserPopupLight.png" width="220"/> | <img src="frontend/assets/screenshots/adminUserPopupDark.png" width="220"/> |
+| <img src="frontend/assets/screenshots/userPopupLight.png" width="220"/> | <img src="frontend/assets/screenshots/userPopupDark.png" width="220"/> |
 | *Admin — User Actions* | *Admin — User Actions* |
-| <img src="frontend/assets/screenshots/adminActiveRidesLight.png" width="220"/> | <img src="frontend/assets/screenshots/adminActiveRidesDark.png" width="220"/> |
+| <img src="frontend/assets/screenshots/adminRidesLight.png" width="220"/> | <img src="frontend/assets/screenshots/adminRidesDark.png" width="220"/> |
 | *Admin — Active Rides* | *Admin — Active Rides* |
 | <img src="frontend/assets/screenshots/adminVerifyLight.png" width="220"/> | <img src="frontend/assets/screenshots/adminVerifyDark.png" width="220"/> |
 | *Admin — KYC Verification* | *Admin — KYC Verification* |
+
 
 </details>
 
