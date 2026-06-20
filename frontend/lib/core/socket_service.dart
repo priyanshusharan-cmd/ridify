@@ -29,7 +29,9 @@ class SocketService {
   io.Socket _createSocket() {
     final accessToken = _accessToken ?? '';
     final s = io.io(kBaseUrl, <String, dynamic>{
-      'transports': ['polling', 'websocket'], // Use polling first for maximum network compatibility (e.g. school wifi, hotspots)
+      // Web often struggles with websockets on some deployments, keep polling fallback.
+      // Mobile works best directly with websockets for robust connections.
+      'transports': kIsWeb ? ['polling', 'websocket'] : ['websocket'],
       'autoConnect': false, // Don't auto-connect until token is set
       'forceNew': true,
       'auth': {'token': accessToken},
@@ -37,6 +39,7 @@ class SocketService {
       'reconnectionDelay': 1000,
       'reconnectionDelayMax': 5000,
       'reconnectionAttempts': 9999, // Keep trying to reconnect on mobile data
+      'timeout': 20000,
     });
 
     s.onConnect((_) {

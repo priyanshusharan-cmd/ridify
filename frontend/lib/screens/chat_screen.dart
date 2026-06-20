@@ -72,11 +72,10 @@ class _ChatScreenState extends State<ChatScreen> {
     super.initState();
     fetchChatHistory();
     initSocket();
-    if (kIsWeb) {
-      _pollingTimer = Timer.periodic(const Duration(seconds: 10), (_) {
-        if (mounted) fetchChatHistory();
-      });
-    }
+    // 10-second background hidden refresh for BOTH phone and Chrome
+    _pollingTimer = Timer.periodic(const Duration(seconds: 10), (_) {
+      if (mounted) fetchChatHistory();
+    });
   }
 
   String participantsStr = "Loading...";

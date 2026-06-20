@@ -137,7 +137,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
       if (mounted) setState(() {});
     });
 
-    // Fallback polling to guarantee state consistency if sockets freeze on Chrome
+    // Fallback polling every 10 seconds on Web, as requested
     if (kIsWeb) {
       _pollingTimer = Timer.periodic(const Duration(seconds: 10), (_) {
         if (mounted) fetchRides();
