@@ -15,7 +15,7 @@ class SplashScreen extends StatefulWidget {
 class _SplashScreenState extends State<SplashScreen>
     with SingleTickerProviderStateMixin {
   late AnimationController _controller;
-  late Animation<double> _carTranslationX;
+  late Animation<double> _carTranslationX;  // initialized in initState with safe default
 
   double _screenWidth = 0.0;
   double _screenHeight = 0.0;
@@ -70,6 +70,11 @@ class _SplashScreenState extends State<SplashScreen>
       vsync: this,
       duration: const Duration(milliseconds: 2250),
     );
+
+    // Safe default: keeps car off-screen left at value 0 until layout is ready.
+    // This prevents LateInitializationError if build() fires before
+    // didChangeDependencies has a chance to set the real screen-relative tween.
+    _carTranslationX = AlwaysStoppedAnimation(0.0);
 
     _controller.addStatusListener((status) {
       if (status == AnimationStatus.completed) {
