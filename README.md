@@ -365,6 +365,6 @@ This project is licensed under the **MIT License** — see the [LICENSE](LICENSE
 
 <div align="center">
 
-Made with ❤️ by Priyanshu and a lot of `socket.emit()` calls
+Made with ❤️ by Priyanshu
 
 </div>
