@@ -125,6 +125,15 @@ function initSocket(server, app) {
       }
     });
 
+    // ── Global Search Room Management ──────────────────────────────────
+    socket.on('join_global_search_room', () => {
+      socket.join('global_search_room');
+    });
+
+    socket.on('leave_global_search_room', () => {
+      socket.leave('global_search_room');
+    });
+
     // ── Driver location — verify the emitter is actually the driver ────
     socket.on('driver_location_update', async (data) => {
       if (!socket.userEmail || !data?.rideId) return;

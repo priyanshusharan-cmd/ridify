@@ -291,9 +291,10 @@ const deleteUser = async (req, res) => {
       await ride.save();
       if (req.io) {
         req.io.to(ride._id.toString()).emit('ride_cancelled', {
-          rideId: ride._id.toString(),
-          ride: ride.toJSON(),
-          reason: 'driver_account_deleted'
+          rideId: ride._id.toString(), ride: ride.toJSON(), adminCancelled: true
+        });
+        req.io.to('global_search_room').emit('ride_cancelled', {
+          rideId: ride._id.toString(), ride: ride.toJSON(), adminCancelled: true
         });
       }
       for (const p of allParticipants) {

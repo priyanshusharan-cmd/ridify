@@ -358,6 +358,7 @@ exports.cancelRide = async (req, res) => {
       req.emitToUser(passenger, 'ride_cancelled', finalPayload);
     }
     req.io.to(req.params.id).emit('ride_cancelled', finalPayload);
+    req.io.to('global_search_room').emit('ride_cancelled', finalPayload);
     res.status(200).json({ success: true });
   } catch (err) { res.status(500).json({ error: err.message }); }
 };
@@ -492,6 +493,7 @@ exports.requestRide = async (req, res) => {
 
       const ridePayload = decodeRiderDetailsForSocket(updateResult.toJSON());
       req.io.to(rideId).emit('new_ride_request', { rideId, ride: ridePayload });
+      req.io.to('global_search_room').emit('new_ride_request', { rideId, ride: ridePayload });
       req.emitToUser(ride.riderEmail, 'new_ride_request', { rideId, ride: ridePayload });
       req.emitToUser(riderEmail, 'new_ride_request', { rideId, ride: ridePayload });
 
@@ -708,6 +710,7 @@ exports.acceptRider = async (req, res) => {
 
       // Also broadcast to the ride room so that active listeners (e.g. LiveTrackingScreen) update immediately
       req.io.to(rideId).emit('ride_updated', { rideId, ride: decodedFullRide });
+      req.io.to('global_search_room').emit('ride_updated', { rideId, ride: decodedFullRide });
 
       return res.status(200).json(updateResult);
     } catch (err) {
@@ -756,6 +759,7 @@ exports.declineRider = async (req, res) => {
     req.emitToUser(passengerEmail, 'ride_cancelled', { rideId, ride: ridePayload });
     // Notify the ride room (driver + other participants) so their UI updates in real-time
     req.io.to(rideId).emit('ride_updated', { rideId, ride: ridePayload });
+    req.io.to('global_search_room').emit('ride_updated', { rideId, ride: ridePayload });
     // Also notify the driver directly in case they lost room membership
     req.emitToUser(ride.riderEmail, 'ride_updated', { rideId, ride: ridePayload });
     req.removeUserFromRide(passengerEmail, rideId);
@@ -812,6 +816,8 @@ exports.kickPassenger = async (req, res) => {
     const rideId = ride._id.toString();
     const payload = { rideId, kickedUser: passengerEmail, ride: decodeRiderDetailsForSocket(ride.toJSON()) };
     req.io.to(rideId).emit('passenger_kicked', payload);
+    // Broadcast the updated capacity to the search room so it immediately reappears
+    req.io.to('global_search_room').emit('ride_updated', { rideId, ride: payload.ride });
     // Also target the kicked user directly (they may have left the room)
     req.emitToUser(passengerEmail, 'passenger_kicked', payload);
     // Notify the driver directly in case they lost room membership
@@ -1174,6 +1180,7 @@ exports.startRide = async (req, res) => {
     const rideId = updateResult._id.toString();
     const payload = { rideId, ride: decodeRiderDetailsForSocket(updateResult.toJSON()) };
     req.io.to(rideId).emit('ride_started', payload);
+    req.io.to('global_search_room').emit('ride_started', payload);
 
     // Notify all participants individually
     const allParticipants = new Set([
@@ -1270,6 +1277,7 @@ exports.endRide = async (req, res) => {
     };
 
     req.io.to(rideId).emit('ride_ended', payload);
+    req.io.to('global_search_room').emit('ride_ended', payload);
 
     // Notify all participants individually
     const allParticipants = new Set([

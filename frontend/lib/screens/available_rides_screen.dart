@@ -44,7 +44,6 @@ class AvailableRidesScreen extends StatefulWidget {
 class _AvailableRidesScreenState extends State<AvailableRidesScreen> {
   Timer? _pricePollTimer;
   Timer? _pollingTimer;
-  final List<String> _joinedRides = [];
   late List<dynamic> allRides;
   late List<dynamic> displayedRides;
   String selectedFilter = 'Any'; // Any, Sedan, Bike, SUV
@@ -72,13 +71,7 @@ class _AvailableRidesScreenState extends State<AvailableRidesScreen> {
       });
     }
     
-    for (var ride in allRides) {
-      final id = ride['_id']?.toString();
-      if (id != null) {
-        SocketService().joinRide(id);
-        _joinedRides.add(id);
-      }
-    }
+    SocketService().joinGlobalSearch();
   }
 
   @override
@@ -103,9 +96,7 @@ class _AvailableRidesScreenState extends State<AvailableRidesScreen> {
     }
     _socketListeners.clear();
     
-    for (var id in _joinedRides) {
-      SocketService().leaveRide(id);
-    }
+    SocketService().leaveGlobalSearch();
     
     super.dispose();
   }
@@ -149,6 +140,7 @@ class _AvailableRidesScreenState extends State<AvailableRidesScreen> {
       final ride = map['ride'] != null ? SocketService.deepConvertMap(map['ride']) : null;
       if (ride != null && mounted) {
         final rideId = ride['_id']?.toString();
+        
         setState(() {
           final idx = allRides.indexWhere((r) => r['_id'].toString() == rideId);
           if (idx >= 0) {

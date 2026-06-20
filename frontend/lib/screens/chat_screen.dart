@@ -12,8 +12,6 @@ import 'package:flutter_map/flutter_map.dart';
 import 'package:latlong2/latlong.dart';
 import '../widgets/swipe_to_reply.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter/foundation.dart';
-
 class ChatScreen extends StatefulWidget {
   final String myName;
   final String myEmail;

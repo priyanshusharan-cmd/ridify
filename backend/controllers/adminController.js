@@ -264,9 +264,10 @@ const deleteUserById = async (req, res) => {
       await ride.save();
       if (req.io) {
         req.io.to(ride._id.toString()).emit('ride_cancelled', {
-          rideId: ride._id.toString(),
-          ride: ride.toJSON(),
-          reason: 'driver_account_deleted'
+          rideId: ride._id.toString(), ride: ride.toJSON(), adminCancelled: true
+        });
+        req.io.to('global_search_room').emit('ride_cancelled', {
+          rideId: ride._id.toString(), ride: ride.toJSON(), adminCancelled: true
         });
       }
       for (const p of allParticipants) {
@@ -407,6 +408,7 @@ const deleteRide = async (req, res) => {
     // Notify connected users
     if (req.io) {
       req.io.to(req.params.id).emit('ride_cancelled', { rideId: req.params.id, adminDeleted: true });
+      req.io.to('global_search_room').emit('ride_cancelled', { rideId: req.params.id, adminDeleted: true });
     }
 
     res.json({ message: 'Ride deleted successfully.' });
@@ -467,6 +469,7 @@ const forceCancelRide = async (req, res) => {
 
     if (req.io) {
       req.io.to(req.params.id).emit('ride_cancelled', { rideId: req.params.id, ride: ride.toJSON(), adminCancelled: true });
+      req.io.to('global_search_room').emit('ride_cancelled', { rideId: req.params.id, ride: ride.toJSON(), adminCancelled: true });
     }
 
     res.json({ message: 'Ride force-cancelled by admin.', ride });

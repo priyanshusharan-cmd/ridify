@@ -156,6 +156,16 @@ class SocketService {
     }
   }
 
+  /// Join the global search room to receive broadcasted ride updates.
+  void joinGlobalSearch() {
+    socket.emit('join_global_search_room');
+  }
+
+  /// Leave the global search room.
+  void leaveGlobalSearch() {
+    socket.emit('leave_global_search_room');
+  }
+
   /// Full cleanup (e.g., on logout).
   void dispose() {
     _healthCheckTimer?.cancel();
