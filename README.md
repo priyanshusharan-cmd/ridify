@@ -76,7 +76,6 @@ Built with Flutter for mobile and Node.js + Express + MongoDB on the backend, Ri
 | Helmet | 8.x | HTTP security headers |
 | express-rate-limit | 7.x | API abuse prevention |
 | sanitize-html | 2.x | XSS input sanitisation |
-| node-cron | 3.x | Stale ride cleanup scheduler |
 
 ### External Services
 
