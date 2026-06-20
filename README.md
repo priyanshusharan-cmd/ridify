@@ -235,14 +235,27 @@ Copy `backend/.env.example` to `backend/.env` and fill in each value.
 
 <br>
 
+#### Splash Screen
+
 | Light | Dark |
 |:---:|:---:|
 | <img src="frontend/assets/screenshots/splashScreenLightGIF.gif" width="220"/> | <img src="frontend/assets/screenshots/splashScreenDarkGIF.gif" width="220"/> |
-| *Splash Screen* | *Splash Screen* |
+<br>
+
+#### Login
+
+| Light | Dark |
+|:---:|:---:|
 | <img src="frontend/assets/screenshots/loginScreenLight.png" width="220"/> | <img src="frontend/assets/screenshots/loginScreenDark.png" width="220"/> |
-| *Login* | *Login* |
+<br>
+
+#### Sign Up
+
+| Light | Dark |
+|:---:|:---:|
 | <img src="frontend/assets/screenshots/signupScreenLight.png" width="220"/> | <img src="frontend/assets/screenshots/signupScreenDark.png" width="220"/> |
-| *Sign Up* | *Sign Up* |
+<br>
+
 
 
 </details>
@@ -252,20 +265,48 @@ Copy `backend/.env.example` to `backend/.env` and fill in each value.
 
 <br>
 
+#### Home Screen
+
 | Light | Dark |
 |:---:|:---:|
 | <img src="frontend/assets/screenshots/homeScreenLightGIF.gif" width="220"/> | <img src="frontend/assets/screenshots/homeScreenDarkGIF.gif" width="220"/> |
-| *Home Screen* | *Home Screen* |
+<br>
+
+#### Offer a Ride
+
+| Light | Dark |
+|:---:|:---:|
 | <img src="frontend/assets/screenshots/offerRideLight.png" width="220"/> | <img src="frontend/assets/screenshots/offerRideDark.png" width="220"/> |
-| *Offer a Ride* | *Offer a Ride* |
+<br>
+
+#### Location Picker
+
+| Light | Dark |
+|:---:|:---:|
 | <img src="frontend/assets/screenshots/locationPickerScreenLight.png" width="220"/> | <img src="frontend/assets/screenshots/locationPickerScreenDark.png" width="220"/> |
-| *Location Picker* | *Location Picker* |
+<br>
+
+#### Find a Ride
+
+| Light | Dark |
+|:---:|:---:|
 | <img src="frontend/assets/screenshots/findRIdeLight.png" width="220"/> | <img src="frontend/assets/screenshots/findRideDark.png" width="220"/> |
-| *Find a Ride* | *Find a Ride* |
+<br>
+
+#### Available Rides
+
+| Light | Dark |
+|:---:|:---:|
 | <img src="frontend/assets/screenshots/availableRidesScreenLight.png" width="220"/> | <img src="frontend/assets/screenshots/availableRidesScreenDark.png" width="220"/> |
-| *Available Rides* | *Available Rides* |
+<br>
+
+#### Filters
+
+| Light | Dark |
+|:---:|:---:|
 | <img src="frontend/assets/screenshots/filtersPopupLight.png" width="220"/> | <img src="frontend/assets/screenshots/filtersPopupDark.png" width="220"/> |
-| *Filters* | *Filters* |
+<br>
+
 
 
 </details>
@@ -275,12 +316,20 @@ Copy `backend/.env.example` to `backend/.env` and fill in each value.
 
 <br>
 
+#### Activity Screen
+
 | Light | Dark |
 |:---:|:---:|
 | <img src="frontend/assets/screenshots/activityScreenLight.png" width="220"/> | <img src="frontend/assets/screenshots/activityScreenDark.png" width="220"/> |
-| *Activity Screen* | *Activity Screen* |
+<br>
+
+#### Ride Details
+
+| Light | Dark |
+|:---:|:---:|
 | <img src="frontend/assets/screenshots/rideDetailScreenLight.png" width="220"/> | <img src="frontend/assets/screenshots/rideDetailScreenDark.png" width="220"/> |
-| *Ride Details* | *Ride Details* |
+<br>
+
 
 
 </details>
@@ -290,26 +339,69 @@ Copy `backend/.env.example` to `backend/.env` and fill in each value.
 
 <br>
 
+#### Driver — Ride Started
+
 | Light | Dark |
 |:---:|:---:|
 | <img src="frontend/assets/screenshots/liveRideScreenDriver1Light.png" width="220"/> | <img src="frontend/assets/screenshots/liveRideScreenDriver1Dark.png" width="220"/> |
-| *Driver — Ride Started* | *Driver — Ride Started* |
+<br>
+
+#### Rider — Waiting for Pickup
+
+| Light | Dark |
+|:---:|:---:|
 | <img src="frontend/assets/screenshots/liveRideScreenRider1Light.png" width="220"/> | <img src="frontend/assets/screenshots/liveRideScreenRider1Dark.png" width="220"/> |
-| *Rider — Waiting for Pickup* | *Rider — Waiting for Pickup* |
+<br>
+
+#### Driver — At Boarding Point
+
+| Light | Dark |
+|:---:|:---:|
 | <img src="frontend/assets/screenshots/liveRideScreenDriver2Light.png" width="220"/> | <img src="frontend/assets/screenshots/liveRideScreenDriver2Dark.png" width="220"/> |
-| *Driver — At Boarding Point* | *Driver — At Boarding Point* |
+<br>
+
+#### Rider — Driver Arrived
+
+| Light | Dark |
+|:---:|:---:|
 | <img src="frontend/assets/screenshots/liveRideScreenRider2Light.png" width="220"/> | <img src="frontend/assets/screenshots/liveRideScreenRider2Dark.png" width="220"/> |
-| *Rider — Driver Arrived* | *Rider — Driver Arrived* |
+<br>
+
+#### Driver — Rider Boarded
+
+| Light | Dark |
+|:---:|:---:|
 | <img src="frontend/assets/screenshots/liveRideScreenDriver3Light.png" width="220"/> | <img src="frontend/assets/screenshots/liveRideScreenDriver3Dark.png" width="220"/> |
-| *Driver — Rider Boarded* | *Driver — Rider Boarded* |
+<br>
+
+#### Rider — In Transit
+
+| Light | Dark |
+|:---:|:---:|
 | <img src="frontend/assets/screenshots/liveRideScreenRider3Light.png" width="220"/> | <img src="frontend/assets/screenshots/liveRideScreenRider3Dark.png" width="220"/> |
-| *Rider — In Transit* | *Rider — In Transit* |
+<br>
+
+#### In-app Chat
+
+| Light | Dark |
+|:---:|:---:|
 | <img src="frontend/assets/screenshots/chatScreenLight.png" width="220"/> | <img src="frontend/assets/screenshots/chatScreenDark.png" width="220"/> |
-| *In-app Chat* | *In-app Chat* |
+<br>
+
+#### Driver — Trip Complete
+
+| Light | Dark |
+|:---:|:---:|
 | <img src="frontend/assets/screenshots/driverCompletionScreenLight.png" width="220"/> | <img src="frontend/assets/screenshots/driverCompletionScreenDark.png" width="220"/> |
-| *Driver — Trip Complete* | *Driver — Trip Complete* |
+<br>
+
+#### Rider — Trip Complete
+
+| Light | Dark |
+|:---:|:---:|
 | <img src="frontend/assets/screenshots/riderCompletionScreenLight.png" width="220"/> | <img src="frontend/assets/screenshots/riderCompletionScreenDark.png" width="220"/> |
-| *Rider — Trip Complete* | *Rider — Trip Complete* |
+<br>
+
 
 
 </details>
@@ -319,14 +411,27 @@ Copy `backend/.env.example` to `backend/.env` and fill in each value.
 
 <br>
 
+#### Ride History
+
 | Light | Dark |
 |:---:|:---:|
 | <img src="frontend/assets/screenshots/historyScreenLight.png" width="220"/> | <img src="frontend/assets/screenshots/historyScreenDark.png" width="220"/> |
-| *Ride History* | *Ride History* |
+<br>
+
+#### Co-Passengers
+
+| Light | Dark |
+|:---:|:---:|
 | <img src="frontend/assets/screenshots/passengersTravelledPopupLight.png" width="220"/> | <img src="frontend/assets/screenshots/passengersTravelledPopupDark.png" width="220"/> |
-| *Co-Passengers* | *Co-Passengers* |
+<br>
+
+#### Profile
+
+| Light | Dark |
+|:---:|:---:|
 | <img src="frontend/assets/screenshots/profileScreenLight.png" width="220"/> | <img src="frontend/assets/screenshots/profileScreenDark.png" width="220"/> |
-| *Profile* | *Profile* |
+<br>
+
 
 
 </details>
@@ -336,18 +441,41 @@ Copy `backend/.env.example` to `backend/.env` and fill in each value.
 
 <br>
 
+#### Admin Dashboard
+
 | Light | Dark |
 |:---:|:---:|
 | <img src="frontend/assets/screenshots/adminDashboardLight.png" width="220"/> | <img src="frontend/assets/screenshots/adminDashboardDark.png" width="220"/> |
-| *Admin Dashboard* | *Admin Dashboard* |
+<br>
+
+#### Admin — Users
+
+| Light | Dark |
+|:---:|:---:|
 | <img src="frontend/assets/screenshots/adminUsersLight.png" width="220"/> | <img src="frontend/assets/screenshots/adminUsersDark.png" width="220"/> |
-| *Admin — Users* | *Admin — Users* |
+<br>
+
+#### Admin — User Actions
+
+| Light | Dark |
+|:---:|:---:|
 | <img src="frontend/assets/screenshots/userPopupLight.png" width="220"/> | <img src="frontend/assets/screenshots/userPopupDark.png" width="220"/> |
-| *Admin — User Actions* | *Admin — User Actions* |
+<br>
+
+#### Admin — Active Rides
+
+| Light | Dark |
+|:---:|:---:|
 | <img src="frontend/assets/screenshots/adminRidesLight.png" width="220"/> | <img src="frontend/assets/screenshots/adminRidesDark.png" width="220"/> |
-| *Admin — Active Rides* | *Admin — Active Rides* |
+<br>
+
+#### Admin — KYC Verification
+
+| Light | Dark |
+|:---:|:---:|
 | <img src="frontend/assets/screenshots/adminVerifyLight.png" width="220"/> | <img src="frontend/assets/screenshots/adminVerifyDark.png" width="220"/> |
-| *Admin — KYC Verification* | *Admin — KYC Verification* |
+<br>
+
 
 
 </details>
