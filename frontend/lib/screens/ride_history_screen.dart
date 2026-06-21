@@ -66,27 +66,14 @@ class RideHistoryScreen extends StatelessWidget {
             slivers: [
               SliverToBoxAdapter(
                 child: Padding(
-                  padding: const EdgeInsets.fromLTRB(24, 24, 24, 16),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        "Ride History",
-                        style: TextStyle(
-                          fontSize: 28, 
-                          fontWeight: FontWeight.bold,
-                          color: isDark ? Colors.white : Colors.black,
-                        ),
-                      ),
-                      const SizedBox(height: 4),
-                      Text(
-                        "Your recent rides and earnings",
-                        style: TextStyle(
-                          fontSize: 14,
-                          color: isDark ? Colors.white54 : Colors.grey[600],
-                        ),
-                      ),
-                    ],
+                  padding: const EdgeInsets.fromLTRB(24, 24, 24, 24),
+                  child: Text(
+                    "Ride History",
+                    style: TextStyle(
+                      fontSize: 28, 
+                      fontWeight: FontWeight.bold,
+                      color: isDark ? Colors.white : Colors.black,
+                    ),
                   ),
                 ),
               ),
