@@ -333,19 +333,34 @@ class RideHistoryCard extends StatelessWidget {
                       : (isDark
                             ? const Color(0xFF162B1D)
                             : Colors.green.shade50),
-                  borderRadius: BorderRadius.circular(8),
+                  borderRadius: BorderRadius.circular(20),
                 ),
-                child: Text(
-                  wasIDriver ? "Offered (Driver)" : "Requested (Rider)",
-                  style: TextStyle(
-                    color: wasIDriver
-                        ? (isDark ? Colors.blue.shade400 : Colors.blue.shade700)
-                        : (isDark
-                              ? Colors.green.shade400
-                              : Colors.green.shade700),
-                    fontWeight: FontWeight.bold,
-                    fontSize: 12,
-                  ),
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Icon(
+                      wasIDriver ? Icons.directions_car_rounded : Icons.person_rounded,
+                      size: 14,
+                      color: wasIDriver
+                          ? (isDark ? Colors.blue.shade400 : Colors.blue.shade700)
+                          : (isDark
+                                ? Colors.green.shade400
+                                : Colors.green.shade700),
+                    ),
+                    const SizedBox(width: 4),
+                    Text(
+                      wasIDriver ? "Offered Ride" : "Requested Ride",
+                      style: TextStyle(
+                        color: wasIDriver
+                            ? (isDark ? Colors.blue.shade400 : Colors.blue.shade700)
+                            : (isDark
+                                  ? Colors.green.shade400
+                                  : Colors.green.shade700),
+                        fontWeight: FontWeight.w600,
+                        fontSize: 11,
+                      ),
+                    ),
+                  ],
                 ),
               ),
               Text(
@@ -361,16 +376,15 @@ class RideHistoryCard extends StatelessWidget {
           const SizedBox(height: 20),
 
           // Locations & Date/Time
-          Row(
+          Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              // Locations
-              Expanded(
-                flex: 3,
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Row(
+              Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Expanded(
+                    flex: 3,
+                    child: Row(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         const Icon(
@@ -393,22 +407,54 @@ class RideHistoryCard extends StatelessWidget {
                         ),
                       ],
                     ),
-                    Padding(
-                      padding: const EdgeInsets.only(left: 7),
-                      child: SizedBox(
-                        height: 6,
-                        width: 2,
-                        child: OverflowBox(
-                          minHeight: 18,
-                          maxHeight: 18,
-                          child: Container(
-                            width: 2,
-                            color: isDark ? Colors.white24 : Colors.black12,
+                  ),
+                  Expanded(
+                    flex: 2,
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.end,
+                      children: [
+                        Icon(
+                          Icons.calendar_today_rounded,
+                          size: 12,
+                          color: isDark ? Colors.white54 : Colors.grey[600],
+                        ),
+                        const SizedBox(width: 6),
+                        Flexible(
+                          child: Text(
+                            datePart,
+                            style: TextStyle(
+                              color: isDark ? Colors.white70 : Colors.grey[700],
+                              fontSize: 11,
+                            ),
+                            overflow: TextOverflow.ellipsis,
                           ),
                         ),
-                      ),
+                      ],
                     ),
-                    Row(
+                  ),
+                ],
+              ),
+              Padding(
+                padding: const EdgeInsets.only(left: 7),
+                child: SizedBox(
+                  height: 6,
+                  width: 2,
+                  child: OverflowBox(
+                    minHeight: 18,
+                    maxHeight: 18,
+                    child: Container(
+                      width: 2,
+                      color: isDark ? Colors.white24 : Colors.black12,
+                    ),
+                  ),
+                ),
+              ),
+              Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Expanded(
+                    flex: 3,
+                    child: Row(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         const Icon(
@@ -431,38 +477,10 @@ class RideHistoryCard extends StatelessWidget {
                         ),
                       ],
                     ),
-                  ],
-                ),
-              ),
-              // Date/Time
-              Expanded(
-                flex: 2,
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.end,
-                  children: [
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.end,
-                      children: [
-                        Icon(
-                          Icons.calendar_today_rounded,
-                          size: 12,
-                          color: isDark ? Colors.white54 : Colors.grey[600],
-                        ),
-                        const SizedBox(width: 6),
-                        Flexible(
-                          child: Text(
-                            datePart,
-                            style: TextStyle(
-                              color: isDark ? Colors.white70 : Colors.grey[700],
-                              fontSize: 11,
-                            ),
-                            overflow: TextOverflow.ellipsis,
-                          ),
-                        ),
-                      ],
-                    ),
-                    const SizedBox(height: 24),
-                    Row(
+                  ),
+                  Expanded(
+                    flex: 2,
+                    child: Row(
                       mainAxisAlignment: MainAxisAlignment.end,
                       children: [
                         Icon(
@@ -483,8 +501,8 @@ class RideHistoryCard extends StatelessWidget {
                         ),
                       ],
                     ),
-                  ],
-                ),
+                  ),
+                ],
               ),
             ],
           ),
