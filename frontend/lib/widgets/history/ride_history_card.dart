@@ -507,9 +507,12 @@ class RideHistoryCard extends StatelessWidget {
             ],
           ),
 
-          const Padding(
-            padding: EdgeInsets.symmetric(vertical: 16),
-            child: Divider(height: 1),
+          Padding(
+            padding: const EdgeInsets.symmetric(vertical: 16),
+            child: Divider(
+              height: 1,
+              color: isDark ? Colors.white10 : Colors.black12,
+            ),
           ),
 
           // Stats Row
@@ -548,9 +551,12 @@ class RideHistoryCard extends StatelessWidget {
             ],
           ),
 
-          const Padding(
-            padding: EdgeInsets.symmetric(vertical: 16),
-            child: Divider(height: 1, color: Colors.white10),
+          Padding(
+            padding: const EdgeInsets.symmetric(vertical: 16),
+            child: Divider(
+              height: 1,
+              color: isDark ? Colors.white10 : Colors.black12,
+            ),
           ),
 
           // Bottom Row
