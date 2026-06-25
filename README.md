@@ -47,35 +47,35 @@ Built with Flutter for mobile and Node.js + Express + MongoDB on the backend, Ri
 
 ### Frontend
 
-| Technology | Version | Purpose |
-|---|---|---|
-| Flutter | 3.x | Cross-platform mobile UI framework |
-| Dart | 3.x | Application language |
-| Provider | 6.x | Reactive state management |
-| socket_io_client | 3.x | WebSocket real-time communication |
-| flutter_map | 7.x | Interactive OpenStreetMap integration |
-| geolocator | 13.x | Device GPS & location permissions |
-| flutter_secure_storage | 9.x | Encrypted JWT token storage |
-| http | 1.x | REST API client |
-| image_picker | 1.x | Profile & KYC photo upload |
-| flutter_dotenv | 5.x | Environment configuration |
+| Technology | Purpose |
+|---|---|
+| Flutter | Cross-platform mobile UI framework |
+| Dart | Application language |
+| Provider | Reactive state management |
+| socket_io_client | WebSocket real-time communication |
+| flutter_map | Interactive OpenStreetMap integration |
+| geolocator | Device GPS & location permissions |
+| flutter_secure_storage | Encrypted JWT token storage |
+| http | REST API client |
+| image_picker | Profile & KYC photo upload |
+| flutter_dotenv | Environment configuration |
 
 ### Backend
 
-| Technology | Version | Purpose |
-|---|---|---|
-| Node.js | 20+ | Runtime environment |
-| Express | 5.2 | HTTP framework |
-| MongoDB | 7.x | Primary database |
-| Mongoose | 9.5 | ODM / schema validation |
-| Socket.IO | 4.8 | Bidirectional real-time events |
-| JSON Web Token | 9.x | Authentication & authorisation |
-| bcrypt | 5.x | Password hashing |
-| @turf/turf | 7.3 | Geospatial sweep-line calculations |
-| Winston | 3.x | Structured logging |
-| Helmet | 8.x | HTTP security headers |
-| express-rate-limit | 7.x | API abuse prevention |
-| sanitize-html | 2.x | XSS input sanitisation |
+| Technology | Purpose |
+|---|---|
+| Node.js | Runtime environment |
+| Express | HTTP framework |
+| MongoDB | Primary database |
+| Mongoose | ODM / schema validation |
+| Socket.IO | Bidirectional real-time events |
+| JSON Web Token | Authentication & authorisation |
+| bcrypt | Password hashing |
+| @turf/turf | Geospatial sweep-line calculations |
+| Winston | Structured logging |
+| Helmet | HTTP security headers |
+| express-rate-limit | API abuse prevention |
+| sanitize-html | XSS input sanitisation |
 
 ### External Services
 
