@@ -290,46 +290,31 @@ Copy `backend/.env.example` to `backend/.env` and fill in each value.
 
 #### Splash Screen
 
-<table>
-<tr>
-<th width="50%" align="center">Light</th>
-<th width="50%" align="center">Dark</th>
-</tr>
-<tr>
-<td align="center"><img src="frontend/assets/screenshots/splashScreenLightGIF.gif" width="70%"/></td>
-<td align="center"><img src="frontend/assets/screenshots/splashScreenDarkGIF.gif" width="70%"/></td>
-</tr>
-</table>
+<p align="center">
+<img src="frontend/assets/screenshots/splashScreenLightGIF.gif" width="38%"/>
+&nbsp;&nbsp;
+<img src="frontend/assets/screenshots/splashScreenDarkGIF.gif" width="38%"/>
+</p>
 
 <br>
 
 #### Login
 
-<table>
-<tr>
-<th width="50%" align="center">Light</th>
-<th width="50%" align="center">Dark</th>
-</tr>
-<tr>
-<td align="center"><img src="frontend/assets/screenshots/loginScreenLight.png" width="70%"/></td>
-<td align="center"><img src="frontend/assets/screenshots/loginScreenDark.png" width="70%"/></td>
-</tr>
-</table>
+<p align="center">
+<img src="frontend/assets/screenshots/loginScreenLight.png" width="38%"/>
+&nbsp;&nbsp;
+<img src="frontend/assets/screenshots/loginScreenDark.png" width="38%"/>
+</p>
 
 <br>
 
 #### Sign Up
 
-<table>
-<tr>
-<th width="50%" align="center">Light</th>
-<th width="50%" align="center">Dark</th>
-</tr>
-<tr>
-<td align="center"><img src="frontend/assets/screenshots/signupScreenLight.png" width="70%"/></td>
-<td align="center"><img src="frontend/assets/screenshots/signupScreenDark.png" width="70%"/></td>
-</tr>
-</table>
+<p align="center">
+<img src="frontend/assets/screenshots/signupScreenLight.png" width="38%"/>
+&nbsp;&nbsp;
+<img src="frontend/assets/screenshots/signupScreenDark.png" width="38%"/>
+</p>
 
 <br>
 
@@ -342,91 +327,61 @@ Copy `backend/.env.example` to `backend/.env` and fill in each value.
 
 #### Home Screen
 
-<table>
-<tr>
-<th width="50%" align="center">Light</th>
-<th width="50%" align="center">Dark</th>
-</tr>
-<tr>
-<td align="center"><img src="frontend/assets/screenshots/homeScreenLightGIF.gif" width="70%"/></td>
-<td align="center"><img src="frontend/assets/screenshots/homeScreenDarkGIF.gif" width="70%"/></td>
-</tr>
-</table>
+<p align="center">
+<img src="frontend/assets/screenshots/homeScreenLightGIF.gif" width="38%"/>
+&nbsp;&nbsp;
+<img src="frontend/assets/screenshots/homeScreenDarkGIF.gif" width="38%"/>
+</p>
 
 <br>
 
 #### Offer a Ride
 
-<table>
-<tr>
-<th width="50%" align="center">Light</th>
-<th width="50%" align="center">Dark</th>
-</tr>
-<tr>
-<td align="center"><img src="frontend/assets/screenshots/offerRideLight.png" width="70%"/></td>
-<td align="center"><img src="frontend/assets/screenshots/offerRideDark.png" width="70%"/></td>
-</tr>
-</table>
+<p align="center">
+<img src="frontend/assets/screenshots/offerRideLight.png" width="38%"/>
+&nbsp;&nbsp;
+<img src="frontend/assets/screenshots/offerRideDark.png" width="38%"/>
+</p>
 
 <br>
 
 #### Location Picker
 
-<table>
-<tr>
-<th width="50%" align="center">Light</th>
-<th width="50%" align="center">Dark</th>
-</tr>
-<tr>
-<td align="center"><img src="frontend/assets/screenshots/locationPickerScreenLight.png" width="70%"/></td>
-<td align="center"><img src="frontend/assets/screenshots/locationPickerScreenDark.png" width="70%"/></td>
-</tr>
-</table>
+<p align="center">
+<img src="frontend/assets/screenshots/locationPickerScreenLight.png" width="38%"/>
+&nbsp;&nbsp;
+<img src="frontend/assets/screenshots/locationPickerScreenDark.png" width="38%"/>
+</p>
 
 <br>
 
 #### Find a Ride
 
-<table>
-<tr>
-<th width="50%" align="center">Light</th>
-<th width="50%" align="center">Dark</th>
-</tr>
-<tr>
-<td align="center"><img src="frontend/assets/screenshots/findRIdeLight.png" width="70%"/></td>
-<td align="center"><img src="frontend/assets/screenshots/findRideDark.png" width="70%"/></td>
-</tr>
-</table>
+<p align="center">
+<img src="frontend/assets/screenshots/findRIdeLight.png" width="38%"/>
+&nbsp;&nbsp;
+<img src="frontend/assets/screenshots/findRideDark.png" width="38%"/>
+</p>
 
 <br>
 
 #### Available Rides
 
-<table>
-<tr>
-<th width="50%" align="center">Light</th>
-<th width="50%" align="center">Dark</th>
-</tr>
-<tr>
-<td align="center"><img src="frontend/assets/screenshots/availableRidesScreenLight.png" width="70%"/></td>
-<td align="center"><img src="frontend/assets/screenshots/availableRidesScreenDark.png" width="70%"/></td>
-</tr>
-</table>
+<p align="center">
+<img src="frontend/assets/screenshots/availableRidesScreenLight.png" width="38%"/>
+&nbsp;&nbsp;
+<img src="frontend/assets/screenshots/availableRidesScreenDark.png" width="38%"/>
+</p>
 
 <br>
 
 #### Filters
 
-<table>
-<tr>
-<th width="50%" align="center">Light</th>
-<th width="50%" align="center">Dark</th>
-</tr>
-<tr>
-<td align="center"><img src="frontend/assets/screenshots/filtersPopupLight.png" width="70%"/></td>
-<td align="center"><img src="frontend/assets/screenshots/filtersPopupDark.png" width="70%"/></td>
-</tr>
-</table>
+<p align="center">
+<img src="frontend/assets/screenshots/filtersPopupLight.png" width="38%"/>
+&nbsp;&nbsp;
+<img src="frontend/assets/screenshots/filtersPopupDark.png" width="38%"/>
+</p>
 
 <br>
 
@@ -439,31 +394,21 @@ Copy `backend/.env.example` to `backend/.env` and fill in each value.
 
 #### Activity Screen
 
-<table>
-<tr>
-<th width="50%" align="center">Light</th>
-<th width="50%" align="center">Dark</th>
-</tr>
-<tr>
-<td align="center"><img src="frontend/assets/screenshots/activityScreenLight.png" width="70%"/></td>
-<td align="center"><img src="frontend/assets/screenshots/activityScreenDark.png" width="70%"/></td>
-</tr>
-</table>
+<p align="center">
+<img src="frontend/assets/screenshots/activityScreenLight.png" width="38%"/>
+&nbsp;&nbsp;
+<img src="frontend/assets/screenshots/activityScreenDark.png" width="38%"/>
+</p>
 
 <br>
 
 #### Ride Details
 
-<table>
-<tr>
-<th width="50%" align="center">Light</th>
-<th width="50%" align="center">Dark</th>
-</tr>
-<tr>
-<td align="center"><img src="frontend/assets/screenshots/rideDetailScreenLight.png" width="70%"/></td>
-<td align="center"><img src="frontend/assets/screenshots/rideDetailScreenDark.png" width="70%"/></td>
-</tr>
-</table>
+<p align="center">
+<img src="frontend/assets/screenshots/rideDetailScreenLight.png" width="38%"/>
+&nbsp;&nbsp;
+<img src="frontend/assets/screenshots/rideDetailScreenDark.png" width="38%"/>
+</p>
 
 <br>
 
@@ -476,136 +421,91 @@ Copy `backend/.env.example` to `backend/.env` and fill in each value.
 
 #### Driver — Ride Started
 
-<table>
-<tr>
-<th width="50%" align="center">Light</th>
-<th width="50%" align="center">Dark</th>
-</tr>
-<tr>
-<td align="center"><img src="frontend/assets/screenshots/liveRideScreenDriver1Light.png" width="70%"/></td>
-<td align="center"><img src="frontend/assets/screenshots/liveRideScreenDriver1Dark.png" width="70%"/></td>
-</tr>
-</table>
+<p align="center">
+<img src="frontend/assets/screenshots/liveRideScreenDriver1Light.png" width="38%"/>
+&nbsp;&nbsp;
+<img src="frontend/assets/screenshots/liveRideScreenDriver1Dark.png" width="38%"/>
+</p>
 
 <br>
 
 #### Rider — Waiting for Pickup
 
-<table>
-<tr>
-<th width="50%" align="center">Light</th>
-<th width="50%" align="center">Dark</th>
-</tr>
-<tr>
-<td align="center"><img src="frontend/assets/screenshots/liveRideScreenRider1Light.png" width="70%"/></td>
-<td align="center"><img src="frontend/assets/screenshots/liveRideScreenRider1Dark.png" width="70%"/></td>
-</tr>
-</table>
+<p align="center">
+<img src="frontend/assets/screenshots/liveRideScreenRider1Light.png" width="38%"/>
+&nbsp;&nbsp;
+<img src="frontend/assets/screenshots/liveRideScreenRider1Dark.png" width="38%"/>
+</p>
 
 <br>
 
 #### Driver — At Boarding Point
 
-<table>
-<tr>
-<th width="50%" align="center">Light</th>
-<th width="50%" align="center">Dark</th>
-</tr>
-<tr>
-<td align="center"><img src="frontend/assets/screenshots/liveRideScreenDriver2Light.png" width="70%"/></td>
-<td align="center"><img src="frontend/assets/screenshots/liveRideScreenDriver2Dark.png" width="70%"/></td>
-</tr>
-</table>
+<p align="center">
+<img src="frontend/assets/screenshots/liveRideScreenDriver2Light.png" width="38%"/>
+&nbsp;&nbsp;
+<img src="frontend/assets/screenshots/liveRideScreenDriver2Dark.png" width="38%"/>
+</p>
 
 <br>
 
 #### Rider — Driver Arrived
 
-<table>
-<tr>
-<th width="50%" align="center">Light</th>
-<th width="50%" align="center">Dark</th>
-</tr>
-<tr>
-<td align="center"><img src="frontend/assets/screenshots/liveRideScreenRider2Light.png" width="70%"/></td>
-<td align="center"><img src="frontend/assets/screenshots/liveRideScreenRider2Dark.png" width="70%"/></td>
-</tr>
-</table>
+<p align="center">
+<img src="frontend/assets/screenshots/liveRideScreenRider2Light.png" width="38%"/>
+&nbsp;&nbsp;
+<img src="frontend/assets/screenshots/liveRideScreenRider2Dark.png" width="38%"/>
+</p>
 
 <br>
 
 #### Driver — Rider Boarded
 
-<table>
-<tr>
-<th width="50%" align="center">Light</th>
-<th width="50%" align="center">Dark</th>
-</tr>
-<tr>
-<td align="center"><img src="frontend/assets/screenshots/liveRideScreenDriver3Light.png" width="70%"/></td>
-<td align="center"><img src="frontend/assets/screenshots/liveRideScreenDriver3Dark.png" width="70%"/></td>
-</tr>
-</table>
+<p align="center">
+<img src="frontend/assets/screenshots/liveRideScreenDriver3Light.png" width="38%"/>
+&nbsp;&nbsp;
+<img src="frontend/assets/screenshots/liveRideScreenDriver3Dark.png" width="38%"/>
+</p>
 
 <br>
 
 #### Rider — In Transit
 
-<table>
-<tr>
-<th width="50%" align="center">Light</th>
-<th width="50%" align="center">Dark</th>
-</tr>
-<tr>
-<td align="center"><img src="frontend/assets/screenshots/liveRideScreenRider3Light.png" width="70%"/></td>
-<td align="center"><img src="frontend/assets/screenshots/liveRideScreenRider3Dark.png" width="70%"/></td>
-</tr>
-</table>
+<p align="center">
+<img src="frontend/assets/screenshots/liveRideScreenRider3Light.png" width="38%"/>
+&nbsp;&nbsp;
+<img src="frontend/assets/screenshots/liveRideScreenRider3Dark.png" width="38%"/>
+</p>
 
 <br>
 
 #### In-app Chat
 
-<table>
-<tr>
-<th width="50%" align="center">Light</th>
-<th width="50%" align="center">Dark</th>
-</tr>
-<tr>
-<td align="center"><img src="frontend/assets/screenshots/chatScreenLight.png" width="70%"/></td>
-<td align="center"><img src="frontend/assets/screenshots/chatScreenDark.png" width="70%"/></td>
-</tr>
-</table>
+<p align="center">
+<img src="frontend/assets/screenshots/chatScreenLight.png" width="38%"/>
+&nbsp;&nbsp;
+<img src="frontend/assets/screenshots/chatScreenDark.png" width="38%"/>
+</p>
 
 <br>
 
 #### Driver — Trip Complete
 
-<table>
-<tr>
-<th width="50%" align="center">Light</th>
-<th width="50%" align="center">Dark</th>
-</tr>
-<tr>
-<td align="center"><img src="frontend/assets/screenshots/driverCompletionScreenLight.png" width="70%"/></td>
-<td align="center"><img src="frontend/assets/screenshots/driverCompletionScreenDark.png" width="70%"/></td>
-</tr>
-</table>
+<p align="center">
+<img src="frontend/assets/screenshots/driverCompletionScreenLight.png" width="38%"/>
+&nbsp;&nbsp;
+<img src="frontend/assets/screenshots/driverCompletionScreenDark.png" width="38%"/>
+</p>
 
 <br>
 
 #### Rider — Trip Complete
 
-<table>
-<tr>
-<th width="50%" align="center">Light</th>
-<th width="50%" align="center">Dark</th>
-</tr>
-<tr>
-<td align="center"><img src="frontend/assets/screenshots/riderCompletionScreenLight.png" width="70%"/></td>
-<td align="center"><img src="frontend/assets/screenshots/riderCompletionScreenDark.png" width="70%"/></td>
-</tr>
-</table>
+<p align="center">
+<img src="frontend/assets/screenshots/riderCompletionScreenLight.png" width="38%"/>
+&nbsp;&nbsp;
+<img src="frontend/assets/screenshots/riderCompletionScreenDark.png" width="38%"/>
+</p>
 
 <br>
 
@@ -618,46 +518,31 @@ Copy `backend/.env.example` to `backend/.env` and fill in each value.
 
 #### Ride History
 
-<table>
-<tr>
-<th width="50%" align="center">Light</th>
-<th width="50%" align="center">Dark</th>
-</tr>
-<tr>
-<td align="center"><img src="frontend/assets/screenshots/historyScreenLight.png" width="70%"/></td>
-<td align="center"><img src="frontend/assets/screenshots/historyScreenDark.png" width="70%"/></td>
-</tr>
-</table>
+<p align="center">
+<img src="frontend/assets/screenshots/historyScreenLight.png" width="38%"/>
+&nbsp;&nbsp;
+<img src="frontend/assets/screenshots/historyScreenDark.png" width="38%"/>
+</p>
 
 <br>
 
 #### Co-Passengers
 
-<table>
-<tr>
-<th width="50%" align="center">Light</th>
-<th width="50%" align="center">Dark</th>
-</tr>
-<tr>
-<td align="center"><img src="frontend/assets/screenshots/passengersTravelledPopupLight.png" width="70%"/></td>
-<td align="center"><img src="frontend/assets/screenshots/passengersTravelledPopupDark.png" width="70%"/></td>
-</tr>
-</table>
+<p align="center">
+<img src="frontend/assets/screenshots/passengersTravelledPopupLight.png" width="38%"/>
+&nbsp;&nbsp;
+<img src="frontend/assets/screenshots/passengersTravelledPopupDark.png" width="38%"/>
+</p>
 
 <br>
 
 #### Profile
 
-<table>
-<tr>
-<th width="50%" align="center">Light</th>
-<th width="50%" align="center">Dark</th>
-</tr>
-<tr>
-<td align="center"><img src="frontend/assets/screenshots/profileScreenLight.png" width="70%"/></td>
-<td align="center"><img src="frontend/assets/screenshots/profileScreenDark.png" width="70%"/></td>
-</tr>
-</table>
+<p align="center">
+<img src="frontend/assets/screenshots/profileScreenLight.png" width="38%"/>
+&nbsp;&nbsp;
+<img src="frontend/assets/screenshots/profileScreenDark.png" width="38%"/>
+</p>
 
 <br>
 
@@ -670,76 +555,51 @@ Copy `backend/.env.example` to `backend/.env` and fill in each value.
 
 #### Admin Dashboard
 
-<table>
-<tr>
-<th width="50%" align="center">Light</th>
-<th width="50%" align="center">Dark</th>
-</tr>
-<tr>
-<td align="center"><img src="frontend/assets/screenshots/adminDashboardLight.png" width="70%"/></td>
-<td align="center"><img src="frontend/assets/screenshots/adminDashboardDark.png" width="70%"/></td>
-</tr>
-</table>
+<p align="center">
+<img src="frontend/assets/screenshots/adminDashboardLight.png" width="38%"/>
+&nbsp;&nbsp;
+<img src="frontend/assets/screenshots/adminDashboardDark.png" width="38%"/>
+</p>
 
 <br>
 
 #### Admin — Users
 
-<table>
-<tr>
-<th width="50%" align="center">Light</th>
-<th width="50%" align="center">Dark</th>
-</tr>
-<tr>
-<td align="center"><img src="frontend/assets/screenshots/adminUsersLight.png" width="70%"/></td>
-<td align="center"><img src="frontend/assets/screenshots/adminUsersDark.png" width="70%"/></td>
-</tr>
-</table>
+<p align="center">
+<img src="frontend/assets/screenshots/adminUsersLight.png" width="38%"/>
+&nbsp;&nbsp;
+<img src="frontend/assets/screenshots/adminUsersDark.png" width="38%"/>
+</p>
 
 <br>
 
 #### Admin — User Actions
 
-<table>
-<tr>
-<th width="50%" align="center">Light</th>
-<th width="50%" align="center">Dark</th>
-</tr>
-<tr>
-<td align="center"><img src="frontend/assets/screenshots/userPopupLight.png" width="70%"/></td>
-<td align="center"><img src="frontend/assets/screenshots/userPopupDark.png" width="70%"/></td>
-</tr>
-</table>
+<p align="center">
+<img src="frontend/assets/screenshots/userPopupLight.png" width="38%"/>
+&nbsp;&nbsp;
+<img src="frontend/assets/screenshots/userPopupDark.png" width="38%"/>
+</p>
 
 <br>
 
 #### Admin — Active Rides
 
-<table>
-<tr>
-<th width="50%" align="center">Light</th>
-<th width="50%" align="center">Dark</th>
-</tr>
-<tr>
-<td align="center"><img src="frontend/assets/screenshots/adminRidesLight.png" width="70%"/></td>
-<td align="center"><img src="frontend/assets/screenshots/adminRidesDark.png" width="70%"/></td>
-</tr>
-</table>
+<p align="center">
+<img src="frontend/assets/screenshots/adminRidesLight.png" width="38%"/>
+&nbsp;&nbsp;
+<img src="frontend/assets/screenshots/adminRidesDark.png" width="38%"/>
+</p>
 
 <br>
 
 #### Admin — KYC Verification
 
-<table>
-<tr>
-<th width="50%" align="center">Light</th>
-<th width="50%" align="center">Dark</th>
-</tr>
-<tr>
-<td align="center"><img src="frontend/assets/screenshots/adminVerifyLight.png" width="70%"/></td>
-<td align="center"><img src="frontend/assets/screenshots/adminVerifyDark.png" width="70%"/></td>
-</tr>
-</table>
+<p align="center">
+<img src="frontend/assets/screenshots/adminVerifyLight.png" width="38%"/>
+&nbsp;&nbsp;
+<img src="frontend/assets/screenshots/adminVerifyDark.png" width="38%"/>
+</p>
 
 <br>
 
