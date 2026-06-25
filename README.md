@@ -89,99 +89,57 @@ Built with Flutter for mobile and Node.js + Express + MongoDB on the backend, Ri
 ## 🏗️ System Architecture
 
 ```mermaid
-graph TD
-    %% Styling
-    classDef client fill:#e1f5fe,stroke:#01579b,stroke-width:2px;
-    classDef backend fill:#e8f5e9,stroke:#2e7d32,stroke-width:2px;
-    classDef db fill:#fff3e0,stroke:#e65100,stroke-width:2px;
-    classDef external fill:#f3e5f5,stroke:#4a148c,stroke-width:2px;
-    classDef socket fill:#ffebee,stroke:#c62828,stroke-width:2px;
+graph LR
+    %% Theming
+    classDef client fill:#E3F2FD,stroke:#1565C0,stroke-width:2px,color:#0D47A1,rx:5,ry:5
+    classDef backend fill:#E8F5E9,stroke:#2E7D32,stroke-width:2px,color:#1B5E20,rx:5,ry:5
+    classDef db fill:#FFF3E0,stroke:#E65100,stroke-width:2px,color:#E65100,rx:5,ry:5
+    classDef external fill:#F3E5F5,stroke:#6A1B9A,stroke-width:2px,color:#4A148C,rx:5,ry:5
 
     subgraph ClientLayer [📱 Client Layer]
-        subgraph FlutterApp [Flutter Mobile App]
-            UI[UI Components & Screens]
-            State[Provider State Management]
-            APIClient[API Client & Services]
-            SocketClient[Socket.IO Client]
-            LocalDB[(Secure Storage)]
-            
-            UI --> State
-            State --> APIClient
-            State --> SocketClient
-            State --> LocalDB
-        end
+        Flutter[Flutter Mobile App]
         Admin[Admin Web Interface]
     end
 
-    subgraph BackendLayer [⚙️ Node.js + Express + Socket.IO Server]
-        REST[Express REST API]
+    subgraph BackendLayer [⚙️ Node.js + Express Server]
+        API[REST API]
         WSS[Socket.IO Server]
+        Logic[Controllers & Services]
+        Sockets[Real-time Events]
         
-        subgraph Controllers [Controllers & Business Logic]
-            AuthCtrl[Auth Controller<br/>JWT & KYC]
-            RideCtrl[Ride Controller<br/>Sweep-line Matching]
-            AdminCtrl[Admin Controller]
-        end
-        
-        subgraph SocketServices [Real-time Events]
-            SocketManager[Socket Manager<br/>Rooms: 'ride:rideId']
-            ChatService[Chat Events]
-            LiveTracking[Live Location Updates]
-        end
-        
-        REST --> AuthCtrl
-        REST --> RideCtrl
-        REST --> AdminCtrl
-        
-        WSS --> SocketManager
-        SocketManager --> ChatService
-        SocketManager --> LiveTracking
+        API --> Logic
+        WSS --> Sockets
     end
 
     subgraph DataLayer [🗄️ Database Layer]
-        MongoDB[(MongoDB Atlas)]
-        UserColl[Users Collection]
-        RideColl[Rides Collection]
-        OTPColl[OTP Verifications<br/>TTL Index]
-        
-        MongoDB --- UserColl
-        MongoDB --- RideColl
-        MongoDB --- OTPColl
+        DB[(MongoDB Atlas)]
+        Models[Mongoose ODM]
+        DB --- Models
     end
 
     subgraph ExternalLayer [🌐 External Services]
-        OSRM[OSRM<br/>Routing Engine]
-        Nominatim[Nominatim<br/>Geocoding]
-        EmailJS[EmailJS<br/>OTP Delivery]
-        GScript[Google Apps Script<br/>KYC Drive Storage]
+        Maps[OSRM & Nominatim]
+        SMTP[EmailJS]
+        Storage[Google Drive]
     end
 
     %% Connections
-    APIClient -->|HTTPS REST| REST
-    Admin -->|HTTPS REST| REST
-    SocketClient <-->|WebSocket| WSS
+    Flutter <-->|HTTPS| API
+    Flutter <-->|WSS| WSS
+    Admin <-->|HTTPS| API
 
-    AuthCtrl --> OTPColl
-    AuthCtrl --> UserColl
-    RideCtrl --> RideColl
-    RideCtrl --> UserColl
-    AdminCtrl --> UserColl
-    AdminCtrl --> RideColl
+    Logic -->|CRUD| DB
+    Sockets -->|Sync| DB
     
-    LiveTracking --> RideColl
-    ChatService --> RideColl
-    
-    RideCtrl -->|Calculate Distance/Time| OSRM
-    APIClient -->|Reverse Geocoding| Nominatim
-    AuthCtrl -->|Send OTP| EmailJS
-    AuthCtrl -->|Upload KYC| GScript
+    Logic -->|Routing| Maps
+    Logic -->|OTP| SMTP
+    Logic -->|KYC| Storage
 
     %% Apply Classes
-    class FlutterApp,Admin client;
-    class REST,WSS,Controllers,SocketServices backend;
-    class MongoDB,UserColl,RideColl,OTPColl db;
-    class OSRM,Nominatim,EmailJS,GScript external;
-    class SocketClient,WSS,SocketManager socket;
+    class Flutter,Admin client;
+    class API,WSS,Logic,Sockets backend;
+    class DB,Models db;
+    class Maps,SMTP,Storage external;
 ```
 
 ---
