@@ -88,29 +88,40 @@ Built with Flutter for mobile and Node.js + Express + MongoDB on the backend, Ri
 
 ## 🏗️ System Architecture
 
-```
-┌─────────────────────────────────────────────────────────────────────────┐
-│                           RIDIFY SYSTEM                                 │
-│                                                                         │
-│   ┌───────────────┐        HTTPS / WSS        ┌──────────────────────┐  │
-│   │               │ ◄────────────────────────►│                      │  │
-│   │  Flutter App  │   REST  ──►  /api/*       │  Express + Socket.IO │  │
-│   │  (Provider)   │   WS    ──►  /socket.io   │       Server         │  │
-│   │               │                           │                      │  │
-│   └───────────────┘                           └──────────┬───────────┘  │
-│                                                          │              │
-│                          ┌───────────────────────────────┤              │
-│                          │                  │            │              │
-│                     ┌────▼────┐        ┌────▼────┐ ┌─────▼────┐         │
-│                     │ MongoDB │        │  OSRM   │ │ EmailJS  │         │
-│                     │  Atlas  │        │(Routes) │ │  (OTP)   │         │
-│                     └─────────┘        └─────────┘ └──────────┘         │
-└─────────────────────────────────────────────────────────────────────────┘
-```
+```mermaid
+graph TD
+    subgraph Client [Client Applications]
+        A[Flutter Mobile App<br/>Provider State Management]
+        G[Admin Panel<br/>Web Interface]
+    end
 
-**Socket.IO Room Model**
+    subgraph Backend [Node.js + Express + Socket.IO Server]
+        B[REST API<br/>/api/*]
+        C[WebSocket<br/>/socket.io]
+        
+        B -->|Auth, Rides, History| D(Controllers & Services)
+        C -->|Real-time Tracking, Chat| E(Socket Event Handlers)
+        
+        D --- F[(MongoDB Atlas<br/>Mongoose ODM)]
+        E --- F
+    end
 
-Every active ride has a dedicated Socket.IO room — `ride:<rideId>`. The driver and all accepted riders join on authentication. Events include `rideUpdate`, `chatMessage`, `locationUpdate`, `boardingOtp`, and `rideEnded`. JWT middleware validates every socket handshake; banned users are rejected asynchronously at the middleware layer.
+    subgraph External [External Services]
+        H[OSRM<br/>Route Engine]
+        I[EmailJS<br/>OTP Delivery]
+        J[Nominatim<br/>Geocoding]
+        K[Google Drive<br/>KYC Storage]
+    end
+
+    A <-->|HTTPS REST| B
+    A <-->|WSS| C
+    G <-->|HTTPS REST| B
+
+    D --> H
+    D --> I
+    D --> J
+    D --> K
+```
 
 ---
 
