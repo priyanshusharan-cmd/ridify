@@ -292,7 +292,7 @@ Copy `backend/.env.example` to `backend/.env` and fill in each value.
 
 | Light | Dark |
 |:---:|:---:|
-| <img src="frontend/assets/screenshots/splashScreenLightGIF.gif" width="180"/> | <img src="frontend/assets/screenshots/splashScreenDarkGIF.gif" width="180"/> |
+| <img src="frontend/assets/screenshots/splashScreenLightGIF.gif" width="130"/> | <img src="frontend/assets/screenshots/splashScreenDarkGIF.gif" width="130"/> |
 <br>
 
 #### Login
@@ -322,7 +322,7 @@ Copy `backend/.env.example` to `backend/.env` and fill in each value.
 
 | Light | Dark |
 |:---:|:---:|
-| <img src="frontend/assets/screenshots/homeScreenLightGIF.gif" width="180"/> | <img src="frontend/assets/screenshots/homeScreenDarkGIF.gif" width="180"/> |
+| <img src="frontend/assets/screenshots/homeScreenLightGIF.gif" width="130"/> | <img src="frontend/assets/screenshots/homeScreenDarkGIF.gif" width="130"/> |
 <br>
 
 #### Offer a Ride
