@@ -293,6 +293,7 @@ Copy `backend/.env.example` to `backend/.env` and fill in each value.
 | Light | Dark |
 |:---:|:---:|
 | <img src="frontend/assets/screenshots/splashScreenLightGIF.gif" width="100%"/> | <img src="frontend/assets/screenshots/splashScreenDarkGIF.gif" width="100%"/> |
+
 <br><br>
 
 #### Login
@@ -300,6 +301,7 @@ Copy `backend/.env.example` to `backend/.env` and fill in each value.
 | Light | Dark |
 |:---:|:---:|
 | <img src="frontend/assets/screenshots/loginScreenLight.png" width="100%"/> | <img src="frontend/assets/screenshots/loginScreenDark.png" width="100%"/> |
+
 <br><br>
 
 #### Sign Up
@@ -307,6 +309,7 @@ Copy `backend/.env.example` to `backend/.env` and fill in each value.
 | Light | Dark |
 |:---:|:---:|
 | <img src="frontend/assets/screenshots/signupScreenLight.png" width="100%"/> | <img src="frontend/assets/screenshots/signupScreenDark.png" width="100%"/> |
+
 <br><br>
 
 </details>
@@ -321,6 +324,7 @@ Copy `backend/.env.example` to `backend/.env` and fill in each value.
 | Light | Dark |
 |:---:|:---:|
 | <img src="frontend/assets/screenshots/homeScreenLightGIF.gif" width="100%"/> | <img src="frontend/assets/screenshots/homeScreenDarkGIF.gif" width="100%"/> |
+
 <br><br>
 
 #### Offer a Ride
@@ -328,6 +332,7 @@ Copy `backend/.env.example` to `backend/.env` and fill in each value.
 | Light | Dark |
 |:---:|:---:|
 | <img src="frontend/assets/screenshots/offerRideLight.png" width="100%"/> | <img src="frontend/assets/screenshots/offerRideDark.png" width="100%"/> |
+
 <br><br>
 
 #### Location Picker
@@ -335,6 +340,7 @@ Copy `backend/.env.example` to `backend/.env` and fill in each value.
 | Light | Dark |
 |:---:|:---:|
 | <img src="frontend/assets/screenshots/locationPickerScreenLight.png" width="100%"/> | <img src="frontend/assets/screenshots/locationPickerScreenDark.png" width="100%"/> |
+
 <br><br>
 
 #### Find a Ride
@@ -342,6 +348,7 @@ Copy `backend/.env.example` to `backend/.env` and fill in each value.
 | Light | Dark |
 |:---:|:---:|
 | <img src="frontend/assets/screenshots/findRIdeLight.png" width="100%"/> | <img src="frontend/assets/screenshots/findRideDark.png" width="100%"/> |
+
 <br><br>
 
 #### Available Rides
@@ -349,6 +356,7 @@ Copy `backend/.env.example` to `backend/.env` and fill in each value.
 | Light | Dark |
 |:---:|:---:|
 | <img src="frontend/assets/screenshots/availableRidesScreenLight.png" width="100%"/> | <img src="frontend/assets/screenshots/availableRidesScreenDark.png" width="100%"/> |
+
 <br><br>
 
 #### Filters
@@ -356,6 +364,7 @@ Copy `backend/.env.example` to `backend/.env` and fill in each value.
 | Light | Dark |
 |:---:|:---:|
 | <img src="frontend/assets/screenshots/filtersPopupLight.png" width="100%"/> | <img src="frontend/assets/screenshots/filtersPopupDark.png" width="100%"/> |
+
 <br><br>
 
 </details>
@@ -370,6 +379,7 @@ Copy `backend/.env.example` to `backend/.env` and fill in each value.
 | Light | Dark |
 |:---:|:---:|
 | <img src="frontend/assets/screenshots/activityScreenLight.png" width="100%"/> | <img src="frontend/assets/screenshots/activityScreenDark.png" width="100%"/> |
+
 <br><br>
 
 #### Ride Details
@@ -377,6 +387,7 @@ Copy `backend/.env.example` to `backend/.env` and fill in each value.
 | Light | Dark |
 |:---:|:---:|
 | <img src="frontend/assets/screenshots/rideDetailScreenLight.png" width="100%"/> | <img src="frontend/assets/screenshots/rideDetailScreenDark.png" width="100%"/> |
+
 <br><br>
 
 </details>
@@ -391,6 +402,7 @@ Copy `backend/.env.example` to `backend/.env` and fill in each value.
 | Light | Dark |
 |:---:|:---:|
 | <img src="frontend/assets/screenshots/liveRideScreenDriver1Light.png" width="100%"/> | <img src="frontend/assets/screenshots/liveRideScreenDriver1Dark.png" width="100%"/> |
+
 <br><br>
 
 #### Rider — Waiting for Pickup
@@ -398,6 +410,7 @@ Copy `backend/.env.example` to `backend/.env` and fill in each value.
 | Light | Dark |
 |:---:|:---:|
 | <img src="frontend/assets/screenshots/liveRideScreenRider1Light.png" width="100%"/> | <img src="frontend/assets/screenshots/liveRideScreenRider1Dark.png" width="100%"/> |
+
 <br><br>
 
 #### Driver — At Boarding Point
@@ -405,6 +418,7 @@ Copy `backend/.env.example` to `backend/.env` and fill in each value.
 | Light | Dark |
 |:---:|:---:|
 | <img src="frontend/assets/screenshots/liveRideScreenDriver2Light.png" width="100%"/> | <img src="frontend/assets/screenshots/liveRideScreenDriver2Dark.png" width="100%"/> |
+
 <br><br>
 
 #### Rider — Driver Arrived
@@ -412,6 +426,7 @@ Copy `backend/.env.example` to `backend/.env` and fill in each value.
 | Light | Dark |
 |:---:|:---:|
 | <img src="frontend/assets/screenshots/liveRideScreenRider2Light.png" width="100%"/> | <img src="frontend/assets/screenshots/liveRideScreenRider2Dark.png" width="100%"/> |
+
 <br><br>
 
 #### Driver — Rider Boarded
@@ -419,6 +434,7 @@ Copy `backend/.env.example` to `backend/.env` and fill in each value.
 | Light | Dark |
 |:---:|:---:|
 | <img src="frontend/assets/screenshots/liveRideScreenDriver3Light.png" width="100%"/> | <img src="frontend/assets/screenshots/liveRideScreenDriver3Dark.png" width="100%"/> |
+
 <br><br>
 
 #### Rider — In Transit
@@ -426,6 +442,7 @@ Copy `backend/.env.example` to `backend/.env` and fill in each value.
 | Light | Dark |
 |:---:|:---:|
 | <img src="frontend/assets/screenshots/liveRideScreenRider3Light.png" width="100%"/> | <img src="frontend/assets/screenshots/liveRideScreenRider3Dark.png" width="100%"/> |
+
 <br><br>
 
 #### In-app Chat
@@ -433,6 +450,7 @@ Copy `backend/.env.example` to `backend/.env` and fill in each value.
 | Light | Dark |
 |:---:|:---:|
 | <img src="frontend/assets/screenshots/chatScreenLight.png" width="100%"/> | <img src="frontend/assets/screenshots/chatScreenDark.png" width="100%"/> |
+
 <br><br>
 
 #### Driver — Trip Complete
@@ -440,6 +458,7 @@ Copy `backend/.env.example` to `backend/.env` and fill in each value.
 | Light | Dark |
 |:---:|:---:|
 | <img src="frontend/assets/screenshots/driverCompletionScreenLight.png" width="100%"/> | <img src="frontend/assets/screenshots/driverCompletionScreenDark.png" width="100%"/> |
+
 <br><br>
 
 #### Rider — Trip Complete
@@ -447,6 +466,7 @@ Copy `backend/.env.example` to `backend/.env` and fill in each value.
 | Light | Dark |
 |:---:|:---:|
 | <img src="frontend/assets/screenshots/riderCompletionScreenLight.png" width="100%"/> | <img src="frontend/assets/screenshots/riderCompletionScreenDark.png" width="100%"/> |
+
 <br><br>
 
 </details>
@@ -461,6 +481,7 @@ Copy `backend/.env.example` to `backend/.env` and fill in each value.
 | Light | Dark |
 |:---:|:---:|
 | <img src="frontend/assets/screenshots/historyScreenLight.png" width="100%"/> | <img src="frontend/assets/screenshots/historyScreenDark.png" width="100%"/> |
+
 <br><br>
 
 #### Co-Passengers
@@ -468,6 +489,7 @@ Copy `backend/.env.example` to `backend/.env` and fill in each value.
 | Light | Dark |
 |:---:|:---:|
 | <img src="frontend/assets/screenshots/passengersTravelledPopupLight.png" width="100%"/> | <img src="frontend/assets/screenshots/passengersTravelledPopupDark.png" width="100%"/> |
+
 <br><br>
 
 #### Profile
@@ -475,6 +497,7 @@ Copy `backend/.env.example` to `backend/.env` and fill in each value.
 | Light | Dark |
 |:---:|:---:|
 | <img src="frontend/assets/screenshots/profileScreenLight.png" width="100%"/> | <img src="frontend/assets/screenshots/profileScreenDark.png" width="100%"/> |
+
 <br><br>
 
 </details>
@@ -489,6 +512,7 @@ Copy `backend/.env.example` to `backend/.env` and fill in each value.
 | Light | Dark |
 |:---:|:---:|
 | <img src="frontend/assets/screenshots/adminDashboardLight.png" width="100%"/> | <img src="frontend/assets/screenshots/adminDashboardDark.png" width="100%"/> |
+
 <br><br>
 
 #### Admin — Users
@@ -496,6 +520,7 @@ Copy `backend/.env.example` to `backend/.env` and fill in each value.
 | Light | Dark |
 |:---:|:---:|
 | <img src="frontend/assets/screenshots/adminUsersLight.png" width="100%"/> | <img src="frontend/assets/screenshots/adminUsersDark.png" width="100%"/> |
+
 <br><br>
 
 #### Admin — User Actions
@@ -503,6 +528,7 @@ Copy `backend/.env.example` to `backend/.env` and fill in each value.
 | Light | Dark |
 |:---:|:---:|
 | <img src="frontend/assets/screenshots/userPopupLight.png" width="100%"/> | <img src="frontend/assets/screenshots/userPopupDark.png" width="100%"/> |
+
 <br><br>
 
 #### Admin — Active Rides
@@ -510,6 +536,7 @@ Copy `backend/.env.example` to `backend/.env` and fill in each value.
 | Light | Dark |
 |:---:|:---:|
 | <img src="frontend/assets/screenshots/adminRidesLight.png" width="100%"/> | <img src="frontend/assets/screenshots/adminRidesDark.png" width="100%"/> |
+
 <br><br>
 
 #### Admin — KYC Verification
@@ -517,6 +544,7 @@ Copy `backend/.env.example` to `backend/.env` and fill in each value.
 | Light | Dark |
 |:---:|:---:|
 | <img src="frontend/assets/screenshots/adminVerifyLight.png" width="100%"/> | <img src="frontend/assets/screenshots/adminVerifyDark.png" width="100%"/> |
+
 <br><br>
 
 </details>
