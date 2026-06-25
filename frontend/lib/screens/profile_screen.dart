@@ -805,7 +805,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                               }
                             },
                             child: const Text(
-                              "github",
+                              "GitHub",
                               style: TextStyle(
                                 color: Colors.blue,
                                 decoration: TextDecoration.underline,
