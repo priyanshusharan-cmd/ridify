@@ -547,4 +547,8 @@ This project is licensed under the **MIT License** — see the [LICENSE](LICENSE
 
 Crafted with ❤️ by Priyanshu Sharan
 
+<br/>
+
+[![LinkedIn](https://img.shields.io/badge/LinkedIn-%230077B5.svg?logo=linkedin&logoColor=white)](https://www.linkedin.com/in/priyanshusharan/)
+
 </div>
