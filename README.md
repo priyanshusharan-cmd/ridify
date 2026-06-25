@@ -57,10 +57,6 @@ Built with Flutter for mobile and Node.js + Express + MongoDB on the backend, Ri
 | geolocator | Device GPS & location permissions |
 | flutter_secure_storage | Encrypted JWT token storage |
 | http | REST API client |
-| image_picker | Profile & KYC photo upload |
-| flutter_dotenv | Environment configuration |
-| shared_preferences | Local key-value storage |
-| url_launcher | Opening external URLs |
 
 ### Backend
 
@@ -78,9 +74,6 @@ Built with Flutter for mobile and Node.js + Express + MongoDB on the backend, Ri
 | Helmet | HTTP security headers |
 | express-rate-limit | API abuse prevention |
 | sanitize-html | XSS input sanitisation |
-| cors | Cross-Origin Resource Sharing |
-| morgan | HTTP request logger |
-| dotenv | Environment variable management |
 
 ### External Services
 
@@ -111,12 +104,7 @@ Built with Flutter for mobile and Node.js + Express + MongoDB on the backend, Ri
 │                     ┌────▼────┐        ┌────▼────┐ ┌─────▼────┐         │
 │                     │ MongoDB │        │  OSRM   │ │ EmailJS  │         │
 │                     │  Atlas  │        │(Routes) │ │  (OTP)   │         │
-│                     └────┬────┘        └─────────┘ └──────────┘         │
-│                          │                                              │
-│               ┌──────────┼──────────────┐                               │
-│          ┌────▼────┐ ┌───▼────┐ ┌───────▼──────┐                        │
-│          │  users  │ │ rides  │ │otpverif.(TTL)│                        │
-│          └─────────┘ └────────┘ └──────────────┘                        │
+│                     └─────────┘        └─────────┘ └──────────┘         │
 └─────────────────────────────────────────────────────────────────────────┘
 ```
 
