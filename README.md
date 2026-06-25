@@ -290,25 +290,46 @@ Copy `backend/.env.example` to `backend/.env` and fill in each value.
 
 #### Splash Screen
 
-| Light | Dark |
-|:---:|:---:|
-| <img src="frontend/assets/screenshots/splashScreenLightGIF.gif" width="70%"/> | <img src="frontend/assets/screenshots/splashScreenDarkGIF.gif" width="70%"/> |
+<table>
+<tr>
+<th width="50%" align="center">Light</th>
+<th width="50%" align="center">Dark</th>
+</tr>
+<tr>
+<td align="center"><img src="frontend/assets/screenshots/splashScreenLightGIF.gif" width="70%"/></td>
+<td align="center"><img src="frontend/assets/screenshots/splashScreenDarkGIF.gif" width="70%"/></td>
+</tr>
+</table>
 
 <br>
 
 #### Login
 
-| Light | Dark |
-|:---:|:---:|
-| <img src="frontend/assets/screenshots/loginScreenLight.png" width="70%"/> | <img src="frontend/assets/screenshots/loginScreenDark.png" width="70%"/> |
+<table>
+<tr>
+<th width="50%" align="center">Light</th>
+<th width="50%" align="center">Dark</th>
+</tr>
+<tr>
+<td align="center"><img src="frontend/assets/screenshots/loginScreenLight.png" width="70%"/></td>
+<td align="center"><img src="frontend/assets/screenshots/loginScreenDark.png" width="70%"/></td>
+</tr>
+</table>
 
 <br>
 
 #### Sign Up
 
-| Light | Dark |
-|:---:|:---:|
-| <img src="frontend/assets/screenshots/signupScreenLight.png" width="70%"/> | <img src="frontend/assets/screenshots/signupScreenDark.png" width="70%"/> |
+<table>
+<tr>
+<th width="50%" align="center">Light</th>
+<th width="50%" align="center">Dark</th>
+</tr>
+<tr>
+<td align="center"><img src="frontend/assets/screenshots/signupScreenLight.png" width="70%"/></td>
+<td align="center"><img src="frontend/assets/screenshots/signupScreenDark.png" width="70%"/></td>
+</tr>
+</table>
 
 <br>
 
@@ -321,49 +342,91 @@ Copy `backend/.env.example` to `backend/.env` and fill in each value.
 
 #### Home Screen
 
-| Light | Dark |
-|:---:|:---:|
-| <img src="frontend/assets/screenshots/homeScreenLightGIF.gif" width="70%"/> | <img src="frontend/assets/screenshots/homeScreenDarkGIF.gif" width="70%"/> |
+<table>
+<tr>
+<th width="50%" align="center">Light</th>
+<th width="50%" align="center">Dark</th>
+</tr>
+<tr>
+<td align="center"><img src="frontend/assets/screenshots/homeScreenLightGIF.gif" width="70%"/></td>
+<td align="center"><img src="frontend/assets/screenshots/homeScreenDarkGIF.gif" width="70%"/></td>
+</tr>
+</table>
 
 <br>
 
 #### Offer a Ride
 
-| Light | Dark |
-|:---:|:---:|
-| <img src="frontend/assets/screenshots/offerRideLight.png" width="70%"/> | <img src="frontend/assets/screenshots/offerRideDark.png" width="70%"/> |
+<table>
+<tr>
+<th width="50%" align="center">Light</th>
+<th width="50%" align="center">Dark</th>
+</tr>
+<tr>
+<td align="center"><img src="frontend/assets/screenshots/offerRideLight.png" width="70%"/></td>
+<td align="center"><img src="frontend/assets/screenshots/offerRideDark.png" width="70%"/></td>
+</tr>
+</table>
 
 <br>
 
 #### Location Picker
 
-| Light | Dark |
-|:---:|:---:|
-| <img src="frontend/assets/screenshots/locationPickerScreenLight.png" width="70%"/> | <img src="frontend/assets/screenshots/locationPickerScreenDark.png" width="70%"/> |
+<table>
+<tr>
+<th width="50%" align="center">Light</th>
+<th width="50%" align="center">Dark</th>
+</tr>
+<tr>
+<td align="center"><img src="frontend/assets/screenshots/locationPickerScreenLight.png" width="70%"/></td>
+<td align="center"><img src="frontend/assets/screenshots/locationPickerScreenDark.png" width="70%"/></td>
+</tr>
+</table>
 
 <br>
 
 #### Find a Ride
 
-| Light | Dark |
-|:---:|:---:|
-| <img src="frontend/assets/screenshots/findRIdeLight.png" width="70%"/> | <img src="frontend/assets/screenshots/findRideDark.png" width="70%"/> |
+<table>
+<tr>
+<th width="50%" align="center">Light</th>
+<th width="50%" align="center">Dark</th>
+</tr>
+<tr>
+<td align="center"><img src="frontend/assets/screenshots/findRIdeLight.png" width="70%"/></td>
+<td align="center"><img src="frontend/assets/screenshots/findRideDark.png" width="70%"/></td>
+</tr>
+</table>
 
 <br>
 
 #### Available Rides
 
-| Light | Dark |
-|:---:|:---:|
-| <img src="frontend/assets/screenshots/availableRidesScreenLight.png" width="70%"/> | <img src="frontend/assets/screenshots/availableRidesScreenDark.png" width="70%"/> |
+<table>
+<tr>
+<th width="50%" align="center">Light</th>
+<th width="50%" align="center">Dark</th>
+</tr>
+<tr>
+<td align="center"><img src="frontend/assets/screenshots/availableRidesScreenLight.png" width="70%"/></td>
+<td align="center"><img src="frontend/assets/screenshots/availableRidesScreenDark.png" width="70%"/></td>
+</tr>
+</table>
 
 <br>
 
 #### Filters
 
-| Light | Dark |
-|:---:|:---:|
-| <img src="frontend/assets/screenshots/filtersPopupLight.png" width="70%"/> | <img src="frontend/assets/screenshots/filtersPopupDark.png" width="70%"/> |
+<table>
+<tr>
+<th width="50%" align="center">Light</th>
+<th width="50%" align="center">Dark</th>
+</tr>
+<tr>
+<td align="center"><img src="frontend/assets/screenshots/filtersPopupLight.png" width="70%"/></td>
+<td align="center"><img src="frontend/assets/screenshots/filtersPopupDark.png" width="70%"/></td>
+</tr>
+</table>
 
 <br>
 
@@ -376,17 +439,31 @@ Copy `backend/.env.example` to `backend/.env` and fill in each value.
 
 #### Activity Screen
 
-| Light | Dark |
-|:---:|:---:|
-| <img src="frontend/assets/screenshots/activityScreenLight.png" width="70%"/> | <img src="frontend/assets/screenshots/activityScreenDark.png" width="70%"/> |
+<table>
+<tr>
+<th width="50%" align="center">Light</th>
+<th width="50%" align="center">Dark</th>
+</tr>
+<tr>
+<td align="center"><img src="frontend/assets/screenshots/activityScreenLight.png" width="70%"/></td>
+<td align="center"><img src="frontend/assets/screenshots/activityScreenDark.png" width="70%"/></td>
+</tr>
+</table>
 
 <br>
 
 #### Ride Details
 
-| Light | Dark |
-|:---:|:---:|
-| <img src="frontend/assets/screenshots/rideDetailScreenLight.png" width="70%"/> | <img src="frontend/assets/screenshots/rideDetailScreenDark.png" width="70%"/> |
+<table>
+<tr>
+<th width="50%" align="center">Light</th>
+<th width="50%" align="center">Dark</th>
+</tr>
+<tr>
+<td align="center"><img src="frontend/assets/screenshots/rideDetailScreenLight.png" width="70%"/></td>
+<td align="center"><img src="frontend/assets/screenshots/rideDetailScreenDark.png" width="70%"/></td>
+</tr>
+</table>
 
 <br>
 
@@ -399,73 +476,136 @@ Copy `backend/.env.example` to `backend/.env` and fill in each value.
 
 #### Driver — Ride Started
 
-| Light | Dark |
-|:---:|:---:|
-| <img src="frontend/assets/screenshots/liveRideScreenDriver1Light.png" width="70%"/> | <img src="frontend/assets/screenshots/liveRideScreenDriver1Dark.png" width="70%"/> |
+<table>
+<tr>
+<th width="50%" align="center">Light</th>
+<th width="50%" align="center">Dark</th>
+</tr>
+<tr>
+<td align="center"><img src="frontend/assets/screenshots/liveRideScreenDriver1Light.png" width="70%"/></td>
+<td align="center"><img src="frontend/assets/screenshots/liveRideScreenDriver1Dark.png" width="70%"/></td>
+</tr>
+</table>
 
 <br>
 
 #### Rider — Waiting for Pickup
 
-| Light | Dark |
-|:---:|:---:|
-| <img src="frontend/assets/screenshots/liveRideScreenRider1Light.png" width="70%"/> | <img src="frontend/assets/screenshots/liveRideScreenRider1Dark.png" width="70%"/> |
+<table>
+<tr>
+<th width="50%" align="center">Light</th>
+<th width="50%" align="center">Dark</th>
+</tr>
+<tr>
+<td align="center"><img src="frontend/assets/screenshots/liveRideScreenRider1Light.png" width="70%"/></td>
+<td align="center"><img src="frontend/assets/screenshots/liveRideScreenRider1Dark.png" width="70%"/></td>
+</tr>
+</table>
 
 <br>
 
 #### Driver — At Boarding Point
 
-| Light | Dark |
-|:---:|:---:|
-| <img src="frontend/assets/screenshots/liveRideScreenDriver2Light.png" width="70%"/> | <img src="frontend/assets/screenshots/liveRideScreenDriver2Dark.png" width="70%"/> |
+<table>
+<tr>
+<th width="50%" align="center">Light</th>
+<th width="50%" align="center">Dark</th>
+</tr>
+<tr>
+<td align="center"><img src="frontend/assets/screenshots/liveRideScreenDriver2Light.png" width="70%"/></td>
+<td align="center"><img src="frontend/assets/screenshots/liveRideScreenDriver2Dark.png" width="70%"/></td>
+</tr>
+</table>
 
 <br>
 
 #### Rider — Driver Arrived
 
-| Light | Dark |
-|:---:|:---:|
-| <img src="frontend/assets/screenshots/liveRideScreenRider2Light.png" width="70%"/> | <img src="frontend/assets/screenshots/liveRideScreenRider2Dark.png" width="70%"/> |
+<table>
+<tr>
+<th width="50%" align="center">Light</th>
+<th width="50%" align="center">Dark</th>
+</tr>
+<tr>
+<td align="center"><img src="frontend/assets/screenshots/liveRideScreenRider2Light.png" width="70%"/></td>
+<td align="center"><img src="frontend/assets/screenshots/liveRideScreenRider2Dark.png" width="70%"/></td>
+</tr>
+</table>
 
 <br>
 
 #### Driver — Rider Boarded
 
-| Light | Dark |
-|:---:|:---:|
-| <img src="frontend/assets/screenshots/liveRideScreenDriver3Light.png" width="70%"/> | <img src="frontend/assets/screenshots/liveRideScreenDriver3Dark.png" width="70%"/> |
+<table>
+<tr>
+<th width="50%" align="center">Light</th>
+<th width="50%" align="center">Dark</th>
+</tr>
+<tr>
+<td align="center"><img src="frontend/assets/screenshots/liveRideScreenDriver3Light.png" width="70%"/></td>
+<td align="center"><img src="frontend/assets/screenshots/liveRideScreenDriver3Dark.png" width="70%"/></td>
+</tr>
+</table>
 
 <br>
 
 #### Rider — In Transit
 
-| Light | Dark |
-|:---:|:---:|
-| <img src="frontend/assets/screenshots/liveRideScreenRider3Light.png" width="70%"/> | <img src="frontend/assets/screenshots/liveRideScreenRider3Dark.png" width="70%"/> |
+<table>
+<tr>
+<th width="50%" align="center">Light</th>
+<th width="50%" align="center">Dark</th>
+</tr>
+<tr>
+<td align="center"><img src="frontend/assets/screenshots/liveRideScreenRider3Light.png" width="70%"/></td>
+<td align="center"><img src="frontend/assets/screenshots/liveRideScreenRider3Dark.png" width="70%"/></td>
+</tr>
+</table>
 
 <br>
 
 #### In-app Chat
 
-| Light | Dark |
-|:---:|:---:|
-| <img src="frontend/assets/screenshots/chatScreenLight.png" width="70%"/> | <img src="frontend/assets/screenshots/chatScreenDark.png" width="70%"/> |
+<table>
+<tr>
+<th width="50%" align="center">Light</th>
+<th width="50%" align="center">Dark</th>
+</tr>
+<tr>
+<td align="center"><img src="frontend/assets/screenshots/chatScreenLight.png" width="70%"/></td>
+<td align="center"><img src="frontend/assets/screenshots/chatScreenDark.png" width="70%"/></td>
+</tr>
+</table>
 
 <br>
 
 #### Driver — Trip Complete
 
-| Light | Dark |
-|:---:|:---:|
-| <img src="frontend/assets/screenshots/driverCompletionScreenLight.png" width="70%"/> | <img src="frontend/assets/screenshots/driverCompletionScreenDark.png" width="70%"/> |
+<table>
+<tr>
+<th width="50%" align="center">Light</th>
+<th width="50%" align="center">Dark</th>
+</tr>
+<tr>
+<td align="center"><img src="frontend/assets/screenshots/driverCompletionScreenLight.png" width="70%"/></td>
+<td align="center"><img src="frontend/assets/screenshots/driverCompletionScreenDark.png" width="70%"/></td>
+</tr>
+</table>
 
 <br>
 
 #### Rider — Trip Complete
 
-| Light | Dark |
-|:---:|:---:|
-| <img src="frontend/assets/screenshots/riderCompletionScreenLight.png" width="70%"/> | <img src="frontend/assets/screenshots/riderCompletionScreenDark.png" width="70%"/> |
+<table>
+<tr>
+<th width="50%" align="center">Light</th>
+<th width="50%" align="center">Dark</th>
+</tr>
+<tr>
+<td align="center"><img src="frontend/assets/screenshots/riderCompletionScreenLight.png" width="70%"/></td>
+<td align="center"><img src="frontend/assets/screenshots/riderCompletionScreenDark.png" width="70%"/></td>
+</tr>
+</table>
 
 <br>
 
@@ -478,25 +618,46 @@ Copy `backend/.env.example` to `backend/.env` and fill in each value.
 
 #### Ride History
 
-| Light | Dark |
-|:---:|:---:|
-| <img src="frontend/assets/screenshots/historyScreenLight.png" width="70%"/> | <img src="frontend/assets/screenshots/historyScreenDark.png" width="70%"/> |
+<table>
+<tr>
+<th width="50%" align="center">Light</th>
+<th width="50%" align="center">Dark</th>
+</tr>
+<tr>
+<td align="center"><img src="frontend/assets/screenshots/historyScreenLight.png" width="70%"/></td>
+<td align="center"><img src="frontend/assets/screenshots/historyScreenDark.png" width="70%"/></td>
+</tr>
+</table>
 
 <br>
 
 #### Co-Passengers
 
-| Light | Dark |
-|:---:|:---:|
-| <img src="frontend/assets/screenshots/passengersTravelledPopupLight.png" width="70%"/> | <img src="frontend/assets/screenshots/passengersTravelledPopupDark.png" width="70%"/> |
+<table>
+<tr>
+<th width="50%" align="center">Light</th>
+<th width="50%" align="center">Dark</th>
+</tr>
+<tr>
+<td align="center"><img src="frontend/assets/screenshots/passengersTravelledPopupLight.png" width="70%"/></td>
+<td align="center"><img src="frontend/assets/screenshots/passengersTravelledPopupDark.png" width="70%"/></td>
+</tr>
+</table>
 
 <br>
 
 #### Profile
 
-| Light | Dark |
-|:---:|:---:|
-| <img src="frontend/assets/screenshots/profileScreenLight.png" width="70%"/> | <img src="frontend/assets/screenshots/profileScreenDark.png" width="70%"/> |
+<table>
+<tr>
+<th width="50%" align="center">Light</th>
+<th width="50%" align="center">Dark</th>
+</tr>
+<tr>
+<td align="center"><img src="frontend/assets/screenshots/profileScreenLight.png" width="70%"/></td>
+<td align="center"><img src="frontend/assets/screenshots/profileScreenDark.png" width="70%"/></td>
+</tr>
+</table>
 
 <br>
 
@@ -509,41 +670,76 @@ Copy `backend/.env.example` to `backend/.env` and fill in each value.
 
 #### Admin Dashboard
 
-| Light | Dark |
-|:---:|:---:|
-| <img src="frontend/assets/screenshots/adminDashboardLight.png" width="70%"/> | <img src="frontend/assets/screenshots/adminDashboardDark.png" width="70%"/> |
+<table>
+<tr>
+<th width="50%" align="center">Light</th>
+<th width="50%" align="center">Dark</th>
+</tr>
+<tr>
+<td align="center"><img src="frontend/assets/screenshots/adminDashboardLight.png" width="70%"/></td>
+<td align="center"><img src="frontend/assets/screenshots/adminDashboardDark.png" width="70%"/></td>
+</tr>
+</table>
 
 <br>
 
 #### Admin — Users
 
-| Light | Dark |
-|:---:|:---:|
-| <img src="frontend/assets/screenshots/adminUsersLight.png" width="70%"/> | <img src="frontend/assets/screenshots/adminUsersDark.png" width="70%"/> |
+<table>
+<tr>
+<th width="50%" align="center">Light</th>
+<th width="50%" align="center">Dark</th>
+</tr>
+<tr>
+<td align="center"><img src="frontend/assets/screenshots/adminUsersLight.png" width="70%"/></td>
+<td align="center"><img src="frontend/assets/screenshots/adminUsersDark.png" width="70%"/></td>
+</tr>
+</table>
 
 <br>
 
 #### Admin — User Actions
 
-| Light | Dark |
-|:---:|:---:|
-| <img src="frontend/assets/screenshots/userPopupLight.png" width="70%"/> | <img src="frontend/assets/screenshots/userPopupDark.png" width="70%"/> |
+<table>
+<tr>
+<th width="50%" align="center">Light</th>
+<th width="50%" align="center">Dark</th>
+</tr>
+<tr>
+<td align="center"><img src="frontend/assets/screenshots/userPopupLight.png" width="70%"/></td>
+<td align="center"><img src="frontend/assets/screenshots/userPopupDark.png" width="70%"/></td>
+</tr>
+</table>
 
 <br>
 
 #### Admin — Active Rides
 
-| Light | Dark |
-|:---:|:---:|
-| <img src="frontend/assets/screenshots/adminRidesLight.png" width="70%"/> | <img src="frontend/assets/screenshots/adminRidesDark.png" width="70%"/> |
+<table>
+<tr>
+<th width="50%" align="center">Light</th>
+<th width="50%" align="center">Dark</th>
+</tr>
+<tr>
+<td align="center"><img src="frontend/assets/screenshots/adminRidesLight.png" width="70%"/></td>
+<td align="center"><img src="frontend/assets/screenshots/adminRidesDark.png" width="70%"/></td>
+</tr>
+</table>
 
 <br>
 
 #### Admin — KYC Verification
 
-| Light | Dark |
-|:---:|:---:|
-| <img src="frontend/assets/screenshots/adminVerifyLight.png" width="70%"/> | <img src="frontend/assets/screenshots/adminVerifyDark.png" width="70%"/> |
+<table>
+<tr>
+<th width="50%" align="center">Light</th>
+<th width="50%" align="center">Dark</th>
+</tr>
+<tr>
+<td align="center"><img src="frontend/assets/screenshots/adminVerifyLight.png" width="70%"/></td>
+<td align="center"><img src="frontend/assets/screenshots/adminVerifyDark.png" width="70%"/></td>
+</tr>
+</table>
 
 <br>
 
