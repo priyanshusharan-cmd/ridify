@@ -780,7 +780,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       ],
                       const SizedBox(height: 40),
                       const Text(
-                        "Built with ❤️ by Priyanshu Sharan",
+                        "Crafted with ❤️ by Priyanshu Sharan",
                         style: TextStyle(
                           color: Colors.grey,
                           fontSize: 14,
