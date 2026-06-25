@@ -90,37 +90,98 @@ Built with Flutter for mobile and Node.js + Express + MongoDB on the backend, Ri
 
 ```mermaid
 graph TD
-    subgraph Client [Client Applications]
-        A[Flutter Mobile App<br/>Provider State Management]
-        G[Admin Panel<br/>Web Interface]
+    %% Styling
+    classDef client fill:#e1f5fe,stroke:#01579b,stroke-width:2px;
+    classDef backend fill:#e8f5e9,stroke:#2e7d32,stroke-width:2px;
+    classDef db fill:#fff3e0,stroke:#e65100,stroke-width:2px;
+    classDef external fill:#f3e5f5,stroke:#4a148c,stroke-width:2px;
+    classDef socket fill:#ffebee,stroke:#c62828,stroke-width:2px;
+
+    subgraph ClientLayer [📱 Client Layer]
+        subgraph FlutterApp [Flutter Mobile App]
+            UI[UI Components & Screens]
+            State[Provider State Management]
+            APIClient[API Client & Services]
+            SocketClient[Socket.IO Client]
+            LocalDB[(Secure Storage)]
+            
+            UI --> State
+            State --> APIClient
+            State --> SocketClient
+            State --> LocalDB
+        end
+        Admin[Admin Web Interface]
     end
 
-    subgraph Backend [Node.js + Express + Socket.IO Server]
-        B[REST API<br/>/api/*]
-        C[WebSocket<br/>/socket.io]
+    subgraph BackendLayer [⚙️ Node.js + Express + Socket.IO Server]
+        REST[Express REST API]
+        WSS[Socket.IO Server]
         
-        B -->|Auth, Rides, History| D(Controllers & Services)
-        C -->|Real-time Tracking, Chat| E(Socket Event Handlers)
+        subgraph Controllers [Controllers & Business Logic]
+            AuthCtrl[Auth Controller<br/>JWT & KYC]
+            RideCtrl[Ride Controller<br/>Sweep-line Matching]
+            AdminCtrl[Admin Controller]
+        end
         
-        D --- F[(MongoDB Atlas<br/>Mongoose ODM)]
-        E --- F
+        subgraph SocketServices [Real-time Events]
+            SocketManager[Socket Manager<br/>Rooms: 'ride:rideId']
+            ChatService[Chat Events]
+            LiveTracking[Live Location Updates]
+        end
+        
+        REST --> AuthCtrl
+        REST --> RideCtrl
+        REST --> AdminCtrl
+        
+        WSS --> SocketManager
+        SocketManager --> ChatService
+        SocketManager --> LiveTracking
     end
 
-    subgraph External [External Services]
-        H[OSRM<br/>Route Engine]
-        I[EmailJS<br/>OTP Delivery]
-        J[Nominatim<br/>Geocoding]
-        K[Google Drive<br/>KYC Storage]
+    subgraph DataLayer [🗄️ Database Layer]
+        MongoDB[(MongoDB Atlas)]
+        UserColl[Users Collection]
+        RideColl[Rides Collection]
+        OTPColl[OTP Verifications<br/>TTL Index]
+        
+        MongoDB --- UserColl
+        MongoDB --- RideColl
+        MongoDB --- OTPColl
     end
 
-    A <-->|HTTPS REST| B
-    A <-->|WSS| C
-    G <-->|HTTPS REST| B
+    subgraph ExternalLayer [🌐 External Services]
+        OSRM[OSRM<br/>Routing Engine]
+        Nominatim[Nominatim<br/>Geocoding]
+        EmailJS[EmailJS<br/>OTP Delivery]
+        GScript[Google Apps Script<br/>KYC Drive Storage]
+    end
 
-    D --> H
-    D --> I
-    D --> J
-    D --> K
+    %% Connections
+    APIClient -->|HTTPS REST| REST
+    Admin -->|HTTPS REST| REST
+    SocketClient <-->|WebSocket| WSS
+
+    AuthCtrl --> OTPColl
+    AuthCtrl --> UserColl
+    RideCtrl --> RideColl
+    RideCtrl --> UserColl
+    AdminCtrl --> UserColl
+    AdminCtrl --> RideColl
+    
+    LiveTracking --> RideColl
+    ChatService --> RideColl
+    
+    RideCtrl -->|Calculate Distance/Time| OSRM
+    APIClient -->|Reverse Geocoding| Nominatim
+    AuthCtrl -->|Send OTP| EmailJS
+    AuthCtrl -->|Upload KYC| GScript
+
+    %% Apply Classes
+    class FlutterApp,Admin client;
+    class REST,WSS,Controllers,SocketServices backend;
+    class MongoDB,UserColl,RideColl,OTPColl db;
+    class OSRM,Nominatim,EmailJS,GScript external;
+    class SocketClient,WSS,SocketManager socket;
 ```
 
 ---
