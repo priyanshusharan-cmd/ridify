@@ -2479,7 +2479,7 @@ The current version of Ridify uses English for all user-facing text. The Flutter
 
 Crafted with ❤️ by Priyanshu Sharan
 
-[![LinkedIn](https://upload.wikimedia.org/wikipedia/commons/c/ca/LinkedIn_logo_initials.png)](https://www.linkedin.com/in/priyanshusharan/)
+<a href="https://www.linkedin.com/in/priyanshusharan/"><img src="https://upload.wikimedia.org/wikipedia/commons/c/ca/LinkedIn_logo_initials.png" alt="LinkedIn" width="24" height="24"/></a>
 
 Licensed under the MIT License — see the [LICENSE](LICENSE) file for details.
 
