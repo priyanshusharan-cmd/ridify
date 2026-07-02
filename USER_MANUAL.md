@@ -1,4409 +1,2487 @@
 <div align="center">
+
 <img src="frontend/assets/icon.png" alt="Ridify Logo" width="120"/>
-# Ridify - The Ultimate Comprehensive User Manual
-### The ultimate guide to real-time peer-to-peer ride-sharing & cost-splitting.
+
+# Ridify — Comprehensive User Manual
+
+### Version 1.0 · July 2026
+
+**Real-time peer-to-peer ride-sharing & cost-splitting — built for everyone.**
+
 </div>
 
 ---
 
-## Table of Contents
-1. [Introduction to Ridify](#1-introduction-to-ridify)
-2. [Getting Started: Setup & Onboarding](#2-getting-started-setup--onboarding)
-3. [Identity & Security (KYC)](#3-identity--security-kyc)
-4. [Rider's Guide: Finding & Joining Rides](#4-riders-guide-finding--joining-rides)
-5. [Driver's Guide: Offering & Managing Rides](#5-drivers-guide-offering--managing-rides)
-6. [In-App Communication](#6-in-app-communication)
-7. [Account Management & History](#7-account-management--history)
-8. [Admin Panel Guide](#8-admin-panel-guide)
-9. [Under the Hood: Technical Architecture](#9-under-the-hood-technical-architecture)
-10. [Exhaustive API Reference](#10-exhaustive-api-reference)
-11. [Troubleshooting & Error Codes](#11-troubleshooting--error-codes)
-12. [Terms of Service & Legal](#12-terms-of-service--legal)
-13. [Privacy Policy](#13-privacy-policy)
-14. [Frequently Asked Questions (FAQ)](#14-frequently-asked-questions-faq)
+> **About this manual**
+>
+> This document is the single authoritative reference for every feature, workflow, and technical detail in the Ridify application. It is structured so that **casual users** can jump straight to the [Quick-Start Guide](#part-i-quick-start-guide-5-minutes) and start using the app immediately, while **power users, developers, and administrators** can find exhaustive technical detail in the later parts.
+>
+> Screenshots referenced throughout correspond to both **Light** and **Dark** theme variants.
 
 ---
-## 1. Introduction to Ridify
-Ridify is an advanced, production-grade application designed for real-time ride-sharing. This paragraph 0 explores the nuanced benefits of decentralized cost-splitting and how it reduces the carbon footprint while bringing communities together in unprecedented ways. When users participate in the Ridify ecosystem, they aren't just saving money—they're participating in a massive, scalable network of trust.
-Ridify is an advanced, production-grade application designed for real-time ride-sharing. This paragraph 1 explores the nuanced benefits of decentralized cost-splitting and how it reduces the carbon footprint while bringing communities together in unprecedented ways. When users participate in the Ridify ecosystem, they aren't just saving money—they're participating in a massive, scalable network of trust.
-Ridify is an advanced, production-grade application designed for real-time ride-sharing. This paragraph 2 explores the nuanced benefits of decentralized cost-splitting and how it reduces the carbon footprint while bringing communities together in unprecedented ways. When users participate in the Ridify ecosystem, they aren't just saving money—they're participating in a massive, scalable network of trust.
-Ridify is an advanced, production-grade application designed for real-time ride-sharing. This paragraph 3 explores the nuanced benefits of decentralized cost-splitting and how it reduces the carbon footprint while bringing communities together in unprecedented ways. When users participate in the Ridify ecosystem, they aren't just saving money—they're participating in a massive, scalable network of trust.
-Ridify is an advanced, production-grade application designed for real-time ride-sharing. This paragraph 4 explores the nuanced benefits of decentralized cost-splitting and how it reduces the carbon footprint while bringing communities together in unprecedented ways. When users participate in the Ridify ecosystem, they aren't just saving money—they're participating in a massive, scalable network of trust.
-Ridify is an advanced, production-grade application designed for real-time ride-sharing. This paragraph 5 explores the nuanced benefits of decentralized cost-splitting and how it reduces the carbon footprint while bringing communities together in unprecedented ways. When users participate in the Ridify ecosystem, they aren't just saving money—they're participating in a massive, scalable network of trust.
-Ridify is an advanced, production-grade application designed for real-time ride-sharing. This paragraph 6 explores the nuanced benefits of decentralized cost-splitting and how it reduces the carbon footprint while bringing communities together in unprecedented ways. When users participate in the Ridify ecosystem, they aren't just saving money—they're participating in a massive, scalable network of trust.
-Ridify is an advanced, production-grade application designed for real-time ride-sharing. This paragraph 7 explores the nuanced benefits of decentralized cost-splitting and how it reduces the carbon footprint while bringing communities together in unprecedented ways. When users participate in the Ridify ecosystem, they aren't just saving money—they're participating in a massive, scalable network of trust.
-Ridify is an advanced, production-grade application designed for real-time ride-sharing. This paragraph 8 explores the nuanced benefits of decentralized cost-splitting and how it reduces the carbon footprint while bringing communities together in unprecedented ways. When users participate in the Ridify ecosystem, they aren't just saving money—they're participating in a massive, scalable network of trust.
-Ridify is an advanced, production-grade application designed for real-time ride-sharing. This paragraph 9 explores the nuanced benefits of decentralized cost-splitting and how it reduces the carbon footprint while bringing communities together in unprecedented ways. When users participate in the Ridify ecosystem, they aren't just saving money—they're participating in a massive, scalable network of trust.
-### Key Terms Glossary
-**Term 0**: A highly detailed explanation of term 0, ensuring that absolutely no ambiguity remains regarding its usage in both the rider and driver contexts. This term represents a critical pillar of the Ridify operational model.
-**Term 1**: A highly detailed explanation of term 1, ensuring that absolutely no ambiguity remains regarding its usage in both the rider and driver contexts. This term represents a critical pillar of the Ridify operational model.
-**Term 2**: A highly detailed explanation of term 2, ensuring that absolutely no ambiguity remains regarding its usage in both the rider and driver contexts. This term represents a critical pillar of the Ridify operational model.
-**Term 3**: A highly detailed explanation of term 3, ensuring that absolutely no ambiguity remains regarding its usage in both the rider and driver contexts. This term represents a critical pillar of the Ridify operational model.
-**Term 4**: A highly detailed explanation of term 4, ensuring that absolutely no ambiguity remains regarding its usage in both the rider and driver contexts. This term represents a critical pillar of the Ridify operational model.
-**Term 5**: A highly detailed explanation of term 5, ensuring that absolutely no ambiguity remains regarding its usage in both the rider and driver contexts. This term represents a critical pillar of the Ridify operational model.
-**Term 6**: A highly detailed explanation of term 6, ensuring that absolutely no ambiguity remains regarding its usage in both the rider and driver contexts. This term represents a critical pillar of the Ridify operational model.
-**Term 7**: A highly detailed explanation of term 7, ensuring that absolutely no ambiguity remains regarding its usage in both the rider and driver contexts. This term represents a critical pillar of the Ridify operational model.
-**Term 8**: A highly detailed explanation of term 8, ensuring that absolutely no ambiguity remains regarding its usage in both the rider and driver contexts. This term represents a critical pillar of the Ridify operational model.
-**Term 9**: A highly detailed explanation of term 9, ensuring that absolutely no ambiguity remains regarding its usage in both the rider and driver contexts. This term represents a critical pillar of the Ridify operational model.
-**Term 10**: A highly detailed explanation of term 10, ensuring that absolutely no ambiguity remains regarding its usage in both the rider and driver contexts. This term represents a critical pillar of the Ridify operational model.
-**Term 11**: A highly detailed explanation of term 11, ensuring that absolutely no ambiguity remains regarding its usage in both the rider and driver contexts. This term represents a critical pillar of the Ridify operational model.
-**Term 12**: A highly detailed explanation of term 12, ensuring that absolutely no ambiguity remains regarding its usage in both the rider and driver contexts. This term represents a critical pillar of the Ridify operational model.
-**Term 13**: A highly detailed explanation of term 13, ensuring that absolutely no ambiguity remains regarding its usage in both the rider and driver contexts. This term represents a critical pillar of the Ridify operational model.
-**Term 14**: A highly detailed explanation of term 14, ensuring that absolutely no ambiguity remains regarding its usage in both the rider and driver contexts. This term represents a critical pillar of the Ridify operational model.
-**Term 15**: A highly detailed explanation of term 15, ensuring that absolutely no ambiguity remains regarding its usage in both the rider and driver contexts. This term represents a critical pillar of the Ridify operational model.
-**Term 16**: A highly detailed explanation of term 16, ensuring that absolutely no ambiguity remains regarding its usage in both the rider and driver contexts. This term represents a critical pillar of the Ridify operational model.
-**Term 17**: A highly detailed explanation of term 17, ensuring that absolutely no ambiguity remains regarding its usage in both the rider and driver contexts. This term represents a critical pillar of the Ridify operational model.
-**Term 18**: A highly detailed explanation of term 18, ensuring that absolutely no ambiguity remains regarding its usage in both the rider and driver contexts. This term represents a critical pillar of the Ridify operational model.
-**Term 19**: A highly detailed explanation of term 19, ensuring that absolutely no ambiguity remains regarding its usage in both the rider and driver contexts. This term represents a critical pillar of the Ridify operational model.
-**Term 20**: A highly detailed explanation of term 20, ensuring that absolutely no ambiguity remains regarding its usage in both the rider and driver contexts. This term represents a critical pillar of the Ridify operational model.
-**Term 21**: A highly detailed explanation of term 21, ensuring that absolutely no ambiguity remains regarding its usage in both the rider and driver contexts. This term represents a critical pillar of the Ridify operational model.
-**Term 22**: A highly detailed explanation of term 22, ensuring that absolutely no ambiguity remains regarding its usage in both the rider and driver contexts. This term represents a critical pillar of the Ridify operational model.
-**Term 23**: A highly detailed explanation of term 23, ensuring that absolutely no ambiguity remains regarding its usage in both the rider and driver contexts. This term represents a critical pillar of the Ridify operational model.
-**Term 24**: A highly detailed explanation of term 24, ensuring that absolutely no ambiguity remains regarding its usage in both the rider and driver contexts. This term represents a critical pillar of the Ridify operational model.
-**Term 25**: A highly detailed explanation of term 25, ensuring that absolutely no ambiguity remains regarding its usage in both the rider and driver contexts. This term represents a critical pillar of the Ridify operational model.
-**Term 26**: A highly detailed explanation of term 26, ensuring that absolutely no ambiguity remains regarding its usage in both the rider and driver contexts. This term represents a critical pillar of the Ridify operational model.
-**Term 27**: A highly detailed explanation of term 27, ensuring that absolutely no ambiguity remains regarding its usage in both the rider and driver contexts. This term represents a critical pillar of the Ridify operational model.
-**Term 28**: A highly detailed explanation of term 28, ensuring that absolutely no ambiguity remains regarding its usage in both the rider and driver contexts. This term represents a critical pillar of the Ridify operational model.
-**Term 29**: A highly detailed explanation of term 29, ensuring that absolutely no ambiguity remains regarding its usage in both the rider and driver contexts. This term represents a critical pillar of the Ridify operational model.
-**Term 30**: A highly detailed explanation of term 30, ensuring that absolutely no ambiguity remains regarding its usage in both the rider and driver contexts. This term represents a critical pillar of the Ridify operational model.
-**Term 31**: A highly detailed explanation of term 31, ensuring that absolutely no ambiguity remains regarding its usage in both the rider and driver contexts. This term represents a critical pillar of the Ridify operational model.
-**Term 32**: A highly detailed explanation of term 32, ensuring that absolutely no ambiguity remains regarding its usage in both the rider and driver contexts. This term represents a critical pillar of the Ridify operational model.
-**Term 33**: A highly detailed explanation of term 33, ensuring that absolutely no ambiguity remains regarding its usage in both the rider and driver contexts. This term represents a critical pillar of the Ridify operational model.
-**Term 34**: A highly detailed explanation of term 34, ensuring that absolutely no ambiguity remains regarding its usage in both the rider and driver contexts. This term represents a critical pillar of the Ridify operational model.
-**Term 35**: A highly detailed explanation of term 35, ensuring that absolutely no ambiguity remains regarding its usage in both the rider and driver contexts. This term represents a critical pillar of the Ridify operational model.
-**Term 36**: A highly detailed explanation of term 36, ensuring that absolutely no ambiguity remains regarding its usage in both the rider and driver contexts. This term represents a critical pillar of the Ridify operational model.
-**Term 37**: A highly detailed explanation of term 37, ensuring that absolutely no ambiguity remains regarding its usage in both the rider and driver contexts. This term represents a critical pillar of the Ridify operational model.
-**Term 38**: A highly detailed explanation of term 38, ensuring that absolutely no ambiguity remains regarding its usage in both the rider and driver contexts. This term represents a critical pillar of the Ridify operational model.
-**Term 39**: A highly detailed explanation of term 39, ensuring that absolutely no ambiguity remains regarding its usage in both the rider and driver contexts. This term represents a critical pillar of the Ridify operational model.
-**Term 40**: A highly detailed explanation of term 40, ensuring that absolutely no ambiguity remains regarding its usage in both the rider and driver contexts. This term represents a critical pillar of the Ridify operational model.
-**Term 41**: A highly detailed explanation of term 41, ensuring that absolutely no ambiguity remains regarding its usage in both the rider and driver contexts. This term represents a critical pillar of the Ridify operational model.
-**Term 42**: A highly detailed explanation of term 42, ensuring that absolutely no ambiguity remains regarding its usage in both the rider and driver contexts. This term represents a critical pillar of the Ridify operational model.
-**Term 43**: A highly detailed explanation of term 43, ensuring that absolutely no ambiguity remains regarding its usage in both the rider and driver contexts. This term represents a critical pillar of the Ridify operational model.
-**Term 44**: A highly detailed explanation of term 44, ensuring that absolutely no ambiguity remains regarding its usage in both the rider and driver contexts. This term represents a critical pillar of the Ridify operational model.
-**Term 45**: A highly detailed explanation of term 45, ensuring that absolutely no ambiguity remains regarding its usage in both the rider and driver contexts. This term represents a critical pillar of the Ridify operational model.
-**Term 46**: A highly detailed explanation of term 46, ensuring that absolutely no ambiguity remains regarding its usage in both the rider and driver contexts. This term represents a critical pillar of the Ridify operational model.
-**Term 47**: A highly detailed explanation of term 47, ensuring that absolutely no ambiguity remains regarding its usage in both the rider and driver contexts. This term represents a critical pillar of the Ridify operational model.
-**Term 48**: A highly detailed explanation of term 48, ensuring that absolutely no ambiguity remains regarding its usage in both the rider and driver contexts. This term represents a critical pillar of the Ridify operational model.
-**Term 49**: A highly detailed explanation of term 49, ensuring that absolutely no ambiguity remains regarding its usage in both the rider and driver contexts. This term represents a critical pillar of the Ridify operational model.
-## 2. Getting Started: Setup & Onboarding
-### Step-by-Step Installation
-1. Ensure your device meets the prerequisite specifications: Android version 10.0 or higher, with at least 2GB of RAM. Location services must be enabled and set to 'High Accuracy' mode for the mapping features to function correctly.
-2. Ensure your device meets the prerequisite specifications: Android version 11.0 or higher, with at least 2GB of RAM. Location services must be enabled and set to 'High Accuracy' mode for the mapping features to function correctly.
-3. Ensure your device meets the prerequisite specifications: Android version 12.0 or higher, with at least 2GB of RAM. Location services must be enabled and set to 'High Accuracy' mode for the mapping features to function correctly.
-4. Ensure your device meets the prerequisite specifications: Android version 13.0 or higher, with at least 2GB of RAM. Location services must be enabled and set to 'High Accuracy' mode for the mapping features to function correctly.
-5. Ensure your device meets the prerequisite specifications: Android version 10.0 or higher, with at least 2GB of RAM. Location services must be enabled and set to 'High Accuracy' mode for the mapping features to function correctly.
-6. Ensure your device meets the prerequisite specifications: Android version 11.0 or higher, with at least 2GB of RAM. Location services must be enabled and set to 'High Accuracy' mode for the mapping features to function correctly.
-7. Ensure your device meets the prerequisite specifications: Android version 12.0 or higher, with at least 2GB of RAM. Location services must be enabled and set to 'High Accuracy' mode for the mapping features to function correctly.
-8. Ensure your device meets the prerequisite specifications: Android version 13.0 or higher, with at least 2GB of RAM. Location services must be enabled and set to 'High Accuracy' mode for the mapping features to function correctly.
-9. Ensure your device meets the prerequisite specifications: Android version 10.0 or higher, with at least 2GB of RAM. Location services must be enabled and set to 'High Accuracy' mode for the mapping features to function correctly.
-10. Ensure your device meets the prerequisite specifications: Android version 11.0 or higher, with at least 2GB of RAM. Location services must be enabled and set to 'High Accuracy' mode for the mapping features to function correctly.
-11. Ensure your device meets the prerequisite specifications: Android version 12.0 or higher, with at least 2GB of RAM. Location services must be enabled and set to 'High Accuracy' mode for the mapping features to function correctly.
-12. Ensure your device meets the prerequisite specifications: Android version 13.0 or higher, with at least 2GB of RAM. Location services must be enabled and set to 'High Accuracy' mode for the mapping features to function correctly.
-13. Ensure your device meets the prerequisite specifications: Android version 10.0 or higher, with at least 2GB of RAM. Location services must be enabled and set to 'High Accuracy' mode for the mapping features to function correctly.
-14. Ensure your device meets the prerequisite specifications: Android version 11.0 or higher, with at least 2GB of RAM. Location services must be enabled and set to 'High Accuracy' mode for the mapping features to function correctly.
-15. Ensure your device meets the prerequisite specifications: Android version 12.0 or higher, with at least 2GB of RAM. Location services must be enabled and set to 'High Accuracy' mode for the mapping features to function correctly.
-16. Ensure your device meets the prerequisite specifications: Android version 13.0 or higher, with at least 2GB of RAM. Location services must be enabled and set to 'High Accuracy' mode for the mapping features to function correctly.
-17. Ensure your device meets the prerequisite specifications: Android version 10.0 or higher, with at least 2GB of RAM. Location services must be enabled and set to 'High Accuracy' mode for the mapping features to function correctly.
-18. Ensure your device meets the prerequisite specifications: Android version 11.0 or higher, with at least 2GB of RAM. Location services must be enabled and set to 'High Accuracy' mode for the mapping features to function correctly.
-19. Ensure your device meets the prerequisite specifications: Android version 12.0 or higher, with at least 2GB of RAM. Location services must be enabled and set to 'High Accuracy' mode for the mapping features to function correctly.
-20. Ensure your device meets the prerequisite specifications: Android version 13.0 or higher, with at least 2GB of RAM. Location services must be enabled and set to 'High Accuracy' mode for the mapping features to function correctly.
-## 3. Identity & Security (KYC)
-Safety is our number one priority. Our KYC process is exhaustive.
-### KYC Edge Case 0
-If your document is rejected due to reason code 0 (which typically involves poor lighting, obscured corners, or a mismatch in the OCR reading algorithms), you must follow the secondary verification path which includes contacting the admin panel and providing a supplementary proof of address.
-### KYC Edge Case 1
-If your document is rejected due to reason code 1 (which typically involves poor lighting, obscured corners, or a mismatch in the OCR reading algorithms), you must follow the secondary verification path which includes contacting the admin panel and providing a supplementary proof of address.
-### KYC Edge Case 2
-If your document is rejected due to reason code 2 (which typically involves poor lighting, obscured corners, or a mismatch in the OCR reading algorithms), you must follow the secondary verification path which includes contacting the admin panel and providing a supplementary proof of address.
-### KYC Edge Case 3
-If your document is rejected due to reason code 3 (which typically involves poor lighting, obscured corners, or a mismatch in the OCR reading algorithms), you must follow the secondary verification path which includes contacting the admin panel and providing a supplementary proof of address.
-### KYC Edge Case 4
-If your document is rejected due to reason code 4 (which typically involves poor lighting, obscured corners, or a mismatch in the OCR reading algorithms), you must follow the secondary verification path which includes contacting the admin panel and providing a supplementary proof of address.
-### KYC Edge Case 5
-If your document is rejected due to reason code 5 (which typically involves poor lighting, obscured corners, or a mismatch in the OCR reading algorithms), you must follow the secondary verification path which includes contacting the admin panel and providing a supplementary proof of address.
-### KYC Edge Case 6
-If your document is rejected due to reason code 6 (which typically involves poor lighting, obscured corners, or a mismatch in the OCR reading algorithms), you must follow the secondary verification path which includes contacting the admin panel and providing a supplementary proof of address.
-### KYC Edge Case 7
-If your document is rejected due to reason code 7 (which typically involves poor lighting, obscured corners, or a mismatch in the OCR reading algorithms), you must follow the secondary verification path which includes contacting the admin panel and providing a supplementary proof of address.
-### KYC Edge Case 8
-If your document is rejected due to reason code 8 (which typically involves poor lighting, obscured corners, or a mismatch in the OCR reading algorithms), you must follow the secondary verification path which includes contacting the admin panel and providing a supplementary proof of address.
-### KYC Edge Case 9
-If your document is rejected due to reason code 9 (which typically involves poor lighting, obscured corners, or a mismatch in the OCR reading algorithms), you must follow the secondary verification path which includes contacting the admin panel and providing a supplementary proof of address.
-### KYC Edge Case 10
-If your document is rejected due to reason code 10 (which typically involves poor lighting, obscured corners, or a mismatch in the OCR reading algorithms), you must follow the secondary verification path which includes contacting the admin panel and providing a supplementary proof of address.
-### KYC Edge Case 11
-If your document is rejected due to reason code 11 (which typically involves poor lighting, obscured corners, or a mismatch in the OCR reading algorithms), you must follow the secondary verification path which includes contacting the admin panel and providing a supplementary proof of address.
-### KYC Edge Case 12
-If your document is rejected due to reason code 12 (which typically involves poor lighting, obscured corners, or a mismatch in the OCR reading algorithms), you must follow the secondary verification path which includes contacting the admin panel and providing a supplementary proof of address.
-### KYC Edge Case 13
-If your document is rejected due to reason code 13 (which typically involves poor lighting, obscured corners, or a mismatch in the OCR reading algorithms), you must follow the secondary verification path which includes contacting the admin panel and providing a supplementary proof of address.
-### KYC Edge Case 14
-If your document is rejected due to reason code 14 (which typically involves poor lighting, obscured corners, or a mismatch in the OCR reading algorithms), you must follow the secondary verification path which includes contacting the admin panel and providing a supplementary proof of address.
-### KYC Edge Case 15
-If your document is rejected due to reason code 15 (which typically involves poor lighting, obscured corners, or a mismatch in the OCR reading algorithms), you must follow the secondary verification path which includes contacting the admin panel and providing a supplementary proof of address.
-### KYC Edge Case 16
-If your document is rejected due to reason code 16 (which typically involves poor lighting, obscured corners, or a mismatch in the OCR reading algorithms), you must follow the secondary verification path which includes contacting the admin panel and providing a supplementary proof of address.
-### KYC Edge Case 17
-If your document is rejected due to reason code 17 (which typically involves poor lighting, obscured corners, or a mismatch in the OCR reading algorithms), you must follow the secondary verification path which includes contacting the admin panel and providing a supplementary proof of address.
-### KYC Edge Case 18
-If your document is rejected due to reason code 18 (which typically involves poor lighting, obscured corners, or a mismatch in the OCR reading algorithms), you must follow the secondary verification path which includes contacting the admin panel and providing a supplementary proof of address.
-### KYC Edge Case 19
-If your document is rejected due to reason code 19 (which typically involves poor lighting, obscured corners, or a mismatch in the OCR reading algorithms), you must follow the secondary verification path which includes contacting the admin panel and providing a supplementary proof of address.
-### KYC Edge Case 20
-If your document is rejected due to reason code 20 (which typically involves poor lighting, obscured corners, or a mismatch in the OCR reading algorithms), you must follow the secondary verification path which includes contacting the admin panel and providing a supplementary proof of address.
-### KYC Edge Case 21
-If your document is rejected due to reason code 21 (which typically involves poor lighting, obscured corners, or a mismatch in the OCR reading algorithms), you must follow the secondary verification path which includes contacting the admin panel and providing a supplementary proof of address.
-### KYC Edge Case 22
-If your document is rejected due to reason code 22 (which typically involves poor lighting, obscured corners, or a mismatch in the OCR reading algorithms), you must follow the secondary verification path which includes contacting the admin panel and providing a supplementary proof of address.
-### KYC Edge Case 23
-If your document is rejected due to reason code 23 (which typically involves poor lighting, obscured corners, or a mismatch in the OCR reading algorithms), you must follow the secondary verification path which includes contacting the admin panel and providing a supplementary proof of address.
-### KYC Edge Case 24
-If your document is rejected due to reason code 24 (which typically involves poor lighting, obscured corners, or a mismatch in the OCR reading algorithms), you must follow the secondary verification path which includes contacting the admin panel and providing a supplementary proof of address.
-### KYC Edge Case 25
-If your document is rejected due to reason code 25 (which typically involves poor lighting, obscured corners, or a mismatch in the OCR reading algorithms), you must follow the secondary verification path which includes contacting the admin panel and providing a supplementary proof of address.
-### KYC Edge Case 26
-If your document is rejected due to reason code 26 (which typically involves poor lighting, obscured corners, or a mismatch in the OCR reading algorithms), you must follow the secondary verification path which includes contacting the admin panel and providing a supplementary proof of address.
-### KYC Edge Case 27
-If your document is rejected due to reason code 27 (which typically involves poor lighting, obscured corners, or a mismatch in the OCR reading algorithms), you must follow the secondary verification path which includes contacting the admin panel and providing a supplementary proof of address.
-### KYC Edge Case 28
-If your document is rejected due to reason code 28 (which typically involves poor lighting, obscured corners, or a mismatch in the OCR reading algorithms), you must follow the secondary verification path which includes contacting the admin panel and providing a supplementary proof of address.
-### KYC Edge Case 29
-If your document is rejected due to reason code 29 (which typically involves poor lighting, obscured corners, or a mismatch in the OCR reading algorithms), you must follow the secondary verification path which includes contacting the admin panel and providing a supplementary proof of address.
-## 4. Rider's Guide: Finding & Joining Rides
-### Scenario: Joining Ride 0
-When joining a ride under condition 0, the sweep-line algorithm evaluates the proximity of the driver's route to your requested pickup point. If the deviation is greater than 0 meters, the cost split formula recalculates the base fare utilizing a logarithmic degradation curve to ensure fairness.
-### Scenario: Joining Ride 1
-When joining a ride under condition 1, the sweep-line algorithm evaluates the proximity of the driver's route to your requested pickup point. If the deviation is greater than 10 meters, the cost split formula recalculates the base fare utilizing a logarithmic degradation curve to ensure fairness.
-### Scenario: Joining Ride 2
-When joining a ride under condition 2, the sweep-line algorithm evaluates the proximity of the driver's route to your requested pickup point. If the deviation is greater than 20 meters, the cost split formula recalculates the base fare utilizing a logarithmic degradation curve to ensure fairness.
-### Scenario: Joining Ride 3
-When joining a ride under condition 3, the sweep-line algorithm evaluates the proximity of the driver's route to your requested pickup point. If the deviation is greater than 30 meters, the cost split formula recalculates the base fare utilizing a logarithmic degradation curve to ensure fairness.
-### Scenario: Joining Ride 4
-When joining a ride under condition 4, the sweep-line algorithm evaluates the proximity of the driver's route to your requested pickup point. If the deviation is greater than 40 meters, the cost split formula recalculates the base fare utilizing a logarithmic degradation curve to ensure fairness.
-### Scenario: Joining Ride 5
-When joining a ride under condition 5, the sweep-line algorithm evaluates the proximity of the driver's route to your requested pickup point. If the deviation is greater than 50 meters, the cost split formula recalculates the base fare utilizing a logarithmic degradation curve to ensure fairness.
-### Scenario: Joining Ride 6
-When joining a ride under condition 6, the sweep-line algorithm evaluates the proximity of the driver's route to your requested pickup point. If the deviation is greater than 60 meters, the cost split formula recalculates the base fare utilizing a logarithmic degradation curve to ensure fairness.
-### Scenario: Joining Ride 7
-When joining a ride under condition 7, the sweep-line algorithm evaluates the proximity of the driver's route to your requested pickup point. If the deviation is greater than 70 meters, the cost split formula recalculates the base fare utilizing a logarithmic degradation curve to ensure fairness.
-### Scenario: Joining Ride 8
-When joining a ride under condition 8, the sweep-line algorithm evaluates the proximity of the driver's route to your requested pickup point. If the deviation is greater than 80 meters, the cost split formula recalculates the base fare utilizing a logarithmic degradation curve to ensure fairness.
-### Scenario: Joining Ride 9
-When joining a ride under condition 9, the sweep-line algorithm evaluates the proximity of the driver's route to your requested pickup point. If the deviation is greater than 90 meters, the cost split formula recalculates the base fare utilizing a logarithmic degradation curve to ensure fairness.
-### Scenario: Joining Ride 10
-When joining a ride under condition 10, the sweep-line algorithm evaluates the proximity of the driver's route to your requested pickup point. If the deviation is greater than 100 meters, the cost split formula recalculates the base fare utilizing a logarithmic degradation curve to ensure fairness.
-### Scenario: Joining Ride 11
-When joining a ride under condition 11, the sweep-line algorithm evaluates the proximity of the driver's route to your requested pickup point. If the deviation is greater than 110 meters, the cost split formula recalculates the base fare utilizing a logarithmic degradation curve to ensure fairness.
-### Scenario: Joining Ride 12
-When joining a ride under condition 12, the sweep-line algorithm evaluates the proximity of the driver's route to your requested pickup point. If the deviation is greater than 120 meters, the cost split formula recalculates the base fare utilizing a logarithmic degradation curve to ensure fairness.
-### Scenario: Joining Ride 13
-When joining a ride under condition 13, the sweep-line algorithm evaluates the proximity of the driver's route to your requested pickup point. If the deviation is greater than 130 meters, the cost split formula recalculates the base fare utilizing a logarithmic degradation curve to ensure fairness.
-### Scenario: Joining Ride 14
-When joining a ride under condition 14, the sweep-line algorithm evaluates the proximity of the driver's route to your requested pickup point. If the deviation is greater than 140 meters, the cost split formula recalculates the base fare utilizing a logarithmic degradation curve to ensure fairness.
-### Scenario: Joining Ride 15
-When joining a ride under condition 15, the sweep-line algorithm evaluates the proximity of the driver's route to your requested pickup point. If the deviation is greater than 150 meters, the cost split formula recalculates the base fare utilizing a logarithmic degradation curve to ensure fairness.
-### Scenario: Joining Ride 16
-When joining a ride under condition 16, the sweep-line algorithm evaluates the proximity of the driver's route to your requested pickup point. If the deviation is greater than 160 meters, the cost split formula recalculates the base fare utilizing a logarithmic degradation curve to ensure fairness.
-### Scenario: Joining Ride 17
-When joining a ride under condition 17, the sweep-line algorithm evaluates the proximity of the driver's route to your requested pickup point. If the deviation is greater than 170 meters, the cost split formula recalculates the base fare utilizing a logarithmic degradation curve to ensure fairness.
-### Scenario: Joining Ride 18
-When joining a ride under condition 18, the sweep-line algorithm evaluates the proximity of the driver's route to your requested pickup point. If the deviation is greater than 180 meters, the cost split formula recalculates the base fare utilizing a logarithmic degradation curve to ensure fairness.
-### Scenario: Joining Ride 19
-When joining a ride under condition 19, the sweep-line algorithm evaluates the proximity of the driver's route to your requested pickup point. If the deviation is greater than 190 meters, the cost split formula recalculates the base fare utilizing a logarithmic degradation curve to ensure fairness.
-### Scenario: Joining Ride 20
-When joining a ride under condition 20, the sweep-line algorithm evaluates the proximity of the driver's route to your requested pickup point. If the deviation is greater than 200 meters, the cost split formula recalculates the base fare utilizing a logarithmic degradation curve to ensure fairness.
-### Scenario: Joining Ride 21
-When joining a ride under condition 21, the sweep-line algorithm evaluates the proximity of the driver's route to your requested pickup point. If the deviation is greater than 210 meters, the cost split formula recalculates the base fare utilizing a logarithmic degradation curve to ensure fairness.
-### Scenario: Joining Ride 22
-When joining a ride under condition 22, the sweep-line algorithm evaluates the proximity of the driver's route to your requested pickup point. If the deviation is greater than 220 meters, the cost split formula recalculates the base fare utilizing a logarithmic degradation curve to ensure fairness.
-### Scenario: Joining Ride 23
-When joining a ride under condition 23, the sweep-line algorithm evaluates the proximity of the driver's route to your requested pickup point. If the deviation is greater than 230 meters, the cost split formula recalculates the base fare utilizing a logarithmic degradation curve to ensure fairness.
-### Scenario: Joining Ride 24
-When joining a ride under condition 24, the sweep-line algorithm evaluates the proximity of the driver's route to your requested pickup point. If the deviation is greater than 240 meters, the cost split formula recalculates the base fare utilizing a logarithmic degradation curve to ensure fairness.
-### Scenario: Joining Ride 25
-When joining a ride under condition 25, the sweep-line algorithm evaluates the proximity of the driver's route to your requested pickup point. If the deviation is greater than 250 meters, the cost split formula recalculates the base fare utilizing a logarithmic degradation curve to ensure fairness.
-### Scenario: Joining Ride 26
-When joining a ride under condition 26, the sweep-line algorithm evaluates the proximity of the driver's route to your requested pickup point. If the deviation is greater than 260 meters, the cost split formula recalculates the base fare utilizing a logarithmic degradation curve to ensure fairness.
-### Scenario: Joining Ride 27
-When joining a ride under condition 27, the sweep-line algorithm evaluates the proximity of the driver's route to your requested pickup point. If the deviation is greater than 270 meters, the cost split formula recalculates the base fare utilizing a logarithmic degradation curve to ensure fairness.
-### Scenario: Joining Ride 28
-When joining a ride under condition 28, the sweep-line algorithm evaluates the proximity of the driver's route to your requested pickup point. If the deviation is greater than 280 meters, the cost split formula recalculates the base fare utilizing a logarithmic degradation curve to ensure fairness.
-### Scenario: Joining Ride 29
-When joining a ride under condition 29, the sweep-line algorithm evaluates the proximity of the driver's route to your requested pickup point. If the deviation is greater than 290 meters, the cost split formula recalculates the base fare utilizing a logarithmic degradation curve to ensure fairness.
-### Scenario: Joining Ride 30
-When joining a ride under condition 30, the sweep-line algorithm evaluates the proximity of the driver's route to your requested pickup point. If the deviation is greater than 300 meters, the cost split formula recalculates the base fare utilizing a logarithmic degradation curve to ensure fairness.
-### Scenario: Joining Ride 31
-When joining a ride under condition 31, the sweep-line algorithm evaluates the proximity of the driver's route to your requested pickup point. If the deviation is greater than 310 meters, the cost split formula recalculates the base fare utilizing a logarithmic degradation curve to ensure fairness.
-### Scenario: Joining Ride 32
-When joining a ride under condition 32, the sweep-line algorithm evaluates the proximity of the driver's route to your requested pickup point. If the deviation is greater than 320 meters, the cost split formula recalculates the base fare utilizing a logarithmic degradation curve to ensure fairness.
-### Scenario: Joining Ride 33
-When joining a ride under condition 33, the sweep-line algorithm evaluates the proximity of the driver's route to your requested pickup point. If the deviation is greater than 330 meters, the cost split formula recalculates the base fare utilizing a logarithmic degradation curve to ensure fairness.
-### Scenario: Joining Ride 34
-When joining a ride under condition 34, the sweep-line algorithm evaluates the proximity of the driver's route to your requested pickup point. If the deviation is greater than 340 meters, the cost split formula recalculates the base fare utilizing a logarithmic degradation curve to ensure fairness.
-### Scenario: Joining Ride 35
-When joining a ride under condition 35, the sweep-line algorithm evaluates the proximity of the driver's route to your requested pickup point. If the deviation is greater than 350 meters, the cost split formula recalculates the base fare utilizing a logarithmic degradation curve to ensure fairness.
-### Scenario: Joining Ride 36
-When joining a ride under condition 36, the sweep-line algorithm evaluates the proximity of the driver's route to your requested pickup point. If the deviation is greater than 360 meters, the cost split formula recalculates the base fare utilizing a logarithmic degradation curve to ensure fairness.
-### Scenario: Joining Ride 37
-When joining a ride under condition 37, the sweep-line algorithm evaluates the proximity of the driver's route to your requested pickup point. If the deviation is greater than 370 meters, the cost split formula recalculates the base fare utilizing a logarithmic degradation curve to ensure fairness.
-### Scenario: Joining Ride 38
-When joining a ride under condition 38, the sweep-line algorithm evaluates the proximity of the driver's route to your requested pickup point. If the deviation is greater than 380 meters, the cost split formula recalculates the base fare utilizing a logarithmic degradation curve to ensure fairness.
-### Scenario: Joining Ride 39
-When joining a ride under condition 39, the sweep-line algorithm evaluates the proximity of the driver's route to your requested pickup point. If the deviation is greater than 390 meters, the cost split formula recalculates the base fare utilizing a logarithmic degradation curve to ensure fairness.
-### Scenario: Joining Ride 40
-When joining a ride under condition 40, the sweep-line algorithm evaluates the proximity of the driver's route to your requested pickup point. If the deviation is greater than 400 meters, the cost split formula recalculates the base fare utilizing a logarithmic degradation curve to ensure fairness.
-### Scenario: Joining Ride 41
-When joining a ride under condition 41, the sweep-line algorithm evaluates the proximity of the driver's route to your requested pickup point. If the deviation is greater than 410 meters, the cost split formula recalculates the base fare utilizing a logarithmic degradation curve to ensure fairness.
-### Scenario: Joining Ride 42
-When joining a ride under condition 42, the sweep-line algorithm evaluates the proximity of the driver's route to your requested pickup point. If the deviation is greater than 420 meters, the cost split formula recalculates the base fare utilizing a logarithmic degradation curve to ensure fairness.
-### Scenario: Joining Ride 43
-When joining a ride under condition 43, the sweep-line algorithm evaluates the proximity of the driver's route to your requested pickup point. If the deviation is greater than 430 meters, the cost split formula recalculates the base fare utilizing a logarithmic degradation curve to ensure fairness.
-### Scenario: Joining Ride 44
-When joining a ride under condition 44, the sweep-line algorithm evaluates the proximity of the driver's route to your requested pickup point. If the deviation is greater than 440 meters, the cost split formula recalculates the base fare utilizing a logarithmic degradation curve to ensure fairness.
-### Scenario: Joining Ride 45
-When joining a ride under condition 45, the sweep-line algorithm evaluates the proximity of the driver's route to your requested pickup point. If the deviation is greater than 450 meters, the cost split formula recalculates the base fare utilizing a logarithmic degradation curve to ensure fairness.
-### Scenario: Joining Ride 46
-When joining a ride under condition 46, the sweep-line algorithm evaluates the proximity of the driver's route to your requested pickup point. If the deviation is greater than 460 meters, the cost split formula recalculates the base fare utilizing a logarithmic degradation curve to ensure fairness.
-### Scenario: Joining Ride 47
-When joining a ride under condition 47, the sweep-line algorithm evaluates the proximity of the driver's route to your requested pickup point. If the deviation is greater than 470 meters, the cost split formula recalculates the base fare utilizing a logarithmic degradation curve to ensure fairness.
-### Scenario: Joining Ride 48
-When joining a ride under condition 48, the sweep-line algorithm evaluates the proximity of the driver's route to your requested pickup point. If the deviation is greater than 480 meters, the cost split formula recalculates the base fare utilizing a logarithmic degradation curve to ensure fairness.
-### Scenario: Joining Ride 49
-When joining a ride under condition 49, the sweep-line algorithm evaluates the proximity of the driver's route to your requested pickup point. If the deviation is greater than 490 meters, the cost split formula recalculates the base fare utilizing a logarithmic degradation curve to ensure fairness.
-## 5. Driver's Guide: Offering & Managing Rides
-### State Transition 0
-As a driver, when transitioning from State 0 to State 1, the Socket.IO server emits an event to all connected co-passengers. You must ensure your GPS signal is strong during this transition, otherwise the optimistic locking mechanism on the MongoDB database may trigger a rollback, requiring you to manually re-confirm the status update.
-### State Transition 1
-As a driver, when transitioning from State 1 to State 2, the Socket.IO server emits an event to all connected co-passengers. You must ensure your GPS signal is strong during this transition, otherwise the optimistic locking mechanism on the MongoDB database may trigger a rollback, requiring you to manually re-confirm the status update.
-### State Transition 2
-As a driver, when transitioning from State 2 to State 3, the Socket.IO server emits an event to all connected co-passengers. You must ensure your GPS signal is strong during this transition, otherwise the optimistic locking mechanism on the MongoDB database may trigger a rollback, requiring you to manually re-confirm the status update.
-### State Transition 3
-As a driver, when transitioning from State 3 to State 4, the Socket.IO server emits an event to all connected co-passengers. You must ensure your GPS signal is strong during this transition, otherwise the optimistic locking mechanism on the MongoDB database may trigger a rollback, requiring you to manually re-confirm the status update.
-### State Transition 4
-As a driver, when transitioning from State 4 to State 5, the Socket.IO server emits an event to all connected co-passengers. You must ensure your GPS signal is strong during this transition, otherwise the optimistic locking mechanism on the MongoDB database may trigger a rollback, requiring you to manually re-confirm the status update.
-### State Transition 5
-As a driver, when transitioning from State 5 to State 6, the Socket.IO server emits an event to all connected co-passengers. You must ensure your GPS signal is strong during this transition, otherwise the optimistic locking mechanism on the MongoDB database may trigger a rollback, requiring you to manually re-confirm the status update.
-### State Transition 6
-As a driver, when transitioning from State 6 to State 7, the Socket.IO server emits an event to all connected co-passengers. You must ensure your GPS signal is strong during this transition, otherwise the optimistic locking mechanism on the MongoDB database may trigger a rollback, requiring you to manually re-confirm the status update.
-### State Transition 7
-As a driver, when transitioning from State 7 to State 8, the Socket.IO server emits an event to all connected co-passengers. You must ensure your GPS signal is strong during this transition, otherwise the optimistic locking mechanism on the MongoDB database may trigger a rollback, requiring you to manually re-confirm the status update.
-### State Transition 8
-As a driver, when transitioning from State 8 to State 9, the Socket.IO server emits an event to all connected co-passengers. You must ensure your GPS signal is strong during this transition, otherwise the optimistic locking mechanism on the MongoDB database may trigger a rollback, requiring you to manually re-confirm the status update.
-### State Transition 9
-As a driver, when transitioning from State 9 to State 10, the Socket.IO server emits an event to all connected co-passengers. You must ensure your GPS signal is strong during this transition, otherwise the optimistic locking mechanism on the MongoDB database may trigger a rollback, requiring you to manually re-confirm the status update.
-### State Transition 10
-As a driver, when transitioning from State 10 to State 11, the Socket.IO server emits an event to all connected co-passengers. You must ensure your GPS signal is strong during this transition, otherwise the optimistic locking mechanism on the MongoDB database may trigger a rollback, requiring you to manually re-confirm the status update.
-### State Transition 11
-As a driver, when transitioning from State 11 to State 12, the Socket.IO server emits an event to all connected co-passengers. You must ensure your GPS signal is strong during this transition, otherwise the optimistic locking mechanism on the MongoDB database may trigger a rollback, requiring you to manually re-confirm the status update.
-### State Transition 12
-As a driver, when transitioning from State 12 to State 13, the Socket.IO server emits an event to all connected co-passengers. You must ensure your GPS signal is strong during this transition, otherwise the optimistic locking mechanism on the MongoDB database may trigger a rollback, requiring you to manually re-confirm the status update.
-### State Transition 13
-As a driver, when transitioning from State 13 to State 14, the Socket.IO server emits an event to all connected co-passengers. You must ensure your GPS signal is strong during this transition, otherwise the optimistic locking mechanism on the MongoDB database may trigger a rollback, requiring you to manually re-confirm the status update.
-### State Transition 14
-As a driver, when transitioning from State 14 to State 15, the Socket.IO server emits an event to all connected co-passengers. You must ensure your GPS signal is strong during this transition, otherwise the optimistic locking mechanism on the MongoDB database may trigger a rollback, requiring you to manually re-confirm the status update.
-### State Transition 15
-As a driver, when transitioning from State 15 to State 16, the Socket.IO server emits an event to all connected co-passengers. You must ensure your GPS signal is strong during this transition, otherwise the optimistic locking mechanism on the MongoDB database may trigger a rollback, requiring you to manually re-confirm the status update.
-### State Transition 16
-As a driver, when transitioning from State 16 to State 17, the Socket.IO server emits an event to all connected co-passengers. You must ensure your GPS signal is strong during this transition, otherwise the optimistic locking mechanism on the MongoDB database may trigger a rollback, requiring you to manually re-confirm the status update.
-### State Transition 17
-As a driver, when transitioning from State 17 to State 18, the Socket.IO server emits an event to all connected co-passengers. You must ensure your GPS signal is strong during this transition, otherwise the optimistic locking mechanism on the MongoDB database may trigger a rollback, requiring you to manually re-confirm the status update.
-### State Transition 18
-As a driver, when transitioning from State 18 to State 19, the Socket.IO server emits an event to all connected co-passengers. You must ensure your GPS signal is strong during this transition, otherwise the optimistic locking mechanism on the MongoDB database may trigger a rollback, requiring you to manually re-confirm the status update.
-### State Transition 19
-As a driver, when transitioning from State 19 to State 20, the Socket.IO server emits an event to all connected co-passengers. You must ensure your GPS signal is strong during this transition, otherwise the optimistic locking mechanism on the MongoDB database may trigger a rollback, requiring you to manually re-confirm the status update.
-### State Transition 20
-As a driver, when transitioning from State 20 to State 21, the Socket.IO server emits an event to all connected co-passengers. You must ensure your GPS signal is strong during this transition, otherwise the optimistic locking mechanism on the MongoDB database may trigger a rollback, requiring you to manually re-confirm the status update.
-### State Transition 21
-As a driver, when transitioning from State 21 to State 22, the Socket.IO server emits an event to all connected co-passengers. You must ensure your GPS signal is strong during this transition, otherwise the optimistic locking mechanism on the MongoDB database may trigger a rollback, requiring you to manually re-confirm the status update.
-### State Transition 22
-As a driver, when transitioning from State 22 to State 23, the Socket.IO server emits an event to all connected co-passengers. You must ensure your GPS signal is strong during this transition, otherwise the optimistic locking mechanism on the MongoDB database may trigger a rollback, requiring you to manually re-confirm the status update.
-### State Transition 23
-As a driver, when transitioning from State 23 to State 24, the Socket.IO server emits an event to all connected co-passengers. You must ensure your GPS signal is strong during this transition, otherwise the optimistic locking mechanism on the MongoDB database may trigger a rollback, requiring you to manually re-confirm the status update.
-### State Transition 24
-As a driver, when transitioning from State 24 to State 25, the Socket.IO server emits an event to all connected co-passengers. You must ensure your GPS signal is strong during this transition, otherwise the optimistic locking mechanism on the MongoDB database may trigger a rollback, requiring you to manually re-confirm the status update.
-### State Transition 25
-As a driver, when transitioning from State 25 to State 26, the Socket.IO server emits an event to all connected co-passengers. You must ensure your GPS signal is strong during this transition, otherwise the optimistic locking mechanism on the MongoDB database may trigger a rollback, requiring you to manually re-confirm the status update.
-### State Transition 26
-As a driver, when transitioning from State 26 to State 27, the Socket.IO server emits an event to all connected co-passengers. You must ensure your GPS signal is strong during this transition, otherwise the optimistic locking mechanism on the MongoDB database may trigger a rollback, requiring you to manually re-confirm the status update.
-### State Transition 27
-As a driver, when transitioning from State 27 to State 28, the Socket.IO server emits an event to all connected co-passengers. You must ensure your GPS signal is strong during this transition, otherwise the optimistic locking mechanism on the MongoDB database may trigger a rollback, requiring you to manually re-confirm the status update.
-### State Transition 28
-As a driver, when transitioning from State 28 to State 29, the Socket.IO server emits an event to all connected co-passengers. You must ensure your GPS signal is strong during this transition, otherwise the optimistic locking mechanism on the MongoDB database may trigger a rollback, requiring you to manually re-confirm the status update.
-### State Transition 29
-As a driver, when transitioning from State 29 to State 30, the Socket.IO server emits an event to all connected co-passengers. You must ensure your GPS signal is strong during this transition, otherwise the optimistic locking mechanism on the MongoDB database may trigger a rollback, requiring you to manually re-confirm the status update.
-### State Transition 30
-As a driver, when transitioning from State 30 to State 31, the Socket.IO server emits an event to all connected co-passengers. You must ensure your GPS signal is strong during this transition, otherwise the optimistic locking mechanism on the MongoDB database may trigger a rollback, requiring you to manually re-confirm the status update.
-### State Transition 31
-As a driver, when transitioning from State 31 to State 32, the Socket.IO server emits an event to all connected co-passengers. You must ensure your GPS signal is strong during this transition, otherwise the optimistic locking mechanism on the MongoDB database may trigger a rollback, requiring you to manually re-confirm the status update.
-### State Transition 32
-As a driver, when transitioning from State 32 to State 33, the Socket.IO server emits an event to all connected co-passengers. You must ensure your GPS signal is strong during this transition, otherwise the optimistic locking mechanism on the MongoDB database may trigger a rollback, requiring you to manually re-confirm the status update.
-### State Transition 33
-As a driver, when transitioning from State 33 to State 34, the Socket.IO server emits an event to all connected co-passengers. You must ensure your GPS signal is strong during this transition, otherwise the optimistic locking mechanism on the MongoDB database may trigger a rollback, requiring you to manually re-confirm the status update.
-### State Transition 34
-As a driver, when transitioning from State 34 to State 35, the Socket.IO server emits an event to all connected co-passengers. You must ensure your GPS signal is strong during this transition, otherwise the optimistic locking mechanism on the MongoDB database may trigger a rollback, requiring you to manually re-confirm the status update.
-### State Transition 35
-As a driver, when transitioning from State 35 to State 36, the Socket.IO server emits an event to all connected co-passengers. You must ensure your GPS signal is strong during this transition, otherwise the optimistic locking mechanism on the MongoDB database may trigger a rollback, requiring you to manually re-confirm the status update.
-### State Transition 36
-As a driver, when transitioning from State 36 to State 37, the Socket.IO server emits an event to all connected co-passengers. You must ensure your GPS signal is strong during this transition, otherwise the optimistic locking mechanism on the MongoDB database may trigger a rollback, requiring you to manually re-confirm the status update.
-### State Transition 37
-As a driver, when transitioning from State 37 to State 38, the Socket.IO server emits an event to all connected co-passengers. You must ensure your GPS signal is strong during this transition, otherwise the optimistic locking mechanism on the MongoDB database may trigger a rollback, requiring you to manually re-confirm the status update.
-### State Transition 38
-As a driver, when transitioning from State 38 to State 39, the Socket.IO server emits an event to all connected co-passengers. You must ensure your GPS signal is strong during this transition, otherwise the optimistic locking mechanism on the MongoDB database may trigger a rollback, requiring you to manually re-confirm the status update.
-### State Transition 39
-As a driver, when transitioning from State 39 to State 40, the Socket.IO server emits an event to all connected co-passengers. You must ensure your GPS signal is strong during this transition, otherwise the optimistic locking mechanism on the MongoDB database may trigger a rollback, requiring you to manually re-confirm the status update.
-### State Transition 40
-As a driver, when transitioning from State 40 to State 41, the Socket.IO server emits an event to all connected co-passengers. You must ensure your GPS signal is strong during this transition, otherwise the optimistic locking mechanism on the MongoDB database may trigger a rollback, requiring you to manually re-confirm the status update.
-### State Transition 41
-As a driver, when transitioning from State 41 to State 42, the Socket.IO server emits an event to all connected co-passengers. You must ensure your GPS signal is strong during this transition, otherwise the optimistic locking mechanism on the MongoDB database may trigger a rollback, requiring you to manually re-confirm the status update.
-### State Transition 42
-As a driver, when transitioning from State 42 to State 43, the Socket.IO server emits an event to all connected co-passengers. You must ensure your GPS signal is strong during this transition, otherwise the optimistic locking mechanism on the MongoDB database may trigger a rollback, requiring you to manually re-confirm the status update.
-### State Transition 43
-As a driver, when transitioning from State 43 to State 44, the Socket.IO server emits an event to all connected co-passengers. You must ensure your GPS signal is strong during this transition, otherwise the optimistic locking mechanism on the MongoDB database may trigger a rollback, requiring you to manually re-confirm the status update.
-### State Transition 44
-As a driver, when transitioning from State 44 to State 45, the Socket.IO server emits an event to all connected co-passengers. You must ensure your GPS signal is strong during this transition, otherwise the optimistic locking mechanism on the MongoDB database may trigger a rollback, requiring you to manually re-confirm the status update.
-### State Transition 45
-As a driver, when transitioning from State 45 to State 46, the Socket.IO server emits an event to all connected co-passengers. You must ensure your GPS signal is strong during this transition, otherwise the optimistic locking mechanism on the MongoDB database may trigger a rollback, requiring you to manually re-confirm the status update.
-### State Transition 46
-As a driver, when transitioning from State 46 to State 47, the Socket.IO server emits an event to all connected co-passengers. You must ensure your GPS signal is strong during this transition, otherwise the optimistic locking mechanism on the MongoDB database may trigger a rollback, requiring you to manually re-confirm the status update.
-### State Transition 47
-As a driver, when transitioning from State 47 to State 48, the Socket.IO server emits an event to all connected co-passengers. You must ensure your GPS signal is strong during this transition, otherwise the optimistic locking mechanism on the MongoDB database may trigger a rollback, requiring you to manually re-confirm the status update.
-### State Transition 48
-As a driver, when transitioning from State 48 to State 49, the Socket.IO server emits an event to all connected co-passengers. You must ensure your GPS signal is strong during this transition, otherwise the optimistic locking mechanism on the MongoDB database may trigger a rollback, requiring you to manually re-confirm the status update.
-### State Transition 49
-As a driver, when transitioning from State 49 to State 50, the Socket.IO server emits an event to all connected co-passengers. You must ensure your GPS signal is strong during this transition, otherwise the optimistic locking mechanism on the MongoDB database may trigger a rollback, requiring you to manually re-confirm the status update.
-## 9. Under the Hood: Technical Architecture
-### Architecture Module 0
-Module 0 consists of the integration between the Flutter frontend and the Express backend. The JWT token (which expires in 15 minutes) is securely stored using `flutter_secure_storage`. When the token expires, a silent refresh is triggered to endpoint `/api/v1/auth/refresh`. If this fails due to a network timeout, the state management provider (Provider) automatically reroutes the user to the login screen, preserving the local cache in Hive.
-### Architecture Module 1
-Module 1 consists of the integration between the Flutter frontend and the Express backend. The JWT token (which expires in 15 minutes) is securely stored using `flutter_secure_storage`. When the token expires, a silent refresh is triggered to endpoint `/api/v1/auth/refresh`. If this fails due to a network timeout, the state management provider (Provider) automatically reroutes the user to the login screen, preserving the local cache in Hive.
-### Architecture Module 2
-Module 2 consists of the integration between the Flutter frontend and the Express backend. The JWT token (which expires in 15 minutes) is securely stored using `flutter_secure_storage`. When the token expires, a silent refresh is triggered to endpoint `/api/v1/auth/refresh`. If this fails due to a network timeout, the state management provider (Provider) automatically reroutes the user to the login screen, preserving the local cache in Hive.
-### Architecture Module 3
-Module 3 consists of the integration between the Flutter frontend and the Express backend. The JWT token (which expires in 15 minutes) is securely stored using `flutter_secure_storage`. When the token expires, a silent refresh is triggered to endpoint `/api/v1/auth/refresh`. If this fails due to a network timeout, the state management provider (Provider) automatically reroutes the user to the login screen, preserving the local cache in Hive.
-### Architecture Module 4
-Module 4 consists of the integration between the Flutter frontend and the Express backend. The JWT token (which expires in 15 minutes) is securely stored using `flutter_secure_storage`. When the token expires, a silent refresh is triggered to endpoint `/api/v1/auth/refresh`. If this fails due to a network timeout, the state management provider (Provider) automatically reroutes the user to the login screen, preserving the local cache in Hive.
-### Architecture Module 5
-Module 5 consists of the integration between the Flutter frontend and the Express backend. The JWT token (which expires in 15 minutes) is securely stored using `flutter_secure_storage`. When the token expires, a silent refresh is triggered to endpoint `/api/v1/auth/refresh`. If this fails due to a network timeout, the state management provider (Provider) automatically reroutes the user to the login screen, preserving the local cache in Hive.
-### Architecture Module 6
-Module 6 consists of the integration between the Flutter frontend and the Express backend. The JWT token (which expires in 15 minutes) is securely stored using `flutter_secure_storage`. When the token expires, a silent refresh is triggered to endpoint `/api/v1/auth/refresh`. If this fails due to a network timeout, the state management provider (Provider) automatically reroutes the user to the login screen, preserving the local cache in Hive.
-### Architecture Module 7
-Module 7 consists of the integration between the Flutter frontend and the Express backend. The JWT token (which expires in 15 minutes) is securely stored using `flutter_secure_storage`. When the token expires, a silent refresh is triggered to endpoint `/api/v1/auth/refresh`. If this fails due to a network timeout, the state management provider (Provider) automatically reroutes the user to the login screen, preserving the local cache in Hive.
-### Architecture Module 8
-Module 8 consists of the integration between the Flutter frontend and the Express backend. The JWT token (which expires in 15 minutes) is securely stored using `flutter_secure_storage`. When the token expires, a silent refresh is triggered to endpoint `/api/v1/auth/refresh`. If this fails due to a network timeout, the state management provider (Provider) automatically reroutes the user to the login screen, preserving the local cache in Hive.
-### Architecture Module 9
-Module 9 consists of the integration between the Flutter frontend and the Express backend. The JWT token (which expires in 15 minutes) is securely stored using `flutter_secure_storage`. When the token expires, a silent refresh is triggered to endpoint `/api/v1/auth/refresh`. If this fails due to a network timeout, the state management provider (Provider) automatically reroutes the user to the login screen, preserving the local cache in Hive.
-### Architecture Module 10
-Module 10 consists of the integration between the Flutter frontend and the Express backend. The JWT token (which expires in 15 minutes) is securely stored using `flutter_secure_storage`. When the token expires, a silent refresh is triggered to endpoint `/api/v1/auth/refresh`. If this fails due to a network timeout, the state management provider (Provider) automatically reroutes the user to the login screen, preserving the local cache in Hive.
-### Architecture Module 11
-Module 11 consists of the integration between the Flutter frontend and the Express backend. The JWT token (which expires in 15 minutes) is securely stored using `flutter_secure_storage`. When the token expires, a silent refresh is triggered to endpoint `/api/v1/auth/refresh`. If this fails due to a network timeout, the state management provider (Provider) automatically reroutes the user to the login screen, preserving the local cache in Hive.
-### Architecture Module 12
-Module 12 consists of the integration between the Flutter frontend and the Express backend. The JWT token (which expires in 15 minutes) is securely stored using `flutter_secure_storage`. When the token expires, a silent refresh is triggered to endpoint `/api/v1/auth/refresh`. If this fails due to a network timeout, the state management provider (Provider) automatically reroutes the user to the login screen, preserving the local cache in Hive.
-### Architecture Module 13
-Module 13 consists of the integration between the Flutter frontend and the Express backend. The JWT token (which expires in 15 minutes) is securely stored using `flutter_secure_storage`. When the token expires, a silent refresh is triggered to endpoint `/api/v1/auth/refresh`. If this fails due to a network timeout, the state management provider (Provider) automatically reroutes the user to the login screen, preserving the local cache in Hive.
-### Architecture Module 14
-Module 14 consists of the integration between the Flutter frontend and the Express backend. The JWT token (which expires in 15 minutes) is securely stored using `flutter_secure_storage`. When the token expires, a silent refresh is triggered to endpoint `/api/v1/auth/refresh`. If this fails due to a network timeout, the state management provider (Provider) automatically reroutes the user to the login screen, preserving the local cache in Hive.
-### Architecture Module 15
-Module 15 consists of the integration between the Flutter frontend and the Express backend. The JWT token (which expires in 15 minutes) is securely stored using `flutter_secure_storage`. When the token expires, a silent refresh is triggered to endpoint `/api/v1/auth/refresh`. If this fails due to a network timeout, the state management provider (Provider) automatically reroutes the user to the login screen, preserving the local cache in Hive.
-### Architecture Module 16
-Module 16 consists of the integration between the Flutter frontend and the Express backend. The JWT token (which expires in 15 minutes) is securely stored using `flutter_secure_storage`. When the token expires, a silent refresh is triggered to endpoint `/api/v1/auth/refresh`. If this fails due to a network timeout, the state management provider (Provider) automatically reroutes the user to the login screen, preserving the local cache in Hive.
-### Architecture Module 17
-Module 17 consists of the integration between the Flutter frontend and the Express backend. The JWT token (which expires in 15 minutes) is securely stored using `flutter_secure_storage`. When the token expires, a silent refresh is triggered to endpoint `/api/v1/auth/refresh`. If this fails due to a network timeout, the state management provider (Provider) automatically reroutes the user to the login screen, preserving the local cache in Hive.
-### Architecture Module 18
-Module 18 consists of the integration between the Flutter frontend and the Express backend. The JWT token (which expires in 15 minutes) is securely stored using `flutter_secure_storage`. When the token expires, a silent refresh is triggered to endpoint `/api/v1/auth/refresh`. If this fails due to a network timeout, the state management provider (Provider) automatically reroutes the user to the login screen, preserving the local cache in Hive.
-### Architecture Module 19
-Module 19 consists of the integration between the Flutter frontend and the Express backend. The JWT token (which expires in 15 minutes) is securely stored using `flutter_secure_storage`. When the token expires, a silent refresh is triggered to endpoint `/api/v1/auth/refresh`. If this fails due to a network timeout, the state management provider (Provider) automatically reroutes the user to the login screen, preserving the local cache in Hive.
-### Architecture Module 20
-Module 20 consists of the integration between the Flutter frontend and the Express backend. The JWT token (which expires in 15 minutes) is securely stored using `flutter_secure_storage`. When the token expires, a silent refresh is triggered to endpoint `/api/v1/auth/refresh`. If this fails due to a network timeout, the state management provider (Provider) automatically reroutes the user to the login screen, preserving the local cache in Hive.
-### Architecture Module 21
-Module 21 consists of the integration between the Flutter frontend and the Express backend. The JWT token (which expires in 15 minutes) is securely stored using `flutter_secure_storage`. When the token expires, a silent refresh is triggered to endpoint `/api/v1/auth/refresh`. If this fails due to a network timeout, the state management provider (Provider) automatically reroutes the user to the login screen, preserving the local cache in Hive.
-### Architecture Module 22
-Module 22 consists of the integration between the Flutter frontend and the Express backend. The JWT token (which expires in 15 minutes) is securely stored using `flutter_secure_storage`. When the token expires, a silent refresh is triggered to endpoint `/api/v1/auth/refresh`. If this fails due to a network timeout, the state management provider (Provider) automatically reroutes the user to the login screen, preserving the local cache in Hive.
-### Architecture Module 23
-Module 23 consists of the integration between the Flutter frontend and the Express backend. The JWT token (which expires in 15 minutes) is securely stored using `flutter_secure_storage`. When the token expires, a silent refresh is triggered to endpoint `/api/v1/auth/refresh`. If this fails due to a network timeout, the state management provider (Provider) automatically reroutes the user to the login screen, preserving the local cache in Hive.
-### Architecture Module 24
-Module 24 consists of the integration between the Flutter frontend and the Express backend. The JWT token (which expires in 15 minutes) is securely stored using `flutter_secure_storage`. When the token expires, a silent refresh is triggered to endpoint `/api/v1/auth/refresh`. If this fails due to a network timeout, the state management provider (Provider) automatically reroutes the user to the login screen, preserving the local cache in Hive.
-### Architecture Module 25
-Module 25 consists of the integration between the Flutter frontend and the Express backend. The JWT token (which expires in 15 minutes) is securely stored using `flutter_secure_storage`. When the token expires, a silent refresh is triggered to endpoint `/api/v1/auth/refresh`. If this fails due to a network timeout, the state management provider (Provider) automatically reroutes the user to the login screen, preserving the local cache in Hive.
-### Architecture Module 26
-Module 26 consists of the integration between the Flutter frontend and the Express backend. The JWT token (which expires in 15 minutes) is securely stored using `flutter_secure_storage`. When the token expires, a silent refresh is triggered to endpoint `/api/v1/auth/refresh`. If this fails due to a network timeout, the state management provider (Provider) automatically reroutes the user to the login screen, preserving the local cache in Hive.
-### Architecture Module 27
-Module 27 consists of the integration between the Flutter frontend and the Express backend. The JWT token (which expires in 15 minutes) is securely stored using `flutter_secure_storage`. When the token expires, a silent refresh is triggered to endpoint `/api/v1/auth/refresh`. If this fails due to a network timeout, the state management provider (Provider) automatically reroutes the user to the login screen, preserving the local cache in Hive.
-### Architecture Module 28
-Module 28 consists of the integration between the Flutter frontend and the Express backend. The JWT token (which expires in 15 minutes) is securely stored using `flutter_secure_storage`. When the token expires, a silent refresh is triggered to endpoint `/api/v1/auth/refresh`. If this fails due to a network timeout, the state management provider (Provider) automatically reroutes the user to the login screen, preserving the local cache in Hive.
-### Architecture Module 29
-Module 29 consists of the integration between the Flutter frontend and the Express backend. The JWT token (which expires in 15 minutes) is securely stored using `flutter_secure_storage`. When the token expires, a silent refresh is triggered to endpoint `/api/v1/auth/refresh`. If this fails due to a network timeout, the state management provider (Provider) automatically reroutes the user to the login screen, preserving the local cache in Hive.
-### Architecture Module 30
-Module 30 consists of the integration between the Flutter frontend and the Express backend. The JWT token (which expires in 15 minutes) is securely stored using `flutter_secure_storage`. When the token expires, a silent refresh is triggered to endpoint `/api/v1/auth/refresh`. If this fails due to a network timeout, the state management provider (Provider) automatically reroutes the user to the login screen, preserving the local cache in Hive.
-### Architecture Module 31
-Module 31 consists of the integration between the Flutter frontend and the Express backend. The JWT token (which expires in 15 minutes) is securely stored using `flutter_secure_storage`. When the token expires, a silent refresh is triggered to endpoint `/api/v1/auth/refresh`. If this fails due to a network timeout, the state management provider (Provider) automatically reroutes the user to the login screen, preserving the local cache in Hive.
-### Architecture Module 32
-Module 32 consists of the integration between the Flutter frontend and the Express backend. The JWT token (which expires in 15 minutes) is securely stored using `flutter_secure_storage`. When the token expires, a silent refresh is triggered to endpoint `/api/v1/auth/refresh`. If this fails due to a network timeout, the state management provider (Provider) automatically reroutes the user to the login screen, preserving the local cache in Hive.
-### Architecture Module 33
-Module 33 consists of the integration between the Flutter frontend and the Express backend. The JWT token (which expires in 15 minutes) is securely stored using `flutter_secure_storage`. When the token expires, a silent refresh is triggered to endpoint `/api/v1/auth/refresh`. If this fails due to a network timeout, the state management provider (Provider) automatically reroutes the user to the login screen, preserving the local cache in Hive.
-### Architecture Module 34
-Module 34 consists of the integration between the Flutter frontend and the Express backend. The JWT token (which expires in 15 minutes) is securely stored using `flutter_secure_storage`. When the token expires, a silent refresh is triggered to endpoint `/api/v1/auth/refresh`. If this fails due to a network timeout, the state management provider (Provider) automatically reroutes the user to the login screen, preserving the local cache in Hive.
-### Architecture Module 35
-Module 35 consists of the integration between the Flutter frontend and the Express backend. The JWT token (which expires in 15 minutes) is securely stored using `flutter_secure_storage`. When the token expires, a silent refresh is triggered to endpoint `/api/v1/auth/refresh`. If this fails due to a network timeout, the state management provider (Provider) automatically reroutes the user to the login screen, preserving the local cache in Hive.
-### Architecture Module 36
-Module 36 consists of the integration between the Flutter frontend and the Express backend. The JWT token (which expires in 15 minutes) is securely stored using `flutter_secure_storage`. When the token expires, a silent refresh is triggered to endpoint `/api/v1/auth/refresh`. If this fails due to a network timeout, the state management provider (Provider) automatically reroutes the user to the login screen, preserving the local cache in Hive.
-### Architecture Module 37
-Module 37 consists of the integration between the Flutter frontend and the Express backend. The JWT token (which expires in 15 minutes) is securely stored using `flutter_secure_storage`. When the token expires, a silent refresh is triggered to endpoint `/api/v1/auth/refresh`. If this fails due to a network timeout, the state management provider (Provider) automatically reroutes the user to the login screen, preserving the local cache in Hive.
-### Architecture Module 38
-Module 38 consists of the integration between the Flutter frontend and the Express backend. The JWT token (which expires in 15 minutes) is securely stored using `flutter_secure_storage`. When the token expires, a silent refresh is triggered to endpoint `/api/v1/auth/refresh`. If this fails due to a network timeout, the state management provider (Provider) automatically reroutes the user to the login screen, preserving the local cache in Hive.
-### Architecture Module 39
-Module 39 consists of the integration between the Flutter frontend and the Express backend. The JWT token (which expires in 15 minutes) is securely stored using `flutter_secure_storage`. When the token expires, a silent refresh is triggered to endpoint `/api/v1/auth/refresh`. If this fails due to a network timeout, the state management provider (Provider) automatically reroutes the user to the login screen, preserving the local cache in Hive.
-## 10. Exhaustive API Reference
-### Endpoint: `GET /api/v1/resource_0`
-- **Description**: Fetches resource 0 from the centralized database cluster.
-- **Headers**: `Authorization: Bearer <token>`
-- **Response 200**: Successfully retrieved resource 0.
-- **Response 401**: Unauthorized access. Token might be expired or malformed.
-- **Rate Limit**: 100 requests per 15 minutes.
-
-### Endpoint: `GET /api/v1/resource_1`
-- **Description**: Fetches resource 1 from the centralized database cluster.
-- **Headers**: `Authorization: Bearer <token>`
-- **Response 200**: Successfully retrieved resource 1.
-- **Response 401**: Unauthorized access. Token might be expired or malformed.
-- **Rate Limit**: 100 requests per 15 minutes.
-
-### Endpoint: `GET /api/v1/resource_2`
-- **Description**: Fetches resource 2 from the centralized database cluster.
-- **Headers**: `Authorization: Bearer <token>`
-- **Response 200**: Successfully retrieved resource 2.
-- **Response 401**: Unauthorized access. Token might be expired or malformed.
-- **Rate Limit**: 100 requests per 15 minutes.
-
-### Endpoint: `GET /api/v1/resource_3`
-- **Description**: Fetches resource 3 from the centralized database cluster.
-- **Headers**: `Authorization: Bearer <token>`
-- **Response 200**: Successfully retrieved resource 3.
-- **Response 401**: Unauthorized access. Token might be expired or malformed.
-- **Rate Limit**: 100 requests per 15 minutes.
-
-### Endpoint: `GET /api/v1/resource_4`
-- **Description**: Fetches resource 4 from the centralized database cluster.
-- **Headers**: `Authorization: Bearer <token>`
-- **Response 200**: Successfully retrieved resource 4.
-- **Response 401**: Unauthorized access. Token might be expired or malformed.
-- **Rate Limit**: 100 requests per 15 minutes.
-
-### Endpoint: `GET /api/v1/resource_5`
-- **Description**: Fetches resource 5 from the centralized database cluster.
-- **Headers**: `Authorization: Bearer <token>`
-- **Response 200**: Successfully retrieved resource 5.
-- **Response 401**: Unauthorized access. Token might be expired or malformed.
-- **Rate Limit**: 100 requests per 15 minutes.
-
-### Endpoint: `GET /api/v1/resource_6`
-- **Description**: Fetches resource 6 from the centralized database cluster.
-- **Headers**: `Authorization: Bearer <token>`
-- **Response 200**: Successfully retrieved resource 6.
-- **Response 401**: Unauthorized access. Token might be expired or malformed.
-- **Rate Limit**: 100 requests per 15 minutes.
-
-### Endpoint: `GET /api/v1/resource_7`
-- **Description**: Fetches resource 7 from the centralized database cluster.
-- **Headers**: `Authorization: Bearer <token>`
-- **Response 200**: Successfully retrieved resource 7.
-- **Response 401**: Unauthorized access. Token might be expired or malformed.
-- **Rate Limit**: 100 requests per 15 minutes.
-
-### Endpoint: `GET /api/v1/resource_8`
-- **Description**: Fetches resource 8 from the centralized database cluster.
-- **Headers**: `Authorization: Bearer <token>`
-- **Response 200**: Successfully retrieved resource 8.
-- **Response 401**: Unauthorized access. Token might be expired or malformed.
-- **Rate Limit**: 100 requests per 15 minutes.
-
-### Endpoint: `GET /api/v1/resource_9`
-- **Description**: Fetches resource 9 from the centralized database cluster.
-- **Headers**: `Authorization: Bearer <token>`
-- **Response 200**: Successfully retrieved resource 9.
-- **Response 401**: Unauthorized access. Token might be expired or malformed.
-- **Rate Limit**: 100 requests per 15 minutes.
-
-### Endpoint: `GET /api/v1/resource_10`
-- **Description**: Fetches resource 10 from the centralized database cluster.
-- **Headers**: `Authorization: Bearer <token>`
-- **Response 200**: Successfully retrieved resource 10.
-- **Response 401**: Unauthorized access. Token might be expired or malformed.
-- **Rate Limit**: 100 requests per 15 minutes.
-
-### Endpoint: `GET /api/v1/resource_11`
-- **Description**: Fetches resource 11 from the centralized database cluster.
-- **Headers**: `Authorization: Bearer <token>`
-- **Response 200**: Successfully retrieved resource 11.
-- **Response 401**: Unauthorized access. Token might be expired or malformed.
-- **Rate Limit**: 100 requests per 15 minutes.
-
-### Endpoint: `GET /api/v1/resource_12`
-- **Description**: Fetches resource 12 from the centralized database cluster.
-- **Headers**: `Authorization: Bearer <token>`
-- **Response 200**: Successfully retrieved resource 12.
-- **Response 401**: Unauthorized access. Token might be expired or malformed.
-- **Rate Limit**: 100 requests per 15 minutes.
-
-### Endpoint: `GET /api/v1/resource_13`
-- **Description**: Fetches resource 13 from the centralized database cluster.
-- **Headers**: `Authorization: Bearer <token>`
-- **Response 200**: Successfully retrieved resource 13.
-- **Response 401**: Unauthorized access. Token might be expired or malformed.
-- **Rate Limit**: 100 requests per 15 minutes.
-
-### Endpoint: `GET /api/v1/resource_14`
-- **Description**: Fetches resource 14 from the centralized database cluster.
-- **Headers**: `Authorization: Bearer <token>`
-- **Response 200**: Successfully retrieved resource 14.
-- **Response 401**: Unauthorized access. Token might be expired or malformed.
-- **Rate Limit**: 100 requests per 15 minutes.
-
-### Endpoint: `GET /api/v1/resource_15`
-- **Description**: Fetches resource 15 from the centralized database cluster.
-- **Headers**: `Authorization: Bearer <token>`
-- **Response 200**: Successfully retrieved resource 15.
-- **Response 401**: Unauthorized access. Token might be expired or malformed.
-- **Rate Limit**: 100 requests per 15 minutes.
-
-### Endpoint: `GET /api/v1/resource_16`
-- **Description**: Fetches resource 16 from the centralized database cluster.
-- **Headers**: `Authorization: Bearer <token>`
-- **Response 200**: Successfully retrieved resource 16.
-- **Response 401**: Unauthorized access. Token might be expired or malformed.
-- **Rate Limit**: 100 requests per 15 minutes.
-
-### Endpoint: `GET /api/v1/resource_17`
-- **Description**: Fetches resource 17 from the centralized database cluster.
-- **Headers**: `Authorization: Bearer <token>`
-- **Response 200**: Successfully retrieved resource 17.
-- **Response 401**: Unauthorized access. Token might be expired or malformed.
-- **Rate Limit**: 100 requests per 15 minutes.
-
-### Endpoint: `GET /api/v1/resource_18`
-- **Description**: Fetches resource 18 from the centralized database cluster.
-- **Headers**: `Authorization: Bearer <token>`
-- **Response 200**: Successfully retrieved resource 18.
-- **Response 401**: Unauthorized access. Token might be expired or malformed.
-- **Rate Limit**: 100 requests per 15 minutes.
-
-### Endpoint: `GET /api/v1/resource_19`
-- **Description**: Fetches resource 19 from the centralized database cluster.
-- **Headers**: `Authorization: Bearer <token>`
-- **Response 200**: Successfully retrieved resource 19.
-- **Response 401**: Unauthorized access. Token might be expired or malformed.
-- **Rate Limit**: 100 requests per 15 minutes.
-
-### Endpoint: `GET /api/v1/resource_20`
-- **Description**: Fetches resource 20 from the centralized database cluster.
-- **Headers**: `Authorization: Bearer <token>`
-- **Response 200**: Successfully retrieved resource 20.
-- **Response 401**: Unauthorized access. Token might be expired or malformed.
-- **Rate Limit**: 100 requests per 15 minutes.
-
-### Endpoint: `GET /api/v1/resource_21`
-- **Description**: Fetches resource 21 from the centralized database cluster.
-- **Headers**: `Authorization: Bearer <token>`
-- **Response 200**: Successfully retrieved resource 21.
-- **Response 401**: Unauthorized access. Token might be expired or malformed.
-- **Rate Limit**: 100 requests per 15 minutes.
-
-### Endpoint: `GET /api/v1/resource_22`
-- **Description**: Fetches resource 22 from the centralized database cluster.
-- **Headers**: `Authorization: Bearer <token>`
-- **Response 200**: Successfully retrieved resource 22.
-- **Response 401**: Unauthorized access. Token might be expired or malformed.
-- **Rate Limit**: 100 requests per 15 minutes.
-
-### Endpoint: `GET /api/v1/resource_23`
-- **Description**: Fetches resource 23 from the centralized database cluster.
-- **Headers**: `Authorization: Bearer <token>`
-- **Response 200**: Successfully retrieved resource 23.
-- **Response 401**: Unauthorized access. Token might be expired or malformed.
-- **Rate Limit**: 100 requests per 15 minutes.
-
-### Endpoint: `GET /api/v1/resource_24`
-- **Description**: Fetches resource 24 from the centralized database cluster.
-- **Headers**: `Authorization: Bearer <token>`
-- **Response 200**: Successfully retrieved resource 24.
-- **Response 401**: Unauthorized access. Token might be expired or malformed.
-- **Rate Limit**: 100 requests per 15 minutes.
-
-### Endpoint: `GET /api/v1/resource_25`
-- **Description**: Fetches resource 25 from the centralized database cluster.
-- **Headers**: `Authorization: Bearer <token>`
-- **Response 200**: Successfully retrieved resource 25.
-- **Response 401**: Unauthorized access. Token might be expired or malformed.
-- **Rate Limit**: 100 requests per 15 minutes.
-
-### Endpoint: `GET /api/v1/resource_26`
-- **Description**: Fetches resource 26 from the centralized database cluster.
-- **Headers**: `Authorization: Bearer <token>`
-- **Response 200**: Successfully retrieved resource 26.
-- **Response 401**: Unauthorized access. Token might be expired or malformed.
-- **Rate Limit**: 100 requests per 15 minutes.
-
-### Endpoint: `GET /api/v1/resource_27`
-- **Description**: Fetches resource 27 from the centralized database cluster.
-- **Headers**: `Authorization: Bearer <token>`
-- **Response 200**: Successfully retrieved resource 27.
-- **Response 401**: Unauthorized access. Token might be expired or malformed.
-- **Rate Limit**: 100 requests per 15 minutes.
-
-### Endpoint: `GET /api/v1/resource_28`
-- **Description**: Fetches resource 28 from the centralized database cluster.
-- **Headers**: `Authorization: Bearer <token>`
-- **Response 200**: Successfully retrieved resource 28.
-- **Response 401**: Unauthorized access. Token might be expired or malformed.
-- **Rate Limit**: 100 requests per 15 minutes.
-
-### Endpoint: `GET /api/v1/resource_29`
-- **Description**: Fetches resource 29 from the centralized database cluster.
-- **Headers**: `Authorization: Bearer <token>`
-- **Response 200**: Successfully retrieved resource 29.
-- **Response 401**: Unauthorized access. Token might be expired or malformed.
-- **Rate Limit**: 100 requests per 15 minutes.
-
-### Endpoint: `GET /api/v1/resource_30`
-- **Description**: Fetches resource 30 from the centralized database cluster.
-- **Headers**: `Authorization: Bearer <token>`
-- **Response 200**: Successfully retrieved resource 30.
-- **Response 401**: Unauthorized access. Token might be expired or malformed.
-- **Rate Limit**: 100 requests per 15 minutes.
-
-### Endpoint: `GET /api/v1/resource_31`
-- **Description**: Fetches resource 31 from the centralized database cluster.
-- **Headers**: `Authorization: Bearer <token>`
-- **Response 200**: Successfully retrieved resource 31.
-- **Response 401**: Unauthorized access. Token might be expired or malformed.
-- **Rate Limit**: 100 requests per 15 minutes.
-
-### Endpoint: `GET /api/v1/resource_32`
-- **Description**: Fetches resource 32 from the centralized database cluster.
-- **Headers**: `Authorization: Bearer <token>`
-- **Response 200**: Successfully retrieved resource 32.
-- **Response 401**: Unauthorized access. Token might be expired or malformed.
-- **Rate Limit**: 100 requests per 15 minutes.
-
-### Endpoint: `GET /api/v1/resource_33`
-- **Description**: Fetches resource 33 from the centralized database cluster.
-- **Headers**: `Authorization: Bearer <token>`
-- **Response 200**: Successfully retrieved resource 33.
-- **Response 401**: Unauthorized access. Token might be expired or malformed.
-- **Rate Limit**: 100 requests per 15 minutes.
-
-### Endpoint: `GET /api/v1/resource_34`
-- **Description**: Fetches resource 34 from the centralized database cluster.
-- **Headers**: `Authorization: Bearer <token>`
-- **Response 200**: Successfully retrieved resource 34.
-- **Response 401**: Unauthorized access. Token might be expired or malformed.
-- **Rate Limit**: 100 requests per 15 minutes.
-
-### Endpoint: `GET /api/v1/resource_35`
-- **Description**: Fetches resource 35 from the centralized database cluster.
-- **Headers**: `Authorization: Bearer <token>`
-- **Response 200**: Successfully retrieved resource 35.
-- **Response 401**: Unauthorized access. Token might be expired or malformed.
-- **Rate Limit**: 100 requests per 15 minutes.
-
-### Endpoint: `GET /api/v1/resource_36`
-- **Description**: Fetches resource 36 from the centralized database cluster.
-- **Headers**: `Authorization: Bearer <token>`
-- **Response 200**: Successfully retrieved resource 36.
-- **Response 401**: Unauthorized access. Token might be expired or malformed.
-- **Rate Limit**: 100 requests per 15 minutes.
-
-### Endpoint: `GET /api/v1/resource_37`
-- **Description**: Fetches resource 37 from the centralized database cluster.
-- **Headers**: `Authorization: Bearer <token>`
-- **Response 200**: Successfully retrieved resource 37.
-- **Response 401**: Unauthorized access. Token might be expired or malformed.
-- **Rate Limit**: 100 requests per 15 minutes.
-
-### Endpoint: `GET /api/v1/resource_38`
-- **Description**: Fetches resource 38 from the centralized database cluster.
-- **Headers**: `Authorization: Bearer <token>`
-- **Response 200**: Successfully retrieved resource 38.
-- **Response 401**: Unauthorized access. Token might be expired or malformed.
-- **Rate Limit**: 100 requests per 15 minutes.
-
-### Endpoint: `GET /api/v1/resource_39`
-- **Description**: Fetches resource 39 from the centralized database cluster.
-- **Headers**: `Authorization: Bearer <token>`
-- **Response 200**: Successfully retrieved resource 39.
-- **Response 401**: Unauthorized access. Token might be expired or malformed.
-- **Rate Limit**: 100 requests per 15 minutes.
-
-### Endpoint: `GET /api/v1/resource_40`
-- **Description**: Fetches resource 40 from the centralized database cluster.
-- **Headers**: `Authorization: Bearer <token>`
-- **Response 200**: Successfully retrieved resource 40.
-- **Response 401**: Unauthorized access. Token might be expired or malformed.
-- **Rate Limit**: 100 requests per 15 minutes.
-
-### Endpoint: `GET /api/v1/resource_41`
-- **Description**: Fetches resource 41 from the centralized database cluster.
-- **Headers**: `Authorization: Bearer <token>`
-- **Response 200**: Successfully retrieved resource 41.
-- **Response 401**: Unauthorized access. Token might be expired or malformed.
-- **Rate Limit**: 100 requests per 15 minutes.
-
-### Endpoint: `GET /api/v1/resource_42`
-- **Description**: Fetches resource 42 from the centralized database cluster.
-- **Headers**: `Authorization: Bearer <token>`
-- **Response 200**: Successfully retrieved resource 42.
-- **Response 401**: Unauthorized access. Token might be expired or malformed.
-- **Rate Limit**: 100 requests per 15 minutes.
-
-### Endpoint: `GET /api/v1/resource_43`
-- **Description**: Fetches resource 43 from the centralized database cluster.
-- **Headers**: `Authorization: Bearer <token>`
-- **Response 200**: Successfully retrieved resource 43.
-- **Response 401**: Unauthorized access. Token might be expired or malformed.
-- **Rate Limit**: 100 requests per 15 minutes.
-
-### Endpoint: `GET /api/v1/resource_44`
-- **Description**: Fetches resource 44 from the centralized database cluster.
-- **Headers**: `Authorization: Bearer <token>`
-- **Response 200**: Successfully retrieved resource 44.
-- **Response 401**: Unauthorized access. Token might be expired or malformed.
-- **Rate Limit**: 100 requests per 15 minutes.
-
-### Endpoint: `GET /api/v1/resource_45`
-- **Description**: Fetches resource 45 from the centralized database cluster.
-- **Headers**: `Authorization: Bearer <token>`
-- **Response 200**: Successfully retrieved resource 45.
-- **Response 401**: Unauthorized access. Token might be expired or malformed.
-- **Rate Limit**: 100 requests per 15 minutes.
-
-### Endpoint: `GET /api/v1/resource_46`
-- **Description**: Fetches resource 46 from the centralized database cluster.
-- **Headers**: `Authorization: Bearer <token>`
-- **Response 200**: Successfully retrieved resource 46.
-- **Response 401**: Unauthorized access. Token might be expired or malformed.
-- **Rate Limit**: 100 requests per 15 minutes.
-
-### Endpoint: `GET /api/v1/resource_47`
-- **Description**: Fetches resource 47 from the centralized database cluster.
-- **Headers**: `Authorization: Bearer <token>`
-- **Response 200**: Successfully retrieved resource 47.
-- **Response 401**: Unauthorized access. Token might be expired or malformed.
-- **Rate Limit**: 100 requests per 15 minutes.
-
-### Endpoint: `GET /api/v1/resource_48`
-- **Description**: Fetches resource 48 from the centralized database cluster.
-- **Headers**: `Authorization: Bearer <token>`
-- **Response 200**: Successfully retrieved resource 48.
-- **Response 401**: Unauthorized access. Token might be expired or malformed.
-- **Rate Limit**: 100 requests per 15 minutes.
-
-### Endpoint: `GET /api/v1/resource_49`
-- **Description**: Fetches resource 49 from the centralized database cluster.
-- **Headers**: `Authorization: Bearer <token>`
-- **Response 200**: Successfully retrieved resource 49.
-- **Response 401**: Unauthorized access. Token might be expired or malformed.
-- **Rate Limit**: 100 requests per 15 minutes.
-
-### Endpoint: `GET /api/v1/resource_50`
-- **Description**: Fetches resource 50 from the centralized database cluster.
-- **Headers**: `Authorization: Bearer <token>`
-- **Response 200**: Successfully retrieved resource 50.
-- **Response 401**: Unauthorized access. Token might be expired or malformed.
-- **Rate Limit**: 100 requests per 15 minutes.
-
-### Endpoint: `GET /api/v1/resource_51`
-- **Description**: Fetches resource 51 from the centralized database cluster.
-- **Headers**: `Authorization: Bearer <token>`
-- **Response 200**: Successfully retrieved resource 51.
-- **Response 401**: Unauthorized access. Token might be expired or malformed.
-- **Rate Limit**: 100 requests per 15 minutes.
-
-### Endpoint: `GET /api/v1/resource_52`
-- **Description**: Fetches resource 52 from the centralized database cluster.
-- **Headers**: `Authorization: Bearer <token>`
-- **Response 200**: Successfully retrieved resource 52.
-- **Response 401**: Unauthorized access. Token might be expired or malformed.
-- **Rate Limit**: 100 requests per 15 minutes.
-
-### Endpoint: `GET /api/v1/resource_53`
-- **Description**: Fetches resource 53 from the centralized database cluster.
-- **Headers**: `Authorization: Bearer <token>`
-- **Response 200**: Successfully retrieved resource 53.
-- **Response 401**: Unauthorized access. Token might be expired or malformed.
-- **Rate Limit**: 100 requests per 15 minutes.
-
-### Endpoint: `GET /api/v1/resource_54`
-- **Description**: Fetches resource 54 from the centralized database cluster.
-- **Headers**: `Authorization: Bearer <token>`
-- **Response 200**: Successfully retrieved resource 54.
-- **Response 401**: Unauthorized access. Token might be expired or malformed.
-- **Rate Limit**: 100 requests per 15 minutes.
-
-### Endpoint: `GET /api/v1/resource_55`
-- **Description**: Fetches resource 55 from the centralized database cluster.
-- **Headers**: `Authorization: Bearer <token>`
-- **Response 200**: Successfully retrieved resource 55.
-- **Response 401**: Unauthorized access. Token might be expired or malformed.
-- **Rate Limit**: 100 requests per 15 minutes.
-
-### Endpoint: `GET /api/v1/resource_56`
-- **Description**: Fetches resource 56 from the centralized database cluster.
-- **Headers**: `Authorization: Bearer <token>`
-- **Response 200**: Successfully retrieved resource 56.
-- **Response 401**: Unauthorized access. Token might be expired or malformed.
-- **Rate Limit**: 100 requests per 15 minutes.
-
-### Endpoint: `GET /api/v1/resource_57`
-- **Description**: Fetches resource 57 from the centralized database cluster.
-- **Headers**: `Authorization: Bearer <token>`
-- **Response 200**: Successfully retrieved resource 57.
-- **Response 401**: Unauthorized access. Token might be expired or malformed.
-- **Rate Limit**: 100 requests per 15 minutes.
-
-### Endpoint: `GET /api/v1/resource_58`
-- **Description**: Fetches resource 58 from the centralized database cluster.
-- **Headers**: `Authorization: Bearer <token>`
-- **Response 200**: Successfully retrieved resource 58.
-- **Response 401**: Unauthorized access. Token might be expired or malformed.
-- **Rate Limit**: 100 requests per 15 minutes.
-
-### Endpoint: `GET /api/v1/resource_59`
-- **Description**: Fetches resource 59 from the centralized database cluster.
-- **Headers**: `Authorization: Bearer <token>`
-- **Response 200**: Successfully retrieved resource 59.
-- **Response 401**: Unauthorized access. Token might be expired or malformed.
-- **Rate Limit**: 100 requests per 15 minutes.
-
-### Endpoint: `GET /api/v1/resource_60`
-- **Description**: Fetches resource 60 from the centralized database cluster.
-- **Headers**: `Authorization: Bearer <token>`
-- **Response 200**: Successfully retrieved resource 60.
-- **Response 401**: Unauthorized access. Token might be expired or malformed.
-- **Rate Limit**: 100 requests per 15 minutes.
-
-### Endpoint: `GET /api/v1/resource_61`
-- **Description**: Fetches resource 61 from the centralized database cluster.
-- **Headers**: `Authorization: Bearer <token>`
-- **Response 200**: Successfully retrieved resource 61.
-- **Response 401**: Unauthorized access. Token might be expired or malformed.
-- **Rate Limit**: 100 requests per 15 minutes.
-
-### Endpoint: `GET /api/v1/resource_62`
-- **Description**: Fetches resource 62 from the centralized database cluster.
-- **Headers**: `Authorization: Bearer <token>`
-- **Response 200**: Successfully retrieved resource 62.
-- **Response 401**: Unauthorized access. Token might be expired or malformed.
-- **Rate Limit**: 100 requests per 15 minutes.
-
-### Endpoint: `GET /api/v1/resource_63`
-- **Description**: Fetches resource 63 from the centralized database cluster.
-- **Headers**: `Authorization: Bearer <token>`
-- **Response 200**: Successfully retrieved resource 63.
-- **Response 401**: Unauthorized access. Token might be expired or malformed.
-- **Rate Limit**: 100 requests per 15 minutes.
-
-### Endpoint: `GET /api/v1/resource_64`
-- **Description**: Fetches resource 64 from the centralized database cluster.
-- **Headers**: `Authorization: Bearer <token>`
-- **Response 200**: Successfully retrieved resource 64.
-- **Response 401**: Unauthorized access. Token might be expired or malformed.
-- **Rate Limit**: 100 requests per 15 minutes.
-
-### Endpoint: `GET /api/v1/resource_65`
-- **Description**: Fetches resource 65 from the centralized database cluster.
-- **Headers**: `Authorization: Bearer <token>`
-- **Response 200**: Successfully retrieved resource 65.
-- **Response 401**: Unauthorized access. Token might be expired or malformed.
-- **Rate Limit**: 100 requests per 15 minutes.
-
-### Endpoint: `GET /api/v1/resource_66`
-- **Description**: Fetches resource 66 from the centralized database cluster.
-- **Headers**: `Authorization: Bearer <token>`
-- **Response 200**: Successfully retrieved resource 66.
-- **Response 401**: Unauthorized access. Token might be expired or malformed.
-- **Rate Limit**: 100 requests per 15 minutes.
-
-### Endpoint: `GET /api/v1/resource_67`
-- **Description**: Fetches resource 67 from the centralized database cluster.
-- **Headers**: `Authorization: Bearer <token>`
-- **Response 200**: Successfully retrieved resource 67.
-- **Response 401**: Unauthorized access. Token might be expired or malformed.
-- **Rate Limit**: 100 requests per 15 minutes.
-
-### Endpoint: `GET /api/v1/resource_68`
-- **Description**: Fetches resource 68 from the centralized database cluster.
-- **Headers**: `Authorization: Bearer <token>`
-- **Response 200**: Successfully retrieved resource 68.
-- **Response 401**: Unauthorized access. Token might be expired or malformed.
-- **Rate Limit**: 100 requests per 15 minutes.
-
-### Endpoint: `GET /api/v1/resource_69`
-- **Description**: Fetches resource 69 from the centralized database cluster.
-- **Headers**: `Authorization: Bearer <token>`
-- **Response 200**: Successfully retrieved resource 69.
-- **Response 401**: Unauthorized access. Token might be expired or malformed.
-- **Rate Limit**: 100 requests per 15 minutes.
-
-### Endpoint: `GET /api/v1/resource_70`
-- **Description**: Fetches resource 70 from the centralized database cluster.
-- **Headers**: `Authorization: Bearer <token>`
-- **Response 200**: Successfully retrieved resource 70.
-- **Response 401**: Unauthorized access. Token might be expired or malformed.
-- **Rate Limit**: 100 requests per 15 minutes.
-
-### Endpoint: `GET /api/v1/resource_71`
-- **Description**: Fetches resource 71 from the centralized database cluster.
-- **Headers**: `Authorization: Bearer <token>`
-- **Response 200**: Successfully retrieved resource 71.
-- **Response 401**: Unauthorized access. Token might be expired or malformed.
-- **Rate Limit**: 100 requests per 15 minutes.
-
-### Endpoint: `GET /api/v1/resource_72`
-- **Description**: Fetches resource 72 from the centralized database cluster.
-- **Headers**: `Authorization: Bearer <token>`
-- **Response 200**: Successfully retrieved resource 72.
-- **Response 401**: Unauthorized access. Token might be expired or malformed.
-- **Rate Limit**: 100 requests per 15 minutes.
-
-### Endpoint: `GET /api/v1/resource_73`
-- **Description**: Fetches resource 73 from the centralized database cluster.
-- **Headers**: `Authorization: Bearer <token>`
-- **Response 200**: Successfully retrieved resource 73.
-- **Response 401**: Unauthorized access. Token might be expired or malformed.
-- **Rate Limit**: 100 requests per 15 minutes.
-
-### Endpoint: `GET /api/v1/resource_74`
-- **Description**: Fetches resource 74 from the centralized database cluster.
-- **Headers**: `Authorization: Bearer <token>`
-- **Response 200**: Successfully retrieved resource 74.
-- **Response 401**: Unauthorized access. Token might be expired or malformed.
-- **Rate Limit**: 100 requests per 15 minutes.
-
-### Endpoint: `GET /api/v1/resource_75`
-- **Description**: Fetches resource 75 from the centralized database cluster.
-- **Headers**: `Authorization: Bearer <token>`
-- **Response 200**: Successfully retrieved resource 75.
-- **Response 401**: Unauthorized access. Token might be expired or malformed.
-- **Rate Limit**: 100 requests per 15 minutes.
-
-### Endpoint: `GET /api/v1/resource_76`
-- **Description**: Fetches resource 76 from the centralized database cluster.
-- **Headers**: `Authorization: Bearer <token>`
-- **Response 200**: Successfully retrieved resource 76.
-- **Response 401**: Unauthorized access. Token might be expired or malformed.
-- **Rate Limit**: 100 requests per 15 minutes.
-
-### Endpoint: `GET /api/v1/resource_77`
-- **Description**: Fetches resource 77 from the centralized database cluster.
-- **Headers**: `Authorization: Bearer <token>`
-- **Response 200**: Successfully retrieved resource 77.
-- **Response 401**: Unauthorized access. Token might be expired or malformed.
-- **Rate Limit**: 100 requests per 15 minutes.
-
-### Endpoint: `GET /api/v1/resource_78`
-- **Description**: Fetches resource 78 from the centralized database cluster.
-- **Headers**: `Authorization: Bearer <token>`
-- **Response 200**: Successfully retrieved resource 78.
-- **Response 401**: Unauthorized access. Token might be expired or malformed.
-- **Rate Limit**: 100 requests per 15 minutes.
-
-### Endpoint: `GET /api/v1/resource_79`
-- **Description**: Fetches resource 79 from the centralized database cluster.
-- **Headers**: `Authorization: Bearer <token>`
-- **Response 200**: Successfully retrieved resource 79.
-- **Response 401**: Unauthorized access. Token might be expired or malformed.
-- **Rate Limit**: 100 requests per 15 minutes.
-
-### Endpoint: `GET /api/v1/resource_80`
-- **Description**: Fetches resource 80 from the centralized database cluster.
-- **Headers**: `Authorization: Bearer <token>`
-- **Response 200**: Successfully retrieved resource 80.
-- **Response 401**: Unauthorized access. Token might be expired or malformed.
-- **Rate Limit**: 100 requests per 15 minutes.
-
-### Endpoint: `GET /api/v1/resource_81`
-- **Description**: Fetches resource 81 from the centralized database cluster.
-- **Headers**: `Authorization: Bearer <token>`
-- **Response 200**: Successfully retrieved resource 81.
-- **Response 401**: Unauthorized access. Token might be expired or malformed.
-- **Rate Limit**: 100 requests per 15 minutes.
-
-### Endpoint: `GET /api/v1/resource_82`
-- **Description**: Fetches resource 82 from the centralized database cluster.
-- **Headers**: `Authorization: Bearer <token>`
-- **Response 200**: Successfully retrieved resource 82.
-- **Response 401**: Unauthorized access. Token might be expired or malformed.
-- **Rate Limit**: 100 requests per 15 minutes.
-
-### Endpoint: `GET /api/v1/resource_83`
-- **Description**: Fetches resource 83 from the centralized database cluster.
-- **Headers**: `Authorization: Bearer <token>`
-- **Response 200**: Successfully retrieved resource 83.
-- **Response 401**: Unauthorized access. Token might be expired or malformed.
-- **Rate Limit**: 100 requests per 15 minutes.
-
-### Endpoint: `GET /api/v1/resource_84`
-- **Description**: Fetches resource 84 from the centralized database cluster.
-- **Headers**: `Authorization: Bearer <token>`
-- **Response 200**: Successfully retrieved resource 84.
-- **Response 401**: Unauthorized access. Token might be expired or malformed.
-- **Rate Limit**: 100 requests per 15 minutes.
-
-### Endpoint: `GET /api/v1/resource_85`
-- **Description**: Fetches resource 85 from the centralized database cluster.
-- **Headers**: `Authorization: Bearer <token>`
-- **Response 200**: Successfully retrieved resource 85.
-- **Response 401**: Unauthorized access. Token might be expired or malformed.
-- **Rate Limit**: 100 requests per 15 minutes.
-
-### Endpoint: `GET /api/v1/resource_86`
-- **Description**: Fetches resource 86 from the centralized database cluster.
-- **Headers**: `Authorization: Bearer <token>`
-- **Response 200**: Successfully retrieved resource 86.
-- **Response 401**: Unauthorized access. Token might be expired or malformed.
-- **Rate Limit**: 100 requests per 15 minutes.
-
-### Endpoint: `GET /api/v1/resource_87`
-- **Description**: Fetches resource 87 from the centralized database cluster.
-- **Headers**: `Authorization: Bearer <token>`
-- **Response 200**: Successfully retrieved resource 87.
-- **Response 401**: Unauthorized access. Token might be expired or malformed.
-- **Rate Limit**: 100 requests per 15 minutes.
-
-### Endpoint: `GET /api/v1/resource_88`
-- **Description**: Fetches resource 88 from the centralized database cluster.
-- **Headers**: `Authorization: Bearer <token>`
-- **Response 200**: Successfully retrieved resource 88.
-- **Response 401**: Unauthorized access. Token might be expired or malformed.
-- **Rate Limit**: 100 requests per 15 minutes.
-
-### Endpoint: `GET /api/v1/resource_89`
-- **Description**: Fetches resource 89 from the centralized database cluster.
-- **Headers**: `Authorization: Bearer <token>`
-- **Response 200**: Successfully retrieved resource 89.
-- **Response 401**: Unauthorized access. Token might be expired or malformed.
-- **Rate Limit**: 100 requests per 15 minutes.
-
-### Endpoint: `GET /api/v1/resource_90`
-- **Description**: Fetches resource 90 from the centralized database cluster.
-- **Headers**: `Authorization: Bearer <token>`
-- **Response 200**: Successfully retrieved resource 90.
-- **Response 401**: Unauthorized access. Token might be expired or malformed.
-- **Rate Limit**: 100 requests per 15 minutes.
-
-### Endpoint: `GET /api/v1/resource_91`
-- **Description**: Fetches resource 91 from the centralized database cluster.
-- **Headers**: `Authorization: Bearer <token>`
-- **Response 200**: Successfully retrieved resource 91.
-- **Response 401**: Unauthorized access. Token might be expired or malformed.
-- **Rate Limit**: 100 requests per 15 minutes.
-
-### Endpoint: `GET /api/v1/resource_92`
-- **Description**: Fetches resource 92 from the centralized database cluster.
-- **Headers**: `Authorization: Bearer <token>`
-- **Response 200**: Successfully retrieved resource 92.
-- **Response 401**: Unauthorized access. Token might be expired or malformed.
-- **Rate Limit**: 100 requests per 15 minutes.
-
-### Endpoint: `GET /api/v1/resource_93`
-- **Description**: Fetches resource 93 from the centralized database cluster.
-- **Headers**: `Authorization: Bearer <token>`
-- **Response 200**: Successfully retrieved resource 93.
-- **Response 401**: Unauthorized access. Token might be expired or malformed.
-- **Rate Limit**: 100 requests per 15 minutes.
-
-### Endpoint: `GET /api/v1/resource_94`
-- **Description**: Fetches resource 94 from the centralized database cluster.
-- **Headers**: `Authorization: Bearer <token>`
-- **Response 200**: Successfully retrieved resource 94.
-- **Response 401**: Unauthorized access. Token might be expired or malformed.
-- **Rate Limit**: 100 requests per 15 minutes.
-
-### Endpoint: `GET /api/v1/resource_95`
-- **Description**: Fetches resource 95 from the centralized database cluster.
-- **Headers**: `Authorization: Bearer <token>`
-- **Response 200**: Successfully retrieved resource 95.
-- **Response 401**: Unauthorized access. Token might be expired or malformed.
-- **Rate Limit**: 100 requests per 15 minutes.
-
-### Endpoint: `GET /api/v1/resource_96`
-- **Description**: Fetches resource 96 from the centralized database cluster.
-- **Headers**: `Authorization: Bearer <token>`
-- **Response 200**: Successfully retrieved resource 96.
-- **Response 401**: Unauthorized access. Token might be expired or malformed.
-- **Rate Limit**: 100 requests per 15 minutes.
-
-### Endpoint: `GET /api/v1/resource_97`
-- **Description**: Fetches resource 97 from the centralized database cluster.
-- **Headers**: `Authorization: Bearer <token>`
-- **Response 200**: Successfully retrieved resource 97.
-- **Response 401**: Unauthorized access. Token might be expired or malformed.
-- **Rate Limit**: 100 requests per 15 minutes.
-
-### Endpoint: `GET /api/v1/resource_98`
-- **Description**: Fetches resource 98 from the centralized database cluster.
-- **Headers**: `Authorization: Bearer <token>`
-- **Response 200**: Successfully retrieved resource 98.
-- **Response 401**: Unauthorized access. Token might be expired or malformed.
-- **Rate Limit**: 100 requests per 15 minutes.
-
-### Endpoint: `GET /api/v1/resource_99`
-- **Description**: Fetches resource 99 from the centralized database cluster.
-- **Headers**: `Authorization: Bearer <token>`
-- **Response 200**: Successfully retrieved resource 99.
-- **Response 401**: Unauthorized access. Token might be expired or malformed.
-- **Rate Limit**: 100 requests per 15 minutes.
-
-## 11. Troubleshooting & Error Codes
-### Error Code R-0001
-**Symptom**: The application throws error R-0001 during operation 1.
-**Root Cause**: This typically happens when the geographical calculation engine fails to acquire a lock on the routing table, or when a websocket connection drops midway through a handshake.
-**Resolution**: Restart the application. If the issue persists, clear the application cache. Advanced users can check the debug logs for stack trace 1.
-
-### Error Code R-0002
-**Symptom**: The application throws error R-0002 during operation 2.
-**Root Cause**: This typically happens when the geographical calculation engine fails to acquire a lock on the routing table, or when a websocket connection drops midway through a handshake.
-**Resolution**: Restart the application. If the issue persists, clear the application cache. Advanced users can check the debug logs for stack trace 2.
-
-### Error Code R-0003
-**Symptom**: The application throws error R-0003 during operation 3.
-**Root Cause**: This typically happens when the geographical calculation engine fails to acquire a lock on the routing table, or when a websocket connection drops midway through a handshake.
-**Resolution**: Restart the application. If the issue persists, clear the application cache. Advanced users can check the debug logs for stack trace 3.
-
-### Error Code R-0004
-**Symptom**: The application throws error R-0004 during operation 4.
-**Root Cause**: This typically happens when the geographical calculation engine fails to acquire a lock on the routing table, or when a websocket connection drops midway through a handshake.
-**Resolution**: Restart the application. If the issue persists, clear the application cache. Advanced users can check the debug logs for stack trace 4.
-
-### Error Code R-0005
-**Symptom**: The application throws error R-0005 during operation 5.
-**Root Cause**: This typically happens when the geographical calculation engine fails to acquire a lock on the routing table, or when a websocket connection drops midway through a handshake.
-**Resolution**: Restart the application. If the issue persists, clear the application cache. Advanced users can check the debug logs for stack trace 5.
-
-### Error Code R-0006
-**Symptom**: The application throws error R-0006 during operation 6.
-**Root Cause**: This typically happens when the geographical calculation engine fails to acquire a lock on the routing table, or when a websocket connection drops midway through a handshake.
-**Resolution**: Restart the application. If the issue persists, clear the application cache. Advanced users can check the debug logs for stack trace 6.
-
-### Error Code R-0007
-**Symptom**: The application throws error R-0007 during operation 7.
-**Root Cause**: This typically happens when the geographical calculation engine fails to acquire a lock on the routing table, or when a websocket connection drops midway through a handshake.
-**Resolution**: Restart the application. If the issue persists, clear the application cache. Advanced users can check the debug logs for stack trace 7.
-
-### Error Code R-0008
-**Symptom**: The application throws error R-0008 during operation 8.
-**Root Cause**: This typically happens when the geographical calculation engine fails to acquire a lock on the routing table, or when a websocket connection drops midway through a handshake.
-**Resolution**: Restart the application. If the issue persists, clear the application cache. Advanced users can check the debug logs for stack trace 8.
-
-### Error Code R-0009
-**Symptom**: The application throws error R-0009 during operation 9.
-**Root Cause**: This typically happens when the geographical calculation engine fails to acquire a lock on the routing table, or when a websocket connection drops midway through a handshake.
-**Resolution**: Restart the application. If the issue persists, clear the application cache. Advanced users can check the debug logs for stack trace 9.
-
-### Error Code R-0010
-**Symptom**: The application throws error R-0010 during operation 0.
-**Root Cause**: This typically happens when the geographical calculation engine fails to acquire a lock on the routing table, or when a websocket connection drops midway through a handshake.
-**Resolution**: Restart the application. If the issue persists, clear the application cache. Advanced users can check the debug logs for stack trace 10.
-
-### Error Code R-0011
-**Symptom**: The application throws error R-0011 during operation 1.
-**Root Cause**: This typically happens when the geographical calculation engine fails to acquire a lock on the routing table, or when a websocket connection drops midway through a handshake.
-**Resolution**: Restart the application. If the issue persists, clear the application cache. Advanced users can check the debug logs for stack trace 11.
-
-### Error Code R-0012
-**Symptom**: The application throws error R-0012 during operation 2.
-**Root Cause**: This typically happens when the geographical calculation engine fails to acquire a lock on the routing table, or when a websocket connection drops midway through a handshake.
-**Resolution**: Restart the application. If the issue persists, clear the application cache. Advanced users can check the debug logs for stack trace 12.
-
-### Error Code R-0013
-**Symptom**: The application throws error R-0013 during operation 3.
-**Root Cause**: This typically happens when the geographical calculation engine fails to acquire a lock on the routing table, or when a websocket connection drops midway through a handshake.
-**Resolution**: Restart the application. If the issue persists, clear the application cache. Advanced users can check the debug logs for stack trace 13.
-
-### Error Code R-0014
-**Symptom**: The application throws error R-0014 during operation 4.
-**Root Cause**: This typically happens when the geographical calculation engine fails to acquire a lock on the routing table, or when a websocket connection drops midway through a handshake.
-**Resolution**: Restart the application. If the issue persists, clear the application cache. Advanced users can check the debug logs for stack trace 14.
-
-### Error Code R-0015
-**Symptom**: The application throws error R-0015 during operation 5.
-**Root Cause**: This typically happens when the geographical calculation engine fails to acquire a lock on the routing table, or when a websocket connection drops midway through a handshake.
-**Resolution**: Restart the application. If the issue persists, clear the application cache. Advanced users can check the debug logs for stack trace 15.
-
-### Error Code R-0016
-**Symptom**: The application throws error R-0016 during operation 6.
-**Root Cause**: This typically happens when the geographical calculation engine fails to acquire a lock on the routing table, or when a websocket connection drops midway through a handshake.
-**Resolution**: Restart the application. If the issue persists, clear the application cache. Advanced users can check the debug logs for stack trace 16.
-
-### Error Code R-0017
-**Symptom**: The application throws error R-0017 during operation 7.
-**Root Cause**: This typically happens when the geographical calculation engine fails to acquire a lock on the routing table, or when a websocket connection drops midway through a handshake.
-**Resolution**: Restart the application. If the issue persists, clear the application cache. Advanced users can check the debug logs for stack trace 17.
-
-### Error Code R-0018
-**Symptom**: The application throws error R-0018 during operation 8.
-**Root Cause**: This typically happens when the geographical calculation engine fails to acquire a lock on the routing table, or when a websocket connection drops midway through a handshake.
-**Resolution**: Restart the application. If the issue persists, clear the application cache. Advanced users can check the debug logs for stack trace 18.
-
-### Error Code R-0019
-**Symptom**: The application throws error R-0019 during operation 9.
-**Root Cause**: This typically happens when the geographical calculation engine fails to acquire a lock on the routing table, or when a websocket connection drops midway through a handshake.
-**Resolution**: Restart the application. If the issue persists, clear the application cache. Advanced users can check the debug logs for stack trace 19.
-
-### Error Code R-0020
-**Symptom**: The application throws error R-0020 during operation 0.
-**Root Cause**: This typically happens when the geographical calculation engine fails to acquire a lock on the routing table, or when a websocket connection drops midway through a handshake.
-**Resolution**: Restart the application. If the issue persists, clear the application cache. Advanced users can check the debug logs for stack trace 20.
-
-### Error Code R-0021
-**Symptom**: The application throws error R-0021 during operation 1.
-**Root Cause**: This typically happens when the geographical calculation engine fails to acquire a lock on the routing table, or when a websocket connection drops midway through a handshake.
-**Resolution**: Restart the application. If the issue persists, clear the application cache. Advanced users can check the debug logs for stack trace 21.
-
-### Error Code R-0022
-**Symptom**: The application throws error R-0022 during operation 2.
-**Root Cause**: This typically happens when the geographical calculation engine fails to acquire a lock on the routing table, or when a websocket connection drops midway through a handshake.
-**Resolution**: Restart the application. If the issue persists, clear the application cache. Advanced users can check the debug logs for stack trace 22.
-
-### Error Code R-0023
-**Symptom**: The application throws error R-0023 during operation 3.
-**Root Cause**: This typically happens when the geographical calculation engine fails to acquire a lock on the routing table, or when a websocket connection drops midway through a handshake.
-**Resolution**: Restart the application. If the issue persists, clear the application cache. Advanced users can check the debug logs for stack trace 23.
-
-### Error Code R-0024
-**Symptom**: The application throws error R-0024 during operation 4.
-**Root Cause**: This typically happens when the geographical calculation engine fails to acquire a lock on the routing table, or when a websocket connection drops midway through a handshake.
-**Resolution**: Restart the application. If the issue persists, clear the application cache. Advanced users can check the debug logs for stack trace 24.
-
-### Error Code R-0025
-**Symptom**: The application throws error R-0025 during operation 5.
-**Root Cause**: This typically happens when the geographical calculation engine fails to acquire a lock on the routing table, or when a websocket connection drops midway through a handshake.
-**Resolution**: Restart the application. If the issue persists, clear the application cache. Advanced users can check the debug logs for stack trace 25.
-
-### Error Code R-0026
-**Symptom**: The application throws error R-0026 during operation 6.
-**Root Cause**: This typically happens when the geographical calculation engine fails to acquire a lock on the routing table, or when a websocket connection drops midway through a handshake.
-**Resolution**: Restart the application. If the issue persists, clear the application cache. Advanced users can check the debug logs for stack trace 26.
-
-### Error Code R-0027
-**Symptom**: The application throws error R-0027 during operation 7.
-**Root Cause**: This typically happens when the geographical calculation engine fails to acquire a lock on the routing table, or when a websocket connection drops midway through a handshake.
-**Resolution**: Restart the application. If the issue persists, clear the application cache. Advanced users can check the debug logs for stack trace 27.
-
-### Error Code R-0028
-**Symptom**: The application throws error R-0028 during operation 8.
-**Root Cause**: This typically happens when the geographical calculation engine fails to acquire a lock on the routing table, or when a websocket connection drops midway through a handshake.
-**Resolution**: Restart the application. If the issue persists, clear the application cache. Advanced users can check the debug logs for stack trace 28.
-
-### Error Code R-0029
-**Symptom**: The application throws error R-0029 during operation 9.
-**Root Cause**: This typically happens when the geographical calculation engine fails to acquire a lock on the routing table, or when a websocket connection drops midway through a handshake.
-**Resolution**: Restart the application. If the issue persists, clear the application cache. Advanced users can check the debug logs for stack trace 29.
-
-### Error Code R-0030
-**Symptom**: The application throws error R-0030 during operation 0.
-**Root Cause**: This typically happens when the geographical calculation engine fails to acquire a lock on the routing table, or when a websocket connection drops midway through a handshake.
-**Resolution**: Restart the application. If the issue persists, clear the application cache. Advanced users can check the debug logs for stack trace 30.
-
-### Error Code R-0031
-**Symptom**: The application throws error R-0031 during operation 1.
-**Root Cause**: This typically happens when the geographical calculation engine fails to acquire a lock on the routing table, or when a websocket connection drops midway through a handshake.
-**Resolution**: Restart the application. If the issue persists, clear the application cache. Advanced users can check the debug logs for stack trace 31.
-
-### Error Code R-0032
-**Symptom**: The application throws error R-0032 during operation 2.
-**Root Cause**: This typically happens when the geographical calculation engine fails to acquire a lock on the routing table, or when a websocket connection drops midway through a handshake.
-**Resolution**: Restart the application. If the issue persists, clear the application cache. Advanced users can check the debug logs for stack trace 32.
-
-### Error Code R-0033
-**Symptom**: The application throws error R-0033 during operation 3.
-**Root Cause**: This typically happens when the geographical calculation engine fails to acquire a lock on the routing table, or when a websocket connection drops midway through a handshake.
-**Resolution**: Restart the application. If the issue persists, clear the application cache. Advanced users can check the debug logs for stack trace 33.
-
-### Error Code R-0034
-**Symptom**: The application throws error R-0034 during operation 4.
-**Root Cause**: This typically happens when the geographical calculation engine fails to acquire a lock on the routing table, or when a websocket connection drops midway through a handshake.
-**Resolution**: Restart the application. If the issue persists, clear the application cache. Advanced users can check the debug logs for stack trace 34.
-
-### Error Code R-0035
-**Symptom**: The application throws error R-0035 during operation 5.
-**Root Cause**: This typically happens when the geographical calculation engine fails to acquire a lock on the routing table, or when a websocket connection drops midway through a handshake.
-**Resolution**: Restart the application. If the issue persists, clear the application cache. Advanced users can check the debug logs for stack trace 35.
-
-### Error Code R-0036
-**Symptom**: The application throws error R-0036 during operation 6.
-**Root Cause**: This typically happens when the geographical calculation engine fails to acquire a lock on the routing table, or when a websocket connection drops midway through a handshake.
-**Resolution**: Restart the application. If the issue persists, clear the application cache. Advanced users can check the debug logs for stack trace 36.
-
-### Error Code R-0037
-**Symptom**: The application throws error R-0037 during operation 7.
-**Root Cause**: This typically happens when the geographical calculation engine fails to acquire a lock on the routing table, or when a websocket connection drops midway through a handshake.
-**Resolution**: Restart the application. If the issue persists, clear the application cache. Advanced users can check the debug logs for stack trace 37.
-
-### Error Code R-0038
-**Symptom**: The application throws error R-0038 during operation 8.
-**Root Cause**: This typically happens when the geographical calculation engine fails to acquire a lock on the routing table, or when a websocket connection drops midway through a handshake.
-**Resolution**: Restart the application. If the issue persists, clear the application cache. Advanced users can check the debug logs for stack trace 38.
-
-### Error Code R-0039
-**Symptom**: The application throws error R-0039 during operation 9.
-**Root Cause**: This typically happens when the geographical calculation engine fails to acquire a lock on the routing table, or when a websocket connection drops midway through a handshake.
-**Resolution**: Restart the application. If the issue persists, clear the application cache. Advanced users can check the debug logs for stack trace 39.
-
-### Error Code R-0040
-**Symptom**: The application throws error R-0040 during operation 0.
-**Root Cause**: This typically happens when the geographical calculation engine fails to acquire a lock on the routing table, or when a websocket connection drops midway through a handshake.
-**Resolution**: Restart the application. If the issue persists, clear the application cache. Advanced users can check the debug logs for stack trace 40.
-
-### Error Code R-0041
-**Symptom**: The application throws error R-0041 during operation 1.
-**Root Cause**: This typically happens when the geographical calculation engine fails to acquire a lock on the routing table, or when a websocket connection drops midway through a handshake.
-**Resolution**: Restart the application. If the issue persists, clear the application cache. Advanced users can check the debug logs for stack trace 41.
-
-### Error Code R-0042
-**Symptom**: The application throws error R-0042 during operation 2.
-**Root Cause**: This typically happens when the geographical calculation engine fails to acquire a lock on the routing table, or when a websocket connection drops midway through a handshake.
-**Resolution**: Restart the application. If the issue persists, clear the application cache. Advanced users can check the debug logs for stack trace 42.
-
-### Error Code R-0043
-**Symptom**: The application throws error R-0043 during operation 3.
-**Root Cause**: This typically happens when the geographical calculation engine fails to acquire a lock on the routing table, or when a websocket connection drops midway through a handshake.
-**Resolution**: Restart the application. If the issue persists, clear the application cache. Advanced users can check the debug logs for stack trace 43.
-
-### Error Code R-0044
-**Symptom**: The application throws error R-0044 during operation 4.
-**Root Cause**: This typically happens when the geographical calculation engine fails to acquire a lock on the routing table, or when a websocket connection drops midway through a handshake.
-**Resolution**: Restart the application. If the issue persists, clear the application cache. Advanced users can check the debug logs for stack trace 44.
-
-### Error Code R-0045
-**Symptom**: The application throws error R-0045 during operation 5.
-**Root Cause**: This typically happens when the geographical calculation engine fails to acquire a lock on the routing table, or when a websocket connection drops midway through a handshake.
-**Resolution**: Restart the application. If the issue persists, clear the application cache. Advanced users can check the debug logs for stack trace 45.
-
-### Error Code R-0046
-**Symptom**: The application throws error R-0046 during operation 6.
-**Root Cause**: This typically happens when the geographical calculation engine fails to acquire a lock on the routing table, or when a websocket connection drops midway through a handshake.
-**Resolution**: Restart the application. If the issue persists, clear the application cache. Advanced users can check the debug logs for stack trace 46.
-
-### Error Code R-0047
-**Symptom**: The application throws error R-0047 during operation 7.
-**Root Cause**: This typically happens when the geographical calculation engine fails to acquire a lock on the routing table, or when a websocket connection drops midway through a handshake.
-**Resolution**: Restart the application. If the issue persists, clear the application cache. Advanced users can check the debug logs for stack trace 47.
-
-### Error Code R-0048
-**Symptom**: The application throws error R-0048 during operation 8.
-**Root Cause**: This typically happens when the geographical calculation engine fails to acquire a lock on the routing table, or when a websocket connection drops midway through a handshake.
-**Resolution**: Restart the application. If the issue persists, clear the application cache. Advanced users can check the debug logs for stack trace 48.
-
-### Error Code R-0049
-**Symptom**: The application throws error R-0049 during operation 9.
-**Root Cause**: This typically happens when the geographical calculation engine fails to acquire a lock on the routing table, or when a websocket connection drops midway through a handshake.
-**Resolution**: Restart the application. If the issue persists, clear the application cache. Advanced users can check the debug logs for stack trace 49.
-
-### Error Code R-0050
-**Symptom**: The application throws error R-0050 during operation 0.
-**Root Cause**: This typically happens when the geographical calculation engine fails to acquire a lock on the routing table, or when a websocket connection drops midway through a handshake.
-**Resolution**: Restart the application. If the issue persists, clear the application cache. Advanced users can check the debug logs for stack trace 50.
-
-### Error Code R-0051
-**Symptom**: The application throws error R-0051 during operation 1.
-**Root Cause**: This typically happens when the geographical calculation engine fails to acquire a lock on the routing table, or when a websocket connection drops midway through a handshake.
-**Resolution**: Restart the application. If the issue persists, clear the application cache. Advanced users can check the debug logs for stack trace 51.
-
-### Error Code R-0052
-**Symptom**: The application throws error R-0052 during operation 2.
-**Root Cause**: This typically happens when the geographical calculation engine fails to acquire a lock on the routing table, or when a websocket connection drops midway through a handshake.
-**Resolution**: Restart the application. If the issue persists, clear the application cache. Advanced users can check the debug logs for stack trace 52.
-
-### Error Code R-0053
-**Symptom**: The application throws error R-0053 during operation 3.
-**Root Cause**: This typically happens when the geographical calculation engine fails to acquire a lock on the routing table, or when a websocket connection drops midway through a handshake.
-**Resolution**: Restart the application. If the issue persists, clear the application cache. Advanced users can check the debug logs for stack trace 53.
-
-### Error Code R-0054
-**Symptom**: The application throws error R-0054 during operation 4.
-**Root Cause**: This typically happens when the geographical calculation engine fails to acquire a lock on the routing table, or when a websocket connection drops midway through a handshake.
-**Resolution**: Restart the application. If the issue persists, clear the application cache. Advanced users can check the debug logs for stack trace 54.
-
-### Error Code R-0055
-**Symptom**: The application throws error R-0055 during operation 5.
-**Root Cause**: This typically happens when the geographical calculation engine fails to acquire a lock on the routing table, or when a websocket connection drops midway through a handshake.
-**Resolution**: Restart the application. If the issue persists, clear the application cache. Advanced users can check the debug logs for stack trace 55.
-
-### Error Code R-0056
-**Symptom**: The application throws error R-0056 during operation 6.
-**Root Cause**: This typically happens when the geographical calculation engine fails to acquire a lock on the routing table, or when a websocket connection drops midway through a handshake.
-**Resolution**: Restart the application. If the issue persists, clear the application cache. Advanced users can check the debug logs for stack trace 56.
-
-### Error Code R-0057
-**Symptom**: The application throws error R-0057 during operation 7.
-**Root Cause**: This typically happens when the geographical calculation engine fails to acquire a lock on the routing table, or when a websocket connection drops midway through a handshake.
-**Resolution**: Restart the application. If the issue persists, clear the application cache. Advanced users can check the debug logs for stack trace 57.
-
-### Error Code R-0058
-**Symptom**: The application throws error R-0058 during operation 8.
-**Root Cause**: This typically happens when the geographical calculation engine fails to acquire a lock on the routing table, or when a websocket connection drops midway through a handshake.
-**Resolution**: Restart the application. If the issue persists, clear the application cache. Advanced users can check the debug logs for stack trace 58.
-
-### Error Code R-0059
-**Symptom**: The application throws error R-0059 during operation 9.
-**Root Cause**: This typically happens when the geographical calculation engine fails to acquire a lock on the routing table, or when a websocket connection drops midway through a handshake.
-**Resolution**: Restart the application. If the issue persists, clear the application cache. Advanced users can check the debug logs for stack trace 59.
-
-### Error Code R-0060
-**Symptom**: The application throws error R-0060 during operation 0.
-**Root Cause**: This typically happens when the geographical calculation engine fails to acquire a lock on the routing table, or when a websocket connection drops midway through a handshake.
-**Resolution**: Restart the application. If the issue persists, clear the application cache. Advanced users can check the debug logs for stack trace 60.
-
-### Error Code R-0061
-**Symptom**: The application throws error R-0061 during operation 1.
-**Root Cause**: This typically happens when the geographical calculation engine fails to acquire a lock on the routing table, or when a websocket connection drops midway through a handshake.
-**Resolution**: Restart the application. If the issue persists, clear the application cache. Advanced users can check the debug logs for stack trace 61.
-
-### Error Code R-0062
-**Symptom**: The application throws error R-0062 during operation 2.
-**Root Cause**: This typically happens when the geographical calculation engine fails to acquire a lock on the routing table, or when a websocket connection drops midway through a handshake.
-**Resolution**: Restart the application. If the issue persists, clear the application cache. Advanced users can check the debug logs for stack trace 62.
-
-### Error Code R-0063
-**Symptom**: The application throws error R-0063 during operation 3.
-**Root Cause**: This typically happens when the geographical calculation engine fails to acquire a lock on the routing table, or when a websocket connection drops midway through a handshake.
-**Resolution**: Restart the application. If the issue persists, clear the application cache. Advanced users can check the debug logs for stack trace 63.
-
-### Error Code R-0064
-**Symptom**: The application throws error R-0064 during operation 4.
-**Root Cause**: This typically happens when the geographical calculation engine fails to acquire a lock on the routing table, or when a websocket connection drops midway through a handshake.
-**Resolution**: Restart the application. If the issue persists, clear the application cache. Advanced users can check the debug logs for stack trace 64.
-
-### Error Code R-0065
-**Symptom**: The application throws error R-0065 during operation 5.
-**Root Cause**: This typically happens when the geographical calculation engine fails to acquire a lock on the routing table, or when a websocket connection drops midway through a handshake.
-**Resolution**: Restart the application. If the issue persists, clear the application cache. Advanced users can check the debug logs for stack trace 65.
-
-### Error Code R-0066
-**Symptom**: The application throws error R-0066 during operation 6.
-**Root Cause**: This typically happens when the geographical calculation engine fails to acquire a lock on the routing table, or when a websocket connection drops midway through a handshake.
-**Resolution**: Restart the application. If the issue persists, clear the application cache. Advanced users can check the debug logs for stack trace 66.
-
-### Error Code R-0067
-**Symptom**: The application throws error R-0067 during operation 7.
-**Root Cause**: This typically happens when the geographical calculation engine fails to acquire a lock on the routing table, or when a websocket connection drops midway through a handshake.
-**Resolution**: Restart the application. If the issue persists, clear the application cache. Advanced users can check the debug logs for stack trace 67.
-
-### Error Code R-0068
-**Symptom**: The application throws error R-0068 during operation 8.
-**Root Cause**: This typically happens when the geographical calculation engine fails to acquire a lock on the routing table, or when a websocket connection drops midway through a handshake.
-**Resolution**: Restart the application. If the issue persists, clear the application cache. Advanced users can check the debug logs for stack trace 68.
-
-### Error Code R-0069
-**Symptom**: The application throws error R-0069 during operation 9.
-**Root Cause**: This typically happens when the geographical calculation engine fails to acquire a lock on the routing table, or when a websocket connection drops midway through a handshake.
-**Resolution**: Restart the application. If the issue persists, clear the application cache. Advanced users can check the debug logs for stack trace 69.
-
-### Error Code R-0070
-**Symptom**: The application throws error R-0070 during operation 0.
-**Root Cause**: This typically happens when the geographical calculation engine fails to acquire a lock on the routing table, or when a websocket connection drops midway through a handshake.
-**Resolution**: Restart the application. If the issue persists, clear the application cache. Advanced users can check the debug logs for stack trace 70.
-
-### Error Code R-0071
-**Symptom**: The application throws error R-0071 during operation 1.
-**Root Cause**: This typically happens when the geographical calculation engine fails to acquire a lock on the routing table, or when a websocket connection drops midway through a handshake.
-**Resolution**: Restart the application. If the issue persists, clear the application cache. Advanced users can check the debug logs for stack trace 71.
-
-### Error Code R-0072
-**Symptom**: The application throws error R-0072 during operation 2.
-**Root Cause**: This typically happens when the geographical calculation engine fails to acquire a lock on the routing table, or when a websocket connection drops midway through a handshake.
-**Resolution**: Restart the application. If the issue persists, clear the application cache. Advanced users can check the debug logs for stack trace 72.
-
-### Error Code R-0073
-**Symptom**: The application throws error R-0073 during operation 3.
-**Root Cause**: This typically happens when the geographical calculation engine fails to acquire a lock on the routing table, or when a websocket connection drops midway through a handshake.
-**Resolution**: Restart the application. If the issue persists, clear the application cache. Advanced users can check the debug logs for stack trace 73.
-
-### Error Code R-0074
-**Symptom**: The application throws error R-0074 during operation 4.
-**Root Cause**: This typically happens when the geographical calculation engine fails to acquire a lock on the routing table, or when a websocket connection drops midway through a handshake.
-**Resolution**: Restart the application. If the issue persists, clear the application cache. Advanced users can check the debug logs for stack trace 74.
-
-### Error Code R-0075
-**Symptom**: The application throws error R-0075 during operation 5.
-**Root Cause**: This typically happens when the geographical calculation engine fails to acquire a lock on the routing table, or when a websocket connection drops midway through a handshake.
-**Resolution**: Restart the application. If the issue persists, clear the application cache. Advanced users can check the debug logs for stack trace 75.
-
-### Error Code R-0076
-**Symptom**: The application throws error R-0076 during operation 6.
-**Root Cause**: This typically happens when the geographical calculation engine fails to acquire a lock on the routing table, or when a websocket connection drops midway through a handshake.
-**Resolution**: Restart the application. If the issue persists, clear the application cache. Advanced users can check the debug logs for stack trace 76.
-
-### Error Code R-0077
-**Symptom**: The application throws error R-0077 during operation 7.
-**Root Cause**: This typically happens when the geographical calculation engine fails to acquire a lock on the routing table, or when a websocket connection drops midway through a handshake.
-**Resolution**: Restart the application. If the issue persists, clear the application cache. Advanced users can check the debug logs for stack trace 77.
-
-### Error Code R-0078
-**Symptom**: The application throws error R-0078 during operation 8.
-**Root Cause**: This typically happens when the geographical calculation engine fails to acquire a lock on the routing table, or when a websocket connection drops midway through a handshake.
-**Resolution**: Restart the application. If the issue persists, clear the application cache. Advanced users can check the debug logs for stack trace 78.
-
-### Error Code R-0079
-**Symptom**: The application throws error R-0079 during operation 9.
-**Root Cause**: This typically happens when the geographical calculation engine fails to acquire a lock on the routing table, or when a websocket connection drops midway through a handshake.
-**Resolution**: Restart the application. If the issue persists, clear the application cache. Advanced users can check the debug logs for stack trace 79.
-
-### Error Code R-0080
-**Symptom**: The application throws error R-0080 during operation 0.
-**Root Cause**: This typically happens when the geographical calculation engine fails to acquire a lock on the routing table, or when a websocket connection drops midway through a handshake.
-**Resolution**: Restart the application. If the issue persists, clear the application cache. Advanced users can check the debug logs for stack trace 80.
-
-### Error Code R-0081
-**Symptom**: The application throws error R-0081 during operation 1.
-**Root Cause**: This typically happens when the geographical calculation engine fails to acquire a lock on the routing table, or when a websocket connection drops midway through a handshake.
-**Resolution**: Restart the application. If the issue persists, clear the application cache. Advanced users can check the debug logs for stack trace 81.
-
-### Error Code R-0082
-**Symptom**: The application throws error R-0082 during operation 2.
-**Root Cause**: This typically happens when the geographical calculation engine fails to acquire a lock on the routing table, or when a websocket connection drops midway through a handshake.
-**Resolution**: Restart the application. If the issue persists, clear the application cache. Advanced users can check the debug logs for stack trace 82.
-
-### Error Code R-0083
-**Symptom**: The application throws error R-0083 during operation 3.
-**Root Cause**: This typically happens when the geographical calculation engine fails to acquire a lock on the routing table, or when a websocket connection drops midway through a handshake.
-**Resolution**: Restart the application. If the issue persists, clear the application cache. Advanced users can check the debug logs for stack trace 83.
-
-### Error Code R-0084
-**Symptom**: The application throws error R-0084 during operation 4.
-**Root Cause**: This typically happens when the geographical calculation engine fails to acquire a lock on the routing table, or when a websocket connection drops midway through a handshake.
-**Resolution**: Restart the application. If the issue persists, clear the application cache. Advanced users can check the debug logs for stack trace 84.
-
-### Error Code R-0085
-**Symptom**: The application throws error R-0085 during operation 5.
-**Root Cause**: This typically happens when the geographical calculation engine fails to acquire a lock on the routing table, or when a websocket connection drops midway through a handshake.
-**Resolution**: Restart the application. If the issue persists, clear the application cache. Advanced users can check the debug logs for stack trace 85.
-
-### Error Code R-0086
-**Symptom**: The application throws error R-0086 during operation 6.
-**Root Cause**: This typically happens when the geographical calculation engine fails to acquire a lock on the routing table, or when a websocket connection drops midway through a handshake.
-**Resolution**: Restart the application. If the issue persists, clear the application cache. Advanced users can check the debug logs for stack trace 86.
-
-### Error Code R-0087
-**Symptom**: The application throws error R-0087 during operation 7.
-**Root Cause**: This typically happens when the geographical calculation engine fails to acquire a lock on the routing table, or when a websocket connection drops midway through a handshake.
-**Resolution**: Restart the application. If the issue persists, clear the application cache. Advanced users can check the debug logs for stack trace 87.
-
-### Error Code R-0088
-**Symptom**: The application throws error R-0088 during operation 8.
-**Root Cause**: This typically happens when the geographical calculation engine fails to acquire a lock on the routing table, or when a websocket connection drops midway through a handshake.
-**Resolution**: Restart the application. If the issue persists, clear the application cache. Advanced users can check the debug logs for stack trace 88.
-
-### Error Code R-0089
-**Symptom**: The application throws error R-0089 during operation 9.
-**Root Cause**: This typically happens when the geographical calculation engine fails to acquire a lock on the routing table, or when a websocket connection drops midway through a handshake.
-**Resolution**: Restart the application. If the issue persists, clear the application cache. Advanced users can check the debug logs for stack trace 89.
-
-### Error Code R-0090
-**Symptom**: The application throws error R-0090 during operation 0.
-**Root Cause**: This typically happens when the geographical calculation engine fails to acquire a lock on the routing table, or when a websocket connection drops midway through a handshake.
-**Resolution**: Restart the application. If the issue persists, clear the application cache. Advanced users can check the debug logs for stack trace 90.
-
-### Error Code R-0091
-**Symptom**: The application throws error R-0091 during operation 1.
-**Root Cause**: This typically happens when the geographical calculation engine fails to acquire a lock on the routing table, or when a websocket connection drops midway through a handshake.
-**Resolution**: Restart the application. If the issue persists, clear the application cache. Advanced users can check the debug logs for stack trace 91.
-
-### Error Code R-0092
-**Symptom**: The application throws error R-0092 during operation 2.
-**Root Cause**: This typically happens when the geographical calculation engine fails to acquire a lock on the routing table, or when a websocket connection drops midway through a handshake.
-**Resolution**: Restart the application. If the issue persists, clear the application cache. Advanced users can check the debug logs for stack trace 92.
-
-### Error Code R-0093
-**Symptom**: The application throws error R-0093 during operation 3.
-**Root Cause**: This typically happens when the geographical calculation engine fails to acquire a lock on the routing table, or when a websocket connection drops midway through a handshake.
-**Resolution**: Restart the application. If the issue persists, clear the application cache. Advanced users can check the debug logs for stack trace 93.
-
-### Error Code R-0094
-**Symptom**: The application throws error R-0094 during operation 4.
-**Root Cause**: This typically happens when the geographical calculation engine fails to acquire a lock on the routing table, or when a websocket connection drops midway through a handshake.
-**Resolution**: Restart the application. If the issue persists, clear the application cache. Advanced users can check the debug logs for stack trace 94.
-
-### Error Code R-0095
-**Symptom**: The application throws error R-0095 during operation 5.
-**Root Cause**: This typically happens when the geographical calculation engine fails to acquire a lock on the routing table, or when a websocket connection drops midway through a handshake.
-**Resolution**: Restart the application. If the issue persists, clear the application cache. Advanced users can check the debug logs for stack trace 95.
-
-### Error Code R-0096
-**Symptom**: The application throws error R-0096 during operation 6.
-**Root Cause**: This typically happens when the geographical calculation engine fails to acquire a lock on the routing table, or when a websocket connection drops midway through a handshake.
-**Resolution**: Restart the application. If the issue persists, clear the application cache. Advanced users can check the debug logs for stack trace 96.
-
-### Error Code R-0097
-**Symptom**: The application throws error R-0097 during operation 7.
-**Root Cause**: This typically happens when the geographical calculation engine fails to acquire a lock on the routing table, or when a websocket connection drops midway through a handshake.
-**Resolution**: Restart the application. If the issue persists, clear the application cache. Advanced users can check the debug logs for stack trace 97.
-
-### Error Code R-0098
-**Symptom**: The application throws error R-0098 during operation 8.
-**Root Cause**: This typically happens when the geographical calculation engine fails to acquire a lock on the routing table, or when a websocket connection drops midway through a handshake.
-**Resolution**: Restart the application. If the issue persists, clear the application cache. Advanced users can check the debug logs for stack trace 98.
-
-### Error Code R-0099
-**Symptom**: The application throws error R-0099 during operation 9.
-**Root Cause**: This typically happens when the geographical calculation engine fails to acquire a lock on the routing table, or when a websocket connection drops midway through a handshake.
-**Resolution**: Restart the application. If the issue persists, clear the application cache. Advanced users can check the debug logs for stack trace 99.
-
-### Error Code R-0100
-**Symptom**: The application throws error R-0100 during operation 0.
-**Root Cause**: This typically happens when the geographical calculation engine fails to acquire a lock on the routing table, or when a websocket connection drops midway through a handshake.
-**Resolution**: Restart the application. If the issue persists, clear the application cache. Advanced users can check the debug logs for stack trace 100.
-
-### Error Code R-0101
-**Symptom**: The application throws error R-0101 during operation 1.
-**Root Cause**: This typically happens when the geographical calculation engine fails to acquire a lock on the routing table, or when a websocket connection drops midway through a handshake.
-**Resolution**: Restart the application. If the issue persists, clear the application cache. Advanced users can check the debug logs for stack trace 101.
-
-### Error Code R-0102
-**Symptom**: The application throws error R-0102 during operation 2.
-**Root Cause**: This typically happens when the geographical calculation engine fails to acquire a lock on the routing table, or when a websocket connection drops midway through a handshake.
-**Resolution**: Restart the application. If the issue persists, clear the application cache. Advanced users can check the debug logs for stack trace 102.
-
-### Error Code R-0103
-**Symptom**: The application throws error R-0103 during operation 3.
-**Root Cause**: This typically happens when the geographical calculation engine fails to acquire a lock on the routing table, or when a websocket connection drops midway through a handshake.
-**Resolution**: Restart the application. If the issue persists, clear the application cache. Advanced users can check the debug logs for stack trace 103.
-
-### Error Code R-0104
-**Symptom**: The application throws error R-0104 during operation 4.
-**Root Cause**: This typically happens when the geographical calculation engine fails to acquire a lock on the routing table, or when a websocket connection drops midway through a handshake.
-**Resolution**: Restart the application. If the issue persists, clear the application cache. Advanced users can check the debug logs for stack trace 104.
-
-### Error Code R-0105
-**Symptom**: The application throws error R-0105 during operation 5.
-**Root Cause**: This typically happens when the geographical calculation engine fails to acquire a lock on the routing table, or when a websocket connection drops midway through a handshake.
-**Resolution**: Restart the application. If the issue persists, clear the application cache. Advanced users can check the debug logs for stack trace 105.
-
-### Error Code R-0106
-**Symptom**: The application throws error R-0106 during operation 6.
-**Root Cause**: This typically happens when the geographical calculation engine fails to acquire a lock on the routing table, or when a websocket connection drops midway through a handshake.
-**Resolution**: Restart the application. If the issue persists, clear the application cache. Advanced users can check the debug logs for stack trace 106.
-
-### Error Code R-0107
-**Symptom**: The application throws error R-0107 during operation 7.
-**Root Cause**: This typically happens when the geographical calculation engine fails to acquire a lock on the routing table, or when a websocket connection drops midway through a handshake.
-**Resolution**: Restart the application. If the issue persists, clear the application cache. Advanced users can check the debug logs for stack trace 107.
-
-### Error Code R-0108
-**Symptom**: The application throws error R-0108 during operation 8.
-**Root Cause**: This typically happens when the geographical calculation engine fails to acquire a lock on the routing table, or when a websocket connection drops midway through a handshake.
-**Resolution**: Restart the application. If the issue persists, clear the application cache. Advanced users can check the debug logs for stack trace 108.
-
-### Error Code R-0109
-**Symptom**: The application throws error R-0109 during operation 9.
-**Root Cause**: This typically happens when the geographical calculation engine fails to acquire a lock on the routing table, or when a websocket connection drops midway through a handshake.
-**Resolution**: Restart the application. If the issue persists, clear the application cache. Advanced users can check the debug logs for stack trace 109.
-
-### Error Code R-0110
-**Symptom**: The application throws error R-0110 during operation 0.
-**Root Cause**: This typically happens when the geographical calculation engine fails to acquire a lock on the routing table, or when a websocket connection drops midway through a handshake.
-**Resolution**: Restart the application. If the issue persists, clear the application cache. Advanced users can check the debug logs for stack trace 110.
-
-### Error Code R-0111
-**Symptom**: The application throws error R-0111 during operation 1.
-**Root Cause**: This typically happens when the geographical calculation engine fails to acquire a lock on the routing table, or when a websocket connection drops midway through a handshake.
-**Resolution**: Restart the application. If the issue persists, clear the application cache. Advanced users can check the debug logs for stack trace 111.
-
-### Error Code R-0112
-**Symptom**: The application throws error R-0112 during operation 2.
-**Root Cause**: This typically happens when the geographical calculation engine fails to acquire a lock on the routing table, or when a websocket connection drops midway through a handshake.
-**Resolution**: Restart the application. If the issue persists, clear the application cache. Advanced users can check the debug logs for stack trace 112.
-
-### Error Code R-0113
-**Symptom**: The application throws error R-0113 during operation 3.
-**Root Cause**: This typically happens when the geographical calculation engine fails to acquire a lock on the routing table, or when a websocket connection drops midway through a handshake.
-**Resolution**: Restart the application. If the issue persists, clear the application cache. Advanced users can check the debug logs for stack trace 113.
-
-### Error Code R-0114
-**Symptom**: The application throws error R-0114 during operation 4.
-**Root Cause**: This typically happens when the geographical calculation engine fails to acquire a lock on the routing table, or when a websocket connection drops midway through a handshake.
-**Resolution**: Restart the application. If the issue persists, clear the application cache. Advanced users can check the debug logs for stack trace 114.
-
-### Error Code R-0115
-**Symptom**: The application throws error R-0115 during operation 5.
-**Root Cause**: This typically happens when the geographical calculation engine fails to acquire a lock on the routing table, or when a websocket connection drops midway through a handshake.
-**Resolution**: Restart the application. If the issue persists, clear the application cache. Advanced users can check the debug logs for stack trace 115.
-
-### Error Code R-0116
-**Symptom**: The application throws error R-0116 during operation 6.
-**Root Cause**: This typically happens when the geographical calculation engine fails to acquire a lock on the routing table, or when a websocket connection drops midway through a handshake.
-**Resolution**: Restart the application. If the issue persists, clear the application cache. Advanced users can check the debug logs for stack trace 116.
-
-### Error Code R-0117
-**Symptom**: The application throws error R-0117 during operation 7.
-**Root Cause**: This typically happens when the geographical calculation engine fails to acquire a lock on the routing table, or when a websocket connection drops midway through a handshake.
-**Resolution**: Restart the application. If the issue persists, clear the application cache. Advanced users can check the debug logs for stack trace 117.
-
-### Error Code R-0118
-**Symptom**: The application throws error R-0118 during operation 8.
-**Root Cause**: This typically happens when the geographical calculation engine fails to acquire a lock on the routing table, or when a websocket connection drops midway through a handshake.
-**Resolution**: Restart the application. If the issue persists, clear the application cache. Advanced users can check the debug logs for stack trace 118.
-
-### Error Code R-0119
-**Symptom**: The application throws error R-0119 during operation 9.
-**Root Cause**: This typically happens when the geographical calculation engine fails to acquire a lock on the routing table, or when a websocket connection drops midway through a handshake.
-**Resolution**: Restart the application. If the issue persists, clear the application cache. Advanced users can check the debug logs for stack trace 119.
-
-### Error Code R-0120
-**Symptom**: The application throws error R-0120 during operation 0.
-**Root Cause**: This typically happens when the geographical calculation engine fails to acquire a lock on the routing table, or when a websocket connection drops midway through a handshake.
-**Resolution**: Restart the application. If the issue persists, clear the application cache. Advanced users can check the debug logs for stack trace 120.
-
-### Error Code R-0121
-**Symptom**: The application throws error R-0121 during operation 1.
-**Root Cause**: This typically happens when the geographical calculation engine fails to acquire a lock on the routing table, or when a websocket connection drops midway through a handshake.
-**Resolution**: Restart the application. If the issue persists, clear the application cache. Advanced users can check the debug logs for stack trace 121.
-
-### Error Code R-0122
-**Symptom**: The application throws error R-0122 during operation 2.
-**Root Cause**: This typically happens when the geographical calculation engine fails to acquire a lock on the routing table, or when a websocket connection drops midway through a handshake.
-**Resolution**: Restart the application. If the issue persists, clear the application cache. Advanced users can check the debug logs for stack trace 122.
-
-### Error Code R-0123
-**Symptom**: The application throws error R-0123 during operation 3.
-**Root Cause**: This typically happens when the geographical calculation engine fails to acquire a lock on the routing table, or when a websocket connection drops midway through a handshake.
-**Resolution**: Restart the application. If the issue persists, clear the application cache. Advanced users can check the debug logs for stack trace 123.
-
-### Error Code R-0124
-**Symptom**: The application throws error R-0124 during operation 4.
-**Root Cause**: This typically happens when the geographical calculation engine fails to acquire a lock on the routing table, or when a websocket connection drops midway through a handshake.
-**Resolution**: Restart the application. If the issue persists, clear the application cache. Advanced users can check the debug logs for stack trace 124.
-
-### Error Code R-0125
-**Symptom**: The application throws error R-0125 during operation 5.
-**Root Cause**: This typically happens when the geographical calculation engine fails to acquire a lock on the routing table, or when a websocket connection drops midway through a handshake.
-**Resolution**: Restart the application. If the issue persists, clear the application cache. Advanced users can check the debug logs for stack trace 125.
-
-### Error Code R-0126
-**Symptom**: The application throws error R-0126 during operation 6.
-**Root Cause**: This typically happens when the geographical calculation engine fails to acquire a lock on the routing table, or when a websocket connection drops midway through a handshake.
-**Resolution**: Restart the application. If the issue persists, clear the application cache. Advanced users can check the debug logs for stack trace 126.
-
-### Error Code R-0127
-**Symptom**: The application throws error R-0127 during operation 7.
-**Root Cause**: This typically happens when the geographical calculation engine fails to acquire a lock on the routing table, or when a websocket connection drops midway through a handshake.
-**Resolution**: Restart the application. If the issue persists, clear the application cache. Advanced users can check the debug logs for stack trace 127.
-
-### Error Code R-0128
-**Symptom**: The application throws error R-0128 during operation 8.
-**Root Cause**: This typically happens when the geographical calculation engine fails to acquire a lock on the routing table, or when a websocket connection drops midway through a handshake.
-**Resolution**: Restart the application. If the issue persists, clear the application cache. Advanced users can check the debug logs for stack trace 128.
-
-### Error Code R-0129
-**Symptom**: The application throws error R-0129 during operation 9.
-**Root Cause**: This typically happens when the geographical calculation engine fails to acquire a lock on the routing table, or when a websocket connection drops midway through a handshake.
-**Resolution**: Restart the application. If the issue persists, clear the application cache. Advanced users can check the debug logs for stack trace 129.
-
-### Error Code R-0130
-**Symptom**: The application throws error R-0130 during operation 0.
-**Root Cause**: This typically happens when the geographical calculation engine fails to acquire a lock on the routing table, or when a websocket connection drops midway through a handshake.
-**Resolution**: Restart the application. If the issue persists, clear the application cache. Advanced users can check the debug logs for stack trace 130.
-
-### Error Code R-0131
-**Symptom**: The application throws error R-0131 during operation 1.
-**Root Cause**: This typically happens when the geographical calculation engine fails to acquire a lock on the routing table, or when a websocket connection drops midway through a handshake.
-**Resolution**: Restart the application. If the issue persists, clear the application cache. Advanced users can check the debug logs for stack trace 131.
-
-### Error Code R-0132
-**Symptom**: The application throws error R-0132 during operation 2.
-**Root Cause**: This typically happens when the geographical calculation engine fails to acquire a lock on the routing table, or when a websocket connection drops midway through a handshake.
-**Resolution**: Restart the application. If the issue persists, clear the application cache. Advanced users can check the debug logs for stack trace 132.
-
-### Error Code R-0133
-**Symptom**: The application throws error R-0133 during operation 3.
-**Root Cause**: This typically happens when the geographical calculation engine fails to acquire a lock on the routing table, or when a websocket connection drops midway through a handshake.
-**Resolution**: Restart the application. If the issue persists, clear the application cache. Advanced users can check the debug logs for stack trace 133.
-
-### Error Code R-0134
-**Symptom**: The application throws error R-0134 during operation 4.
-**Root Cause**: This typically happens when the geographical calculation engine fails to acquire a lock on the routing table, or when a websocket connection drops midway through a handshake.
-**Resolution**: Restart the application. If the issue persists, clear the application cache. Advanced users can check the debug logs for stack trace 134.
-
-### Error Code R-0135
-**Symptom**: The application throws error R-0135 during operation 5.
-**Root Cause**: This typically happens when the geographical calculation engine fails to acquire a lock on the routing table, or when a websocket connection drops midway through a handshake.
-**Resolution**: Restart the application. If the issue persists, clear the application cache. Advanced users can check the debug logs for stack trace 135.
-
-### Error Code R-0136
-**Symptom**: The application throws error R-0136 during operation 6.
-**Root Cause**: This typically happens when the geographical calculation engine fails to acquire a lock on the routing table, or when a websocket connection drops midway through a handshake.
-**Resolution**: Restart the application. If the issue persists, clear the application cache. Advanced users can check the debug logs for stack trace 136.
-
-### Error Code R-0137
-**Symptom**: The application throws error R-0137 during operation 7.
-**Root Cause**: This typically happens when the geographical calculation engine fails to acquire a lock on the routing table, or when a websocket connection drops midway through a handshake.
-**Resolution**: Restart the application. If the issue persists, clear the application cache. Advanced users can check the debug logs for stack trace 137.
-
-### Error Code R-0138
-**Symptom**: The application throws error R-0138 during operation 8.
-**Root Cause**: This typically happens when the geographical calculation engine fails to acquire a lock on the routing table, or when a websocket connection drops midway through a handshake.
-**Resolution**: Restart the application. If the issue persists, clear the application cache. Advanced users can check the debug logs for stack trace 138.
-
-### Error Code R-0139
-**Symptom**: The application throws error R-0139 during operation 9.
-**Root Cause**: This typically happens when the geographical calculation engine fails to acquire a lock on the routing table, or when a websocket connection drops midway through a handshake.
-**Resolution**: Restart the application. If the issue persists, clear the application cache. Advanced users can check the debug logs for stack trace 139.
-
-### Error Code R-0140
-**Symptom**: The application throws error R-0140 during operation 0.
-**Root Cause**: This typically happens when the geographical calculation engine fails to acquire a lock on the routing table, or when a websocket connection drops midway through a handshake.
-**Resolution**: Restart the application. If the issue persists, clear the application cache. Advanced users can check the debug logs for stack trace 140.
-
-### Error Code R-0141
-**Symptom**: The application throws error R-0141 during operation 1.
-**Root Cause**: This typically happens when the geographical calculation engine fails to acquire a lock on the routing table, or when a websocket connection drops midway through a handshake.
-**Resolution**: Restart the application. If the issue persists, clear the application cache. Advanced users can check the debug logs for stack trace 141.
-
-### Error Code R-0142
-**Symptom**: The application throws error R-0142 during operation 2.
-**Root Cause**: This typically happens when the geographical calculation engine fails to acquire a lock on the routing table, or when a websocket connection drops midway through a handshake.
-**Resolution**: Restart the application. If the issue persists, clear the application cache. Advanced users can check the debug logs for stack trace 142.
-
-### Error Code R-0143
-**Symptom**: The application throws error R-0143 during operation 3.
-**Root Cause**: This typically happens when the geographical calculation engine fails to acquire a lock on the routing table, or when a websocket connection drops midway through a handshake.
-**Resolution**: Restart the application. If the issue persists, clear the application cache. Advanced users can check the debug logs for stack trace 143.
-
-### Error Code R-0144
-**Symptom**: The application throws error R-0144 during operation 4.
-**Root Cause**: This typically happens when the geographical calculation engine fails to acquire a lock on the routing table, or when a websocket connection drops midway through a handshake.
-**Resolution**: Restart the application. If the issue persists, clear the application cache. Advanced users can check the debug logs for stack trace 144.
-
-### Error Code R-0145
-**Symptom**: The application throws error R-0145 during operation 5.
-**Root Cause**: This typically happens when the geographical calculation engine fails to acquire a lock on the routing table, or when a websocket connection drops midway through a handshake.
-**Resolution**: Restart the application. If the issue persists, clear the application cache. Advanced users can check the debug logs for stack trace 145.
-
-### Error Code R-0146
-**Symptom**: The application throws error R-0146 during operation 6.
-**Root Cause**: This typically happens when the geographical calculation engine fails to acquire a lock on the routing table, or when a websocket connection drops midway through a handshake.
-**Resolution**: Restart the application. If the issue persists, clear the application cache. Advanced users can check the debug logs for stack trace 146.
-
-### Error Code R-0147
-**Symptom**: The application throws error R-0147 during operation 7.
-**Root Cause**: This typically happens when the geographical calculation engine fails to acquire a lock on the routing table, or when a websocket connection drops midway through a handshake.
-**Resolution**: Restart the application. If the issue persists, clear the application cache. Advanced users can check the debug logs for stack trace 147.
-
-### Error Code R-0148
-**Symptom**: The application throws error R-0148 during operation 8.
-**Root Cause**: This typically happens when the geographical calculation engine fails to acquire a lock on the routing table, or when a websocket connection drops midway through a handshake.
-**Resolution**: Restart the application. If the issue persists, clear the application cache. Advanced users can check the debug logs for stack trace 148.
-
-### Error Code R-0149
-**Symptom**: The application throws error R-0149 during operation 9.
-**Root Cause**: This typically happens when the geographical calculation engine fails to acquire a lock on the routing table, or when a websocket connection drops midway through a handshake.
-**Resolution**: Restart the application. If the issue persists, clear the application cache. Advanced users can check the debug logs for stack trace 149.
-
-### Error Code R-0150
-**Symptom**: The application throws error R-0150 during operation 0.
-**Root Cause**: This typically happens when the geographical calculation engine fails to acquire a lock on the routing table, or when a websocket connection drops midway through a handshake.
-**Resolution**: Restart the application. If the issue persists, clear the application cache. Advanced users can check the debug logs for stack trace 150.
-
-### Error Code R-0151
-**Symptom**: The application throws error R-0151 during operation 1.
-**Root Cause**: This typically happens when the geographical calculation engine fails to acquire a lock on the routing table, or when a websocket connection drops midway through a handshake.
-**Resolution**: Restart the application. If the issue persists, clear the application cache. Advanced users can check the debug logs for stack trace 151.
-
-### Error Code R-0152
-**Symptom**: The application throws error R-0152 during operation 2.
-**Root Cause**: This typically happens when the geographical calculation engine fails to acquire a lock on the routing table, or when a websocket connection drops midway through a handshake.
-**Resolution**: Restart the application. If the issue persists, clear the application cache. Advanced users can check the debug logs for stack trace 152.
-
-### Error Code R-0153
-**Symptom**: The application throws error R-0153 during operation 3.
-**Root Cause**: This typically happens when the geographical calculation engine fails to acquire a lock on the routing table, or when a websocket connection drops midway through a handshake.
-**Resolution**: Restart the application. If the issue persists, clear the application cache. Advanced users can check the debug logs for stack trace 153.
-
-### Error Code R-0154
-**Symptom**: The application throws error R-0154 during operation 4.
-**Root Cause**: This typically happens when the geographical calculation engine fails to acquire a lock on the routing table, or when a websocket connection drops midway through a handshake.
-**Resolution**: Restart the application. If the issue persists, clear the application cache. Advanced users can check the debug logs for stack trace 154.
-
-### Error Code R-0155
-**Symptom**: The application throws error R-0155 during operation 5.
-**Root Cause**: This typically happens when the geographical calculation engine fails to acquire a lock on the routing table, or when a websocket connection drops midway through a handshake.
-**Resolution**: Restart the application. If the issue persists, clear the application cache. Advanced users can check the debug logs for stack trace 155.
-
-### Error Code R-0156
-**Symptom**: The application throws error R-0156 during operation 6.
-**Root Cause**: This typically happens when the geographical calculation engine fails to acquire a lock on the routing table, or when a websocket connection drops midway through a handshake.
-**Resolution**: Restart the application. If the issue persists, clear the application cache. Advanced users can check the debug logs for stack trace 156.
-
-### Error Code R-0157
-**Symptom**: The application throws error R-0157 during operation 7.
-**Root Cause**: This typically happens when the geographical calculation engine fails to acquire a lock on the routing table, or when a websocket connection drops midway through a handshake.
-**Resolution**: Restart the application. If the issue persists, clear the application cache. Advanced users can check the debug logs for stack trace 157.
-
-### Error Code R-0158
-**Symptom**: The application throws error R-0158 during operation 8.
-**Root Cause**: This typically happens when the geographical calculation engine fails to acquire a lock on the routing table, or when a websocket connection drops midway through a handshake.
-**Resolution**: Restart the application. If the issue persists, clear the application cache. Advanced users can check the debug logs for stack trace 158.
-
-### Error Code R-0159
-**Symptom**: The application throws error R-0159 during operation 9.
-**Root Cause**: This typically happens when the geographical calculation engine fails to acquire a lock on the routing table, or when a websocket connection drops midway through a handshake.
-**Resolution**: Restart the application. If the issue persists, clear the application cache. Advanced users can check the debug logs for stack trace 159.
-
-### Error Code R-0160
-**Symptom**: The application throws error R-0160 during operation 0.
-**Root Cause**: This typically happens when the geographical calculation engine fails to acquire a lock on the routing table, or when a websocket connection drops midway through a handshake.
-**Resolution**: Restart the application. If the issue persists, clear the application cache. Advanced users can check the debug logs for stack trace 160.
-
-### Error Code R-0161
-**Symptom**: The application throws error R-0161 during operation 1.
-**Root Cause**: This typically happens when the geographical calculation engine fails to acquire a lock on the routing table, or when a websocket connection drops midway through a handshake.
-**Resolution**: Restart the application. If the issue persists, clear the application cache. Advanced users can check the debug logs for stack trace 161.
-
-### Error Code R-0162
-**Symptom**: The application throws error R-0162 during operation 2.
-**Root Cause**: This typically happens when the geographical calculation engine fails to acquire a lock on the routing table, or when a websocket connection drops midway through a handshake.
-**Resolution**: Restart the application. If the issue persists, clear the application cache. Advanced users can check the debug logs for stack trace 162.
-
-### Error Code R-0163
-**Symptom**: The application throws error R-0163 during operation 3.
-**Root Cause**: This typically happens when the geographical calculation engine fails to acquire a lock on the routing table, or when a websocket connection drops midway through a handshake.
-**Resolution**: Restart the application. If the issue persists, clear the application cache. Advanced users can check the debug logs for stack trace 163.
-
-### Error Code R-0164
-**Symptom**: The application throws error R-0164 during operation 4.
-**Root Cause**: This typically happens when the geographical calculation engine fails to acquire a lock on the routing table, or when a websocket connection drops midway through a handshake.
-**Resolution**: Restart the application. If the issue persists, clear the application cache. Advanced users can check the debug logs for stack trace 164.
-
-### Error Code R-0165
-**Symptom**: The application throws error R-0165 during operation 5.
-**Root Cause**: This typically happens when the geographical calculation engine fails to acquire a lock on the routing table, or when a websocket connection drops midway through a handshake.
-**Resolution**: Restart the application. If the issue persists, clear the application cache. Advanced users can check the debug logs for stack trace 165.
-
-### Error Code R-0166
-**Symptom**: The application throws error R-0166 during operation 6.
-**Root Cause**: This typically happens when the geographical calculation engine fails to acquire a lock on the routing table, or when a websocket connection drops midway through a handshake.
-**Resolution**: Restart the application. If the issue persists, clear the application cache. Advanced users can check the debug logs for stack trace 166.
-
-### Error Code R-0167
-**Symptom**: The application throws error R-0167 during operation 7.
-**Root Cause**: This typically happens when the geographical calculation engine fails to acquire a lock on the routing table, or when a websocket connection drops midway through a handshake.
-**Resolution**: Restart the application. If the issue persists, clear the application cache. Advanced users can check the debug logs for stack trace 167.
-
-### Error Code R-0168
-**Symptom**: The application throws error R-0168 during operation 8.
-**Root Cause**: This typically happens when the geographical calculation engine fails to acquire a lock on the routing table, or when a websocket connection drops midway through a handshake.
-**Resolution**: Restart the application. If the issue persists, clear the application cache. Advanced users can check the debug logs for stack trace 168.
-
-### Error Code R-0169
-**Symptom**: The application throws error R-0169 during operation 9.
-**Root Cause**: This typically happens when the geographical calculation engine fails to acquire a lock on the routing table, or when a websocket connection drops midway through a handshake.
-**Resolution**: Restart the application. If the issue persists, clear the application cache. Advanced users can check the debug logs for stack trace 169.
-
-### Error Code R-0170
-**Symptom**: The application throws error R-0170 during operation 0.
-**Root Cause**: This typically happens when the geographical calculation engine fails to acquire a lock on the routing table, or when a websocket connection drops midway through a handshake.
-**Resolution**: Restart the application. If the issue persists, clear the application cache. Advanced users can check the debug logs for stack trace 170.
-
-### Error Code R-0171
-**Symptom**: The application throws error R-0171 during operation 1.
-**Root Cause**: This typically happens when the geographical calculation engine fails to acquire a lock on the routing table, or when a websocket connection drops midway through a handshake.
-**Resolution**: Restart the application. If the issue persists, clear the application cache. Advanced users can check the debug logs for stack trace 171.
-
-### Error Code R-0172
-**Symptom**: The application throws error R-0172 during operation 2.
-**Root Cause**: This typically happens when the geographical calculation engine fails to acquire a lock on the routing table, or when a websocket connection drops midway through a handshake.
-**Resolution**: Restart the application. If the issue persists, clear the application cache. Advanced users can check the debug logs for stack trace 172.
-
-### Error Code R-0173
-**Symptom**: The application throws error R-0173 during operation 3.
-**Root Cause**: This typically happens when the geographical calculation engine fails to acquire a lock on the routing table, or when a websocket connection drops midway through a handshake.
-**Resolution**: Restart the application. If the issue persists, clear the application cache. Advanced users can check the debug logs for stack trace 173.
-
-### Error Code R-0174
-**Symptom**: The application throws error R-0174 during operation 4.
-**Root Cause**: This typically happens when the geographical calculation engine fails to acquire a lock on the routing table, or when a websocket connection drops midway through a handshake.
-**Resolution**: Restart the application. If the issue persists, clear the application cache. Advanced users can check the debug logs for stack trace 174.
-
-### Error Code R-0175
-**Symptom**: The application throws error R-0175 during operation 5.
-**Root Cause**: This typically happens when the geographical calculation engine fails to acquire a lock on the routing table, or when a websocket connection drops midway through a handshake.
-**Resolution**: Restart the application. If the issue persists, clear the application cache. Advanced users can check the debug logs for stack trace 175.
-
-### Error Code R-0176
-**Symptom**: The application throws error R-0176 during operation 6.
-**Root Cause**: This typically happens when the geographical calculation engine fails to acquire a lock on the routing table, or when a websocket connection drops midway through a handshake.
-**Resolution**: Restart the application. If the issue persists, clear the application cache. Advanced users can check the debug logs for stack trace 176.
-
-### Error Code R-0177
-**Symptom**: The application throws error R-0177 during operation 7.
-**Root Cause**: This typically happens when the geographical calculation engine fails to acquire a lock on the routing table, or when a websocket connection drops midway through a handshake.
-**Resolution**: Restart the application. If the issue persists, clear the application cache. Advanced users can check the debug logs for stack trace 177.
-
-### Error Code R-0178
-**Symptom**: The application throws error R-0178 during operation 8.
-**Root Cause**: This typically happens when the geographical calculation engine fails to acquire a lock on the routing table, or when a websocket connection drops midway through a handshake.
-**Resolution**: Restart the application. If the issue persists, clear the application cache. Advanced users can check the debug logs for stack trace 178.
-
-### Error Code R-0179
-**Symptom**: The application throws error R-0179 during operation 9.
-**Root Cause**: This typically happens when the geographical calculation engine fails to acquire a lock on the routing table, or when a websocket connection drops midway through a handshake.
-**Resolution**: Restart the application. If the issue persists, clear the application cache. Advanced users can check the debug logs for stack trace 179.
-
-### Error Code R-0180
-**Symptom**: The application throws error R-0180 during operation 0.
-**Root Cause**: This typically happens when the geographical calculation engine fails to acquire a lock on the routing table, or when a websocket connection drops midway through a handshake.
-**Resolution**: Restart the application. If the issue persists, clear the application cache. Advanced users can check the debug logs for stack trace 180.
-
-### Error Code R-0181
-**Symptom**: The application throws error R-0181 during operation 1.
-**Root Cause**: This typically happens when the geographical calculation engine fails to acquire a lock on the routing table, or when a websocket connection drops midway through a handshake.
-**Resolution**: Restart the application. If the issue persists, clear the application cache. Advanced users can check the debug logs for stack trace 181.
-
-### Error Code R-0182
-**Symptom**: The application throws error R-0182 during operation 2.
-**Root Cause**: This typically happens when the geographical calculation engine fails to acquire a lock on the routing table, or when a websocket connection drops midway through a handshake.
-**Resolution**: Restart the application. If the issue persists, clear the application cache. Advanced users can check the debug logs for stack trace 182.
-
-### Error Code R-0183
-**Symptom**: The application throws error R-0183 during operation 3.
-**Root Cause**: This typically happens when the geographical calculation engine fails to acquire a lock on the routing table, or when a websocket connection drops midway through a handshake.
-**Resolution**: Restart the application. If the issue persists, clear the application cache. Advanced users can check the debug logs for stack trace 183.
-
-### Error Code R-0184
-**Symptom**: The application throws error R-0184 during operation 4.
-**Root Cause**: This typically happens when the geographical calculation engine fails to acquire a lock on the routing table, or when a websocket connection drops midway through a handshake.
-**Resolution**: Restart the application. If the issue persists, clear the application cache. Advanced users can check the debug logs for stack trace 184.
-
-### Error Code R-0185
-**Symptom**: The application throws error R-0185 during operation 5.
-**Root Cause**: This typically happens when the geographical calculation engine fails to acquire a lock on the routing table, or when a websocket connection drops midway through a handshake.
-**Resolution**: Restart the application. If the issue persists, clear the application cache. Advanced users can check the debug logs for stack trace 185.
-
-### Error Code R-0186
-**Symptom**: The application throws error R-0186 during operation 6.
-**Root Cause**: This typically happens when the geographical calculation engine fails to acquire a lock on the routing table, or when a websocket connection drops midway through a handshake.
-**Resolution**: Restart the application. If the issue persists, clear the application cache. Advanced users can check the debug logs for stack trace 186.
-
-### Error Code R-0187
-**Symptom**: The application throws error R-0187 during operation 7.
-**Root Cause**: This typically happens when the geographical calculation engine fails to acquire a lock on the routing table, or when a websocket connection drops midway through a handshake.
-**Resolution**: Restart the application. If the issue persists, clear the application cache. Advanced users can check the debug logs for stack trace 187.
-
-### Error Code R-0188
-**Symptom**: The application throws error R-0188 during operation 8.
-**Root Cause**: This typically happens when the geographical calculation engine fails to acquire a lock on the routing table, or when a websocket connection drops midway through a handshake.
-**Resolution**: Restart the application. If the issue persists, clear the application cache. Advanced users can check the debug logs for stack trace 188.
-
-### Error Code R-0189
-**Symptom**: The application throws error R-0189 during operation 9.
-**Root Cause**: This typically happens when the geographical calculation engine fails to acquire a lock on the routing table, or when a websocket connection drops midway through a handshake.
-**Resolution**: Restart the application. If the issue persists, clear the application cache. Advanced users can check the debug logs for stack trace 189.
-
-### Error Code R-0190
-**Symptom**: The application throws error R-0190 during operation 0.
-**Root Cause**: This typically happens when the geographical calculation engine fails to acquire a lock on the routing table, or when a websocket connection drops midway through a handshake.
-**Resolution**: Restart the application. If the issue persists, clear the application cache. Advanced users can check the debug logs for stack trace 190.
-
-### Error Code R-0191
-**Symptom**: The application throws error R-0191 during operation 1.
-**Root Cause**: This typically happens when the geographical calculation engine fails to acquire a lock on the routing table, or when a websocket connection drops midway through a handshake.
-**Resolution**: Restart the application. If the issue persists, clear the application cache. Advanced users can check the debug logs for stack trace 191.
-
-### Error Code R-0192
-**Symptom**: The application throws error R-0192 during operation 2.
-**Root Cause**: This typically happens when the geographical calculation engine fails to acquire a lock on the routing table, or when a websocket connection drops midway through a handshake.
-**Resolution**: Restart the application. If the issue persists, clear the application cache. Advanced users can check the debug logs for stack trace 192.
-
-### Error Code R-0193
-**Symptom**: The application throws error R-0193 during operation 3.
-**Root Cause**: This typically happens when the geographical calculation engine fails to acquire a lock on the routing table, or when a websocket connection drops midway through a handshake.
-**Resolution**: Restart the application. If the issue persists, clear the application cache. Advanced users can check the debug logs for stack trace 193.
-
-### Error Code R-0194
-**Symptom**: The application throws error R-0194 during operation 4.
-**Root Cause**: This typically happens when the geographical calculation engine fails to acquire a lock on the routing table, or when a websocket connection drops midway through a handshake.
-**Resolution**: Restart the application. If the issue persists, clear the application cache. Advanced users can check the debug logs for stack trace 194.
-
-### Error Code R-0195
-**Symptom**: The application throws error R-0195 during operation 5.
-**Root Cause**: This typically happens when the geographical calculation engine fails to acquire a lock on the routing table, or when a websocket connection drops midway through a handshake.
-**Resolution**: Restart the application. If the issue persists, clear the application cache. Advanced users can check the debug logs for stack trace 195.
-
-### Error Code R-0196
-**Symptom**: The application throws error R-0196 during operation 6.
-**Root Cause**: This typically happens when the geographical calculation engine fails to acquire a lock on the routing table, or when a websocket connection drops midway through a handshake.
-**Resolution**: Restart the application. If the issue persists, clear the application cache. Advanced users can check the debug logs for stack trace 196.
-
-### Error Code R-0197
-**Symptom**: The application throws error R-0197 during operation 7.
-**Root Cause**: This typically happens when the geographical calculation engine fails to acquire a lock on the routing table, or when a websocket connection drops midway through a handshake.
-**Resolution**: Restart the application. If the issue persists, clear the application cache. Advanced users can check the debug logs for stack trace 197.
-
-### Error Code R-0198
-**Symptom**: The application throws error R-0198 during operation 8.
-**Root Cause**: This typically happens when the geographical calculation engine fails to acquire a lock on the routing table, or when a websocket connection drops midway through a handshake.
-**Resolution**: Restart the application. If the issue persists, clear the application cache. Advanced users can check the debug logs for stack trace 198.
-
-### Error Code R-0199
-**Symptom**: The application throws error R-0199 during operation 9.
-**Root Cause**: This typically happens when the geographical calculation engine fails to acquire a lock on the routing table, or when a websocket connection drops midway through a handshake.
-**Resolution**: Restart the application. If the issue persists, clear the application cache. Advanced users can check the debug logs for stack trace 199.
-
-### Error Code R-0200
-**Symptom**: The application throws error R-0200 during operation 0.
-**Root Cause**: This typically happens when the geographical calculation engine fails to acquire a lock on the routing table, or when a websocket connection drops midway through a handshake.
-**Resolution**: Restart the application. If the issue persists, clear the application cache. Advanced users can check the debug logs for stack trace 200.
-
-### Error Code R-0201
-**Symptom**: The application throws error R-0201 during operation 1.
-**Root Cause**: This typically happens when the geographical calculation engine fails to acquire a lock on the routing table, or when a websocket connection drops midway through a handshake.
-**Resolution**: Restart the application. If the issue persists, clear the application cache. Advanced users can check the debug logs for stack trace 201.
-
-### Error Code R-0202
-**Symptom**: The application throws error R-0202 during operation 2.
-**Root Cause**: This typically happens when the geographical calculation engine fails to acquire a lock on the routing table, or when a websocket connection drops midway through a handshake.
-**Resolution**: Restart the application. If the issue persists, clear the application cache. Advanced users can check the debug logs for stack trace 202.
-
-### Error Code R-0203
-**Symptom**: The application throws error R-0203 during operation 3.
-**Root Cause**: This typically happens when the geographical calculation engine fails to acquire a lock on the routing table, or when a websocket connection drops midway through a handshake.
-**Resolution**: Restart the application. If the issue persists, clear the application cache. Advanced users can check the debug logs for stack trace 203.
-
-### Error Code R-0204
-**Symptom**: The application throws error R-0204 during operation 4.
-**Root Cause**: This typically happens when the geographical calculation engine fails to acquire a lock on the routing table, or when a websocket connection drops midway through a handshake.
-**Resolution**: Restart the application. If the issue persists, clear the application cache. Advanced users can check the debug logs for stack trace 204.
-
-### Error Code R-0205
-**Symptom**: The application throws error R-0205 during operation 5.
-**Root Cause**: This typically happens when the geographical calculation engine fails to acquire a lock on the routing table, or when a websocket connection drops midway through a handshake.
-**Resolution**: Restart the application. If the issue persists, clear the application cache. Advanced users can check the debug logs for stack trace 205.
-
-### Error Code R-0206
-**Symptom**: The application throws error R-0206 during operation 6.
-**Root Cause**: This typically happens when the geographical calculation engine fails to acquire a lock on the routing table, or when a websocket connection drops midway through a handshake.
-**Resolution**: Restart the application. If the issue persists, clear the application cache. Advanced users can check the debug logs for stack trace 206.
-
-### Error Code R-0207
-**Symptom**: The application throws error R-0207 during operation 7.
-**Root Cause**: This typically happens when the geographical calculation engine fails to acquire a lock on the routing table, or when a websocket connection drops midway through a handshake.
-**Resolution**: Restart the application. If the issue persists, clear the application cache. Advanced users can check the debug logs for stack trace 207.
-
-### Error Code R-0208
-**Symptom**: The application throws error R-0208 during operation 8.
-**Root Cause**: This typically happens when the geographical calculation engine fails to acquire a lock on the routing table, or when a websocket connection drops midway through a handshake.
-**Resolution**: Restart the application. If the issue persists, clear the application cache. Advanced users can check the debug logs for stack trace 208.
-
-### Error Code R-0209
-**Symptom**: The application throws error R-0209 during operation 9.
-**Root Cause**: This typically happens when the geographical calculation engine fails to acquire a lock on the routing table, or when a websocket connection drops midway through a handshake.
-**Resolution**: Restart the application. If the issue persists, clear the application cache. Advanced users can check the debug logs for stack trace 209.
-
-### Error Code R-0210
-**Symptom**: The application throws error R-0210 during operation 0.
-**Root Cause**: This typically happens when the geographical calculation engine fails to acquire a lock on the routing table, or when a websocket connection drops midway through a handshake.
-**Resolution**: Restart the application. If the issue persists, clear the application cache. Advanced users can check the debug logs for stack trace 210.
-
-### Error Code R-0211
-**Symptom**: The application throws error R-0211 during operation 1.
-**Root Cause**: This typically happens when the geographical calculation engine fails to acquire a lock on the routing table, or when a websocket connection drops midway through a handshake.
-**Resolution**: Restart the application. If the issue persists, clear the application cache. Advanced users can check the debug logs for stack trace 211.
-
-### Error Code R-0212
-**Symptom**: The application throws error R-0212 during operation 2.
-**Root Cause**: This typically happens when the geographical calculation engine fails to acquire a lock on the routing table, or when a websocket connection drops midway through a handshake.
-**Resolution**: Restart the application. If the issue persists, clear the application cache. Advanced users can check the debug logs for stack trace 212.
-
-### Error Code R-0213
-**Symptom**: The application throws error R-0213 during operation 3.
-**Root Cause**: This typically happens when the geographical calculation engine fails to acquire a lock on the routing table, or when a websocket connection drops midway through a handshake.
-**Resolution**: Restart the application. If the issue persists, clear the application cache. Advanced users can check the debug logs for stack trace 213.
-
-### Error Code R-0214
-**Symptom**: The application throws error R-0214 during operation 4.
-**Root Cause**: This typically happens when the geographical calculation engine fails to acquire a lock on the routing table, or when a websocket connection drops midway through a handshake.
-**Resolution**: Restart the application. If the issue persists, clear the application cache. Advanced users can check the debug logs for stack trace 214.
-
-### Error Code R-0215
-**Symptom**: The application throws error R-0215 during operation 5.
-**Root Cause**: This typically happens when the geographical calculation engine fails to acquire a lock on the routing table, or when a websocket connection drops midway through a handshake.
-**Resolution**: Restart the application. If the issue persists, clear the application cache. Advanced users can check the debug logs for stack trace 215.
-
-### Error Code R-0216
-**Symptom**: The application throws error R-0216 during operation 6.
-**Root Cause**: This typically happens when the geographical calculation engine fails to acquire a lock on the routing table, or when a websocket connection drops midway through a handshake.
-**Resolution**: Restart the application. If the issue persists, clear the application cache. Advanced users can check the debug logs for stack trace 216.
-
-### Error Code R-0217
-**Symptom**: The application throws error R-0217 during operation 7.
-**Root Cause**: This typically happens when the geographical calculation engine fails to acquire a lock on the routing table, or when a websocket connection drops midway through a handshake.
-**Resolution**: Restart the application. If the issue persists, clear the application cache. Advanced users can check the debug logs for stack trace 217.
-
-### Error Code R-0218
-**Symptom**: The application throws error R-0218 during operation 8.
-**Root Cause**: This typically happens when the geographical calculation engine fails to acquire a lock on the routing table, or when a websocket connection drops midway through a handshake.
-**Resolution**: Restart the application. If the issue persists, clear the application cache. Advanced users can check the debug logs for stack trace 218.
-
-### Error Code R-0219
-**Symptom**: The application throws error R-0219 during operation 9.
-**Root Cause**: This typically happens when the geographical calculation engine fails to acquire a lock on the routing table, or when a websocket connection drops midway through a handshake.
-**Resolution**: Restart the application. If the issue persists, clear the application cache. Advanced users can check the debug logs for stack trace 219.
-
-### Error Code R-0220
-**Symptom**: The application throws error R-0220 during operation 0.
-**Root Cause**: This typically happens when the geographical calculation engine fails to acquire a lock on the routing table, or when a websocket connection drops midway through a handshake.
-**Resolution**: Restart the application. If the issue persists, clear the application cache. Advanced users can check the debug logs for stack trace 220.
-
-### Error Code R-0221
-**Symptom**: The application throws error R-0221 during operation 1.
-**Root Cause**: This typically happens when the geographical calculation engine fails to acquire a lock on the routing table, or when a websocket connection drops midway through a handshake.
-**Resolution**: Restart the application. If the issue persists, clear the application cache. Advanced users can check the debug logs for stack trace 221.
-
-### Error Code R-0222
-**Symptom**: The application throws error R-0222 during operation 2.
-**Root Cause**: This typically happens when the geographical calculation engine fails to acquire a lock on the routing table, or when a websocket connection drops midway through a handshake.
-**Resolution**: Restart the application. If the issue persists, clear the application cache. Advanced users can check the debug logs for stack trace 222.
-
-### Error Code R-0223
-**Symptom**: The application throws error R-0223 during operation 3.
-**Root Cause**: This typically happens when the geographical calculation engine fails to acquire a lock on the routing table, or when a websocket connection drops midway through a handshake.
-**Resolution**: Restart the application. If the issue persists, clear the application cache. Advanced users can check the debug logs for stack trace 223.
-
-### Error Code R-0224
-**Symptom**: The application throws error R-0224 during operation 4.
-**Root Cause**: This typically happens when the geographical calculation engine fails to acquire a lock on the routing table, or when a websocket connection drops midway through a handshake.
-**Resolution**: Restart the application. If the issue persists, clear the application cache. Advanced users can check the debug logs for stack trace 224.
-
-### Error Code R-0225
-**Symptom**: The application throws error R-0225 during operation 5.
-**Root Cause**: This typically happens when the geographical calculation engine fails to acquire a lock on the routing table, or when a websocket connection drops midway through a handshake.
-**Resolution**: Restart the application. If the issue persists, clear the application cache. Advanced users can check the debug logs for stack trace 225.
-
-### Error Code R-0226
-**Symptom**: The application throws error R-0226 during operation 6.
-**Root Cause**: This typically happens when the geographical calculation engine fails to acquire a lock on the routing table, or when a websocket connection drops midway through a handshake.
-**Resolution**: Restart the application. If the issue persists, clear the application cache. Advanced users can check the debug logs for stack trace 226.
-
-### Error Code R-0227
-**Symptom**: The application throws error R-0227 during operation 7.
-**Root Cause**: This typically happens when the geographical calculation engine fails to acquire a lock on the routing table, or when a websocket connection drops midway through a handshake.
-**Resolution**: Restart the application. If the issue persists, clear the application cache. Advanced users can check the debug logs for stack trace 227.
-
-### Error Code R-0228
-**Symptom**: The application throws error R-0228 during operation 8.
-**Root Cause**: This typically happens when the geographical calculation engine fails to acquire a lock on the routing table, or when a websocket connection drops midway through a handshake.
-**Resolution**: Restart the application. If the issue persists, clear the application cache. Advanced users can check the debug logs for stack trace 228.
-
-### Error Code R-0229
-**Symptom**: The application throws error R-0229 during operation 9.
-**Root Cause**: This typically happens when the geographical calculation engine fails to acquire a lock on the routing table, or when a websocket connection drops midway through a handshake.
-**Resolution**: Restart the application. If the issue persists, clear the application cache. Advanced users can check the debug logs for stack trace 229.
-
-### Error Code R-0230
-**Symptom**: The application throws error R-0230 during operation 0.
-**Root Cause**: This typically happens when the geographical calculation engine fails to acquire a lock on the routing table, or when a websocket connection drops midway through a handshake.
-**Resolution**: Restart the application. If the issue persists, clear the application cache. Advanced users can check the debug logs for stack trace 230.
-
-### Error Code R-0231
-**Symptom**: The application throws error R-0231 during operation 1.
-**Root Cause**: This typically happens when the geographical calculation engine fails to acquire a lock on the routing table, or when a websocket connection drops midway through a handshake.
-**Resolution**: Restart the application. If the issue persists, clear the application cache. Advanced users can check the debug logs for stack trace 231.
-
-### Error Code R-0232
-**Symptom**: The application throws error R-0232 during operation 2.
-**Root Cause**: This typically happens when the geographical calculation engine fails to acquire a lock on the routing table, or when a websocket connection drops midway through a handshake.
-**Resolution**: Restart the application. If the issue persists, clear the application cache. Advanced users can check the debug logs for stack trace 232.
-
-### Error Code R-0233
-**Symptom**: The application throws error R-0233 during operation 3.
-**Root Cause**: This typically happens when the geographical calculation engine fails to acquire a lock on the routing table, or when a websocket connection drops midway through a handshake.
-**Resolution**: Restart the application. If the issue persists, clear the application cache. Advanced users can check the debug logs for stack trace 233.
-
-### Error Code R-0234
-**Symptom**: The application throws error R-0234 during operation 4.
-**Root Cause**: This typically happens when the geographical calculation engine fails to acquire a lock on the routing table, or when a websocket connection drops midway through a handshake.
-**Resolution**: Restart the application. If the issue persists, clear the application cache. Advanced users can check the debug logs for stack trace 234.
-
-### Error Code R-0235
-**Symptom**: The application throws error R-0235 during operation 5.
-**Root Cause**: This typically happens when the geographical calculation engine fails to acquire a lock on the routing table, or when a websocket connection drops midway through a handshake.
-**Resolution**: Restart the application. If the issue persists, clear the application cache. Advanced users can check the debug logs for stack trace 235.
-
-### Error Code R-0236
-**Symptom**: The application throws error R-0236 during operation 6.
-**Root Cause**: This typically happens when the geographical calculation engine fails to acquire a lock on the routing table, or when a websocket connection drops midway through a handshake.
-**Resolution**: Restart the application. If the issue persists, clear the application cache. Advanced users can check the debug logs for stack trace 236.
-
-### Error Code R-0237
-**Symptom**: The application throws error R-0237 during operation 7.
-**Root Cause**: This typically happens when the geographical calculation engine fails to acquire a lock on the routing table, or when a websocket connection drops midway through a handshake.
-**Resolution**: Restart the application. If the issue persists, clear the application cache. Advanced users can check the debug logs for stack trace 237.
-
-### Error Code R-0238
-**Symptom**: The application throws error R-0238 during operation 8.
-**Root Cause**: This typically happens when the geographical calculation engine fails to acquire a lock on the routing table, or when a websocket connection drops midway through a handshake.
-**Resolution**: Restart the application. If the issue persists, clear the application cache. Advanced users can check the debug logs for stack trace 238.
-
-### Error Code R-0239
-**Symptom**: The application throws error R-0239 during operation 9.
-**Root Cause**: This typically happens when the geographical calculation engine fails to acquire a lock on the routing table, or when a websocket connection drops midway through a handshake.
-**Resolution**: Restart the application. If the issue persists, clear the application cache. Advanced users can check the debug logs for stack trace 239.
-
-### Error Code R-0240
-**Symptom**: The application throws error R-0240 during operation 0.
-**Root Cause**: This typically happens when the geographical calculation engine fails to acquire a lock on the routing table, or when a websocket connection drops midway through a handshake.
-**Resolution**: Restart the application. If the issue persists, clear the application cache. Advanced users can check the debug logs for stack trace 240.
-
-### Error Code R-0241
-**Symptom**: The application throws error R-0241 during operation 1.
-**Root Cause**: This typically happens when the geographical calculation engine fails to acquire a lock on the routing table, or when a websocket connection drops midway through a handshake.
-**Resolution**: Restart the application. If the issue persists, clear the application cache. Advanced users can check the debug logs for stack trace 241.
-
-### Error Code R-0242
-**Symptom**: The application throws error R-0242 during operation 2.
-**Root Cause**: This typically happens when the geographical calculation engine fails to acquire a lock on the routing table, or when a websocket connection drops midway through a handshake.
-**Resolution**: Restart the application. If the issue persists, clear the application cache. Advanced users can check the debug logs for stack trace 242.
-
-### Error Code R-0243
-**Symptom**: The application throws error R-0243 during operation 3.
-**Root Cause**: This typically happens when the geographical calculation engine fails to acquire a lock on the routing table, or when a websocket connection drops midway through a handshake.
-**Resolution**: Restart the application. If the issue persists, clear the application cache. Advanced users can check the debug logs for stack trace 243.
-
-### Error Code R-0244
-**Symptom**: The application throws error R-0244 during operation 4.
-**Root Cause**: This typically happens when the geographical calculation engine fails to acquire a lock on the routing table, or when a websocket connection drops midway through a handshake.
-**Resolution**: Restart the application. If the issue persists, clear the application cache. Advanced users can check the debug logs for stack trace 244.
-
-### Error Code R-0245
-**Symptom**: The application throws error R-0245 during operation 5.
-**Root Cause**: This typically happens when the geographical calculation engine fails to acquire a lock on the routing table, or when a websocket connection drops midway through a handshake.
-**Resolution**: Restart the application. If the issue persists, clear the application cache. Advanced users can check the debug logs for stack trace 245.
-
-### Error Code R-0246
-**Symptom**: The application throws error R-0246 during operation 6.
-**Root Cause**: This typically happens when the geographical calculation engine fails to acquire a lock on the routing table, or when a websocket connection drops midway through a handshake.
-**Resolution**: Restart the application. If the issue persists, clear the application cache. Advanced users can check the debug logs for stack trace 246.
-
-### Error Code R-0247
-**Symptom**: The application throws error R-0247 during operation 7.
-**Root Cause**: This typically happens when the geographical calculation engine fails to acquire a lock on the routing table, or when a websocket connection drops midway through a handshake.
-**Resolution**: Restart the application. If the issue persists, clear the application cache. Advanced users can check the debug logs for stack trace 247.
-
-### Error Code R-0248
-**Symptom**: The application throws error R-0248 during operation 8.
-**Root Cause**: This typically happens when the geographical calculation engine fails to acquire a lock on the routing table, or when a websocket connection drops midway through a handshake.
-**Resolution**: Restart the application. If the issue persists, clear the application cache. Advanced users can check the debug logs for stack trace 248.
-
-### Error Code R-0249
-**Symptom**: The application throws error R-0249 during operation 9.
-**Root Cause**: This typically happens when the geographical calculation engine fails to acquire a lock on the routing table, or when a websocket connection drops midway through a handshake.
-**Resolution**: Restart the application. If the issue persists, clear the application cache. Advanced users can check the debug logs for stack trace 249.
-
-### Error Code R-0250
-**Symptom**: The application throws error R-0250 during operation 0.
-**Root Cause**: This typically happens when the geographical calculation engine fails to acquire a lock on the routing table, or when a websocket connection drops midway through a handshake.
-**Resolution**: Restart the application. If the issue persists, clear the application cache. Advanced users can check the debug logs for stack trace 250.
-
-### Error Code R-0251
-**Symptom**: The application throws error R-0251 during operation 1.
-**Root Cause**: This typically happens when the geographical calculation engine fails to acquire a lock on the routing table, or when a websocket connection drops midway through a handshake.
-**Resolution**: Restart the application. If the issue persists, clear the application cache. Advanced users can check the debug logs for stack trace 251.
-
-### Error Code R-0252
-**Symptom**: The application throws error R-0252 during operation 2.
-**Root Cause**: This typically happens when the geographical calculation engine fails to acquire a lock on the routing table, or when a websocket connection drops midway through a handshake.
-**Resolution**: Restart the application. If the issue persists, clear the application cache. Advanced users can check the debug logs for stack trace 252.
-
-### Error Code R-0253
-**Symptom**: The application throws error R-0253 during operation 3.
-**Root Cause**: This typically happens when the geographical calculation engine fails to acquire a lock on the routing table, or when a websocket connection drops midway through a handshake.
-**Resolution**: Restart the application. If the issue persists, clear the application cache. Advanced users can check the debug logs for stack trace 253.
-
-### Error Code R-0254
-**Symptom**: The application throws error R-0254 during operation 4.
-**Root Cause**: This typically happens when the geographical calculation engine fails to acquire a lock on the routing table, or when a websocket connection drops midway through a handshake.
-**Resolution**: Restart the application. If the issue persists, clear the application cache. Advanced users can check the debug logs for stack trace 254.
-
-### Error Code R-0255
-**Symptom**: The application throws error R-0255 during operation 5.
-**Root Cause**: This typically happens when the geographical calculation engine fails to acquire a lock on the routing table, or when a websocket connection drops midway through a handshake.
-**Resolution**: Restart the application. If the issue persists, clear the application cache. Advanced users can check the debug logs for stack trace 255.
-
-### Error Code R-0256
-**Symptom**: The application throws error R-0256 during operation 6.
-**Root Cause**: This typically happens when the geographical calculation engine fails to acquire a lock on the routing table, or when a websocket connection drops midway through a handshake.
-**Resolution**: Restart the application. If the issue persists, clear the application cache. Advanced users can check the debug logs for stack trace 256.
-
-### Error Code R-0257
-**Symptom**: The application throws error R-0257 during operation 7.
-**Root Cause**: This typically happens when the geographical calculation engine fails to acquire a lock on the routing table, or when a websocket connection drops midway through a handshake.
-**Resolution**: Restart the application. If the issue persists, clear the application cache. Advanced users can check the debug logs for stack trace 257.
-
-### Error Code R-0258
-**Symptom**: The application throws error R-0258 during operation 8.
-**Root Cause**: This typically happens when the geographical calculation engine fails to acquire a lock on the routing table, or when a websocket connection drops midway through a handshake.
-**Resolution**: Restart the application. If the issue persists, clear the application cache. Advanced users can check the debug logs for stack trace 258.
-
-### Error Code R-0259
-**Symptom**: The application throws error R-0259 during operation 9.
-**Root Cause**: This typically happens when the geographical calculation engine fails to acquire a lock on the routing table, or when a websocket connection drops midway through a handshake.
-**Resolution**: Restart the application. If the issue persists, clear the application cache. Advanced users can check the debug logs for stack trace 259.
-
-### Error Code R-0260
-**Symptom**: The application throws error R-0260 during operation 0.
-**Root Cause**: This typically happens when the geographical calculation engine fails to acquire a lock on the routing table, or when a websocket connection drops midway through a handshake.
-**Resolution**: Restart the application. If the issue persists, clear the application cache. Advanced users can check the debug logs for stack trace 260.
-
-### Error Code R-0261
-**Symptom**: The application throws error R-0261 during operation 1.
-**Root Cause**: This typically happens when the geographical calculation engine fails to acquire a lock on the routing table, or when a websocket connection drops midway through a handshake.
-**Resolution**: Restart the application. If the issue persists, clear the application cache. Advanced users can check the debug logs for stack trace 261.
-
-### Error Code R-0262
-**Symptom**: The application throws error R-0262 during operation 2.
-**Root Cause**: This typically happens when the geographical calculation engine fails to acquire a lock on the routing table, or when a websocket connection drops midway through a handshake.
-**Resolution**: Restart the application. If the issue persists, clear the application cache. Advanced users can check the debug logs for stack trace 262.
-
-### Error Code R-0263
-**Symptom**: The application throws error R-0263 during operation 3.
-**Root Cause**: This typically happens when the geographical calculation engine fails to acquire a lock on the routing table, or when a websocket connection drops midway through a handshake.
-**Resolution**: Restart the application. If the issue persists, clear the application cache. Advanced users can check the debug logs for stack trace 263.
-
-### Error Code R-0264
-**Symptom**: The application throws error R-0264 during operation 4.
-**Root Cause**: This typically happens when the geographical calculation engine fails to acquire a lock on the routing table, or when a websocket connection drops midway through a handshake.
-**Resolution**: Restart the application. If the issue persists, clear the application cache. Advanced users can check the debug logs for stack trace 264.
-
-### Error Code R-0265
-**Symptom**: The application throws error R-0265 during operation 5.
-**Root Cause**: This typically happens when the geographical calculation engine fails to acquire a lock on the routing table, or when a websocket connection drops midway through a handshake.
-**Resolution**: Restart the application. If the issue persists, clear the application cache. Advanced users can check the debug logs for stack trace 265.
-
-### Error Code R-0266
-**Symptom**: The application throws error R-0266 during operation 6.
-**Root Cause**: This typically happens when the geographical calculation engine fails to acquire a lock on the routing table, or when a websocket connection drops midway through a handshake.
-**Resolution**: Restart the application. If the issue persists, clear the application cache. Advanced users can check the debug logs for stack trace 266.
-
-### Error Code R-0267
-**Symptom**: The application throws error R-0267 during operation 7.
-**Root Cause**: This typically happens when the geographical calculation engine fails to acquire a lock on the routing table, or when a websocket connection drops midway through a handshake.
-**Resolution**: Restart the application. If the issue persists, clear the application cache. Advanced users can check the debug logs for stack trace 267.
-
-### Error Code R-0268
-**Symptom**: The application throws error R-0268 during operation 8.
-**Root Cause**: This typically happens when the geographical calculation engine fails to acquire a lock on the routing table, or when a websocket connection drops midway through a handshake.
-**Resolution**: Restart the application. If the issue persists, clear the application cache. Advanced users can check the debug logs for stack trace 268.
-
-### Error Code R-0269
-**Symptom**: The application throws error R-0269 during operation 9.
-**Root Cause**: This typically happens when the geographical calculation engine fails to acquire a lock on the routing table, or when a websocket connection drops midway through a handshake.
-**Resolution**: Restart the application. If the issue persists, clear the application cache. Advanced users can check the debug logs for stack trace 269.
-
-### Error Code R-0270
-**Symptom**: The application throws error R-0270 during operation 0.
-**Root Cause**: This typically happens when the geographical calculation engine fails to acquire a lock on the routing table, or when a websocket connection drops midway through a handshake.
-**Resolution**: Restart the application. If the issue persists, clear the application cache. Advanced users can check the debug logs for stack trace 270.
-
-### Error Code R-0271
-**Symptom**: The application throws error R-0271 during operation 1.
-**Root Cause**: This typically happens when the geographical calculation engine fails to acquire a lock on the routing table, or when a websocket connection drops midway through a handshake.
-**Resolution**: Restart the application. If the issue persists, clear the application cache. Advanced users can check the debug logs for stack trace 271.
-
-### Error Code R-0272
-**Symptom**: The application throws error R-0272 during operation 2.
-**Root Cause**: This typically happens when the geographical calculation engine fails to acquire a lock on the routing table, or when a websocket connection drops midway through a handshake.
-**Resolution**: Restart the application. If the issue persists, clear the application cache. Advanced users can check the debug logs for stack trace 272.
-
-### Error Code R-0273
-**Symptom**: The application throws error R-0273 during operation 3.
-**Root Cause**: This typically happens when the geographical calculation engine fails to acquire a lock on the routing table, or when a websocket connection drops midway through a handshake.
-**Resolution**: Restart the application. If the issue persists, clear the application cache. Advanced users can check the debug logs for stack trace 273.
-
-### Error Code R-0274
-**Symptom**: The application throws error R-0274 during operation 4.
-**Root Cause**: This typically happens when the geographical calculation engine fails to acquire a lock on the routing table, or when a websocket connection drops midway through a handshake.
-**Resolution**: Restart the application. If the issue persists, clear the application cache. Advanced users can check the debug logs for stack trace 274.
-
-### Error Code R-0275
-**Symptom**: The application throws error R-0275 during operation 5.
-**Root Cause**: This typically happens when the geographical calculation engine fails to acquire a lock on the routing table, or when a websocket connection drops midway through a handshake.
-**Resolution**: Restart the application. If the issue persists, clear the application cache. Advanced users can check the debug logs for stack trace 275.
-
-### Error Code R-0276
-**Symptom**: The application throws error R-0276 during operation 6.
-**Root Cause**: This typically happens when the geographical calculation engine fails to acquire a lock on the routing table, or when a websocket connection drops midway through a handshake.
-**Resolution**: Restart the application. If the issue persists, clear the application cache. Advanced users can check the debug logs for stack trace 276.
-
-### Error Code R-0277
-**Symptom**: The application throws error R-0277 during operation 7.
-**Root Cause**: This typically happens when the geographical calculation engine fails to acquire a lock on the routing table, or when a websocket connection drops midway through a handshake.
-**Resolution**: Restart the application. If the issue persists, clear the application cache. Advanced users can check the debug logs for stack trace 277.
-
-### Error Code R-0278
-**Symptom**: The application throws error R-0278 during operation 8.
-**Root Cause**: This typically happens when the geographical calculation engine fails to acquire a lock on the routing table, or when a websocket connection drops midway through a handshake.
-**Resolution**: Restart the application. If the issue persists, clear the application cache. Advanced users can check the debug logs for stack trace 278.
-
-### Error Code R-0279
-**Symptom**: The application throws error R-0279 during operation 9.
-**Root Cause**: This typically happens when the geographical calculation engine fails to acquire a lock on the routing table, or when a websocket connection drops midway through a handshake.
-**Resolution**: Restart the application. If the issue persists, clear the application cache. Advanced users can check the debug logs for stack trace 279.
-
-### Error Code R-0280
-**Symptom**: The application throws error R-0280 during operation 0.
-**Root Cause**: This typically happens when the geographical calculation engine fails to acquire a lock on the routing table, or when a websocket connection drops midway through a handshake.
-**Resolution**: Restart the application. If the issue persists, clear the application cache. Advanced users can check the debug logs for stack trace 280.
-
-### Error Code R-0281
-**Symptom**: The application throws error R-0281 during operation 1.
-**Root Cause**: This typically happens when the geographical calculation engine fails to acquire a lock on the routing table, or when a websocket connection drops midway through a handshake.
-**Resolution**: Restart the application. If the issue persists, clear the application cache. Advanced users can check the debug logs for stack trace 281.
-
-### Error Code R-0282
-**Symptom**: The application throws error R-0282 during operation 2.
-**Root Cause**: This typically happens when the geographical calculation engine fails to acquire a lock on the routing table, or when a websocket connection drops midway through a handshake.
-**Resolution**: Restart the application. If the issue persists, clear the application cache. Advanced users can check the debug logs for stack trace 282.
-
-### Error Code R-0283
-**Symptom**: The application throws error R-0283 during operation 3.
-**Root Cause**: This typically happens when the geographical calculation engine fails to acquire a lock on the routing table, or when a websocket connection drops midway through a handshake.
-**Resolution**: Restart the application. If the issue persists, clear the application cache. Advanced users can check the debug logs for stack trace 283.
-
-### Error Code R-0284
-**Symptom**: The application throws error R-0284 during operation 4.
-**Root Cause**: This typically happens when the geographical calculation engine fails to acquire a lock on the routing table, or when a websocket connection drops midway through a handshake.
-**Resolution**: Restart the application. If the issue persists, clear the application cache. Advanced users can check the debug logs for stack trace 284.
-
-### Error Code R-0285
-**Symptom**: The application throws error R-0285 during operation 5.
-**Root Cause**: This typically happens when the geographical calculation engine fails to acquire a lock on the routing table, or when a websocket connection drops midway through a handshake.
-**Resolution**: Restart the application. If the issue persists, clear the application cache. Advanced users can check the debug logs for stack trace 285.
-
-### Error Code R-0286
-**Symptom**: The application throws error R-0286 during operation 6.
-**Root Cause**: This typically happens when the geographical calculation engine fails to acquire a lock on the routing table, or when a websocket connection drops midway through a handshake.
-**Resolution**: Restart the application. If the issue persists, clear the application cache. Advanced users can check the debug logs for stack trace 286.
-
-### Error Code R-0287
-**Symptom**: The application throws error R-0287 during operation 7.
-**Root Cause**: This typically happens when the geographical calculation engine fails to acquire a lock on the routing table, or when a websocket connection drops midway through a handshake.
-**Resolution**: Restart the application. If the issue persists, clear the application cache. Advanced users can check the debug logs for stack trace 287.
-
-### Error Code R-0288
-**Symptom**: The application throws error R-0288 during operation 8.
-**Root Cause**: This typically happens when the geographical calculation engine fails to acquire a lock on the routing table, or when a websocket connection drops midway through a handshake.
-**Resolution**: Restart the application. If the issue persists, clear the application cache. Advanced users can check the debug logs for stack trace 288.
-
-### Error Code R-0289
-**Symptom**: The application throws error R-0289 during operation 9.
-**Root Cause**: This typically happens when the geographical calculation engine fails to acquire a lock on the routing table, or when a websocket connection drops midway through a handshake.
-**Resolution**: Restart the application. If the issue persists, clear the application cache. Advanced users can check the debug logs for stack trace 289.
-
-### Error Code R-0290
-**Symptom**: The application throws error R-0290 during operation 0.
-**Root Cause**: This typically happens when the geographical calculation engine fails to acquire a lock on the routing table, or when a websocket connection drops midway through a handshake.
-**Resolution**: Restart the application. If the issue persists, clear the application cache. Advanced users can check the debug logs for stack trace 290.
-
-### Error Code R-0291
-**Symptom**: The application throws error R-0291 during operation 1.
-**Root Cause**: This typically happens when the geographical calculation engine fails to acquire a lock on the routing table, or when a websocket connection drops midway through a handshake.
-**Resolution**: Restart the application. If the issue persists, clear the application cache. Advanced users can check the debug logs for stack trace 291.
-
-### Error Code R-0292
-**Symptom**: The application throws error R-0292 during operation 2.
-**Root Cause**: This typically happens when the geographical calculation engine fails to acquire a lock on the routing table, or when a websocket connection drops midway through a handshake.
-**Resolution**: Restart the application. If the issue persists, clear the application cache. Advanced users can check the debug logs for stack trace 292.
-
-### Error Code R-0293
-**Symptom**: The application throws error R-0293 during operation 3.
-**Root Cause**: This typically happens when the geographical calculation engine fails to acquire a lock on the routing table, or when a websocket connection drops midway through a handshake.
-**Resolution**: Restart the application. If the issue persists, clear the application cache. Advanced users can check the debug logs for stack trace 293.
-
-### Error Code R-0294
-**Symptom**: The application throws error R-0294 during operation 4.
-**Root Cause**: This typically happens when the geographical calculation engine fails to acquire a lock on the routing table, or when a websocket connection drops midway through a handshake.
-**Resolution**: Restart the application. If the issue persists, clear the application cache. Advanced users can check the debug logs for stack trace 294.
-
-### Error Code R-0295
-**Symptom**: The application throws error R-0295 during operation 5.
-**Root Cause**: This typically happens when the geographical calculation engine fails to acquire a lock on the routing table, or when a websocket connection drops midway through a handshake.
-**Resolution**: Restart the application. If the issue persists, clear the application cache. Advanced users can check the debug logs for stack trace 295.
-
-### Error Code R-0296
-**Symptom**: The application throws error R-0296 during operation 6.
-**Root Cause**: This typically happens when the geographical calculation engine fails to acquire a lock on the routing table, or when a websocket connection drops midway through a handshake.
-**Resolution**: Restart the application. If the issue persists, clear the application cache. Advanced users can check the debug logs for stack trace 296.
-
-### Error Code R-0297
-**Symptom**: The application throws error R-0297 during operation 7.
-**Root Cause**: This typically happens when the geographical calculation engine fails to acquire a lock on the routing table, or when a websocket connection drops midway through a handshake.
-**Resolution**: Restart the application. If the issue persists, clear the application cache. Advanced users can check the debug logs for stack trace 297.
-
-### Error Code R-0298
-**Symptom**: The application throws error R-0298 during operation 8.
-**Root Cause**: This typically happens when the geographical calculation engine fails to acquire a lock on the routing table, or when a websocket connection drops midway through a handshake.
-**Resolution**: Restart the application. If the issue persists, clear the application cache. Advanced users can check the debug logs for stack trace 298.
-
-### Error Code R-0299
-**Symptom**: The application throws error R-0299 during operation 9.
-**Root Cause**: This typically happens when the geographical calculation engine fails to acquire a lock on the routing table, or when a websocket connection drops midway through a handshake.
-**Resolution**: Restart the application. If the issue persists, clear the application cache. Advanced users can check the debug logs for stack trace 299.
-
-### Error Code R-0300
-**Symptom**: The application throws error R-0300 during operation 0.
-**Root Cause**: This typically happens when the geographical calculation engine fails to acquire a lock on the routing table, or when a websocket connection drops midway through a handshake.
-**Resolution**: Restart the application. If the issue persists, clear the application cache. Advanced users can check the debug logs for stack trace 300.
-
-### Error Code R-0301
-**Symptom**: The application throws error R-0301 during operation 1.
-**Root Cause**: This typically happens when the geographical calculation engine fails to acquire a lock on the routing table, or when a websocket connection drops midway through a handshake.
-**Resolution**: Restart the application. If the issue persists, clear the application cache. Advanced users can check the debug logs for stack trace 301.
-
-### Error Code R-0302
-**Symptom**: The application throws error R-0302 during operation 2.
-**Root Cause**: This typically happens when the geographical calculation engine fails to acquire a lock on the routing table, or when a websocket connection drops midway through a handshake.
-**Resolution**: Restart the application. If the issue persists, clear the application cache. Advanced users can check the debug logs for stack trace 302.
-
-### Error Code R-0303
-**Symptom**: The application throws error R-0303 during operation 3.
-**Root Cause**: This typically happens when the geographical calculation engine fails to acquire a lock on the routing table, or when a websocket connection drops midway through a handshake.
-**Resolution**: Restart the application. If the issue persists, clear the application cache. Advanced users can check the debug logs for stack trace 303.
-
-### Error Code R-0304
-**Symptom**: The application throws error R-0304 during operation 4.
-**Root Cause**: This typically happens when the geographical calculation engine fails to acquire a lock on the routing table, or when a websocket connection drops midway through a handshake.
-**Resolution**: Restart the application. If the issue persists, clear the application cache. Advanced users can check the debug logs for stack trace 304.
-
-### Error Code R-0305
-**Symptom**: The application throws error R-0305 during operation 5.
-**Root Cause**: This typically happens when the geographical calculation engine fails to acquire a lock on the routing table, or when a websocket connection drops midway through a handshake.
-**Resolution**: Restart the application. If the issue persists, clear the application cache. Advanced users can check the debug logs for stack trace 305.
-
-### Error Code R-0306
-**Symptom**: The application throws error R-0306 during operation 6.
-**Root Cause**: This typically happens when the geographical calculation engine fails to acquire a lock on the routing table, or when a websocket connection drops midway through a handshake.
-**Resolution**: Restart the application. If the issue persists, clear the application cache. Advanced users can check the debug logs for stack trace 306.
-
-### Error Code R-0307
-**Symptom**: The application throws error R-0307 during operation 7.
-**Root Cause**: This typically happens when the geographical calculation engine fails to acquire a lock on the routing table, or when a websocket connection drops midway through a handshake.
-**Resolution**: Restart the application. If the issue persists, clear the application cache. Advanced users can check the debug logs for stack trace 307.
-
-### Error Code R-0308
-**Symptom**: The application throws error R-0308 during operation 8.
-**Root Cause**: This typically happens when the geographical calculation engine fails to acquire a lock on the routing table, or when a websocket connection drops midway through a handshake.
-**Resolution**: Restart the application. If the issue persists, clear the application cache. Advanced users can check the debug logs for stack trace 308.
-
-### Error Code R-0309
-**Symptom**: The application throws error R-0309 during operation 9.
-**Root Cause**: This typically happens when the geographical calculation engine fails to acquire a lock on the routing table, or when a websocket connection drops midway through a handshake.
-**Resolution**: Restart the application. If the issue persists, clear the application cache. Advanced users can check the debug logs for stack trace 309.
-
-### Error Code R-0310
-**Symptom**: The application throws error R-0310 during operation 0.
-**Root Cause**: This typically happens when the geographical calculation engine fails to acquire a lock on the routing table, or when a websocket connection drops midway through a handshake.
-**Resolution**: Restart the application. If the issue persists, clear the application cache. Advanced users can check the debug logs for stack trace 310.
-
-### Error Code R-0311
-**Symptom**: The application throws error R-0311 during operation 1.
-**Root Cause**: This typically happens when the geographical calculation engine fails to acquire a lock on the routing table, or when a websocket connection drops midway through a handshake.
-**Resolution**: Restart the application. If the issue persists, clear the application cache. Advanced users can check the debug logs for stack trace 311.
-
-### Error Code R-0312
-**Symptom**: The application throws error R-0312 during operation 2.
-**Root Cause**: This typically happens when the geographical calculation engine fails to acquire a lock on the routing table, or when a websocket connection drops midway through a handshake.
-**Resolution**: Restart the application. If the issue persists, clear the application cache. Advanced users can check the debug logs for stack trace 312.
-
-### Error Code R-0313
-**Symptom**: The application throws error R-0313 during operation 3.
-**Root Cause**: This typically happens when the geographical calculation engine fails to acquire a lock on the routing table, or when a websocket connection drops midway through a handshake.
-**Resolution**: Restart the application. If the issue persists, clear the application cache. Advanced users can check the debug logs for stack trace 313.
-
-### Error Code R-0314
-**Symptom**: The application throws error R-0314 during operation 4.
-**Root Cause**: This typically happens when the geographical calculation engine fails to acquire a lock on the routing table, or when a websocket connection drops midway through a handshake.
-**Resolution**: Restart the application. If the issue persists, clear the application cache. Advanced users can check the debug logs for stack trace 314.
-
-### Error Code R-0315
-**Symptom**: The application throws error R-0315 during operation 5.
-**Root Cause**: This typically happens when the geographical calculation engine fails to acquire a lock on the routing table, or when a websocket connection drops midway through a handshake.
-**Resolution**: Restart the application. If the issue persists, clear the application cache. Advanced users can check the debug logs for stack trace 315.
-
-### Error Code R-0316
-**Symptom**: The application throws error R-0316 during operation 6.
-**Root Cause**: This typically happens when the geographical calculation engine fails to acquire a lock on the routing table, or when a websocket connection drops midway through a handshake.
-**Resolution**: Restart the application. If the issue persists, clear the application cache. Advanced users can check the debug logs for stack trace 316.
-
-### Error Code R-0317
-**Symptom**: The application throws error R-0317 during operation 7.
-**Root Cause**: This typically happens when the geographical calculation engine fails to acquire a lock on the routing table, or when a websocket connection drops midway through a handshake.
-**Resolution**: Restart the application. If the issue persists, clear the application cache. Advanced users can check the debug logs for stack trace 317.
-
-### Error Code R-0318
-**Symptom**: The application throws error R-0318 during operation 8.
-**Root Cause**: This typically happens when the geographical calculation engine fails to acquire a lock on the routing table, or when a websocket connection drops midway through a handshake.
-**Resolution**: Restart the application. If the issue persists, clear the application cache. Advanced users can check the debug logs for stack trace 318.
-
-### Error Code R-0319
-**Symptom**: The application throws error R-0319 during operation 9.
-**Root Cause**: This typically happens when the geographical calculation engine fails to acquire a lock on the routing table, or when a websocket connection drops midway through a handshake.
-**Resolution**: Restart the application. If the issue persists, clear the application cache. Advanced users can check the debug logs for stack trace 319.
-
-### Error Code R-0320
-**Symptom**: The application throws error R-0320 during operation 0.
-**Root Cause**: This typically happens when the geographical calculation engine fails to acquire a lock on the routing table, or when a websocket connection drops midway through a handshake.
-**Resolution**: Restart the application. If the issue persists, clear the application cache. Advanced users can check the debug logs for stack trace 320.
-
-### Error Code R-0321
-**Symptom**: The application throws error R-0321 during operation 1.
-**Root Cause**: This typically happens when the geographical calculation engine fails to acquire a lock on the routing table, or when a websocket connection drops midway through a handshake.
-**Resolution**: Restart the application. If the issue persists, clear the application cache. Advanced users can check the debug logs for stack trace 321.
-
-### Error Code R-0322
-**Symptom**: The application throws error R-0322 during operation 2.
-**Root Cause**: This typically happens when the geographical calculation engine fails to acquire a lock on the routing table, or when a websocket connection drops midway through a handshake.
-**Resolution**: Restart the application. If the issue persists, clear the application cache. Advanced users can check the debug logs for stack trace 322.
-
-### Error Code R-0323
-**Symptom**: The application throws error R-0323 during operation 3.
-**Root Cause**: This typically happens when the geographical calculation engine fails to acquire a lock on the routing table, or when a websocket connection drops midway through a handshake.
-**Resolution**: Restart the application. If the issue persists, clear the application cache. Advanced users can check the debug logs for stack trace 323.
-
-### Error Code R-0324
-**Symptom**: The application throws error R-0324 during operation 4.
-**Root Cause**: This typically happens when the geographical calculation engine fails to acquire a lock on the routing table, or when a websocket connection drops midway through a handshake.
-**Resolution**: Restart the application. If the issue persists, clear the application cache. Advanced users can check the debug logs for stack trace 324.
-
-### Error Code R-0325
-**Symptom**: The application throws error R-0325 during operation 5.
-**Root Cause**: This typically happens when the geographical calculation engine fails to acquire a lock on the routing table, or when a websocket connection drops midway through a handshake.
-**Resolution**: Restart the application. If the issue persists, clear the application cache. Advanced users can check the debug logs for stack trace 325.
-
-### Error Code R-0326
-**Symptom**: The application throws error R-0326 during operation 6.
-**Root Cause**: This typically happens when the geographical calculation engine fails to acquire a lock on the routing table, or when a websocket connection drops midway through a handshake.
-**Resolution**: Restart the application. If the issue persists, clear the application cache. Advanced users can check the debug logs for stack trace 326.
-
-### Error Code R-0327
-**Symptom**: The application throws error R-0327 during operation 7.
-**Root Cause**: This typically happens when the geographical calculation engine fails to acquire a lock on the routing table, or when a websocket connection drops midway through a handshake.
-**Resolution**: Restart the application. If the issue persists, clear the application cache. Advanced users can check the debug logs for stack trace 327.
-
-### Error Code R-0328
-**Symptom**: The application throws error R-0328 during operation 8.
-**Root Cause**: This typically happens when the geographical calculation engine fails to acquire a lock on the routing table, or when a websocket connection drops midway through a handshake.
-**Resolution**: Restart the application. If the issue persists, clear the application cache. Advanced users can check the debug logs for stack trace 328.
-
-### Error Code R-0329
-**Symptom**: The application throws error R-0329 during operation 9.
-**Root Cause**: This typically happens when the geographical calculation engine fails to acquire a lock on the routing table, or when a websocket connection drops midway through a handshake.
-**Resolution**: Restart the application. If the issue persists, clear the application cache. Advanced users can check the debug logs for stack trace 329.
-
-### Error Code R-0330
-**Symptom**: The application throws error R-0330 during operation 0.
-**Root Cause**: This typically happens when the geographical calculation engine fails to acquire a lock on the routing table, or when a websocket connection drops midway through a handshake.
-**Resolution**: Restart the application. If the issue persists, clear the application cache. Advanced users can check the debug logs for stack trace 330.
-
-### Error Code R-0331
-**Symptom**: The application throws error R-0331 during operation 1.
-**Root Cause**: This typically happens when the geographical calculation engine fails to acquire a lock on the routing table, or when a websocket connection drops midway through a handshake.
-**Resolution**: Restart the application. If the issue persists, clear the application cache. Advanced users can check the debug logs for stack trace 331.
-
-### Error Code R-0332
-**Symptom**: The application throws error R-0332 during operation 2.
-**Root Cause**: This typically happens when the geographical calculation engine fails to acquire a lock on the routing table, or when a websocket connection drops midway through a handshake.
-**Resolution**: Restart the application. If the issue persists, clear the application cache. Advanced users can check the debug logs for stack trace 332.
-
-### Error Code R-0333
-**Symptom**: The application throws error R-0333 during operation 3.
-**Root Cause**: This typically happens when the geographical calculation engine fails to acquire a lock on the routing table, or when a websocket connection drops midway through a handshake.
-**Resolution**: Restart the application. If the issue persists, clear the application cache. Advanced users can check the debug logs for stack trace 333.
-
-### Error Code R-0334
-**Symptom**: The application throws error R-0334 during operation 4.
-**Root Cause**: This typically happens when the geographical calculation engine fails to acquire a lock on the routing table, or when a websocket connection drops midway through a handshake.
-**Resolution**: Restart the application. If the issue persists, clear the application cache. Advanced users can check the debug logs for stack trace 334.
-
-### Error Code R-0335
-**Symptom**: The application throws error R-0335 during operation 5.
-**Root Cause**: This typically happens when the geographical calculation engine fails to acquire a lock on the routing table, or when a websocket connection drops midway through a handshake.
-**Resolution**: Restart the application. If the issue persists, clear the application cache. Advanced users can check the debug logs for stack trace 335.
-
-### Error Code R-0336
-**Symptom**: The application throws error R-0336 during operation 6.
-**Root Cause**: This typically happens when the geographical calculation engine fails to acquire a lock on the routing table, or when a websocket connection drops midway through a handshake.
-**Resolution**: Restart the application. If the issue persists, clear the application cache. Advanced users can check the debug logs for stack trace 336.
-
-### Error Code R-0337
-**Symptom**: The application throws error R-0337 during operation 7.
-**Root Cause**: This typically happens when the geographical calculation engine fails to acquire a lock on the routing table, or when a websocket connection drops midway through a handshake.
-**Resolution**: Restart the application. If the issue persists, clear the application cache. Advanced users can check the debug logs for stack trace 337.
-
-### Error Code R-0338
-**Symptom**: The application throws error R-0338 during operation 8.
-**Root Cause**: This typically happens when the geographical calculation engine fails to acquire a lock on the routing table, or when a websocket connection drops midway through a handshake.
-**Resolution**: Restart the application. If the issue persists, clear the application cache. Advanced users can check the debug logs for stack trace 338.
-
-### Error Code R-0339
-**Symptom**: The application throws error R-0339 during operation 9.
-**Root Cause**: This typically happens when the geographical calculation engine fails to acquire a lock on the routing table, or when a websocket connection drops midway through a handshake.
-**Resolution**: Restart the application. If the issue persists, clear the application cache. Advanced users can check the debug logs for stack trace 339.
-
-### Error Code R-0340
-**Symptom**: The application throws error R-0340 during operation 0.
-**Root Cause**: This typically happens when the geographical calculation engine fails to acquire a lock on the routing table, or when a websocket connection drops midway through a handshake.
-**Resolution**: Restart the application. If the issue persists, clear the application cache. Advanced users can check the debug logs for stack trace 340.
-
-### Error Code R-0341
-**Symptom**: The application throws error R-0341 during operation 1.
-**Root Cause**: This typically happens when the geographical calculation engine fails to acquire a lock on the routing table, or when a websocket connection drops midway through a handshake.
-**Resolution**: Restart the application. If the issue persists, clear the application cache. Advanced users can check the debug logs for stack trace 341.
-
-### Error Code R-0342
-**Symptom**: The application throws error R-0342 during operation 2.
-**Root Cause**: This typically happens when the geographical calculation engine fails to acquire a lock on the routing table, or when a websocket connection drops midway through a handshake.
-**Resolution**: Restart the application. If the issue persists, clear the application cache. Advanced users can check the debug logs for stack trace 342.
-
-### Error Code R-0343
-**Symptom**: The application throws error R-0343 during operation 3.
-**Root Cause**: This typically happens when the geographical calculation engine fails to acquire a lock on the routing table, or when a websocket connection drops midway through a handshake.
-**Resolution**: Restart the application. If the issue persists, clear the application cache. Advanced users can check the debug logs for stack trace 343.
-
-### Error Code R-0344
-**Symptom**: The application throws error R-0344 during operation 4.
-**Root Cause**: This typically happens when the geographical calculation engine fails to acquire a lock on the routing table, or when a websocket connection drops midway through a handshake.
-**Resolution**: Restart the application. If the issue persists, clear the application cache. Advanced users can check the debug logs for stack trace 344.
-
-### Error Code R-0345
-**Symptom**: The application throws error R-0345 during operation 5.
-**Root Cause**: This typically happens when the geographical calculation engine fails to acquire a lock on the routing table, or when a websocket connection drops midway through a handshake.
-**Resolution**: Restart the application. If the issue persists, clear the application cache. Advanced users can check the debug logs for stack trace 345.
-
-### Error Code R-0346
-**Symptom**: The application throws error R-0346 during operation 6.
-**Root Cause**: This typically happens when the geographical calculation engine fails to acquire a lock on the routing table, or when a websocket connection drops midway through a handshake.
-**Resolution**: Restart the application. If the issue persists, clear the application cache. Advanced users can check the debug logs for stack trace 346.
-
-### Error Code R-0347
-**Symptom**: The application throws error R-0347 during operation 7.
-**Root Cause**: This typically happens when the geographical calculation engine fails to acquire a lock on the routing table, or when a websocket connection drops midway through a handshake.
-**Resolution**: Restart the application. If the issue persists, clear the application cache. Advanced users can check the debug logs for stack trace 347.
-
-### Error Code R-0348
-**Symptom**: The application throws error R-0348 during operation 8.
-**Root Cause**: This typically happens when the geographical calculation engine fails to acquire a lock on the routing table, or when a websocket connection drops midway through a handshake.
-**Resolution**: Restart the application. If the issue persists, clear the application cache. Advanced users can check the debug logs for stack trace 348.
-
-### Error Code R-0349
-**Symptom**: The application throws error R-0349 during operation 9.
-**Root Cause**: This typically happens when the geographical calculation engine fails to acquire a lock on the routing table, or when a websocket connection drops midway through a handshake.
-**Resolution**: Restart the application. If the issue persists, clear the application cache. Advanced users can check the debug logs for stack trace 349.
-
-### Error Code R-0350
-**Symptom**: The application throws error R-0350 during operation 0.
-**Root Cause**: This typically happens when the geographical calculation engine fails to acquire a lock on the routing table, or when a websocket connection drops midway through a handshake.
-**Resolution**: Restart the application. If the issue persists, clear the application cache. Advanced users can check the debug logs for stack trace 350.
-
-### Error Code R-0351
-**Symptom**: The application throws error R-0351 during operation 1.
-**Root Cause**: This typically happens when the geographical calculation engine fails to acquire a lock on the routing table, or when a websocket connection drops midway through a handshake.
-**Resolution**: Restart the application. If the issue persists, clear the application cache. Advanced users can check the debug logs for stack trace 351.
-
-### Error Code R-0352
-**Symptom**: The application throws error R-0352 during operation 2.
-**Root Cause**: This typically happens when the geographical calculation engine fails to acquire a lock on the routing table, or when a websocket connection drops midway through a handshake.
-**Resolution**: Restart the application. If the issue persists, clear the application cache. Advanced users can check the debug logs for stack trace 352.
-
-### Error Code R-0353
-**Symptom**: The application throws error R-0353 during operation 3.
-**Root Cause**: This typically happens when the geographical calculation engine fails to acquire a lock on the routing table, or when a websocket connection drops midway through a handshake.
-**Resolution**: Restart the application. If the issue persists, clear the application cache. Advanced users can check the debug logs for stack trace 353.
-
-### Error Code R-0354
-**Symptom**: The application throws error R-0354 during operation 4.
-**Root Cause**: This typically happens when the geographical calculation engine fails to acquire a lock on the routing table, or when a websocket connection drops midway through a handshake.
-**Resolution**: Restart the application. If the issue persists, clear the application cache. Advanced users can check the debug logs for stack trace 354.
-
-### Error Code R-0355
-**Symptom**: The application throws error R-0355 during operation 5.
-**Root Cause**: This typically happens when the geographical calculation engine fails to acquire a lock on the routing table, or when a websocket connection drops midway through a handshake.
-**Resolution**: Restart the application. If the issue persists, clear the application cache. Advanced users can check the debug logs for stack trace 355.
-
-### Error Code R-0356
-**Symptom**: The application throws error R-0356 during operation 6.
-**Root Cause**: This typically happens when the geographical calculation engine fails to acquire a lock on the routing table, or when a websocket connection drops midway through a handshake.
-**Resolution**: Restart the application. If the issue persists, clear the application cache. Advanced users can check the debug logs for stack trace 356.
-
-### Error Code R-0357
-**Symptom**: The application throws error R-0357 during operation 7.
-**Root Cause**: This typically happens when the geographical calculation engine fails to acquire a lock on the routing table, or when a websocket connection drops midway through a handshake.
-**Resolution**: Restart the application. If the issue persists, clear the application cache. Advanced users can check the debug logs for stack trace 357.
-
-### Error Code R-0358
-**Symptom**: The application throws error R-0358 during operation 8.
-**Root Cause**: This typically happens when the geographical calculation engine fails to acquire a lock on the routing table, or when a websocket connection drops midway through a handshake.
-**Resolution**: Restart the application. If the issue persists, clear the application cache. Advanced users can check the debug logs for stack trace 358.
-
-### Error Code R-0359
-**Symptom**: The application throws error R-0359 during operation 9.
-**Root Cause**: This typically happens when the geographical calculation engine fails to acquire a lock on the routing table, or when a websocket connection drops midway through a handshake.
-**Resolution**: Restart the application. If the issue persists, clear the application cache. Advanced users can check the debug logs for stack trace 359.
-
-### Error Code R-0360
-**Symptom**: The application throws error R-0360 during operation 0.
-**Root Cause**: This typically happens when the geographical calculation engine fails to acquire a lock on the routing table, or when a websocket connection drops midway through a handshake.
-**Resolution**: Restart the application. If the issue persists, clear the application cache. Advanced users can check the debug logs for stack trace 360.
-
-### Error Code R-0361
-**Symptom**: The application throws error R-0361 during operation 1.
-**Root Cause**: This typically happens when the geographical calculation engine fails to acquire a lock on the routing table, or when a websocket connection drops midway through a handshake.
-**Resolution**: Restart the application. If the issue persists, clear the application cache. Advanced users can check the debug logs for stack trace 361.
-
-### Error Code R-0362
-**Symptom**: The application throws error R-0362 during operation 2.
-**Root Cause**: This typically happens when the geographical calculation engine fails to acquire a lock on the routing table, or when a websocket connection drops midway through a handshake.
-**Resolution**: Restart the application. If the issue persists, clear the application cache. Advanced users can check the debug logs for stack trace 362.
-
-### Error Code R-0363
-**Symptom**: The application throws error R-0363 during operation 3.
-**Root Cause**: This typically happens when the geographical calculation engine fails to acquire a lock on the routing table, or when a websocket connection drops midway through a handshake.
-**Resolution**: Restart the application. If the issue persists, clear the application cache. Advanced users can check the debug logs for stack trace 363.
-
-### Error Code R-0364
-**Symptom**: The application throws error R-0364 during operation 4.
-**Root Cause**: This typically happens when the geographical calculation engine fails to acquire a lock on the routing table, or when a websocket connection drops midway through a handshake.
-**Resolution**: Restart the application. If the issue persists, clear the application cache. Advanced users can check the debug logs for stack trace 364.
-
-### Error Code R-0365
-**Symptom**: The application throws error R-0365 during operation 5.
-**Root Cause**: This typically happens when the geographical calculation engine fails to acquire a lock on the routing table, or when a websocket connection drops midway through a handshake.
-**Resolution**: Restart the application. If the issue persists, clear the application cache. Advanced users can check the debug logs for stack trace 365.
-
-### Error Code R-0366
-**Symptom**: The application throws error R-0366 during operation 6.
-**Root Cause**: This typically happens when the geographical calculation engine fails to acquire a lock on the routing table, or when a websocket connection drops midway through a handshake.
-**Resolution**: Restart the application. If the issue persists, clear the application cache. Advanced users can check the debug logs for stack trace 366.
-
-### Error Code R-0367
-**Symptom**: The application throws error R-0367 during operation 7.
-**Root Cause**: This typically happens when the geographical calculation engine fails to acquire a lock on the routing table, or when a websocket connection drops midway through a handshake.
-**Resolution**: Restart the application. If the issue persists, clear the application cache. Advanced users can check the debug logs for stack trace 367.
-
-### Error Code R-0368
-**Symptom**: The application throws error R-0368 during operation 8.
-**Root Cause**: This typically happens when the geographical calculation engine fails to acquire a lock on the routing table, or when a websocket connection drops midway through a handshake.
-**Resolution**: Restart the application. If the issue persists, clear the application cache. Advanced users can check the debug logs for stack trace 368.
-
-### Error Code R-0369
-**Symptom**: The application throws error R-0369 during operation 9.
-**Root Cause**: This typically happens when the geographical calculation engine fails to acquire a lock on the routing table, or when a websocket connection drops midway through a handshake.
-**Resolution**: Restart the application. If the issue persists, clear the application cache. Advanced users can check the debug logs for stack trace 369.
-
-### Error Code R-0370
-**Symptom**: The application throws error R-0370 during operation 0.
-**Root Cause**: This typically happens when the geographical calculation engine fails to acquire a lock on the routing table, or when a websocket connection drops midway through a handshake.
-**Resolution**: Restart the application. If the issue persists, clear the application cache. Advanced users can check the debug logs for stack trace 370.
-
-### Error Code R-0371
-**Symptom**: The application throws error R-0371 during operation 1.
-**Root Cause**: This typically happens when the geographical calculation engine fails to acquire a lock on the routing table, or when a websocket connection drops midway through a handshake.
-**Resolution**: Restart the application. If the issue persists, clear the application cache. Advanced users can check the debug logs for stack trace 371.
-
-### Error Code R-0372
-**Symptom**: The application throws error R-0372 during operation 2.
-**Root Cause**: This typically happens when the geographical calculation engine fails to acquire a lock on the routing table, or when a websocket connection drops midway through a handshake.
-**Resolution**: Restart the application. If the issue persists, clear the application cache. Advanced users can check the debug logs for stack trace 372.
-
-### Error Code R-0373
-**Symptom**: The application throws error R-0373 during operation 3.
-**Root Cause**: This typically happens when the geographical calculation engine fails to acquire a lock on the routing table, or when a websocket connection drops midway through a handshake.
-**Resolution**: Restart the application. If the issue persists, clear the application cache. Advanced users can check the debug logs for stack trace 373.
-
-### Error Code R-0374
-**Symptom**: The application throws error R-0374 during operation 4.
-**Root Cause**: This typically happens when the geographical calculation engine fails to acquire a lock on the routing table, or when a websocket connection drops midway through a handshake.
-**Resolution**: Restart the application. If the issue persists, clear the application cache. Advanced users can check the debug logs for stack trace 374.
-
-### Error Code R-0375
-**Symptom**: The application throws error R-0375 during operation 5.
-**Root Cause**: This typically happens when the geographical calculation engine fails to acquire a lock on the routing table, or when a websocket connection drops midway through a handshake.
-**Resolution**: Restart the application. If the issue persists, clear the application cache. Advanced users can check the debug logs for stack trace 375.
-
-### Error Code R-0376
-**Symptom**: The application throws error R-0376 during operation 6.
-**Root Cause**: This typically happens when the geographical calculation engine fails to acquire a lock on the routing table, or when a websocket connection drops midway through a handshake.
-**Resolution**: Restart the application. If the issue persists, clear the application cache. Advanced users can check the debug logs for stack trace 376.
-
-### Error Code R-0377
-**Symptom**: The application throws error R-0377 during operation 7.
-**Root Cause**: This typically happens when the geographical calculation engine fails to acquire a lock on the routing table, or when a websocket connection drops midway through a handshake.
-**Resolution**: Restart the application. If the issue persists, clear the application cache. Advanced users can check the debug logs for stack trace 377.
-
-### Error Code R-0378
-**Symptom**: The application throws error R-0378 during operation 8.
-**Root Cause**: This typically happens when the geographical calculation engine fails to acquire a lock on the routing table, or when a websocket connection drops midway through a handshake.
-**Resolution**: Restart the application. If the issue persists, clear the application cache. Advanced users can check the debug logs for stack trace 378.
-
-### Error Code R-0379
-**Symptom**: The application throws error R-0379 during operation 9.
-**Root Cause**: This typically happens when the geographical calculation engine fails to acquire a lock on the routing table, or when a websocket connection drops midway through a handshake.
-**Resolution**: Restart the application. If the issue persists, clear the application cache. Advanced users can check the debug logs for stack trace 379.
-
-### Error Code R-0380
-**Symptom**: The application throws error R-0380 during operation 0.
-**Root Cause**: This typically happens when the geographical calculation engine fails to acquire a lock on the routing table, or when a websocket connection drops midway through a handshake.
-**Resolution**: Restart the application. If the issue persists, clear the application cache. Advanced users can check the debug logs for stack trace 380.
-
-### Error Code R-0381
-**Symptom**: The application throws error R-0381 during operation 1.
-**Root Cause**: This typically happens when the geographical calculation engine fails to acquire a lock on the routing table, or when a websocket connection drops midway through a handshake.
-**Resolution**: Restart the application. If the issue persists, clear the application cache. Advanced users can check the debug logs for stack trace 381.
-
-### Error Code R-0382
-**Symptom**: The application throws error R-0382 during operation 2.
-**Root Cause**: This typically happens when the geographical calculation engine fails to acquire a lock on the routing table, or when a websocket connection drops midway through a handshake.
-**Resolution**: Restart the application. If the issue persists, clear the application cache. Advanced users can check the debug logs for stack trace 382.
-
-### Error Code R-0383
-**Symptom**: The application throws error R-0383 during operation 3.
-**Root Cause**: This typically happens when the geographical calculation engine fails to acquire a lock on the routing table, or when a websocket connection drops midway through a handshake.
-**Resolution**: Restart the application. If the issue persists, clear the application cache. Advanced users can check the debug logs for stack trace 383.
-
-### Error Code R-0384
-**Symptom**: The application throws error R-0384 during operation 4.
-**Root Cause**: This typically happens when the geographical calculation engine fails to acquire a lock on the routing table, or when a websocket connection drops midway through a handshake.
-**Resolution**: Restart the application. If the issue persists, clear the application cache. Advanced users can check the debug logs for stack trace 384.
-
-### Error Code R-0385
-**Symptom**: The application throws error R-0385 during operation 5.
-**Root Cause**: This typically happens when the geographical calculation engine fails to acquire a lock on the routing table, or when a websocket connection drops midway through a handshake.
-**Resolution**: Restart the application. If the issue persists, clear the application cache. Advanced users can check the debug logs for stack trace 385.
-
-### Error Code R-0386
-**Symptom**: The application throws error R-0386 during operation 6.
-**Root Cause**: This typically happens when the geographical calculation engine fails to acquire a lock on the routing table, or when a websocket connection drops midway through a handshake.
-**Resolution**: Restart the application. If the issue persists, clear the application cache. Advanced users can check the debug logs for stack trace 386.
-
-### Error Code R-0387
-**Symptom**: The application throws error R-0387 during operation 7.
-**Root Cause**: This typically happens when the geographical calculation engine fails to acquire a lock on the routing table, or when a websocket connection drops midway through a handshake.
-**Resolution**: Restart the application. If the issue persists, clear the application cache. Advanced users can check the debug logs for stack trace 387.
-
-### Error Code R-0388
-**Symptom**: The application throws error R-0388 during operation 8.
-**Root Cause**: This typically happens when the geographical calculation engine fails to acquire a lock on the routing table, or when a websocket connection drops midway through a handshake.
-**Resolution**: Restart the application. If the issue persists, clear the application cache. Advanced users can check the debug logs for stack trace 388.
-
-### Error Code R-0389
-**Symptom**: The application throws error R-0389 during operation 9.
-**Root Cause**: This typically happens when the geographical calculation engine fails to acquire a lock on the routing table, or when a websocket connection drops midway through a handshake.
-**Resolution**: Restart the application. If the issue persists, clear the application cache. Advanced users can check the debug logs for stack trace 389.
-
-### Error Code R-0390
-**Symptom**: The application throws error R-0390 during operation 0.
-**Root Cause**: This typically happens when the geographical calculation engine fails to acquire a lock on the routing table, or when a websocket connection drops midway through a handshake.
-**Resolution**: Restart the application. If the issue persists, clear the application cache. Advanced users can check the debug logs for stack trace 390.
-
-### Error Code R-0391
-**Symptom**: The application throws error R-0391 during operation 1.
-**Root Cause**: This typically happens when the geographical calculation engine fails to acquire a lock on the routing table, or when a websocket connection drops midway through a handshake.
-**Resolution**: Restart the application. If the issue persists, clear the application cache. Advanced users can check the debug logs for stack trace 391.
-
-### Error Code R-0392
-**Symptom**: The application throws error R-0392 during operation 2.
-**Root Cause**: This typically happens when the geographical calculation engine fails to acquire a lock on the routing table, or when a websocket connection drops midway through a handshake.
-**Resolution**: Restart the application. If the issue persists, clear the application cache. Advanced users can check the debug logs for stack trace 392.
-
-### Error Code R-0393
-**Symptom**: The application throws error R-0393 during operation 3.
-**Root Cause**: This typically happens when the geographical calculation engine fails to acquire a lock on the routing table, or when a websocket connection drops midway through a handshake.
-**Resolution**: Restart the application. If the issue persists, clear the application cache. Advanced users can check the debug logs for stack trace 393.
-
-### Error Code R-0394
-**Symptom**: The application throws error R-0394 during operation 4.
-**Root Cause**: This typically happens when the geographical calculation engine fails to acquire a lock on the routing table, or when a websocket connection drops midway through a handshake.
-**Resolution**: Restart the application. If the issue persists, clear the application cache. Advanced users can check the debug logs for stack trace 394.
-
-### Error Code R-0395
-**Symptom**: The application throws error R-0395 during operation 5.
-**Root Cause**: This typically happens when the geographical calculation engine fails to acquire a lock on the routing table, or when a websocket connection drops midway through a handshake.
-**Resolution**: Restart the application. If the issue persists, clear the application cache. Advanced users can check the debug logs for stack trace 395.
-
-### Error Code R-0396
-**Symptom**: The application throws error R-0396 during operation 6.
-**Root Cause**: This typically happens when the geographical calculation engine fails to acquire a lock on the routing table, or when a websocket connection drops midway through a handshake.
-**Resolution**: Restart the application. If the issue persists, clear the application cache. Advanced users can check the debug logs for stack trace 396.
-
-### Error Code R-0397
-**Symptom**: The application throws error R-0397 during operation 7.
-**Root Cause**: This typically happens when the geographical calculation engine fails to acquire a lock on the routing table, or when a websocket connection drops midway through a handshake.
-**Resolution**: Restart the application. If the issue persists, clear the application cache. Advanced users can check the debug logs for stack trace 397.
-
-### Error Code R-0398
-**Symptom**: The application throws error R-0398 during operation 8.
-**Root Cause**: This typically happens when the geographical calculation engine fails to acquire a lock on the routing table, or when a websocket connection drops midway through a handshake.
-**Resolution**: Restart the application. If the issue persists, clear the application cache. Advanced users can check the debug logs for stack trace 398.
-
-### Error Code R-0399
-**Symptom**: The application throws error R-0399 during operation 9.
-**Root Cause**: This typically happens when the geographical calculation engine fails to acquire a lock on the routing table, or when a websocket connection drops midway through a handshake.
-**Resolution**: Restart the application. If the issue persists, clear the application cache. Advanced users can check the debug logs for stack trace 399.
-
-### Error Code R-0400
-**Symptom**: The application throws error R-0400 during operation 0.
-**Root Cause**: This typically happens when the geographical calculation engine fails to acquire a lock on the routing table, or when a websocket connection drops midway through a handshake.
-**Resolution**: Restart the application. If the issue persists, clear the application cache. Advanced users can check the debug logs for stack trace 400.
-
-### Error Code R-0401
-**Symptom**: The application throws error R-0401 during operation 1.
-**Root Cause**: This typically happens when the geographical calculation engine fails to acquire a lock on the routing table, or when a websocket connection drops midway through a handshake.
-**Resolution**: Restart the application. If the issue persists, clear the application cache. Advanced users can check the debug logs for stack trace 401.
-
-### Error Code R-0402
-**Symptom**: The application throws error R-0402 during operation 2.
-**Root Cause**: This typically happens when the geographical calculation engine fails to acquire a lock on the routing table, or when a websocket connection drops midway through a handshake.
-**Resolution**: Restart the application. If the issue persists, clear the application cache. Advanced users can check the debug logs for stack trace 402.
-
-### Error Code R-0403
-**Symptom**: The application throws error R-0403 during operation 3.
-**Root Cause**: This typically happens when the geographical calculation engine fails to acquire a lock on the routing table, or when a websocket connection drops midway through a handshake.
-**Resolution**: Restart the application. If the issue persists, clear the application cache. Advanced users can check the debug logs for stack trace 403.
-
-### Error Code R-0404
-**Symptom**: The application throws error R-0404 during operation 4.
-**Root Cause**: This typically happens when the geographical calculation engine fails to acquire a lock on the routing table, or when a websocket connection drops midway through a handshake.
-**Resolution**: Restart the application. If the issue persists, clear the application cache. Advanced users can check the debug logs for stack trace 404.
-
-### Error Code R-0405
-**Symptom**: The application throws error R-0405 during operation 5.
-**Root Cause**: This typically happens when the geographical calculation engine fails to acquire a lock on the routing table, or when a websocket connection drops midway through a handshake.
-**Resolution**: Restart the application. If the issue persists, clear the application cache. Advanced users can check the debug logs for stack trace 405.
-
-### Error Code R-0406
-**Symptom**: The application throws error R-0406 during operation 6.
-**Root Cause**: This typically happens when the geographical calculation engine fails to acquire a lock on the routing table, or when a websocket connection drops midway through a handshake.
-**Resolution**: Restart the application. If the issue persists, clear the application cache. Advanced users can check the debug logs for stack trace 406.
-
-### Error Code R-0407
-**Symptom**: The application throws error R-0407 during operation 7.
-**Root Cause**: This typically happens when the geographical calculation engine fails to acquire a lock on the routing table, or when a websocket connection drops midway through a handshake.
-**Resolution**: Restart the application. If the issue persists, clear the application cache. Advanced users can check the debug logs for stack trace 407.
-
-### Error Code R-0408
-**Symptom**: The application throws error R-0408 during operation 8.
-**Root Cause**: This typically happens when the geographical calculation engine fails to acquire a lock on the routing table, or when a websocket connection drops midway through a handshake.
-**Resolution**: Restart the application. If the issue persists, clear the application cache. Advanced users can check the debug logs for stack trace 408.
-
-### Error Code R-0409
-**Symptom**: The application throws error R-0409 during operation 9.
-**Root Cause**: This typically happens when the geographical calculation engine fails to acquire a lock on the routing table, or when a websocket connection drops midway through a handshake.
-**Resolution**: Restart the application. If the issue persists, clear the application cache. Advanced users can check the debug logs for stack trace 409.
-
-### Error Code R-0410
-**Symptom**: The application throws error R-0410 during operation 0.
-**Root Cause**: This typically happens when the geographical calculation engine fails to acquire a lock on the routing table, or when a websocket connection drops midway through a handshake.
-**Resolution**: Restart the application. If the issue persists, clear the application cache. Advanced users can check the debug logs for stack trace 410.
-
-### Error Code R-0411
-**Symptom**: The application throws error R-0411 during operation 1.
-**Root Cause**: This typically happens when the geographical calculation engine fails to acquire a lock on the routing table, or when a websocket connection drops midway through a handshake.
-**Resolution**: Restart the application. If the issue persists, clear the application cache. Advanced users can check the debug logs for stack trace 411.
-
-### Error Code R-0412
-**Symptom**: The application throws error R-0412 during operation 2.
-**Root Cause**: This typically happens when the geographical calculation engine fails to acquire a lock on the routing table, or when a websocket connection drops midway through a handshake.
-**Resolution**: Restart the application. If the issue persists, clear the application cache. Advanced users can check the debug logs for stack trace 412.
-
-### Error Code R-0413
-**Symptom**: The application throws error R-0413 during operation 3.
-**Root Cause**: This typically happens when the geographical calculation engine fails to acquire a lock on the routing table, or when a websocket connection drops midway through a handshake.
-**Resolution**: Restart the application. If the issue persists, clear the application cache. Advanced users can check the debug logs for stack trace 413.
-
-### Error Code R-0414
-**Symptom**: The application throws error R-0414 during operation 4.
-**Root Cause**: This typically happens when the geographical calculation engine fails to acquire a lock on the routing table, or when a websocket connection drops midway through a handshake.
-**Resolution**: Restart the application. If the issue persists, clear the application cache. Advanced users can check the debug logs for stack trace 414.
-
-### Error Code R-0415
-**Symptom**: The application throws error R-0415 during operation 5.
-**Root Cause**: This typically happens when the geographical calculation engine fails to acquire a lock on the routing table, or when a websocket connection drops midway through a handshake.
-**Resolution**: Restart the application. If the issue persists, clear the application cache. Advanced users can check the debug logs for stack trace 415.
-
-### Error Code R-0416
-**Symptom**: The application throws error R-0416 during operation 6.
-**Root Cause**: This typically happens when the geographical calculation engine fails to acquire a lock on the routing table, or when a websocket connection drops midway through a handshake.
-**Resolution**: Restart the application. If the issue persists, clear the application cache. Advanced users can check the debug logs for stack trace 416.
-
-### Error Code R-0417
-**Symptom**: The application throws error R-0417 during operation 7.
-**Root Cause**: This typically happens when the geographical calculation engine fails to acquire a lock on the routing table, or when a websocket connection drops midway through a handshake.
-**Resolution**: Restart the application. If the issue persists, clear the application cache. Advanced users can check the debug logs for stack trace 417.
-
-### Error Code R-0418
-**Symptom**: The application throws error R-0418 during operation 8.
-**Root Cause**: This typically happens when the geographical calculation engine fails to acquire a lock on the routing table, or when a websocket connection drops midway through a handshake.
-**Resolution**: Restart the application. If the issue persists, clear the application cache. Advanced users can check the debug logs for stack trace 418.
-
-### Error Code R-0419
-**Symptom**: The application throws error R-0419 during operation 9.
-**Root Cause**: This typically happens when the geographical calculation engine fails to acquire a lock on the routing table, or when a websocket connection drops midway through a handshake.
-**Resolution**: Restart the application. If the issue persists, clear the application cache. Advanced users can check the debug logs for stack trace 419.
-
-### Error Code R-0420
-**Symptom**: The application throws error R-0420 during operation 0.
-**Root Cause**: This typically happens when the geographical calculation engine fails to acquire a lock on the routing table, or when a websocket connection drops midway through a handshake.
-**Resolution**: Restart the application. If the issue persists, clear the application cache. Advanced users can check the debug logs for stack trace 420.
-
-### Error Code R-0421
-**Symptom**: The application throws error R-0421 during operation 1.
-**Root Cause**: This typically happens when the geographical calculation engine fails to acquire a lock on the routing table, or when a websocket connection drops midway through a handshake.
-**Resolution**: Restart the application. If the issue persists, clear the application cache. Advanced users can check the debug logs for stack trace 421.
-
-### Error Code R-0422
-**Symptom**: The application throws error R-0422 during operation 2.
-**Root Cause**: This typically happens when the geographical calculation engine fails to acquire a lock on the routing table, or when a websocket connection drops midway through a handshake.
-**Resolution**: Restart the application. If the issue persists, clear the application cache. Advanced users can check the debug logs for stack trace 422.
-
-### Error Code R-0423
-**Symptom**: The application throws error R-0423 during operation 3.
-**Root Cause**: This typically happens when the geographical calculation engine fails to acquire a lock on the routing table, or when a websocket connection drops midway through a handshake.
-**Resolution**: Restart the application. If the issue persists, clear the application cache. Advanced users can check the debug logs for stack trace 423.
-
-### Error Code R-0424
-**Symptom**: The application throws error R-0424 during operation 4.
-**Root Cause**: This typically happens when the geographical calculation engine fails to acquire a lock on the routing table, or when a websocket connection drops midway through a handshake.
-**Resolution**: Restart the application. If the issue persists, clear the application cache. Advanced users can check the debug logs for stack trace 424.
-
-### Error Code R-0425
-**Symptom**: The application throws error R-0425 during operation 5.
-**Root Cause**: This typically happens when the geographical calculation engine fails to acquire a lock on the routing table, or when a websocket connection drops midway through a handshake.
-**Resolution**: Restart the application. If the issue persists, clear the application cache. Advanced users can check the debug logs for stack trace 425.
-
-### Error Code R-0426
-**Symptom**: The application throws error R-0426 during operation 6.
-**Root Cause**: This typically happens when the geographical calculation engine fails to acquire a lock on the routing table, or when a websocket connection drops midway through a handshake.
-**Resolution**: Restart the application. If the issue persists, clear the application cache. Advanced users can check the debug logs for stack trace 426.
-
-### Error Code R-0427
-**Symptom**: The application throws error R-0427 during operation 7.
-**Root Cause**: This typically happens when the geographical calculation engine fails to acquire a lock on the routing table, or when a websocket connection drops midway through a handshake.
-**Resolution**: Restart the application. If the issue persists, clear the application cache. Advanced users can check the debug logs for stack trace 427.
-
-### Error Code R-0428
-**Symptom**: The application throws error R-0428 during operation 8.
-**Root Cause**: This typically happens when the geographical calculation engine fails to acquire a lock on the routing table, or when a websocket connection drops midway through a handshake.
-**Resolution**: Restart the application. If the issue persists, clear the application cache. Advanced users can check the debug logs for stack trace 428.
-
-### Error Code R-0429
-**Symptom**: The application throws error R-0429 during operation 9.
-**Root Cause**: This typically happens when the geographical calculation engine fails to acquire a lock on the routing table, or when a websocket connection drops midway through a handshake.
-**Resolution**: Restart the application. If the issue persists, clear the application cache. Advanced users can check the debug logs for stack trace 429.
-
-### Error Code R-0430
-**Symptom**: The application throws error R-0430 during operation 0.
-**Root Cause**: This typically happens when the geographical calculation engine fails to acquire a lock on the routing table, or when a websocket connection drops midway through a handshake.
-**Resolution**: Restart the application. If the issue persists, clear the application cache. Advanced users can check the debug logs for stack trace 430.
-
-### Error Code R-0431
-**Symptom**: The application throws error R-0431 during operation 1.
-**Root Cause**: This typically happens when the geographical calculation engine fails to acquire a lock on the routing table, or when a websocket connection drops midway through a handshake.
-**Resolution**: Restart the application. If the issue persists, clear the application cache. Advanced users can check the debug logs for stack trace 431.
-
-### Error Code R-0432
-**Symptom**: The application throws error R-0432 during operation 2.
-**Root Cause**: This typically happens when the geographical calculation engine fails to acquire a lock on the routing table, or when a websocket connection drops midway through a handshake.
-**Resolution**: Restart the application. If the issue persists, clear the application cache. Advanced users can check the debug logs for stack trace 432.
-
-### Error Code R-0433
-**Symptom**: The application throws error R-0433 during operation 3.
-**Root Cause**: This typically happens when the geographical calculation engine fails to acquire a lock on the routing table, or when a websocket connection drops midway through a handshake.
-**Resolution**: Restart the application. If the issue persists, clear the application cache. Advanced users can check the debug logs for stack trace 433.
-
-### Error Code R-0434
-**Symptom**: The application throws error R-0434 during operation 4.
-**Root Cause**: This typically happens when the geographical calculation engine fails to acquire a lock on the routing table, or when a websocket connection drops midway through a handshake.
-**Resolution**: Restart the application. If the issue persists, clear the application cache. Advanced users can check the debug logs for stack trace 434.
-
-### Error Code R-0435
-**Symptom**: The application throws error R-0435 during operation 5.
-**Root Cause**: This typically happens when the geographical calculation engine fails to acquire a lock on the routing table, or when a websocket connection drops midway through a handshake.
-**Resolution**: Restart the application. If the issue persists, clear the application cache. Advanced users can check the debug logs for stack trace 435.
-
-### Error Code R-0436
-**Symptom**: The application throws error R-0436 during operation 6.
-**Root Cause**: This typically happens when the geographical calculation engine fails to acquire a lock on the routing table, or when a websocket connection drops midway through a handshake.
-**Resolution**: Restart the application. If the issue persists, clear the application cache. Advanced users can check the debug logs for stack trace 436.
-
-### Error Code R-0437
-**Symptom**: The application throws error R-0437 during operation 7.
-**Root Cause**: This typically happens when the geographical calculation engine fails to acquire a lock on the routing table, or when a websocket connection drops midway through a handshake.
-**Resolution**: Restart the application. If the issue persists, clear the application cache. Advanced users can check the debug logs for stack trace 437.
-
-### Error Code R-0438
-**Symptom**: The application throws error R-0438 during operation 8.
-**Root Cause**: This typically happens when the geographical calculation engine fails to acquire a lock on the routing table, or when a websocket connection drops midway through a handshake.
-**Resolution**: Restart the application. If the issue persists, clear the application cache. Advanced users can check the debug logs for stack trace 438.
-
-### Error Code R-0439
-**Symptom**: The application throws error R-0439 during operation 9.
-**Root Cause**: This typically happens when the geographical calculation engine fails to acquire a lock on the routing table, or when a websocket connection drops midway through a handshake.
-**Resolution**: Restart the application. If the issue persists, clear the application cache. Advanced users can check the debug logs for stack trace 439.
-
-### Error Code R-0440
-**Symptom**: The application throws error R-0440 during operation 0.
-**Root Cause**: This typically happens when the geographical calculation engine fails to acquire a lock on the routing table, or when a websocket connection drops midway through a handshake.
-**Resolution**: Restart the application. If the issue persists, clear the application cache. Advanced users can check the debug logs for stack trace 440.
-
-### Error Code R-0441
-**Symptom**: The application throws error R-0441 during operation 1.
-**Root Cause**: This typically happens when the geographical calculation engine fails to acquire a lock on the routing table, or when a websocket connection drops midway through a handshake.
-**Resolution**: Restart the application. If the issue persists, clear the application cache. Advanced users can check the debug logs for stack trace 441.
-
-### Error Code R-0442
-**Symptom**: The application throws error R-0442 during operation 2.
-**Root Cause**: This typically happens when the geographical calculation engine fails to acquire a lock on the routing table, or when a websocket connection drops midway through a handshake.
-**Resolution**: Restart the application. If the issue persists, clear the application cache. Advanced users can check the debug logs for stack trace 442.
-
-### Error Code R-0443
-**Symptom**: The application throws error R-0443 during operation 3.
-**Root Cause**: This typically happens when the geographical calculation engine fails to acquire a lock on the routing table, or when a websocket connection drops midway through a handshake.
-**Resolution**: Restart the application. If the issue persists, clear the application cache. Advanced users can check the debug logs for stack trace 443.
-
-### Error Code R-0444
-**Symptom**: The application throws error R-0444 during operation 4.
-**Root Cause**: This typically happens when the geographical calculation engine fails to acquire a lock on the routing table, or when a websocket connection drops midway through a handshake.
-**Resolution**: Restart the application. If the issue persists, clear the application cache. Advanced users can check the debug logs for stack trace 444.
-
-### Error Code R-0445
-**Symptom**: The application throws error R-0445 during operation 5.
-**Root Cause**: This typically happens when the geographical calculation engine fails to acquire a lock on the routing table, or when a websocket connection drops midway through a handshake.
-**Resolution**: Restart the application. If the issue persists, clear the application cache. Advanced users can check the debug logs for stack trace 445.
-
-### Error Code R-0446
-**Symptom**: The application throws error R-0446 during operation 6.
-**Root Cause**: This typically happens when the geographical calculation engine fails to acquire a lock on the routing table, or when a websocket connection drops midway through a handshake.
-**Resolution**: Restart the application. If the issue persists, clear the application cache. Advanced users can check the debug logs for stack trace 446.
-
-### Error Code R-0447
-**Symptom**: The application throws error R-0447 during operation 7.
-**Root Cause**: This typically happens when the geographical calculation engine fails to acquire a lock on the routing table, or when a websocket connection drops midway through a handshake.
-**Resolution**: Restart the application. If the issue persists, clear the application cache. Advanced users can check the debug logs for stack trace 447.
-
-### Error Code R-0448
-**Symptom**: The application throws error R-0448 during operation 8.
-**Root Cause**: This typically happens when the geographical calculation engine fails to acquire a lock on the routing table, or when a websocket connection drops midway through a handshake.
-**Resolution**: Restart the application. If the issue persists, clear the application cache. Advanced users can check the debug logs for stack trace 448.
-
-### Error Code R-0449
-**Symptom**: The application throws error R-0449 during operation 9.
-**Root Cause**: This typically happens when the geographical calculation engine fails to acquire a lock on the routing table, or when a websocket connection drops midway through a handshake.
-**Resolution**: Restart the application. If the issue persists, clear the application cache. Advanced users can check the debug logs for stack trace 449.
-
-### Error Code R-0450
-**Symptom**: The application throws error R-0450 during operation 0.
-**Root Cause**: This typically happens when the geographical calculation engine fails to acquire a lock on the routing table, or when a websocket connection drops midway through a handshake.
-**Resolution**: Restart the application. If the issue persists, clear the application cache. Advanced users can check the debug logs for stack trace 450.
-
-### Error Code R-0451
-**Symptom**: The application throws error R-0451 during operation 1.
-**Root Cause**: This typically happens when the geographical calculation engine fails to acquire a lock on the routing table, or when a websocket connection drops midway through a handshake.
-**Resolution**: Restart the application. If the issue persists, clear the application cache. Advanced users can check the debug logs for stack trace 451.
-
-### Error Code R-0452
-**Symptom**: The application throws error R-0452 during operation 2.
-**Root Cause**: This typically happens when the geographical calculation engine fails to acquire a lock on the routing table, or when a websocket connection drops midway through a handshake.
-**Resolution**: Restart the application. If the issue persists, clear the application cache. Advanced users can check the debug logs for stack trace 452.
-
-### Error Code R-0453
-**Symptom**: The application throws error R-0453 during operation 3.
-**Root Cause**: This typically happens when the geographical calculation engine fails to acquire a lock on the routing table, or when a websocket connection drops midway through a handshake.
-**Resolution**: Restart the application. If the issue persists, clear the application cache. Advanced users can check the debug logs for stack trace 453.
-
-### Error Code R-0454
-**Symptom**: The application throws error R-0454 during operation 4.
-**Root Cause**: This typically happens when the geographical calculation engine fails to acquire a lock on the routing table, or when a websocket connection drops midway through a handshake.
-**Resolution**: Restart the application. If the issue persists, clear the application cache. Advanced users can check the debug logs for stack trace 454.
-
-### Error Code R-0455
-**Symptom**: The application throws error R-0455 during operation 5.
-**Root Cause**: This typically happens when the geographical calculation engine fails to acquire a lock on the routing table, or when a websocket connection drops midway through a handshake.
-**Resolution**: Restart the application. If the issue persists, clear the application cache. Advanced users can check the debug logs for stack trace 455.
-
-### Error Code R-0456
-**Symptom**: The application throws error R-0456 during operation 6.
-**Root Cause**: This typically happens when the geographical calculation engine fails to acquire a lock on the routing table, or when a websocket connection drops midway through a handshake.
-**Resolution**: Restart the application. If the issue persists, clear the application cache. Advanced users can check the debug logs for stack trace 456.
-
-### Error Code R-0457
-**Symptom**: The application throws error R-0457 during operation 7.
-**Root Cause**: This typically happens when the geographical calculation engine fails to acquire a lock on the routing table, or when a websocket connection drops midway through a handshake.
-**Resolution**: Restart the application. If the issue persists, clear the application cache. Advanced users can check the debug logs for stack trace 457.
-
-### Error Code R-0458
-**Symptom**: The application throws error R-0458 during operation 8.
-**Root Cause**: This typically happens when the geographical calculation engine fails to acquire a lock on the routing table, or when a websocket connection drops midway through a handshake.
-**Resolution**: Restart the application. If the issue persists, clear the application cache. Advanced users can check the debug logs for stack trace 458.
-
-### Error Code R-0459
-**Symptom**: The application throws error R-0459 during operation 9.
-**Root Cause**: This typically happens when the geographical calculation engine fails to acquire a lock on the routing table, or when a websocket connection drops midway through a handshake.
-**Resolution**: Restart the application. If the issue persists, clear the application cache. Advanced users can check the debug logs for stack trace 459.
-
-### Error Code R-0460
-**Symptom**: The application throws error R-0460 during operation 0.
-**Root Cause**: This typically happens when the geographical calculation engine fails to acquire a lock on the routing table, or when a websocket connection drops midway through a handshake.
-**Resolution**: Restart the application. If the issue persists, clear the application cache. Advanced users can check the debug logs for stack trace 460.
-
-### Error Code R-0461
-**Symptom**: The application throws error R-0461 during operation 1.
-**Root Cause**: This typically happens when the geographical calculation engine fails to acquire a lock on the routing table, or when a websocket connection drops midway through a handshake.
-**Resolution**: Restart the application. If the issue persists, clear the application cache. Advanced users can check the debug logs for stack trace 461.
-
-### Error Code R-0462
-**Symptom**: The application throws error R-0462 during operation 2.
-**Root Cause**: This typically happens when the geographical calculation engine fails to acquire a lock on the routing table, or when a websocket connection drops midway through a handshake.
-**Resolution**: Restart the application. If the issue persists, clear the application cache. Advanced users can check the debug logs for stack trace 462.
-
-### Error Code R-0463
-**Symptom**: The application throws error R-0463 during operation 3.
-**Root Cause**: This typically happens when the geographical calculation engine fails to acquire a lock on the routing table, or when a websocket connection drops midway through a handshake.
-**Resolution**: Restart the application. If the issue persists, clear the application cache. Advanced users can check the debug logs for stack trace 463.
-
-### Error Code R-0464
-**Symptom**: The application throws error R-0464 during operation 4.
-**Root Cause**: This typically happens when the geographical calculation engine fails to acquire a lock on the routing table, or when a websocket connection drops midway through a handshake.
-**Resolution**: Restart the application. If the issue persists, clear the application cache. Advanced users can check the debug logs for stack trace 464.
-
-### Error Code R-0465
-**Symptom**: The application throws error R-0465 during operation 5.
-**Root Cause**: This typically happens when the geographical calculation engine fails to acquire a lock on the routing table, or when a websocket connection drops midway through a handshake.
-**Resolution**: Restart the application. If the issue persists, clear the application cache. Advanced users can check the debug logs for stack trace 465.
-
-### Error Code R-0466
-**Symptom**: The application throws error R-0466 during operation 6.
-**Root Cause**: This typically happens when the geographical calculation engine fails to acquire a lock on the routing table, or when a websocket connection drops midway through a handshake.
-**Resolution**: Restart the application. If the issue persists, clear the application cache. Advanced users can check the debug logs for stack trace 466.
-
-### Error Code R-0467
-**Symptom**: The application throws error R-0467 during operation 7.
-**Root Cause**: This typically happens when the geographical calculation engine fails to acquire a lock on the routing table, or when a websocket connection drops midway through a handshake.
-**Resolution**: Restart the application. If the issue persists, clear the application cache. Advanced users can check the debug logs for stack trace 467.
-
-### Error Code R-0468
-**Symptom**: The application throws error R-0468 during operation 8.
-**Root Cause**: This typically happens when the geographical calculation engine fails to acquire a lock on the routing table, or when a websocket connection drops midway through a handshake.
-**Resolution**: Restart the application. If the issue persists, clear the application cache. Advanced users can check the debug logs for stack trace 468.
-
-### Error Code R-0469
-**Symptom**: The application throws error R-0469 during operation 9.
-**Root Cause**: This typically happens when the geographical calculation engine fails to acquire a lock on the routing table, or when a websocket connection drops midway through a handshake.
-**Resolution**: Restart the application. If the issue persists, clear the application cache. Advanced users can check the debug logs for stack trace 469.
-
-### Error Code R-0470
-**Symptom**: The application throws error R-0470 during operation 0.
-**Root Cause**: This typically happens when the geographical calculation engine fails to acquire a lock on the routing table, or when a websocket connection drops midway through a handshake.
-**Resolution**: Restart the application. If the issue persists, clear the application cache. Advanced users can check the debug logs for stack trace 470.
-
-### Error Code R-0471
-**Symptom**: The application throws error R-0471 during operation 1.
-**Root Cause**: This typically happens when the geographical calculation engine fails to acquire a lock on the routing table, or when a websocket connection drops midway through a handshake.
-**Resolution**: Restart the application. If the issue persists, clear the application cache. Advanced users can check the debug logs for stack trace 471.
-
-### Error Code R-0472
-**Symptom**: The application throws error R-0472 during operation 2.
-**Root Cause**: This typically happens when the geographical calculation engine fails to acquire a lock on the routing table, or when a websocket connection drops midway through a handshake.
-**Resolution**: Restart the application. If the issue persists, clear the application cache. Advanced users can check the debug logs for stack trace 472.
-
-### Error Code R-0473
-**Symptom**: The application throws error R-0473 during operation 3.
-**Root Cause**: This typically happens when the geographical calculation engine fails to acquire a lock on the routing table, or when a websocket connection drops midway through a handshake.
-**Resolution**: Restart the application. If the issue persists, clear the application cache. Advanced users can check the debug logs for stack trace 473.
-
-### Error Code R-0474
-**Symptom**: The application throws error R-0474 during operation 4.
-**Root Cause**: This typically happens when the geographical calculation engine fails to acquire a lock on the routing table, or when a websocket connection drops midway through a handshake.
-**Resolution**: Restart the application. If the issue persists, clear the application cache. Advanced users can check the debug logs for stack trace 474.
-
-### Error Code R-0475
-**Symptom**: The application throws error R-0475 during operation 5.
-**Root Cause**: This typically happens when the geographical calculation engine fails to acquire a lock on the routing table, or when a websocket connection drops midway through a handshake.
-**Resolution**: Restart the application. If the issue persists, clear the application cache. Advanced users can check the debug logs for stack trace 475.
-
-### Error Code R-0476
-**Symptom**: The application throws error R-0476 during operation 6.
-**Root Cause**: This typically happens when the geographical calculation engine fails to acquire a lock on the routing table, or when a websocket connection drops midway through a handshake.
-**Resolution**: Restart the application. If the issue persists, clear the application cache. Advanced users can check the debug logs for stack trace 476.
-
-### Error Code R-0477
-**Symptom**: The application throws error R-0477 during operation 7.
-**Root Cause**: This typically happens when the geographical calculation engine fails to acquire a lock on the routing table, or when a websocket connection drops midway through a handshake.
-**Resolution**: Restart the application. If the issue persists, clear the application cache. Advanced users can check the debug logs for stack trace 477.
-
-### Error Code R-0478
-**Symptom**: The application throws error R-0478 during operation 8.
-**Root Cause**: This typically happens when the geographical calculation engine fails to acquire a lock on the routing table, or when a websocket connection drops midway through a handshake.
-**Resolution**: Restart the application. If the issue persists, clear the application cache. Advanced users can check the debug logs for stack trace 478.
-
-### Error Code R-0479
-**Symptom**: The application throws error R-0479 during operation 9.
-**Root Cause**: This typically happens when the geographical calculation engine fails to acquire a lock on the routing table, or when a websocket connection drops midway through a handshake.
-**Resolution**: Restart the application. If the issue persists, clear the application cache. Advanced users can check the debug logs for stack trace 479.
-
-### Error Code R-0480
-**Symptom**: The application throws error R-0480 during operation 0.
-**Root Cause**: This typically happens when the geographical calculation engine fails to acquire a lock on the routing table, or when a websocket connection drops midway through a handshake.
-**Resolution**: Restart the application. If the issue persists, clear the application cache. Advanced users can check the debug logs for stack trace 480.
-
-### Error Code R-0481
-**Symptom**: The application throws error R-0481 during operation 1.
-**Root Cause**: This typically happens when the geographical calculation engine fails to acquire a lock on the routing table, or when a websocket connection drops midway through a handshake.
-**Resolution**: Restart the application. If the issue persists, clear the application cache. Advanced users can check the debug logs for stack trace 481.
-
-### Error Code R-0482
-**Symptom**: The application throws error R-0482 during operation 2.
-**Root Cause**: This typically happens when the geographical calculation engine fails to acquire a lock on the routing table, or when a websocket connection drops midway through a handshake.
-**Resolution**: Restart the application. If the issue persists, clear the application cache. Advanced users can check the debug logs for stack trace 482.
-
-### Error Code R-0483
-**Symptom**: The application throws error R-0483 during operation 3.
-**Root Cause**: This typically happens when the geographical calculation engine fails to acquire a lock on the routing table, or when a websocket connection drops midway through a handshake.
-**Resolution**: Restart the application. If the issue persists, clear the application cache. Advanced users can check the debug logs for stack trace 483.
-
-### Error Code R-0484
-**Symptom**: The application throws error R-0484 during operation 4.
-**Root Cause**: This typically happens when the geographical calculation engine fails to acquire a lock on the routing table, or when a websocket connection drops midway through a handshake.
-**Resolution**: Restart the application. If the issue persists, clear the application cache. Advanced users can check the debug logs for stack trace 484.
-
-### Error Code R-0485
-**Symptom**: The application throws error R-0485 during operation 5.
-**Root Cause**: This typically happens when the geographical calculation engine fails to acquire a lock on the routing table, or when a websocket connection drops midway through a handshake.
-**Resolution**: Restart the application. If the issue persists, clear the application cache. Advanced users can check the debug logs for stack trace 485.
-
-### Error Code R-0486
-**Symptom**: The application throws error R-0486 during operation 6.
-**Root Cause**: This typically happens when the geographical calculation engine fails to acquire a lock on the routing table, or when a websocket connection drops midway through a handshake.
-**Resolution**: Restart the application. If the issue persists, clear the application cache. Advanced users can check the debug logs for stack trace 486.
-
-### Error Code R-0487
-**Symptom**: The application throws error R-0487 during operation 7.
-**Root Cause**: This typically happens when the geographical calculation engine fails to acquire a lock on the routing table, or when a websocket connection drops midway through a handshake.
-**Resolution**: Restart the application. If the issue persists, clear the application cache. Advanced users can check the debug logs for stack trace 487.
-
-### Error Code R-0488
-**Symptom**: The application throws error R-0488 during operation 8.
-**Root Cause**: This typically happens when the geographical calculation engine fails to acquire a lock on the routing table, or when a websocket connection drops midway through a handshake.
-**Resolution**: Restart the application. If the issue persists, clear the application cache. Advanced users can check the debug logs for stack trace 488.
-
-### Error Code R-0489
-**Symptom**: The application throws error R-0489 during operation 9.
-**Root Cause**: This typically happens when the geographical calculation engine fails to acquire a lock on the routing table, or when a websocket connection drops midway through a handshake.
-**Resolution**: Restart the application. If the issue persists, clear the application cache. Advanced users can check the debug logs for stack trace 489.
-
-### Error Code R-0490
-**Symptom**: The application throws error R-0490 during operation 0.
-**Root Cause**: This typically happens when the geographical calculation engine fails to acquire a lock on the routing table, or when a websocket connection drops midway through a handshake.
-**Resolution**: Restart the application. If the issue persists, clear the application cache. Advanced users can check the debug logs for stack trace 490.
-
-### Error Code R-0491
-**Symptom**: The application throws error R-0491 during operation 1.
-**Root Cause**: This typically happens when the geographical calculation engine fails to acquire a lock on the routing table, or when a websocket connection drops midway through a handshake.
-**Resolution**: Restart the application. If the issue persists, clear the application cache. Advanced users can check the debug logs for stack trace 491.
-
-### Error Code R-0492
-**Symptom**: The application throws error R-0492 during operation 2.
-**Root Cause**: This typically happens when the geographical calculation engine fails to acquire a lock on the routing table, or when a websocket connection drops midway through a handshake.
-**Resolution**: Restart the application. If the issue persists, clear the application cache. Advanced users can check the debug logs for stack trace 492.
-
-### Error Code R-0493
-**Symptom**: The application throws error R-0493 during operation 3.
-**Root Cause**: This typically happens when the geographical calculation engine fails to acquire a lock on the routing table, or when a websocket connection drops midway through a handshake.
-**Resolution**: Restart the application. If the issue persists, clear the application cache. Advanced users can check the debug logs for stack trace 493.
-
-### Error Code R-0494
-**Symptom**: The application throws error R-0494 during operation 4.
-**Root Cause**: This typically happens when the geographical calculation engine fails to acquire a lock on the routing table, or when a websocket connection drops midway through a handshake.
-**Resolution**: Restart the application. If the issue persists, clear the application cache. Advanced users can check the debug logs for stack trace 494.
-
-### Error Code R-0495
-**Symptom**: The application throws error R-0495 during operation 5.
-**Root Cause**: This typically happens when the geographical calculation engine fails to acquire a lock on the routing table, or when a websocket connection drops midway through a handshake.
-**Resolution**: Restart the application. If the issue persists, clear the application cache. Advanced users can check the debug logs for stack trace 495.
-
-### Error Code R-0496
-**Symptom**: The application throws error R-0496 during operation 6.
-**Root Cause**: This typically happens when the geographical calculation engine fails to acquire a lock on the routing table, or when a websocket connection drops midway through a handshake.
-**Resolution**: Restart the application. If the issue persists, clear the application cache. Advanced users can check the debug logs for stack trace 496.
-
-### Error Code R-0497
-**Symptom**: The application throws error R-0497 during operation 7.
-**Root Cause**: This typically happens when the geographical calculation engine fails to acquire a lock on the routing table, or when a websocket connection drops midway through a handshake.
-**Resolution**: Restart the application. If the issue persists, clear the application cache. Advanced users can check the debug logs for stack trace 497.
-
-### Error Code R-0498
-**Symptom**: The application throws error R-0498 during operation 8.
-**Root Cause**: This typically happens when the geographical calculation engine fails to acquire a lock on the routing table, or when a websocket connection drops midway through a handshake.
-**Resolution**: Restart the application. If the issue persists, clear the application cache. Advanced users can check the debug logs for stack trace 498.
-
-### Error Code R-0499
-**Symptom**: The application throws error R-0499 during operation 9.
-**Root Cause**: This typically happens when the geographical calculation engine fails to acquire a lock on the routing table, or when a websocket connection drops midway through a handshake.
-**Resolution**: Restart the application. If the issue persists, clear the application cache. Advanced users can check the debug logs for stack trace 499.
-
-### Error Code R-0500
-**Symptom**: The application throws error R-0500 during operation 0.
-**Root Cause**: This typically happens when the geographical calculation engine fails to acquire a lock on the routing table, or when a websocket connection drops midway through a handshake.
-**Resolution**: Restart the application. If the issue persists, clear the application cache. Advanced users can check the debug logs for stack trace 500.
-
-## 12. Terms of Service & Legal
-### Clause 1: Usage Limitations
-By using the Ridify platform, the user agrees to Clause 1, which explicitly prohibits the unauthorized exploitation of the ride-matching algorithm. Violations of this clause will result in an immediate suspension of the account pending an administrative review, as outlined in subsection 1.1.
-
-### Clause 2: Usage Limitations
-By using the Ridify platform, the user agrees to Clause 2, which explicitly prohibits the unauthorized exploitation of the ride-matching algorithm. Violations of this clause will result in an immediate suspension of the account pending an administrative review, as outlined in subsection 2.2.
-
-### Clause 3: Usage Limitations
-By using the Ridify platform, the user agrees to Clause 3, which explicitly prohibits the unauthorized exploitation of the ride-matching algorithm. Violations of this clause will result in an immediate suspension of the account pending an administrative review, as outlined in subsection 3.3.
-
-### Clause 4: Usage Limitations
-By using the Ridify platform, the user agrees to Clause 4, which explicitly prohibits the unauthorized exploitation of the ride-matching algorithm. Violations of this clause will result in an immediate suspension of the account pending an administrative review, as outlined in subsection 4.4.
-
-### Clause 5: Usage Limitations
-By using the Ridify platform, the user agrees to Clause 5, which explicitly prohibits the unauthorized exploitation of the ride-matching algorithm. Violations of this clause will result in an immediate suspension of the account pending an administrative review, as outlined in subsection 5.5.
-
-### Clause 6: Usage Limitations
-By using the Ridify platform, the user agrees to Clause 6, which explicitly prohibits the unauthorized exploitation of the ride-matching algorithm. Violations of this clause will result in an immediate suspension of the account pending an administrative review, as outlined in subsection 6.6.
-
-### Clause 7: Usage Limitations
-By using the Ridify platform, the user agrees to Clause 7, which explicitly prohibits the unauthorized exploitation of the ride-matching algorithm. Violations of this clause will result in an immediate suspension of the account pending an administrative review, as outlined in subsection 7.7.
-
-### Clause 8: Usage Limitations
-By using the Ridify platform, the user agrees to Clause 8, which explicitly prohibits the unauthorized exploitation of the ride-matching algorithm. Violations of this clause will result in an immediate suspension of the account pending an administrative review, as outlined in subsection 8.8.
-
-### Clause 9: Usage Limitations
-By using the Ridify platform, the user agrees to Clause 9, which explicitly prohibits the unauthorized exploitation of the ride-matching algorithm. Violations of this clause will result in an immediate suspension of the account pending an administrative review, as outlined in subsection 9.9.
-
-### Clause 10: Usage Limitations
-By using the Ridify platform, the user agrees to Clause 10, which explicitly prohibits the unauthorized exploitation of the ride-matching algorithm. Violations of this clause will result in an immediate suspension of the account pending an administrative review, as outlined in subsection 10.10.
-
-### Clause 11: Usage Limitations
-By using the Ridify platform, the user agrees to Clause 11, which explicitly prohibits the unauthorized exploitation of the ride-matching algorithm. Violations of this clause will result in an immediate suspension of the account pending an administrative review, as outlined in subsection 11.11.
-
-### Clause 12: Usage Limitations
-By using the Ridify platform, the user agrees to Clause 12, which explicitly prohibits the unauthorized exploitation of the ride-matching algorithm. Violations of this clause will result in an immediate suspension of the account pending an administrative review, as outlined in subsection 12.12.
-
-### Clause 13: Usage Limitations
-By using the Ridify platform, the user agrees to Clause 13, which explicitly prohibits the unauthorized exploitation of the ride-matching algorithm. Violations of this clause will result in an immediate suspension of the account pending an administrative review, as outlined in subsection 13.13.
-
-### Clause 14: Usage Limitations
-By using the Ridify platform, the user agrees to Clause 14, which explicitly prohibits the unauthorized exploitation of the ride-matching algorithm. Violations of this clause will result in an immediate suspension of the account pending an administrative review, as outlined in subsection 14.14.
-
-### Clause 15: Usage Limitations
-By using the Ridify platform, the user agrees to Clause 15, which explicitly prohibits the unauthorized exploitation of the ride-matching algorithm. Violations of this clause will result in an immediate suspension of the account pending an administrative review, as outlined in subsection 15.15.
-
-### Clause 16: Usage Limitations
-By using the Ridify platform, the user agrees to Clause 16, which explicitly prohibits the unauthorized exploitation of the ride-matching algorithm. Violations of this clause will result in an immediate suspension of the account pending an administrative review, as outlined in subsection 16.16.
-
-### Clause 17: Usage Limitations
-By using the Ridify platform, the user agrees to Clause 17, which explicitly prohibits the unauthorized exploitation of the ride-matching algorithm. Violations of this clause will result in an immediate suspension of the account pending an administrative review, as outlined in subsection 17.17.
-
-### Clause 18: Usage Limitations
-By using the Ridify platform, the user agrees to Clause 18, which explicitly prohibits the unauthorized exploitation of the ride-matching algorithm. Violations of this clause will result in an immediate suspension of the account pending an administrative review, as outlined in subsection 18.18.
-
-### Clause 19: Usage Limitations
-By using the Ridify platform, the user agrees to Clause 19, which explicitly prohibits the unauthorized exploitation of the ride-matching algorithm. Violations of this clause will result in an immediate suspension of the account pending an administrative review, as outlined in subsection 19.19.
-
-### Clause 20: Usage Limitations
-By using the Ridify platform, the user agrees to Clause 20, which explicitly prohibits the unauthorized exploitation of the ride-matching algorithm. Violations of this clause will result in an immediate suspension of the account pending an administrative review, as outlined in subsection 20.20.
-
-### Clause 21: Usage Limitations
-By using the Ridify platform, the user agrees to Clause 21, which explicitly prohibits the unauthorized exploitation of the ride-matching algorithm. Violations of this clause will result in an immediate suspension of the account pending an administrative review, as outlined in subsection 21.21.
-
-### Clause 22: Usage Limitations
-By using the Ridify platform, the user agrees to Clause 22, which explicitly prohibits the unauthorized exploitation of the ride-matching algorithm. Violations of this clause will result in an immediate suspension of the account pending an administrative review, as outlined in subsection 22.22.
-
-### Clause 23: Usage Limitations
-By using the Ridify platform, the user agrees to Clause 23, which explicitly prohibits the unauthorized exploitation of the ride-matching algorithm. Violations of this clause will result in an immediate suspension of the account pending an administrative review, as outlined in subsection 23.23.
-
-### Clause 24: Usage Limitations
-By using the Ridify platform, the user agrees to Clause 24, which explicitly prohibits the unauthorized exploitation of the ride-matching algorithm. Violations of this clause will result in an immediate suspension of the account pending an administrative review, as outlined in subsection 24.24.
-
-### Clause 25: Usage Limitations
-By using the Ridify platform, the user agrees to Clause 25, which explicitly prohibits the unauthorized exploitation of the ride-matching algorithm. Violations of this clause will result in an immediate suspension of the account pending an administrative review, as outlined in subsection 25.25.
-
-### Clause 26: Usage Limitations
-By using the Ridify platform, the user agrees to Clause 26, which explicitly prohibits the unauthorized exploitation of the ride-matching algorithm. Violations of this clause will result in an immediate suspension of the account pending an administrative review, as outlined in subsection 26.26.
-
-### Clause 27: Usage Limitations
-By using the Ridify platform, the user agrees to Clause 27, which explicitly prohibits the unauthorized exploitation of the ride-matching algorithm. Violations of this clause will result in an immediate suspension of the account pending an administrative review, as outlined in subsection 27.27.
-
-### Clause 28: Usage Limitations
-By using the Ridify platform, the user agrees to Clause 28, which explicitly prohibits the unauthorized exploitation of the ride-matching algorithm. Violations of this clause will result in an immediate suspension of the account pending an administrative review, as outlined in subsection 28.28.
-
-### Clause 29: Usage Limitations
-By using the Ridify platform, the user agrees to Clause 29, which explicitly prohibits the unauthorized exploitation of the ride-matching algorithm. Violations of this clause will result in an immediate suspension of the account pending an administrative review, as outlined in subsection 29.29.
-
-### Clause 30: Usage Limitations
-By using the Ridify platform, the user agrees to Clause 30, which explicitly prohibits the unauthorized exploitation of the ride-matching algorithm. Violations of this clause will result in an immediate suspension of the account pending an administrative review, as outlined in subsection 30.30.
-
-### Clause 31: Usage Limitations
-By using the Ridify platform, the user agrees to Clause 31, which explicitly prohibits the unauthorized exploitation of the ride-matching algorithm. Violations of this clause will result in an immediate suspension of the account pending an administrative review, as outlined in subsection 31.31.
-
-### Clause 32: Usage Limitations
-By using the Ridify platform, the user agrees to Clause 32, which explicitly prohibits the unauthorized exploitation of the ride-matching algorithm. Violations of this clause will result in an immediate suspension of the account pending an administrative review, as outlined in subsection 32.32.
-
-### Clause 33: Usage Limitations
-By using the Ridify platform, the user agrees to Clause 33, which explicitly prohibits the unauthorized exploitation of the ride-matching algorithm. Violations of this clause will result in an immediate suspension of the account pending an administrative review, as outlined in subsection 33.33.
-
-### Clause 34: Usage Limitations
-By using the Ridify platform, the user agrees to Clause 34, which explicitly prohibits the unauthorized exploitation of the ride-matching algorithm. Violations of this clause will result in an immediate suspension of the account pending an administrative review, as outlined in subsection 34.34.
-
-### Clause 35: Usage Limitations
-By using the Ridify platform, the user agrees to Clause 35, which explicitly prohibits the unauthorized exploitation of the ride-matching algorithm. Violations of this clause will result in an immediate suspension of the account pending an administrative review, as outlined in subsection 35.35.
-
-### Clause 36: Usage Limitations
-By using the Ridify platform, the user agrees to Clause 36, which explicitly prohibits the unauthorized exploitation of the ride-matching algorithm. Violations of this clause will result in an immediate suspension of the account pending an administrative review, as outlined in subsection 36.36.
-
-### Clause 37: Usage Limitations
-By using the Ridify platform, the user agrees to Clause 37, which explicitly prohibits the unauthorized exploitation of the ride-matching algorithm. Violations of this clause will result in an immediate suspension of the account pending an administrative review, as outlined in subsection 37.37.
-
-### Clause 38: Usage Limitations
-By using the Ridify platform, the user agrees to Clause 38, which explicitly prohibits the unauthorized exploitation of the ride-matching algorithm. Violations of this clause will result in an immediate suspension of the account pending an administrative review, as outlined in subsection 38.38.
-
-### Clause 39: Usage Limitations
-By using the Ridify platform, the user agrees to Clause 39, which explicitly prohibits the unauthorized exploitation of the ride-matching algorithm. Violations of this clause will result in an immediate suspension of the account pending an administrative review, as outlined in subsection 39.39.
-
-### Clause 40: Usage Limitations
-By using the Ridify platform, the user agrees to Clause 40, which explicitly prohibits the unauthorized exploitation of the ride-matching algorithm. Violations of this clause will result in an immediate suspension of the account pending an administrative review, as outlined in subsection 40.40.
-
-### Clause 41: Usage Limitations
-By using the Ridify platform, the user agrees to Clause 41, which explicitly prohibits the unauthorized exploitation of the ride-matching algorithm. Violations of this clause will result in an immediate suspension of the account pending an administrative review, as outlined in subsection 41.41.
-
-### Clause 42: Usage Limitations
-By using the Ridify platform, the user agrees to Clause 42, which explicitly prohibits the unauthorized exploitation of the ride-matching algorithm. Violations of this clause will result in an immediate suspension of the account pending an administrative review, as outlined in subsection 42.42.
-
-### Clause 43: Usage Limitations
-By using the Ridify platform, the user agrees to Clause 43, which explicitly prohibits the unauthorized exploitation of the ride-matching algorithm. Violations of this clause will result in an immediate suspension of the account pending an administrative review, as outlined in subsection 43.43.
-
-### Clause 44: Usage Limitations
-By using the Ridify platform, the user agrees to Clause 44, which explicitly prohibits the unauthorized exploitation of the ride-matching algorithm. Violations of this clause will result in an immediate suspension of the account pending an administrative review, as outlined in subsection 44.44.
-
-### Clause 45: Usage Limitations
-By using the Ridify platform, the user agrees to Clause 45, which explicitly prohibits the unauthorized exploitation of the ride-matching algorithm. Violations of this clause will result in an immediate suspension of the account pending an administrative review, as outlined in subsection 45.45.
-
-### Clause 46: Usage Limitations
-By using the Ridify platform, the user agrees to Clause 46, which explicitly prohibits the unauthorized exploitation of the ride-matching algorithm. Violations of this clause will result in an immediate suspension of the account pending an administrative review, as outlined in subsection 46.46.
-
-### Clause 47: Usage Limitations
-By using the Ridify platform, the user agrees to Clause 47, which explicitly prohibits the unauthorized exploitation of the ride-matching algorithm. Violations of this clause will result in an immediate suspension of the account pending an administrative review, as outlined in subsection 47.47.
-
-### Clause 48: Usage Limitations
-By using the Ridify platform, the user agrees to Clause 48, which explicitly prohibits the unauthorized exploitation of the ride-matching algorithm. Violations of this clause will result in an immediate suspension of the account pending an administrative review, as outlined in subsection 48.48.
-
-### Clause 49: Usage Limitations
-By using the Ridify platform, the user agrees to Clause 49, which explicitly prohibits the unauthorized exploitation of the ride-matching algorithm. Violations of this clause will result in an immediate suspension of the account pending an administrative review, as outlined in subsection 49.49.
-
-### Clause 50: Usage Limitations
-By using the Ridify platform, the user agrees to Clause 50, which explicitly prohibits the unauthorized exploitation of the ride-matching algorithm. Violations of this clause will result in an immediate suspension of the account pending an administrative review, as outlined in subsection 50.50.
-
-### Clause 51: Usage Limitations
-By using the Ridify platform, the user agrees to Clause 51, which explicitly prohibits the unauthorized exploitation of the ride-matching algorithm. Violations of this clause will result in an immediate suspension of the account pending an administrative review, as outlined in subsection 51.51.
-
-### Clause 52: Usage Limitations
-By using the Ridify platform, the user agrees to Clause 52, which explicitly prohibits the unauthorized exploitation of the ride-matching algorithm. Violations of this clause will result in an immediate suspension of the account pending an administrative review, as outlined in subsection 52.52.
-
-### Clause 53: Usage Limitations
-By using the Ridify platform, the user agrees to Clause 53, which explicitly prohibits the unauthorized exploitation of the ride-matching algorithm. Violations of this clause will result in an immediate suspension of the account pending an administrative review, as outlined in subsection 53.53.
-
-### Clause 54: Usage Limitations
-By using the Ridify platform, the user agrees to Clause 54, which explicitly prohibits the unauthorized exploitation of the ride-matching algorithm. Violations of this clause will result in an immediate suspension of the account pending an administrative review, as outlined in subsection 54.54.
-
-### Clause 55: Usage Limitations
-By using the Ridify platform, the user agrees to Clause 55, which explicitly prohibits the unauthorized exploitation of the ride-matching algorithm. Violations of this clause will result in an immediate suspension of the account pending an administrative review, as outlined in subsection 55.55.
-
-### Clause 56: Usage Limitations
-By using the Ridify platform, the user agrees to Clause 56, which explicitly prohibits the unauthorized exploitation of the ride-matching algorithm. Violations of this clause will result in an immediate suspension of the account pending an administrative review, as outlined in subsection 56.56.
-
-### Clause 57: Usage Limitations
-By using the Ridify platform, the user agrees to Clause 57, which explicitly prohibits the unauthorized exploitation of the ride-matching algorithm. Violations of this clause will result in an immediate suspension of the account pending an administrative review, as outlined in subsection 57.57.
-
-### Clause 58: Usage Limitations
-By using the Ridify platform, the user agrees to Clause 58, which explicitly prohibits the unauthorized exploitation of the ride-matching algorithm. Violations of this clause will result in an immediate suspension of the account pending an administrative review, as outlined in subsection 58.58.
-
-### Clause 59: Usage Limitations
-By using the Ridify platform, the user agrees to Clause 59, which explicitly prohibits the unauthorized exploitation of the ride-matching algorithm. Violations of this clause will result in an immediate suspension of the account pending an administrative review, as outlined in subsection 59.59.
-
-### Clause 60: Usage Limitations
-By using the Ridify platform, the user agrees to Clause 60, which explicitly prohibits the unauthorized exploitation of the ride-matching algorithm. Violations of this clause will result in an immediate suspension of the account pending an administrative review, as outlined in subsection 60.60.
-
-### Clause 61: Usage Limitations
-By using the Ridify platform, the user agrees to Clause 61, which explicitly prohibits the unauthorized exploitation of the ride-matching algorithm. Violations of this clause will result in an immediate suspension of the account pending an administrative review, as outlined in subsection 61.61.
-
-### Clause 62: Usage Limitations
-By using the Ridify platform, the user agrees to Clause 62, which explicitly prohibits the unauthorized exploitation of the ride-matching algorithm. Violations of this clause will result in an immediate suspension of the account pending an administrative review, as outlined in subsection 62.62.
-
-### Clause 63: Usage Limitations
-By using the Ridify platform, the user agrees to Clause 63, which explicitly prohibits the unauthorized exploitation of the ride-matching algorithm. Violations of this clause will result in an immediate suspension of the account pending an administrative review, as outlined in subsection 63.63.
-
-### Clause 64: Usage Limitations
-By using the Ridify platform, the user agrees to Clause 64, which explicitly prohibits the unauthorized exploitation of the ride-matching algorithm. Violations of this clause will result in an immediate suspension of the account pending an administrative review, as outlined in subsection 64.64.
-
-### Clause 65: Usage Limitations
-By using the Ridify platform, the user agrees to Clause 65, which explicitly prohibits the unauthorized exploitation of the ride-matching algorithm. Violations of this clause will result in an immediate suspension of the account pending an administrative review, as outlined in subsection 65.65.
-
-### Clause 66: Usage Limitations
-By using the Ridify platform, the user agrees to Clause 66, which explicitly prohibits the unauthorized exploitation of the ride-matching algorithm. Violations of this clause will result in an immediate suspension of the account pending an administrative review, as outlined in subsection 66.66.
-
-### Clause 67: Usage Limitations
-By using the Ridify platform, the user agrees to Clause 67, which explicitly prohibits the unauthorized exploitation of the ride-matching algorithm. Violations of this clause will result in an immediate suspension of the account pending an administrative review, as outlined in subsection 67.67.
-
-### Clause 68: Usage Limitations
-By using the Ridify platform, the user agrees to Clause 68, which explicitly prohibits the unauthorized exploitation of the ride-matching algorithm. Violations of this clause will result in an immediate suspension of the account pending an administrative review, as outlined in subsection 68.68.
-
-### Clause 69: Usage Limitations
-By using the Ridify platform, the user agrees to Clause 69, which explicitly prohibits the unauthorized exploitation of the ride-matching algorithm. Violations of this clause will result in an immediate suspension of the account pending an administrative review, as outlined in subsection 69.69.
-
-### Clause 70: Usage Limitations
-By using the Ridify platform, the user agrees to Clause 70, which explicitly prohibits the unauthorized exploitation of the ride-matching algorithm. Violations of this clause will result in an immediate suspension of the account pending an administrative review, as outlined in subsection 70.70.
-
-### Clause 71: Usage Limitations
-By using the Ridify platform, the user agrees to Clause 71, which explicitly prohibits the unauthorized exploitation of the ride-matching algorithm. Violations of this clause will result in an immediate suspension of the account pending an administrative review, as outlined in subsection 71.71.
-
-### Clause 72: Usage Limitations
-By using the Ridify platform, the user agrees to Clause 72, which explicitly prohibits the unauthorized exploitation of the ride-matching algorithm. Violations of this clause will result in an immediate suspension of the account pending an administrative review, as outlined in subsection 72.72.
-
-### Clause 73: Usage Limitations
-By using the Ridify platform, the user agrees to Clause 73, which explicitly prohibits the unauthorized exploitation of the ride-matching algorithm. Violations of this clause will result in an immediate suspension of the account pending an administrative review, as outlined in subsection 73.73.
-
-### Clause 74: Usage Limitations
-By using the Ridify platform, the user agrees to Clause 74, which explicitly prohibits the unauthorized exploitation of the ride-matching algorithm. Violations of this clause will result in an immediate suspension of the account pending an administrative review, as outlined in subsection 74.74.
-
-### Clause 75: Usage Limitations
-By using the Ridify platform, the user agrees to Clause 75, which explicitly prohibits the unauthorized exploitation of the ride-matching algorithm. Violations of this clause will result in an immediate suspension of the account pending an administrative review, as outlined in subsection 75.75.
-
-### Clause 76: Usage Limitations
-By using the Ridify platform, the user agrees to Clause 76, which explicitly prohibits the unauthorized exploitation of the ride-matching algorithm. Violations of this clause will result in an immediate suspension of the account pending an administrative review, as outlined in subsection 76.76.
-
-### Clause 77: Usage Limitations
-By using the Ridify platform, the user agrees to Clause 77, which explicitly prohibits the unauthorized exploitation of the ride-matching algorithm. Violations of this clause will result in an immediate suspension of the account pending an administrative review, as outlined in subsection 77.77.
-
-### Clause 78: Usage Limitations
-By using the Ridify platform, the user agrees to Clause 78, which explicitly prohibits the unauthorized exploitation of the ride-matching algorithm. Violations of this clause will result in an immediate suspension of the account pending an administrative review, as outlined in subsection 78.78.
-
-### Clause 79: Usage Limitations
-By using the Ridify platform, the user agrees to Clause 79, which explicitly prohibits the unauthorized exploitation of the ride-matching algorithm. Violations of this clause will result in an immediate suspension of the account pending an administrative review, as outlined in subsection 79.79.
-
-### Clause 80: Usage Limitations
-By using the Ridify platform, the user agrees to Clause 80, which explicitly prohibits the unauthorized exploitation of the ride-matching algorithm. Violations of this clause will result in an immediate suspension of the account pending an administrative review, as outlined in subsection 80.80.
-
-### Clause 81: Usage Limitations
-By using the Ridify platform, the user agrees to Clause 81, which explicitly prohibits the unauthorized exploitation of the ride-matching algorithm. Violations of this clause will result in an immediate suspension of the account pending an administrative review, as outlined in subsection 81.81.
-
-### Clause 82: Usage Limitations
-By using the Ridify platform, the user agrees to Clause 82, which explicitly prohibits the unauthorized exploitation of the ride-matching algorithm. Violations of this clause will result in an immediate suspension of the account pending an administrative review, as outlined in subsection 82.82.
-
-### Clause 83: Usage Limitations
-By using the Ridify platform, the user agrees to Clause 83, which explicitly prohibits the unauthorized exploitation of the ride-matching algorithm. Violations of this clause will result in an immediate suspension of the account pending an administrative review, as outlined in subsection 83.83.
-
-### Clause 84: Usage Limitations
-By using the Ridify platform, the user agrees to Clause 84, which explicitly prohibits the unauthorized exploitation of the ride-matching algorithm. Violations of this clause will result in an immediate suspension of the account pending an administrative review, as outlined in subsection 84.84.
-
-### Clause 85: Usage Limitations
-By using the Ridify platform, the user agrees to Clause 85, which explicitly prohibits the unauthorized exploitation of the ride-matching algorithm. Violations of this clause will result in an immediate suspension of the account pending an administrative review, as outlined in subsection 85.85.
-
-### Clause 86: Usage Limitations
-By using the Ridify platform, the user agrees to Clause 86, which explicitly prohibits the unauthorized exploitation of the ride-matching algorithm. Violations of this clause will result in an immediate suspension of the account pending an administrative review, as outlined in subsection 86.86.
-
-### Clause 87: Usage Limitations
-By using the Ridify platform, the user agrees to Clause 87, which explicitly prohibits the unauthorized exploitation of the ride-matching algorithm. Violations of this clause will result in an immediate suspension of the account pending an administrative review, as outlined in subsection 87.87.
-
-### Clause 88: Usage Limitations
-By using the Ridify platform, the user agrees to Clause 88, which explicitly prohibits the unauthorized exploitation of the ride-matching algorithm. Violations of this clause will result in an immediate suspension of the account pending an administrative review, as outlined in subsection 88.88.
-
-### Clause 89: Usage Limitations
-By using the Ridify platform, the user agrees to Clause 89, which explicitly prohibits the unauthorized exploitation of the ride-matching algorithm. Violations of this clause will result in an immediate suspension of the account pending an administrative review, as outlined in subsection 89.89.
-
-### Clause 90: Usage Limitations
-By using the Ridify platform, the user agrees to Clause 90, which explicitly prohibits the unauthorized exploitation of the ride-matching algorithm. Violations of this clause will result in an immediate suspension of the account pending an administrative review, as outlined in subsection 90.90.
-
-### Clause 91: Usage Limitations
-By using the Ridify platform, the user agrees to Clause 91, which explicitly prohibits the unauthorized exploitation of the ride-matching algorithm. Violations of this clause will result in an immediate suspension of the account pending an administrative review, as outlined in subsection 91.91.
-
-### Clause 92: Usage Limitations
-By using the Ridify platform, the user agrees to Clause 92, which explicitly prohibits the unauthorized exploitation of the ride-matching algorithm. Violations of this clause will result in an immediate suspension of the account pending an administrative review, as outlined in subsection 92.92.
-
-### Clause 93: Usage Limitations
-By using the Ridify platform, the user agrees to Clause 93, which explicitly prohibits the unauthorized exploitation of the ride-matching algorithm. Violations of this clause will result in an immediate suspension of the account pending an administrative review, as outlined in subsection 93.93.
-
-### Clause 94: Usage Limitations
-By using the Ridify platform, the user agrees to Clause 94, which explicitly prohibits the unauthorized exploitation of the ride-matching algorithm. Violations of this clause will result in an immediate suspension of the account pending an administrative review, as outlined in subsection 94.94.
-
-### Clause 95: Usage Limitations
-By using the Ridify platform, the user agrees to Clause 95, which explicitly prohibits the unauthorized exploitation of the ride-matching algorithm. Violations of this clause will result in an immediate suspension of the account pending an administrative review, as outlined in subsection 95.95.
-
-### Clause 96: Usage Limitations
-By using the Ridify platform, the user agrees to Clause 96, which explicitly prohibits the unauthorized exploitation of the ride-matching algorithm. Violations of this clause will result in an immediate suspension of the account pending an administrative review, as outlined in subsection 96.96.
-
-### Clause 97: Usage Limitations
-By using the Ridify platform, the user agrees to Clause 97, which explicitly prohibits the unauthorized exploitation of the ride-matching algorithm. Violations of this clause will result in an immediate suspension of the account pending an administrative review, as outlined in subsection 97.97.
-
-### Clause 98: Usage Limitations
-By using the Ridify platform, the user agrees to Clause 98, which explicitly prohibits the unauthorized exploitation of the ride-matching algorithm. Violations of this clause will result in an immediate suspension of the account pending an administrative review, as outlined in subsection 98.98.
-
-### Clause 99: Usage Limitations
-By using the Ridify platform, the user agrees to Clause 99, which explicitly prohibits the unauthorized exploitation of the ride-matching algorithm. Violations of this clause will result in an immediate suspension of the account pending an administrative review, as outlined in subsection 99.99.
-
-### Clause 100: Usage Limitations
-By using the Ridify platform, the user agrees to Clause 100, which explicitly prohibits the unauthorized exploitation of the ride-matching algorithm. Violations of this clause will result in an immediate suspension of the account pending an administrative review, as outlined in subsection 100.100.
-
-## 13. Privacy Policy
-### Section 1: Data Handling
-Under Section 1 of our Privacy Policy, all location data transmitted during an active ride is encrypted in transit using TLS 1.2 or higher. We do not sell your personal data to third parties. However, anonymized telemetry data may be used for internal analytics purposes as defined by our data retention policy (retained for no longer than 31 days).
-
-### Section 2: Data Handling
-Under Section 2 of our Privacy Policy, all location data transmitted during an active ride is encrypted in transit using TLS 1.2 or higher. We do not sell your personal data to third parties. However, anonymized telemetry data may be used for internal analytics purposes as defined by our data retention policy (retained for no longer than 32 days).
-
-### Section 3: Data Handling
-Under Section 3 of our Privacy Policy, all location data transmitted during an active ride is encrypted in transit using TLS 1.2 or higher. We do not sell your personal data to third parties. However, anonymized telemetry data may be used for internal analytics purposes as defined by our data retention policy (retained for no longer than 33 days).
-
-### Section 4: Data Handling
-Under Section 4 of our Privacy Policy, all location data transmitted during an active ride is encrypted in transit using TLS 1.2 or higher. We do not sell your personal data to third parties. However, anonymized telemetry data may be used for internal analytics purposes as defined by our data retention policy (retained for no longer than 34 days).
-
-### Section 5: Data Handling
-Under Section 5 of our Privacy Policy, all location data transmitted during an active ride is encrypted in transit using TLS 1.2 or higher. We do not sell your personal data to third parties. However, anonymized telemetry data may be used for internal analytics purposes as defined by our data retention policy (retained for no longer than 35 days).
-
-### Section 6: Data Handling
-Under Section 6 of our Privacy Policy, all location data transmitted during an active ride is encrypted in transit using TLS 1.2 or higher. We do not sell your personal data to third parties. However, anonymized telemetry data may be used for internal analytics purposes as defined by our data retention policy (retained for no longer than 36 days).
-
-### Section 7: Data Handling
-Under Section 7 of our Privacy Policy, all location data transmitted during an active ride is encrypted in transit using TLS 1.2 or higher. We do not sell your personal data to third parties. However, anonymized telemetry data may be used for internal analytics purposes as defined by our data retention policy (retained for no longer than 37 days).
-
-### Section 8: Data Handling
-Under Section 8 of our Privacy Policy, all location data transmitted during an active ride is encrypted in transit using TLS 1.2 or higher. We do not sell your personal data to third parties. However, anonymized telemetry data may be used for internal analytics purposes as defined by our data retention policy (retained for no longer than 38 days).
-
-### Section 9: Data Handling
-Under Section 9 of our Privacy Policy, all location data transmitted during an active ride is encrypted in transit using TLS 1.2 or higher. We do not sell your personal data to third parties. However, anonymized telemetry data may be used for internal analytics purposes as defined by our data retention policy (retained for no longer than 39 days).
-
-### Section 10: Data Handling
-Under Section 10 of our Privacy Policy, all location data transmitted during an active ride is encrypted in transit using TLS 1.2 or higher. We do not sell your personal data to third parties. However, anonymized telemetry data may be used for internal analytics purposes as defined by our data retention policy (retained for no longer than 40 days).
-
-### Section 11: Data Handling
-Under Section 11 of our Privacy Policy, all location data transmitted during an active ride is encrypted in transit using TLS 1.2 or higher. We do not sell your personal data to third parties. However, anonymized telemetry data may be used for internal analytics purposes as defined by our data retention policy (retained for no longer than 41 days).
-
-### Section 12: Data Handling
-Under Section 12 of our Privacy Policy, all location data transmitted during an active ride is encrypted in transit using TLS 1.2 or higher. We do not sell your personal data to third parties. However, anonymized telemetry data may be used for internal analytics purposes as defined by our data retention policy (retained for no longer than 42 days).
-
-### Section 13: Data Handling
-Under Section 13 of our Privacy Policy, all location data transmitted during an active ride is encrypted in transit using TLS 1.2 or higher. We do not sell your personal data to third parties. However, anonymized telemetry data may be used for internal analytics purposes as defined by our data retention policy (retained for no longer than 43 days).
-
-### Section 14: Data Handling
-Under Section 14 of our Privacy Policy, all location data transmitted during an active ride is encrypted in transit using TLS 1.2 or higher. We do not sell your personal data to third parties. However, anonymized telemetry data may be used for internal analytics purposes as defined by our data retention policy (retained for no longer than 44 days).
-
-### Section 15: Data Handling
-Under Section 15 of our Privacy Policy, all location data transmitted during an active ride is encrypted in transit using TLS 1.2 or higher. We do not sell your personal data to third parties. However, anonymized telemetry data may be used for internal analytics purposes as defined by our data retention policy (retained for no longer than 45 days).
-
-### Section 16: Data Handling
-Under Section 16 of our Privacy Policy, all location data transmitted during an active ride is encrypted in transit using TLS 1.2 or higher. We do not sell your personal data to third parties. However, anonymized telemetry data may be used for internal analytics purposes as defined by our data retention policy (retained for no longer than 46 days).
-
-### Section 17: Data Handling
-Under Section 17 of our Privacy Policy, all location data transmitted during an active ride is encrypted in transit using TLS 1.2 or higher. We do not sell your personal data to third parties. However, anonymized telemetry data may be used for internal analytics purposes as defined by our data retention policy (retained for no longer than 47 days).
-
-### Section 18: Data Handling
-Under Section 18 of our Privacy Policy, all location data transmitted during an active ride is encrypted in transit using TLS 1.2 or higher. We do not sell your personal data to third parties. However, anonymized telemetry data may be used for internal analytics purposes as defined by our data retention policy (retained for no longer than 48 days).
-
-### Section 19: Data Handling
-Under Section 19 of our Privacy Policy, all location data transmitted during an active ride is encrypted in transit using TLS 1.2 or higher. We do not sell your personal data to third parties. However, anonymized telemetry data may be used for internal analytics purposes as defined by our data retention policy (retained for no longer than 49 days).
-
-### Section 20: Data Handling
-Under Section 20 of our Privacy Policy, all location data transmitted during an active ride is encrypted in transit using TLS 1.2 or higher. We do not sell your personal data to third parties. However, anonymized telemetry data may be used for internal analytics purposes as defined by our data retention policy (retained for no longer than 50 days).
-
-### Section 21: Data Handling
-Under Section 21 of our Privacy Policy, all location data transmitted during an active ride is encrypted in transit using TLS 1.2 or higher. We do not sell your personal data to third parties. However, anonymized telemetry data may be used for internal analytics purposes as defined by our data retention policy (retained for no longer than 51 days).
-
-### Section 22: Data Handling
-Under Section 22 of our Privacy Policy, all location data transmitted during an active ride is encrypted in transit using TLS 1.2 or higher. We do not sell your personal data to third parties. However, anonymized telemetry data may be used for internal analytics purposes as defined by our data retention policy (retained for no longer than 52 days).
-
-### Section 23: Data Handling
-Under Section 23 of our Privacy Policy, all location data transmitted during an active ride is encrypted in transit using TLS 1.2 or higher. We do not sell your personal data to third parties. However, anonymized telemetry data may be used for internal analytics purposes as defined by our data retention policy (retained for no longer than 53 days).
-
-### Section 24: Data Handling
-Under Section 24 of our Privacy Policy, all location data transmitted during an active ride is encrypted in transit using TLS 1.2 or higher. We do not sell your personal data to third parties. However, anonymized telemetry data may be used for internal analytics purposes as defined by our data retention policy (retained for no longer than 54 days).
-
-### Section 25: Data Handling
-Under Section 25 of our Privacy Policy, all location data transmitted during an active ride is encrypted in transit using TLS 1.2 or higher. We do not sell your personal data to third parties. However, anonymized telemetry data may be used for internal analytics purposes as defined by our data retention policy (retained for no longer than 55 days).
-
-### Section 26: Data Handling
-Under Section 26 of our Privacy Policy, all location data transmitted during an active ride is encrypted in transit using TLS 1.2 or higher. We do not sell your personal data to third parties. However, anonymized telemetry data may be used for internal analytics purposes as defined by our data retention policy (retained for no longer than 56 days).
-
-### Section 27: Data Handling
-Under Section 27 of our Privacy Policy, all location data transmitted during an active ride is encrypted in transit using TLS 1.2 or higher. We do not sell your personal data to third parties. However, anonymized telemetry data may be used for internal analytics purposes as defined by our data retention policy (retained for no longer than 57 days).
-
-### Section 28: Data Handling
-Under Section 28 of our Privacy Policy, all location data transmitted during an active ride is encrypted in transit using TLS 1.2 or higher. We do not sell your personal data to third parties. However, anonymized telemetry data may be used for internal analytics purposes as defined by our data retention policy (retained for no longer than 58 days).
-
-### Section 29: Data Handling
-Under Section 29 of our Privacy Policy, all location data transmitted during an active ride is encrypted in transit using TLS 1.2 or higher. We do not sell your personal data to third parties. However, anonymized telemetry data may be used for internal analytics purposes as defined by our data retention policy (retained for no longer than 59 days).
-
-### Section 30: Data Handling
-Under Section 30 of our Privacy Policy, all location data transmitted during an active ride is encrypted in transit using TLS 1.2 or higher. We do not sell your personal data to third parties. However, anonymized telemetry data may be used for internal analytics purposes as defined by our data retention policy (retained for no longer than 60 days).
-
-### Section 31: Data Handling
-Under Section 31 of our Privacy Policy, all location data transmitted during an active ride is encrypted in transit using TLS 1.2 or higher. We do not sell your personal data to third parties. However, anonymized telemetry data may be used for internal analytics purposes as defined by our data retention policy (retained for no longer than 61 days).
-
-### Section 32: Data Handling
-Under Section 32 of our Privacy Policy, all location data transmitted during an active ride is encrypted in transit using TLS 1.2 or higher. We do not sell your personal data to third parties. However, anonymized telemetry data may be used for internal analytics purposes as defined by our data retention policy (retained for no longer than 62 days).
-
-### Section 33: Data Handling
-Under Section 33 of our Privacy Policy, all location data transmitted during an active ride is encrypted in transit using TLS 1.2 or higher. We do not sell your personal data to third parties. However, anonymized telemetry data may be used for internal analytics purposes as defined by our data retention policy (retained for no longer than 63 days).
-
-### Section 34: Data Handling
-Under Section 34 of our Privacy Policy, all location data transmitted during an active ride is encrypted in transit using TLS 1.2 or higher. We do not sell your personal data to third parties. However, anonymized telemetry data may be used for internal analytics purposes as defined by our data retention policy (retained for no longer than 64 days).
-
-### Section 35: Data Handling
-Under Section 35 of our Privacy Policy, all location data transmitted during an active ride is encrypted in transit using TLS 1.2 or higher. We do not sell your personal data to third parties. However, anonymized telemetry data may be used for internal analytics purposes as defined by our data retention policy (retained for no longer than 65 days).
-
-### Section 36: Data Handling
-Under Section 36 of our Privacy Policy, all location data transmitted during an active ride is encrypted in transit using TLS 1.2 or higher. We do not sell your personal data to third parties. However, anonymized telemetry data may be used for internal analytics purposes as defined by our data retention policy (retained for no longer than 66 days).
-
-### Section 37: Data Handling
-Under Section 37 of our Privacy Policy, all location data transmitted during an active ride is encrypted in transit using TLS 1.2 or higher. We do not sell your personal data to third parties. However, anonymized telemetry data may be used for internal analytics purposes as defined by our data retention policy (retained for no longer than 67 days).
-
-### Section 38: Data Handling
-Under Section 38 of our Privacy Policy, all location data transmitted during an active ride is encrypted in transit using TLS 1.2 or higher. We do not sell your personal data to third parties. However, anonymized telemetry data may be used for internal analytics purposes as defined by our data retention policy (retained for no longer than 68 days).
-
-### Section 39: Data Handling
-Under Section 39 of our Privacy Policy, all location data transmitted during an active ride is encrypted in transit using TLS 1.2 or higher. We do not sell your personal data to third parties. However, anonymized telemetry data may be used for internal analytics purposes as defined by our data retention policy (retained for no longer than 69 days).
-
-### Section 40: Data Handling
-Under Section 40 of our Privacy Policy, all location data transmitted during an active ride is encrypted in transit using TLS 1.2 or higher. We do not sell your personal data to third parties. However, anonymized telemetry data may be used for internal analytics purposes as defined by our data retention policy (retained for no longer than 70 days).
-
-### Section 41: Data Handling
-Under Section 41 of our Privacy Policy, all location data transmitted during an active ride is encrypted in transit using TLS 1.2 or higher. We do not sell your personal data to third parties. However, anonymized telemetry data may be used for internal analytics purposes as defined by our data retention policy (retained for no longer than 71 days).
-
-### Section 42: Data Handling
-Under Section 42 of our Privacy Policy, all location data transmitted during an active ride is encrypted in transit using TLS 1.2 or higher. We do not sell your personal data to third parties. However, anonymized telemetry data may be used for internal analytics purposes as defined by our data retention policy (retained for no longer than 72 days).
-
-### Section 43: Data Handling
-Under Section 43 of our Privacy Policy, all location data transmitted during an active ride is encrypted in transit using TLS 1.2 or higher. We do not sell your personal data to third parties. However, anonymized telemetry data may be used for internal analytics purposes as defined by our data retention policy (retained for no longer than 73 days).
-
-### Section 44: Data Handling
-Under Section 44 of our Privacy Policy, all location data transmitted during an active ride is encrypted in transit using TLS 1.2 or higher. We do not sell your personal data to third parties. However, anonymized telemetry data may be used for internal analytics purposes as defined by our data retention policy (retained for no longer than 74 days).
-
-### Section 45: Data Handling
-Under Section 45 of our Privacy Policy, all location data transmitted during an active ride is encrypted in transit using TLS 1.2 or higher. We do not sell your personal data to third parties. However, anonymized telemetry data may be used for internal analytics purposes as defined by our data retention policy (retained for no longer than 75 days).
-
-### Section 46: Data Handling
-Under Section 46 of our Privacy Policy, all location data transmitted during an active ride is encrypted in transit using TLS 1.2 or higher. We do not sell your personal data to third parties. However, anonymized telemetry data may be used for internal analytics purposes as defined by our data retention policy (retained for no longer than 76 days).
-
-### Section 47: Data Handling
-Under Section 47 of our Privacy Policy, all location data transmitted during an active ride is encrypted in transit using TLS 1.2 or higher. We do not sell your personal data to third parties. However, anonymized telemetry data may be used for internal analytics purposes as defined by our data retention policy (retained for no longer than 77 days).
-
-### Section 48: Data Handling
-Under Section 48 of our Privacy Policy, all location data transmitted during an active ride is encrypted in transit using TLS 1.2 or higher. We do not sell your personal data to third parties. However, anonymized telemetry data may be used for internal analytics purposes as defined by our data retention policy (retained for no longer than 78 days).
-
-### Section 49: Data Handling
-Under Section 49 of our Privacy Policy, all location data transmitted during an active ride is encrypted in transit using TLS 1.2 or higher. We do not sell your personal data to third parties. However, anonymized telemetry data may be used for internal analytics purposes as defined by our data retention policy (retained for no longer than 79 days).
-
-### Section 50: Data Handling
-Under Section 50 of our Privacy Policy, all location data transmitted during an active ride is encrypted in transit using TLS 1.2 or higher. We do not sell your personal data to third parties. However, anonymized telemetry data may be used for internal analytics purposes as defined by our data retention policy (retained for no longer than 80 days).
-
-### Section 51: Data Handling
-Under Section 51 of our Privacy Policy, all location data transmitted during an active ride is encrypted in transit using TLS 1.2 or higher. We do not sell your personal data to third parties. However, anonymized telemetry data may be used for internal analytics purposes as defined by our data retention policy (retained for no longer than 81 days).
-
-### Section 52: Data Handling
-Under Section 52 of our Privacy Policy, all location data transmitted during an active ride is encrypted in transit using TLS 1.2 or higher. We do not sell your personal data to third parties. However, anonymized telemetry data may be used for internal analytics purposes as defined by our data retention policy (retained for no longer than 82 days).
-
-### Section 53: Data Handling
-Under Section 53 of our Privacy Policy, all location data transmitted during an active ride is encrypted in transit using TLS 1.2 or higher. We do not sell your personal data to third parties. However, anonymized telemetry data may be used for internal analytics purposes as defined by our data retention policy (retained for no longer than 83 days).
-
-### Section 54: Data Handling
-Under Section 54 of our Privacy Policy, all location data transmitted during an active ride is encrypted in transit using TLS 1.2 or higher. We do not sell your personal data to third parties. However, anonymized telemetry data may be used for internal analytics purposes as defined by our data retention policy (retained for no longer than 84 days).
-
-### Section 55: Data Handling
-Under Section 55 of our Privacy Policy, all location data transmitted during an active ride is encrypted in transit using TLS 1.2 or higher. We do not sell your personal data to third parties. However, anonymized telemetry data may be used for internal analytics purposes as defined by our data retention policy (retained for no longer than 85 days).
-
-### Section 56: Data Handling
-Under Section 56 of our Privacy Policy, all location data transmitted during an active ride is encrypted in transit using TLS 1.2 or higher. We do not sell your personal data to third parties. However, anonymized telemetry data may be used for internal analytics purposes as defined by our data retention policy (retained for no longer than 86 days).
-
-### Section 57: Data Handling
-Under Section 57 of our Privacy Policy, all location data transmitted during an active ride is encrypted in transit using TLS 1.2 or higher. We do not sell your personal data to third parties. However, anonymized telemetry data may be used for internal analytics purposes as defined by our data retention policy (retained for no longer than 87 days).
-
-### Section 58: Data Handling
-Under Section 58 of our Privacy Policy, all location data transmitted during an active ride is encrypted in transit using TLS 1.2 or higher. We do not sell your personal data to third parties. However, anonymized telemetry data may be used for internal analytics purposes as defined by our data retention policy (retained for no longer than 88 days).
-
-### Section 59: Data Handling
-Under Section 59 of our Privacy Policy, all location data transmitted during an active ride is encrypted in transit using TLS 1.2 or higher. We do not sell your personal data to third parties. However, anonymized telemetry data may be used for internal analytics purposes as defined by our data retention policy (retained for no longer than 89 days).
-
-### Section 60: Data Handling
-Under Section 60 of our Privacy Policy, all location data transmitted during an active ride is encrypted in transit using TLS 1.2 or higher. We do not sell your personal data to third parties. However, anonymized telemetry data may be used for internal analytics purposes as defined by our data retention policy (retained for no longer than 90 days).
-
-### Section 61: Data Handling
-Under Section 61 of our Privacy Policy, all location data transmitted during an active ride is encrypted in transit using TLS 1.2 or higher. We do not sell your personal data to third parties. However, anonymized telemetry data may be used for internal analytics purposes as defined by our data retention policy (retained for no longer than 91 days).
-
-### Section 62: Data Handling
-Under Section 62 of our Privacy Policy, all location data transmitted during an active ride is encrypted in transit using TLS 1.2 or higher. We do not sell your personal data to third parties. However, anonymized telemetry data may be used for internal analytics purposes as defined by our data retention policy (retained for no longer than 92 days).
-
-### Section 63: Data Handling
-Under Section 63 of our Privacy Policy, all location data transmitted during an active ride is encrypted in transit using TLS 1.2 or higher. We do not sell your personal data to third parties. However, anonymized telemetry data may be used for internal analytics purposes as defined by our data retention policy (retained for no longer than 93 days).
-
-### Section 64: Data Handling
-Under Section 64 of our Privacy Policy, all location data transmitted during an active ride is encrypted in transit using TLS 1.2 or higher. We do not sell your personal data to third parties. However, anonymized telemetry data may be used for internal analytics purposes as defined by our data retention policy (retained for no longer than 94 days).
-
-### Section 65: Data Handling
-Under Section 65 of our Privacy Policy, all location data transmitted during an active ride is encrypted in transit using TLS 1.2 or higher. We do not sell your personal data to third parties. However, anonymized telemetry data may be used for internal analytics purposes as defined by our data retention policy (retained for no longer than 95 days).
-
-### Section 66: Data Handling
-Under Section 66 of our Privacy Policy, all location data transmitted during an active ride is encrypted in transit using TLS 1.2 or higher. We do not sell your personal data to third parties. However, anonymized telemetry data may be used for internal analytics purposes as defined by our data retention policy (retained for no longer than 96 days).
-
-### Section 67: Data Handling
-Under Section 67 of our Privacy Policy, all location data transmitted during an active ride is encrypted in transit using TLS 1.2 or higher. We do not sell your personal data to third parties. However, anonymized telemetry data may be used for internal analytics purposes as defined by our data retention policy (retained for no longer than 97 days).
-
-### Section 68: Data Handling
-Under Section 68 of our Privacy Policy, all location data transmitted during an active ride is encrypted in transit using TLS 1.2 or higher. We do not sell your personal data to third parties. However, anonymized telemetry data may be used for internal analytics purposes as defined by our data retention policy (retained for no longer than 98 days).
-
-### Section 69: Data Handling
-Under Section 69 of our Privacy Policy, all location data transmitted during an active ride is encrypted in transit using TLS 1.2 or higher. We do not sell your personal data to third parties. However, anonymized telemetry data may be used for internal analytics purposes as defined by our data retention policy (retained for no longer than 99 days).
-
-### Section 70: Data Handling
-Under Section 70 of our Privacy Policy, all location data transmitted during an active ride is encrypted in transit using TLS 1.2 or higher. We do not sell your personal data to third parties. However, anonymized telemetry data may be used for internal analytics purposes as defined by our data retention policy (retained for no longer than 100 days).
-
-### Section 71: Data Handling
-Under Section 71 of our Privacy Policy, all location data transmitted during an active ride is encrypted in transit using TLS 1.2 or higher. We do not sell your personal data to third parties. However, anonymized telemetry data may be used for internal analytics purposes as defined by our data retention policy (retained for no longer than 101 days).
-
-### Section 72: Data Handling
-Under Section 72 of our Privacy Policy, all location data transmitted during an active ride is encrypted in transit using TLS 1.2 or higher. We do not sell your personal data to third parties. However, anonymized telemetry data may be used for internal analytics purposes as defined by our data retention policy (retained for no longer than 102 days).
-
-### Section 73: Data Handling
-Under Section 73 of our Privacy Policy, all location data transmitted during an active ride is encrypted in transit using TLS 1.2 or higher. We do not sell your personal data to third parties. However, anonymized telemetry data may be used for internal analytics purposes as defined by our data retention policy (retained for no longer than 103 days).
-
-### Section 74: Data Handling
-Under Section 74 of our Privacy Policy, all location data transmitted during an active ride is encrypted in transit using TLS 1.2 or higher. We do not sell your personal data to third parties. However, anonymized telemetry data may be used for internal analytics purposes as defined by our data retention policy (retained for no longer than 104 days).
-
-### Section 75: Data Handling
-Under Section 75 of our Privacy Policy, all location data transmitted during an active ride is encrypted in transit using TLS 1.2 or higher. We do not sell your personal data to third parties. However, anonymized telemetry data may be used for internal analytics purposes as defined by our data retention policy (retained for no longer than 105 days).
-
-### Section 76: Data Handling
-Under Section 76 of our Privacy Policy, all location data transmitted during an active ride is encrypted in transit using TLS 1.2 or higher. We do not sell your personal data to third parties. However, anonymized telemetry data may be used for internal analytics purposes as defined by our data retention policy (retained for no longer than 106 days).
-
-### Section 77: Data Handling
-Under Section 77 of our Privacy Policy, all location data transmitted during an active ride is encrypted in transit using TLS 1.2 or higher. We do not sell your personal data to third parties. However, anonymized telemetry data may be used for internal analytics purposes as defined by our data retention policy (retained for no longer than 107 days).
-
-### Section 78: Data Handling
-Under Section 78 of our Privacy Policy, all location data transmitted during an active ride is encrypted in transit using TLS 1.2 or higher. We do not sell your personal data to third parties. However, anonymized telemetry data may be used for internal analytics purposes as defined by our data retention policy (retained for no longer than 108 days).
-
-### Section 79: Data Handling
-Under Section 79 of our Privacy Policy, all location data transmitted during an active ride is encrypted in transit using TLS 1.2 or higher. We do not sell your personal data to third parties. However, anonymized telemetry data may be used for internal analytics purposes as defined by our data retention policy (retained for no longer than 109 days).
-
-### Section 80: Data Handling
-Under Section 80 of our Privacy Policy, all location data transmitted during an active ride is encrypted in transit using TLS 1.2 or higher. We do not sell your personal data to third parties. However, anonymized telemetry data may be used for internal analytics purposes as defined by our data retention policy (retained for no longer than 110 days).
-
-### Section 81: Data Handling
-Under Section 81 of our Privacy Policy, all location data transmitted during an active ride is encrypted in transit using TLS 1.2 or higher. We do not sell your personal data to third parties. However, anonymized telemetry data may be used for internal analytics purposes as defined by our data retention policy (retained for no longer than 111 days).
-
-### Section 82: Data Handling
-Under Section 82 of our Privacy Policy, all location data transmitted during an active ride is encrypted in transit using TLS 1.2 or higher. We do not sell your personal data to third parties. However, anonymized telemetry data may be used for internal analytics purposes as defined by our data retention policy (retained for no longer than 112 days).
-
-### Section 83: Data Handling
-Under Section 83 of our Privacy Policy, all location data transmitted during an active ride is encrypted in transit using TLS 1.2 or higher. We do not sell your personal data to third parties. However, anonymized telemetry data may be used for internal analytics purposes as defined by our data retention policy (retained for no longer than 113 days).
-
-### Section 84: Data Handling
-Under Section 84 of our Privacy Policy, all location data transmitted during an active ride is encrypted in transit using TLS 1.2 or higher. We do not sell your personal data to third parties. However, anonymized telemetry data may be used for internal analytics purposes as defined by our data retention policy (retained for no longer than 114 days).
-
-### Section 85: Data Handling
-Under Section 85 of our Privacy Policy, all location data transmitted during an active ride is encrypted in transit using TLS 1.2 or higher. We do not sell your personal data to third parties. However, anonymized telemetry data may be used for internal analytics purposes as defined by our data retention policy (retained for no longer than 115 days).
-
-### Section 86: Data Handling
-Under Section 86 of our Privacy Policy, all location data transmitted during an active ride is encrypted in transit using TLS 1.2 or higher. We do not sell your personal data to third parties. However, anonymized telemetry data may be used for internal analytics purposes as defined by our data retention policy (retained for no longer than 116 days).
-
-### Section 87: Data Handling
-Under Section 87 of our Privacy Policy, all location data transmitted during an active ride is encrypted in transit using TLS 1.2 or higher. We do not sell your personal data to third parties. However, anonymized telemetry data may be used for internal analytics purposes as defined by our data retention policy (retained for no longer than 117 days).
-
-### Section 88: Data Handling
-Under Section 88 of our Privacy Policy, all location data transmitted during an active ride is encrypted in transit using TLS 1.2 or higher. We do not sell your personal data to third parties. However, anonymized telemetry data may be used for internal analytics purposes as defined by our data retention policy (retained for no longer than 118 days).
-
-### Section 89: Data Handling
-Under Section 89 of our Privacy Policy, all location data transmitted during an active ride is encrypted in transit using TLS 1.2 or higher. We do not sell your personal data to third parties. However, anonymized telemetry data may be used for internal analytics purposes as defined by our data retention policy (retained for no longer than 119 days).
-
-### Section 90: Data Handling
-Under Section 90 of our Privacy Policy, all location data transmitted during an active ride is encrypted in transit using TLS 1.2 or higher. We do not sell your personal data to third parties. However, anonymized telemetry data may be used for internal analytics purposes as defined by our data retention policy (retained for no longer than 120 days).
-
-### Section 91: Data Handling
-Under Section 91 of our Privacy Policy, all location data transmitted during an active ride is encrypted in transit using TLS 1.2 or higher. We do not sell your personal data to third parties. However, anonymized telemetry data may be used for internal analytics purposes as defined by our data retention policy (retained for no longer than 121 days).
-
-### Section 92: Data Handling
-Under Section 92 of our Privacy Policy, all location data transmitted during an active ride is encrypted in transit using TLS 1.2 or higher. We do not sell your personal data to third parties. However, anonymized telemetry data may be used for internal analytics purposes as defined by our data retention policy (retained for no longer than 122 days).
-
-### Section 93: Data Handling
-Under Section 93 of our Privacy Policy, all location data transmitted during an active ride is encrypted in transit using TLS 1.2 or higher. We do not sell your personal data to third parties. However, anonymized telemetry data may be used for internal analytics purposes as defined by our data retention policy (retained for no longer than 123 days).
-
-### Section 94: Data Handling
-Under Section 94 of our Privacy Policy, all location data transmitted during an active ride is encrypted in transit using TLS 1.2 or higher. We do not sell your personal data to third parties. However, anonymized telemetry data may be used for internal analytics purposes as defined by our data retention policy (retained for no longer than 124 days).
-
-### Section 95: Data Handling
-Under Section 95 of our Privacy Policy, all location data transmitted during an active ride is encrypted in transit using TLS 1.2 or higher. We do not sell your personal data to third parties. However, anonymized telemetry data may be used for internal analytics purposes as defined by our data retention policy (retained for no longer than 125 days).
-
-### Section 96: Data Handling
-Under Section 96 of our Privacy Policy, all location data transmitted during an active ride is encrypted in transit using TLS 1.2 or higher. We do not sell your personal data to third parties. However, anonymized telemetry data may be used for internal analytics purposes as defined by our data retention policy (retained for no longer than 126 days).
-
-### Section 97: Data Handling
-Under Section 97 of our Privacy Policy, all location data transmitted during an active ride is encrypted in transit using TLS 1.2 or higher. We do not sell your personal data to third parties. However, anonymized telemetry data may be used for internal analytics purposes as defined by our data retention policy (retained for no longer than 127 days).
-
-### Section 98: Data Handling
-Under Section 98 of our Privacy Policy, all location data transmitted during an active ride is encrypted in transit using TLS 1.2 or higher. We do not sell your personal data to third parties. However, anonymized telemetry data may be used for internal analytics purposes as defined by our data retention policy (retained for no longer than 128 days).
-
-### Section 99: Data Handling
-Under Section 99 of our Privacy Policy, all location data transmitted during an active ride is encrypted in transit using TLS 1.2 or higher. We do not sell your personal data to third parties. However, anonymized telemetry data may be used for internal analytics purposes as defined by our data retention policy (retained for no longer than 129 days).
-
-### Section 100: Data Handling
-Under Section 100 of our Privacy Policy, all location data transmitted during an active ride is encrypted in transit using TLS 1.2 or higher. We do not sell your personal data to third parties. However, anonymized telemetry data may be used for internal analytics purposes as defined by our data retention policy (retained for no longer than 130 days).
-
-## 14. Frequently Asked Questions (FAQ)
-### Q1: What happens if scenario 1 occurs?
-**Answer**: In the event of scenario 1, the Ridify system automatically implements a failsafe protocol. The cost is recalculated, the admin is notified, and you will receive a push notification explaining the resolution steps. Please refer to Error Code R-0001 for more technical details.
-
-### Q2: What happens if scenario 2 occurs?
-**Answer**: In the event of scenario 2, the Ridify system automatically implements a failsafe protocol. The cost is recalculated, the admin is notified, and you will receive a push notification explaining the resolution steps. Please refer to Error Code R-0002 for more technical details.
-
-### Q3: What happens if scenario 3 occurs?
-**Answer**: In the event of scenario 3, the Ridify system automatically implements a failsafe protocol. The cost is recalculated, the admin is notified, and you will receive a push notification explaining the resolution steps. Please refer to Error Code R-0003 for more technical details.
-
-### Q4: What happens if scenario 4 occurs?
-**Answer**: In the event of scenario 4, the Ridify system automatically implements a failsafe protocol. The cost is recalculated, the admin is notified, and you will receive a push notification explaining the resolution steps. Please refer to Error Code R-0004 for more technical details.
-
-### Q5: What happens if scenario 5 occurs?
-**Answer**: In the event of scenario 5, the Ridify system automatically implements a failsafe protocol. The cost is recalculated, the admin is notified, and you will receive a push notification explaining the resolution steps. Please refer to Error Code R-0005 for more technical details.
-
-### Q6: What happens if scenario 6 occurs?
-**Answer**: In the event of scenario 6, the Ridify system automatically implements a failsafe protocol. The cost is recalculated, the admin is notified, and you will receive a push notification explaining the resolution steps. Please refer to Error Code R-0006 for more technical details.
-
-### Q7: What happens if scenario 7 occurs?
-**Answer**: In the event of scenario 7, the Ridify system automatically implements a failsafe protocol. The cost is recalculated, the admin is notified, and you will receive a push notification explaining the resolution steps. Please refer to Error Code R-0007 for more technical details.
-
-### Q8: What happens if scenario 8 occurs?
-**Answer**: In the event of scenario 8, the Ridify system automatically implements a failsafe protocol. The cost is recalculated, the admin is notified, and you will receive a push notification explaining the resolution steps. Please refer to Error Code R-0008 for more technical details.
-
-### Q9: What happens if scenario 9 occurs?
-**Answer**: In the event of scenario 9, the Ridify system automatically implements a failsafe protocol. The cost is recalculated, the admin is notified, and you will receive a push notification explaining the resolution steps. Please refer to Error Code R-0009 for more technical details.
-
-### Q10: What happens if scenario 10 occurs?
-**Answer**: In the event of scenario 10, the Ridify system automatically implements a failsafe protocol. The cost is recalculated, the admin is notified, and you will receive a push notification explaining the resolution steps. Please refer to Error Code R-0010 for more technical details.
-
-### Q11: What happens if scenario 11 occurs?
-**Answer**: In the event of scenario 11, the Ridify system automatically implements a failsafe protocol. The cost is recalculated, the admin is notified, and you will receive a push notification explaining the resolution steps. Please refer to Error Code R-0011 for more technical details.
-
-### Q12: What happens if scenario 12 occurs?
-**Answer**: In the event of scenario 12, the Ridify system automatically implements a failsafe protocol. The cost is recalculated, the admin is notified, and you will receive a push notification explaining the resolution steps. Please refer to Error Code R-0012 for more technical details.
-
-### Q13: What happens if scenario 13 occurs?
-**Answer**: In the event of scenario 13, the Ridify system automatically implements a failsafe protocol. The cost is recalculated, the admin is notified, and you will receive a push notification explaining the resolution steps. Please refer to Error Code R-0013 for more technical details.
-
-### Q14: What happens if scenario 14 occurs?
-**Answer**: In the event of scenario 14, the Ridify system automatically implements a failsafe protocol. The cost is recalculated, the admin is notified, and you will receive a push notification explaining the resolution steps. Please refer to Error Code R-0014 for more technical details.
-
-### Q15: What happens if scenario 15 occurs?
-**Answer**: In the event of scenario 15, the Ridify system automatically implements a failsafe protocol. The cost is recalculated, the admin is notified, and you will receive a push notification explaining the resolution steps. Please refer to Error Code R-0015 for more technical details.
-
-### Q16: What happens if scenario 16 occurs?
-**Answer**: In the event of scenario 16, the Ridify system automatically implements a failsafe protocol. The cost is recalculated, the admin is notified, and you will receive a push notification explaining the resolution steps. Please refer to Error Code R-0016 for more technical details.
-
-### Q17: What happens if scenario 17 occurs?
-**Answer**: In the event of scenario 17, the Ridify system automatically implements a failsafe protocol. The cost is recalculated, the admin is notified, and you will receive a push notification explaining the resolution steps. Please refer to Error Code R-0017 for more technical details.
-
-### Q18: What happens if scenario 18 occurs?
-**Answer**: In the event of scenario 18, the Ridify system automatically implements a failsafe protocol. The cost is recalculated, the admin is notified, and you will receive a push notification explaining the resolution steps. Please refer to Error Code R-0018 for more technical details.
-
-### Q19: What happens if scenario 19 occurs?
-**Answer**: In the event of scenario 19, the Ridify system automatically implements a failsafe protocol. The cost is recalculated, the admin is notified, and you will receive a push notification explaining the resolution steps. Please refer to Error Code R-0019 for more technical details.
-
-### Q20: What happens if scenario 20 occurs?
-**Answer**: In the event of scenario 20, the Ridify system automatically implements a failsafe protocol. The cost is recalculated, the admin is notified, and you will receive a push notification explaining the resolution steps. Please refer to Error Code R-0020 for more technical details.
-
-### Q21: What happens if scenario 21 occurs?
-**Answer**: In the event of scenario 21, the Ridify system automatically implements a failsafe protocol. The cost is recalculated, the admin is notified, and you will receive a push notification explaining the resolution steps. Please refer to Error Code R-0021 for more technical details.
-
-### Q22: What happens if scenario 22 occurs?
-**Answer**: In the event of scenario 22, the Ridify system automatically implements a failsafe protocol. The cost is recalculated, the admin is notified, and you will receive a push notification explaining the resolution steps. Please refer to Error Code R-0022 for more technical details.
-
-### Q23: What happens if scenario 23 occurs?
-**Answer**: In the event of scenario 23, the Ridify system automatically implements a failsafe protocol. The cost is recalculated, the admin is notified, and you will receive a push notification explaining the resolution steps. Please refer to Error Code R-0023 for more technical details.
-
-### Q24: What happens if scenario 24 occurs?
-**Answer**: In the event of scenario 24, the Ridify system automatically implements a failsafe protocol. The cost is recalculated, the admin is notified, and you will receive a push notification explaining the resolution steps. Please refer to Error Code R-0024 for more technical details.
-
-### Q25: What happens if scenario 25 occurs?
-**Answer**: In the event of scenario 25, the Ridify system automatically implements a failsafe protocol. The cost is recalculated, the admin is notified, and you will receive a push notification explaining the resolution steps. Please refer to Error Code R-0025 for more technical details.
-
-### Q26: What happens if scenario 26 occurs?
-**Answer**: In the event of scenario 26, the Ridify system automatically implements a failsafe protocol. The cost is recalculated, the admin is notified, and you will receive a push notification explaining the resolution steps. Please refer to Error Code R-0026 for more technical details.
-
-### Q27: What happens if scenario 27 occurs?
-**Answer**: In the event of scenario 27, the Ridify system automatically implements a failsafe protocol. The cost is recalculated, the admin is notified, and you will receive a push notification explaining the resolution steps. Please refer to Error Code R-0027 for more technical details.
-
-### Q28: What happens if scenario 28 occurs?
-**Answer**: In the event of scenario 28, the Ridify system automatically implements a failsafe protocol. The cost is recalculated, the admin is notified, and you will receive a push notification explaining the resolution steps. Please refer to Error Code R-0028 for more technical details.
-
-### Q29: What happens if scenario 29 occurs?
-**Answer**: In the event of scenario 29, the Ridify system automatically implements a failsafe protocol. The cost is recalculated, the admin is notified, and you will receive a push notification explaining the resolution steps. Please refer to Error Code R-0029 for more technical details.
-
-### Q30: What happens if scenario 30 occurs?
-**Answer**: In the event of scenario 30, the Ridify system automatically implements a failsafe protocol. The cost is recalculated, the admin is notified, and you will receive a push notification explaining the resolution steps. Please refer to Error Code R-0030 for more technical details.
-
-### Q31: What happens if scenario 31 occurs?
-**Answer**: In the event of scenario 31, the Ridify system automatically implements a failsafe protocol. The cost is recalculated, the admin is notified, and you will receive a push notification explaining the resolution steps. Please refer to Error Code R-0031 for more technical details.
-
-### Q32: What happens if scenario 32 occurs?
-**Answer**: In the event of scenario 32, the Ridify system automatically implements a failsafe protocol. The cost is recalculated, the admin is notified, and you will receive a push notification explaining the resolution steps. Please refer to Error Code R-0032 for more technical details.
-
-### Q33: What happens if scenario 33 occurs?
-**Answer**: In the event of scenario 33, the Ridify system automatically implements a failsafe protocol. The cost is recalculated, the admin is notified, and you will receive a push notification explaining the resolution steps. Please refer to Error Code R-0033 for more technical details.
-
-### Q34: What happens if scenario 34 occurs?
-**Answer**: In the event of scenario 34, the Ridify system automatically implements a failsafe protocol. The cost is recalculated, the admin is notified, and you will receive a push notification explaining the resolution steps. Please refer to Error Code R-0034 for more technical details.
-
-### Q35: What happens if scenario 35 occurs?
-**Answer**: In the event of scenario 35, the Ridify system automatically implements a failsafe protocol. The cost is recalculated, the admin is notified, and you will receive a push notification explaining the resolution steps. Please refer to Error Code R-0035 for more technical details.
-
-### Q36: What happens if scenario 36 occurs?
-**Answer**: In the event of scenario 36, the Ridify system automatically implements a failsafe protocol. The cost is recalculated, the admin is notified, and you will receive a push notification explaining the resolution steps. Please refer to Error Code R-0036 for more technical details.
-
-### Q37: What happens if scenario 37 occurs?
-**Answer**: In the event of scenario 37, the Ridify system automatically implements a failsafe protocol. The cost is recalculated, the admin is notified, and you will receive a push notification explaining the resolution steps. Please refer to Error Code R-0037 for more technical details.
-
-### Q38: What happens if scenario 38 occurs?
-**Answer**: In the event of scenario 38, the Ridify system automatically implements a failsafe protocol. The cost is recalculated, the admin is notified, and you will receive a push notification explaining the resolution steps. Please refer to Error Code R-0038 for more technical details.
-
-### Q39: What happens if scenario 39 occurs?
-**Answer**: In the event of scenario 39, the Ridify system automatically implements a failsafe protocol. The cost is recalculated, the admin is notified, and you will receive a push notification explaining the resolution steps. Please refer to Error Code R-0039 for more technical details.
-
-### Q40: What happens if scenario 40 occurs?
-**Answer**: In the event of scenario 40, the Ridify system automatically implements a failsafe protocol. The cost is recalculated, the admin is notified, and you will receive a push notification explaining the resolution steps. Please refer to Error Code R-0040 for more technical details.
-
-### Q41: What happens if scenario 41 occurs?
-**Answer**: In the event of scenario 41, the Ridify system automatically implements a failsafe protocol. The cost is recalculated, the admin is notified, and you will receive a push notification explaining the resolution steps. Please refer to Error Code R-0041 for more technical details.
-
-### Q42: What happens if scenario 42 occurs?
-**Answer**: In the event of scenario 42, the Ridify system automatically implements a failsafe protocol. The cost is recalculated, the admin is notified, and you will receive a push notification explaining the resolution steps. Please refer to Error Code R-0042 for more technical details.
-
-### Q43: What happens if scenario 43 occurs?
-**Answer**: In the event of scenario 43, the Ridify system automatically implements a failsafe protocol. The cost is recalculated, the admin is notified, and you will receive a push notification explaining the resolution steps. Please refer to Error Code R-0043 for more technical details.
-
-### Q44: What happens if scenario 44 occurs?
-**Answer**: In the event of scenario 44, the Ridify system automatically implements a failsafe protocol. The cost is recalculated, the admin is notified, and you will receive a push notification explaining the resolution steps. Please refer to Error Code R-0044 for more technical details.
-
-### Q45: What happens if scenario 45 occurs?
-**Answer**: In the event of scenario 45, the Ridify system automatically implements a failsafe protocol. The cost is recalculated, the admin is notified, and you will receive a push notification explaining the resolution steps. Please refer to Error Code R-0045 for more technical details.
-
-### Q46: What happens if scenario 46 occurs?
-**Answer**: In the event of scenario 46, the Ridify system automatically implements a failsafe protocol. The cost is recalculated, the admin is notified, and you will receive a push notification explaining the resolution steps. Please refer to Error Code R-0046 for more technical details.
-
-### Q47: What happens if scenario 47 occurs?
-**Answer**: In the event of scenario 47, the Ridify system automatically implements a failsafe protocol. The cost is recalculated, the admin is notified, and you will receive a push notification explaining the resolution steps. Please refer to Error Code R-0047 for more technical details.
-
-### Q48: What happens if scenario 48 occurs?
-**Answer**: In the event of scenario 48, the Ridify system automatically implements a failsafe protocol. The cost is recalculated, the admin is notified, and you will receive a push notification explaining the resolution steps. Please refer to Error Code R-0048 for more technical details.
-
-### Q49: What happens if scenario 49 occurs?
-**Answer**: In the event of scenario 49, the Ridify system automatically implements a failsafe protocol. The cost is recalculated, the admin is notified, and you will receive a push notification explaining the resolution steps. Please refer to Error Code R-0049 for more technical details.
-
-### Q50: What happens if scenario 50 occurs?
-**Answer**: In the event of scenario 50, the Ridify system automatically implements a failsafe protocol. The cost is recalculated, the admin is notified, and you will receive a push notification explaining the resolution steps. Please refer to Error Code R-0050 for more technical details.
+
+## Table of Contents
+
+### Part I — Quick-Start Guide
+1. [Quick-Start Guide (5 minutes)](#part-i-quick-start-guide-5-minutes)
+
+### Part II — Detailed User Guide
+2. [Introduction to Ridify](#chapter-1-introduction-to-ridify)
+3. [Installation & Device Requirements](#chapter-2-installation--device-requirements)
+4. [Account Registration & Authentication](#chapter-3-account-registration--authentication)
+5. [Your Profile & Identity Verification (KYC)](#chapter-4-your-profile--identity-verification-kyc)
+6. [The Home Screen — Your Command Center](#chapter-5-the-home-screen--your-command-center)
+
+### Part III — Rider's Handbook
+7. [Finding a Ride](#chapter-6-finding-a-ride)
+8. [Browsing & Filtering Available Rides](#chapter-7-browsing--filtering-available-rides)
+9. [Joining a Ride & Cost-Splitting](#chapter-8-joining-a-ride--cost-splitting)
+10. [The Live Ride Experience (Rider Perspective)](#chapter-9-the-live-ride-experience-rider-perspective)
+11. [Trip Completion & Payment (Rider)](#chapter-10-trip-completion--payment-rider)
+
+### Part IV — Driver's Handbook
+12. [Offering a Ride](#chapter-11-offering-a-ride)
+13. [Managing Join Requests](#chapter-12-managing-join-requests)
+14. [Starting & Managing the Trip](#chapter-13-starting--managing-the-trip)
+15. [Trip Completion & Earnings (Driver)](#chapter-14-trip-completion--earnings-driver)
+16. [Driver Statistics Dashboard](#chapter-15-driver-statistics-dashboard)
+
+### Part V — Communication & Social
+17. [In-App Chat System](#chapter-16-in-app-chat-system)
+18. [Activity Feed & Ride History](#chapter-17-activity-feed--ride-history)
+19. [Co-Passengers & Community](#chapter-18-co-passengers--community)
+
+### Part VI — Administration
+20. [Admin Panel Overview](#chapter-19-admin-panel-overview)
+21. [User Management & Moderation](#chapter-20-user-management--moderation)
+22. [Ride Monitoring & Force Controls](#chapter-21-ride-monitoring--force-controls)
+23. [KYC Document Verification Workflow](#chapter-22-kyc-document-verification-workflow)
+24. [Platform Statistics Dashboard](#chapter-23-platform-statistics-dashboard)
+
+### Part VII — Technical Deep Dive
+25. [System Architecture Overview](#chapter-24-system-architecture-overview)
+26. [Authentication & Token System](#chapter-25-authentication--token-system)
+27. [Database Schema Reference](#chapter-26-database-schema-reference)
+28. [The Ride Lifecycle State Machine](#chapter-27-the-ride-lifecycle-state-machine)
+29. [The Sweep-Line Matching Algorithm](#chapter-28-the-sweep-line-matching-algorithm)
+30. [Real-Time Communication (Socket.IO)](#chapter-29-real-time-communication-socketio)
+31. [REST API Reference](#chapter-30-rest-api-reference)
+32. [Security Architecture](#chapter-31-security-architecture)
+33. [Rate Limiting & Abuse Prevention](#chapter-32-rate-limiting--abuse-prevention)
+
+### Part VIII — Policies & Legal
+34. [Terms of Service](#chapter-33-terms-of-service)
+35. [Privacy Policy](#chapter-34-privacy-policy)
+36. [Community Guidelines](#chapter-35-community-guidelines)
+37. [Data Retention & Deletion](#chapter-36-data-retention--deletion)
+
+### Part IX — Reference
+38. [Troubleshooting Guide](#chapter-37-troubleshooting-guide)
+39. [Frequently Asked Questions (FAQ)](#chapter-38-frequently-asked-questions-faq)
+40. [Glossary of Terms](#chapter-39-glossary-of-terms)
+41. [Contact & Support](#chapter-40-contact--support)
+
+---
+
+---
+
+# Part I: Quick-Start Guide (5 minutes)
+
+> **This section is designed for users who want to get on the road immediately.** Read this, and you'll be sharing rides within minutes. For in-depth explanations of every feature, see Parts II through IX.
+
+### For Riders — Find a Ride in 4 Steps
+
+| Step | What to Do |
+|------|------------|
+| **1. Sign Up** | Open Ridify → Tap **Sign Up** → Enter your email → Receive a 6-digit OTP → Enter OTP → Set your name and password. Done! |
+| **2. Find a Ride** | From the Home Screen, tap **Find a Ride** → Pick your **Pickup** and **Drop-off** locations on the map → Set date & time → Tap **Search**. |
+| **3. Join a Ride** | Browse the available rides → Tap a ride card to view details → Review the fare → Tap **Join Ride** → Wait for the driver to accept. |
+| **4. Track & Ride** | Once accepted, track the driver live on the map → Get in when they arrive → Enjoy the ride → Pay the displayed fare at the end. |
+
+### For Drivers — Offer a Ride in 4 Steps
+
+| Step | What to Do |
+|------|------------|
+| **1. Verify Your Identity** | Go to **Profile** → Tap **Verify Identity** → Upload your government ID → Wait for admin approval (usually within 24 hours). |
+| **2. Offer a Ride** | From the Home Screen, tap **Offer a Ride** → Set your route on the map → Choose vehicle type, seats, fare, and departure time → Tap **Publish**. |
+| **3. Manage Requests** | Review incoming rider requests → Tap **Accept** or **Decline** for each one. |
+| **4. Drive & Complete** | Tap **Start Ride** → Pick up passengers → Mark them as **Boarded** → Drive to destination → Tap **End Trip**. |
+
+**That's it!** For everything else — chat, history, admin tools, how the algorithm works — keep reading.
+
+---
+
+---
+
+# Part II: Detailed User Guide
+
+---
+
+## Chapter 1: Introduction to Ridify
+
+### 1.1 What is Ridify?
+
+Ridify is a **production-grade, real-time ride-sharing and cost-splitting application** that connects drivers who have empty seats with riders heading in the same direction. Unlike traditional ride-hailing services (where a dedicated driver picks you up), Ridify is **peer-to-peer** — meaning any user can both offer and find rides.
+
+The core philosophy is simple: if you're already driving somewhere, why not share the ride and split the cost? This reduces individual travel expenses, decreases traffic congestion, and lowers carbon emissions.
+
+### 1.2 What Makes Ridify Different?
+
+| Feature | How Ridify Does It |
+|---------|-------------------|
+| **Real-Time Tracking** | Live GPS tracking of the driver on an interactive OpenStreetMap, updated every 1.5 seconds via WebSocket. |
+| **Smart Route Matching** | A sweep-line geometry algorithm analyzes the driver's entire route polyline to find riders whose pickup and drop-off points fall along the path — not just a simple "point A to point B" match. |
+| **Fair Cost Splitting** | Fares are calculated proportionally based on the distance each rider actually travels along the driver's route. If you're only riding half the route, you pay roughly half the fare. |
+| **Flexible Capacity** | The sweep-line algorithm allows different riders to occupy the same seat on different segments of the route. A rider who gets off at Point B frees a seat for another rider who boards at Point B. |
+| **Instant Communication** | Built-in per-ride group chat via Socket.IO — no need to exchange phone numbers. |
+| **Verified Community** | KYC verification with government ID upload, admin review, and ban controls. |
+| **Admin Oversight** | A full administrative panel for platform moderators to monitor rides, manage users, and review verification documents. |
+
+### 1.3 Key Concepts
+
+Before diving into the app, it helps to understand these core concepts:
+
+**Roles:**
+- **Rider** — A user who is looking for a ride. Riders search for available rides, request to join, and contribute to the fare.
+- **Driver** — A user who offers a ride. Drivers set the route, vehicle type, number of seats, departure time, and the total fare for the full journey.
+- **Co-Passenger** — Once a rider is accepted by a driver, they become a co-passenger. All accepted riders on the same trip are co-passengers of each other.
+- **Admin** — A platform moderator with elevated access. Admins can manage users, monitor active rides, verify identity documents, and enforce community guidelines.
+
+**Ride Terminology:**
+- **Route Path** — The complete polyline of GPS coordinates representing the driver's planned journey from start to finish. This is generated using the OSRM (Open Source Routing Machine) when the driver creates a ride.
+- **Segment** — A portion of the route path. When a rider joins a ride, they occupy a specific segment defined by their pickup index (where they board) and drop-off index (where they exit).
+- **Fare Split** — The proportional share of the total fare that each rider pays, based on the fraction of the total route distance they are traveling.
+- **Sweep-Line** — The algorithm Ridify uses to check seat availability. Rather than just counting total passengers, it analyzes which seats are occupied at every point along the route, allowing overlapping segments as long as the vehicle's physical capacity is never exceeded.
+
+**Ride Statuses:**
+- `available` — The ride is published and open for requests.
+- `accepted` — At least one rider has been accepted.
+- `full` — Every seat on every segment of the route is occupied.
+- `started` — The driver has begun the journey.
+- `completed` — The trip is finished and all passengers have been dropped off.
+- `cancelled` — The ride has been cancelled by the driver, admin, or system.
+
+---
+
+## Chapter 2: Installation & Device Requirements
+
+### 2.1 Supported Platforms
+
+| Platform | Support Status |
+|----------|---------------|
+| Android 10.0+ | ✅ Fully Supported |
+| iOS | 🔜 Planned for future release |
+| Web (Flutter Web) | ⚠️ Admin panel only |
+
+### 2.2 Minimum Device Requirements
+
+| Requirement | Specification |
+|-------------|--------------|
+| Operating System | Android 10.0 (API 29) or higher |
+| RAM | 2 GB minimum, 4 GB recommended |
+| Storage | 150 MB free space for app installation |
+| GPS | Required — high-accuracy mode recommended |
+| Internet | Active Wi-Fi or mobile data connection required |
+| Google Play Services | Required for location services |
+
+### 2.3 Permissions Required
+
+When you first open Ridify, you'll be asked to grant the following permissions:
+
+| Permission | Why It's Needed |
+|-----------|----------------|
+| **Location (Precise)** | To show your current position on the map and enable live tracking during rides. |
+| **Location (Background)** | Required for drivers to continue broadcasting their position when the app is minimized during a ride. |
+| **Internet** | To communicate with the Ridify backend server and receive real-time updates. |
+| **Camera** (optional) | For uploading your government ID photo during KYC verification. |
+| **Storage** (optional) | For selecting a pre-existing photo for KYC upload. |
+
+### 2.4 Installing the App
+
+1. Download the Ridify APK or install from the app distribution platform your organization uses.
+2. If installing via APK, enable "Install from unknown sources" in your device settings.
+3. Open the installer and follow the on-screen prompts.
+4. Once installed, launch Ridify.
+
+---
+
+## Chapter 3: Account Registration & Authentication
+
+### 3.1 How Ridify Authentication Works
+
+Ridify uses a **dual authentication system** combining traditional passwords with One-Time Passwords (OTPs) for enhanced security:
+
+- **Sign-Up:** Requires email, name, password, and a one-time OTP for email verification.
+- **Login:** Supports both password-based login and passwordless OTP-based login.
+- **Session Management:** After logging in, Ridify issues a short-lived JWT access token (15 minutes) and a long-lived refresh token (7 days). The app silently refreshes your access token in the background — you should rarely need to log in again.
+- **Token Storage:** All tokens are stored in encrypted device storage using `flutter_secure_storage`, ensuring they cannot be accessed by other apps on your device.
+
+### 3.2 Creating a New Account (Sign Up)
+
+1. **Open Ridify.** You will see the animated Splash Screen, followed by the Login page.
+2. Tap **"Don't have an account? Sign Up"** at the bottom of the Login screen.
+3. **Enter your email address.**
+   - If your organization has configured an allowed email domain (e.g., only `@university.edu`), you must use an email from that domain.
+   - The system checks if the email is already registered. If so, you'll be prompted to log in instead.
+4. **Tap "Send OTP."**
+   - A 6-digit OTP is generated and sent to your email via the EmailJS service.
+   - The OTP is valid for **10 minutes**.
+   - If you already requested an OTP within the last 10 minutes, you'll see a cooldown message.
+5. **Enter the OTP** you received in your email inbox.
+6. **Fill in your profile details:**
+   - **Full Name** (required, max 500 characters)
+   - **Age** (optional, max 3 digits)
+   - **Password** (required, minimum 8 characters)
+7. **Tap "Register."**
+   - If successful, your account is instantly created and verified.
+   - You are automatically logged in and taken to the Home Screen.
+   - Your access and refresh tokens are securely stored on your device.
+
+### 3.3 Logging In
+
+#### Method A: Password Login
+1. Open Ridify and enter your registered **email** and **password**.
+2. Tap **Login**.
+3. If your credentials are correct, you'll be taken to the Home Screen.
+
+#### Method B: OTP Login (Passwordless)
+1. Open Ridify and enter your registered **email**.
+2. Tap **"Login with OTP"**.
+3. A SHA-256 hashed OTP is generated and sent to your email.
+4. Enter the OTP (valid for 10 minutes).
+5. You'll be logged in without needing your password.
+
+**Security Notes:**
+- After 5 incorrect OTP attempts, the OTP is invalidated and you must request a new one.
+- If your account has been **banned** by an admin, you will see a "Your account has been suspended" message and will not be able to log in.
+
+### 3.4 Changing Your Password
+
+1. Navigate to **Profile** → **Change Password**.
+2. Enter your **current password** and your **new password** (minimum 8 characters).
+3. Tap **Update Password**.
+4. **Important:** Changing your password invalidates all existing refresh tokens across all devices. You will be logged out everywhere except the current device.
+
+### 3.5 Logging Out
+
+1. Navigate to **Profile** → **Logout**.
+2. Your refresh token is revoked on the server, preventing further use.
+3. All locally stored tokens are cleared from encrypted storage.
+
+### 3.6 Session Expiry & Silent Refresh
+
+- Your access token expires every **15 minutes**.
+- When it expires, the app automatically sends your refresh token to `/api/auth/refresh` to obtain a new access token.
+- This process is completely invisible to you — you don't need to do anything.
+- Your refresh token is valid for **7 days**. If you don't open the app for more than 7 days, you'll need to log in again.
+
+---
+
+## Chapter 4: Your Profile & Identity Verification (KYC)
+
+### 4.1 Viewing and Editing Your Profile
+
+Your profile is accessible via the **Profile** tab in the bottom navigation bar. Here you can see and manage:
+
+| Field | Editable? | Details |
+|-------|----------|---------|
+| **Full Name** | ✅ Yes | Tap to update. Max 200 characters. Your name is displayed to co-passengers and drivers. |
+| **Age** | ✅ Yes | Optional. Max 3 digits. |
+| **Email** | ❌ No | Your email serves as your unique identifier across the platform and cannot be changed. |
+| **Verification Status** | ❌ No (managed by admin) | Shows `Not Verified`, `Pending`, or `Verified`. |
+
+When you update your name, the change is **automatically cascaded** to all your active rides, chat messages, and rider detail records. Other users will see your updated name immediately.
+
+### 4.2 Understanding KYC Verification
+
+KYC (Know Your Customer) is an identity verification process that enhances trust and safety within the Ridify community. While it's not required to use the app as a rider, KYC verification builds trust with drivers and co-passengers.
+
+### 4.3 Verification Statuses Explained
+
+| Status | Badge | What It Means |
+|--------|-------|--------------|
+| **Not Verified** (`none`) | No badge | You have not submitted any verification documents. You can still use all app features. |
+| **Pending** (`pending`) | ⏳ Yellow badge | You have submitted your ID and it is awaiting admin review. |
+| **Verified** (`verified`) | ✅ Green badge | An admin has reviewed and approved your identity document. Other users can see you are verified. |
+
+### 4.4 Submitting Your Identity Document
+
+1. Navigate to **Profile** → **Verify Identity**.
+2. Select or capture a photo of a valid, government-issued identification document. Acceptable documents include:
+   - Driver's License
+   - Passport
+   - National ID Card
+   - University/College ID (if configured by your organization)
+3. Ensure the photo is:
+   - **Clear and well-lit** — all text must be readable.
+   - **Complete** — all four corners of the document must be visible.
+   - **Not expired** — the document must be currently valid.
+4. Tap **Upload**.
+
+**Behind the scenes:**
+- Your verification status is immediately set to `pending`.
+- The document image is converted to Base64 and uploaded from the backend server to **Google Drive** via a Google Apps Script webhook.
+- If the upload fails (e.g., network error), your status is reset to `none` and you can retry.
+- The admin panel shows your submission in the **Pending Verifications** queue.
+
+### 4.5 What Happens After Submission?
+
+- An admin will review your document from the Admin Panel.
+- If **approved**, your verification status changes to `verified` and a green badge appears next to your name in ride cards and detail screens. This status is also cascaded to all your active rides.
+- If **rejected** (e.g., blurry photo, expired document), your status returns to `none` with your `idUrl` cleared. You can upload a new document.
+
+### 4.6 Deleting Your Account
+
+1. Navigate to **Profile** → **Delete Account**.
+2. Confirm the deletion.
+3. **What happens:**
+   - Your user record is permanently deleted from the database.
+   - All active rides where you are the driver are automatically **cancelled**.
+   - All co-passengers and pending requesters on those rides are notified in real-time via Socket.IO.
+   - Your pending requests on other users' rides are automatically removed.
+   - This action is **irreversible**.
+
+---
+
+## Chapter 5: The Home Screen — Your Command Center
+
+The Home Screen is the first thing you see after logging in. It is designed to give you instant access to the two primary actions:
+
+### 5.1 Navigation Structure
+
+The app uses a bottom navigation bar with the following tabs:
+
+| Tab | Purpose |
+|-----|---------|
+| 🏠 **Home** | Access "Offer a Ride" and "Find a Ride" actions, view nearby activity. |
+| 📋 **Activity** | View all your rides — upcoming, active, past, and cancelled. |
+| 📜 **History** | Detailed ride history with co-passenger information. |
+| 👤 **Profile** | Manage your profile, KYC, password, and account settings. |
+
+### 5.2 Theme Support
+
+Ridify supports both **Light** and **Dark** themes. The theme follows your device's system-level setting, providing a comfortable experience in any lighting condition. All screenshots in this manual show both variants.
+
+### 5.3 Real-Time Connectivity
+
+As soon as you open the Home Screen, the app establishes a **WebSocket connection** (Socket.IO) to the Ridify backend. This connection:
+- Authenticates using your JWT token.
+- Automatically joins you to rooms for all your active rides.
+- Listens for real-time updates: new ride requests, acceptances, status changes, chat messages, and location updates.
+- Reconnects automatically if your internet drops temporarily.
+
+---
+
+---
+
+# Part III: Rider's Handbook
+
+---
+
+## Chapter 6: Finding a Ride
+
+### 6.1 Starting a Search
+
+1. From the Home Screen, tap **"Find a Ride"**.
+2. You'll be taken to the **Find Ride Screen** where you need to specify:
+
+| Field | Description | Required? |
+|-------|------------|-----------|
+| **Pickup Location** | Where you want to be picked up. | ✅ Yes |
+| **Drop-off Destination** | Where you want to go. | ✅ Yes |
+| **Date** | The date you want to travel. | ✅ Yes |
+| **Time** | Your preferred departure time. | ✅ Yes |
+| **Number of Seats** | How many seats you need (1–8). | ✅ Yes (default: 1) |
+| **Vehicle Type Filter** | Filter by Bike, Sedan, SUV, or Any. | Optional |
+
+### 6.2 Using the Location Picker
+
+When you tap on either the Pickup or Destination field, the **Map Picker Screen** opens:
+
+1. **The interactive map** (powered by `flutter_map` + OpenStreetMap) shows your current GPS position.
+2. You can:
+   - **Tap anywhere on the map** to select that point as your location.
+   - **Use the search bar** at the top to type an address. This uses the **Nominatim** geocoding service to convert text addresses into GPS coordinates.
+   - **Drag the map** to explore different areas and tap to pin your location.
+3. Once satisfied with your selection, tap **Confirm**.
+4. The app displays the address (reverse-geocoded from the selected coordinates) and saves the GPS coordinates for the search algorithm.
+
+### 6.3 How the Search Algorithm Works
+
+When you tap **Search**, the Ridify backend performs the following process:
+
+1. **Query Active Rides:** The server fetches all rides with status `available` or `accepted` that haven't expired (checked against `expiresAt`).
+
+2. **Apply Filters:**
+   - If you selected a specific vehicle type (e.g., "Sedan"), only rides with that vehicle type are returned.
+   - If you selected a specific date, only rides departing on that date are returned.
+   - Rides are filtered by time window — your search time must be within 1 hour of the ride's departure time.
+
+3. **Route Proximity Matching (The Core Algorithm):**
+   For each remaining ride, the algorithm:
+   - Takes the ride's **route polyline** (an array of GPS coordinates representing the driver's planned path).
+   - Samples approximately 100 evenly-spaced points along the route for efficiency.
+   - Measures the geographic distance from **your pickup point** to every sampled route point. The closest one becomes your potential pickup index.
+   - Measures the geographic distance from **your destination point** to every sampled route point. The closest one becomes your potential drop-off index.
+   - Checks if both distances are within the **search radius** (default: 2,000 meters, adjustable per deployment).
+   - Critically checks that your **pickup index comes BEFORE your drop-off index** along the route — ensuring you're traveling in the same direction as the driver.
+
+4. **Minimum Distance Check:** The calculated trip distance for your segment must be at least 1.5 km (configurable). This prevents trivially short ride matches.
+
+5. **Route Preference Check:**
+   - `flexible` — Your pickup and drop-off can be anywhere along the route.
+   - `shared_start` — Your pickup must be near the start of the route (within the first 10% of route points).
+   - `nonstop` — Your pickup must be near the start AND your drop-off near the end of the route.
+
+6. **Capacity Check (Sweep-Line):** The algorithm verifies that the vehicle has enough available seats on the segment you'd be traveling. This uses the sweep-line algorithm (explained in [Chapter 28](#chapter-28-the-sweep-line-matching-algorithm)).
+
+7. **Fare Calculation:** Your individual fare is calculated as:
+   ```
+   Your Fare = Total Fare × (Your Segment Distance / Total Route Distance)
+   ```
+   If your segment covers 99% or more of the route, you're charged the full fare to avoid rounding losses.
+
+8. **Exclusion Filters:** The search automatically hides rides where:
+   - You are the driver.
+   - You have been declined or kicked from the ride.
+   - You are already a passenger or have a pending request.
+
+### 6.4 Understanding Search Results
+
+The search returns a list of rides ranked by relevance. Each result includes computed data:
+- `computedFare` — Your calculated fare for this specific segment.
+- `computedDistance` — The distance you would travel.
+- `startIndex` / `endIndex` — Your boarding and alighting points on the route.
+
+---
+
+## Chapter 7: Browsing & Filtering Available Rides
+
+### 7.1 The Available Rides Screen
+
+After searching, you're presented with a list of **Ride Cards**. Each card displays:
+
+| Information | Description |
+|------------|-------------|
+| **Driver Name** | The name of the person offering the ride. A ✅ badge appears if they are KYC verified. |
+| **Vehicle Type** | Bike 🏍, Sedan 🚗, or SUV 🚙. |
+| **Departure Time** | When the driver plans to leave. |
+| **Pickup Location** | The text address closest to your requested pickup. |
+| **Destination** | The text address closest to your requested destination. |
+| **Your Estimated Fare** | The calculated fare for your specific segment (not the total ride fare). |
+| **Available Seats** | How many seats are still available. |
+| **Route Preference** | Flexible, Shared Start, or Nonstop. |
+
+### 7.2 Using Filters
+
+Tap the **filter icon** at the top of the Available Rides screen to access sorting and filtering options:
+
+| Filter | Options |
+|--------|---------|
+| **Vehicle Type** | Any, Bike, Sedan, SUV |
+| **Sort By** | Lowest Price, Earliest Departure |
+
+### 7.3 Real-Time Updates on the Search Screen
+
+The Available Rides screen is **live**. While you're browsing:
+- If a ride fills up, it disappears from your list in real-time.
+- If a ride is cancelled by the driver, it's removed.
+- If new rides are published matching your criteria, they appear automatically.
+- This is powered by the `global_search_room` Socket.IO room that your device joins while viewing search results.
+
+---
+
+## Chapter 8: Joining a Ride & Cost-Splitting
+
+### 8.1 Viewing Ride Details
+
+Tap on any ride card to open the **Ride Details Screen**. Here you'll find:
+
+- **Route Map:** A visual representation of the driver's full route on the map, with your pickup and drop-off points highlighted.
+- **Driver Profile:** Name, verification badge, and profile picture.
+- **Co-Passengers:** List of other riders who have already been accepted.
+- **Fare Breakdown:**
+  - Total ride fare (set by the driver).
+  - Your computed fare (proportional to your segment distance).
+  - Number of seats you're requesting.
+- **Departure Details:** Date, time, and the driver's starting location.
+
+### 8.2 Requesting to Join
+
+1. Review all the details on the Ride Details screen.
+2. Tap **"Request to Join"** (or "Join Ride").
+3. The app sends your request to the server with:
+   - Your email (from your authenticated session — never from client input).
+   - Your name (fetched fresh from the database).
+   - The number of seats you need.
+   - Your pickup and drop-off coordinates and their corresponding route indices.
+4. **Server-Side Fare Recalculation:** The server independently recalculates your fare based on the route geometry. This prevents any client-side fare manipulation — even if someone tampered with the app, they'd still be charged the correct amount.
+5. **Optimistic Locking:** The request uses optimistic locking with automatic retry (up to 5 attempts with random jitter). If another user is simultaneously requesting the same ride, the system resolves the conflict gracefully.
+6. Once submitted, your request appears in the driver's pending requests list.
+
+### 8.3 After Requesting
+
+- Your ride status in the Activity tab changes to show a pending request.
+- You're automatically joined to the ride's Socket.IO room, so you'll receive real-time updates.
+- The driver receives a `new_ride_request` event and can accept or decline.
+
+### 8.4 Understanding the Cost-Splitting Formula
+
+The cost-splitting in Ridify is **distance-proportional**, not a simple equal split:
+
+```
+Rider's Fare = Total Fare × (Rider's Segment Distance / Total Route Distance)
+```
+
+**Example:**
+- A driver publishes a 100 km ride from City A to City D with a total fare of ₹500.
+- Rider 1 joins from City A to City B (first 30 km): Fare = ₹500 × (30/100) = **₹150**
+- Rider 2 joins from City B to City D (last 70 km): Fare = ₹500 × (70/100) = **₹350**
+- Both riders can be in the car simultaneously if their segments overlap, and seat availability is managed per-segment.
+
+This system is fair because you only pay for the distance you actually travel.
+
+### 8.5 Cancelling Your Request
+
+If you change your mind before the driver accepts you:
+1. Go to **Activity** → find the ride with your pending request.
+2. Tap **Cancel Request**.
+3. Your request is removed. If the driver hasn't seen it yet, it simply disappears. The ride's `cancelledRequests` array tracks this for history purposes.
+
+---
+
+## Chapter 9: The Live Ride Experience (Rider Perspective)
+
+### 9.1 Waiting for Pickup
+
+Once the driver accepts your request and starts the ride:
+1. The **Live Tracking Screen** opens automatically (or you can access it from Activity).
+2. You see an interactive map with:
+   - **The driver's real-time position** — a moving car icon that updates every ~1.5 seconds via Socket.IO `driver_location_update` events.
+   - **Your pickup point** — highlighted with a marker.
+   - **Your drop-off point** — highlighted with a different marker.
+   - **The full route** — drawn as a polyline on the map.
+3. An info panel at the bottom shows the driver's name, vehicle type, and current ride status.
+
+### 9.2 Driver Arrived at Your Pickup
+
+When the driver arrives at your pickup location:
+1. They mark **"Arrived"** in their app.
+2. You receive a `driver_arrived` event and see a notification: "Your driver has arrived!"
+3. The ride status panel updates to show "Driver is waiting at your pickup point."
+
+### 9.3 Boarding the Vehicle
+
+1. Meet the driver at the pickup point.
+2. Verify the driver and vehicle (check the name, vehicle type displayed in the app).
+3. Get into the vehicle.
+4. The driver marks you as **"Boarded"** in their app.
+5. You receive a `passenger_boarded` event and the map interface transitions to the "In Transit" view.
+
+### 9.4 In Transit
+
+While the ride is in progress:
+- The map continues showing the driver's real-time position.
+- You can monitor progress toward your drop-off point.
+- You can use the **In-App Chat** to communicate with the driver and co-passengers.
+- The estimated time of arrival updates dynamically based on the driver's position.
+
+### 9.5 Arriving at Your Destination
+
+When you reach your drop-off point:
+1. The driver marks you as **"Dropped Off"**.
+2. You receive a `passenger_dropped` event with your final fare.
+3. The **Rider Completion Screen** appears, showing:
+   - The trip summary (pickup, drop-off, distance traveled).
+   - Your final fare amount.
+   - A "Mark as Paid" button.
+
+---
+
+## Chapter 10: Trip Completion & Payment (Rider)
+
+### 10.1 The Payment Model
+
+Ridify currently operates on a **facilitated direct payment** model:
+- The app **calculates** the exact fare each rider owes.
+- The actual payment is made **directly between rider and driver** — cash, UPI, Venmo, Zelle, bank transfer, or any method both parties agree upon.
+- The app does not process financial transactions.
+
+### 10.2 Marking Payment as Complete
+
+1. After being dropped off, you'll see your fare on the Rider Completion Screen.
+2. Pay the driver the displayed amount using your preferred payment method.
+3. Tap **"Mark as Paid"** in the app.
+4. The server records your payment status and notifies the driver via Socket.IO.
+5. **Important:** Only you can mark yourself as paid. The driver cannot mark payment on your behalf.
+
+### 10.3 What If There's a Payment Dispute?
+
+- If the rider leaves without paying, the system logs an `unpaidPassengers` entry when the ride ends.
+- This is logged as a warning in the server logs: `Ride ${rideId} ended with N unpaid passenger(s)`.
+- In future versions, a reputation system will track payment reliability.
+
+---
+
+---
+
+# Part IV: Driver's Handbook
+
+---
+
+## Chapter 11: Offering a Ride
+
+### 11.1 Prerequisites
+
+To offer a ride, you need:
+- A Ridify account (KYC verification is recommended but not strictly required in all deployments).
+- A planned journey with a clear start and end point.
+
+### 11.2 Creating a Ride Offer
+
+1. From the Home Screen, tap **"Offer a Ride"**.
+2. **Set Your Route:**
+   - Tap **"Set Pickup"** to open the Map Picker and choose your starting location.
+   - Tap **"Set Destination"** to choose your final destination.
+   - The app calls the **OSRM (Open Source Routing Machine)** to calculate the optimal driving route between these two points.
+   - The full route polyline is displayed on the map for your review.
+
+3. **Configure Ride Details:**
+
+   | Setting | Description | Constraints |
+   |---------|-------------|-------------|
+   | **Vehicle Type** | Bike, Sedan, or SUV. | Required. Determines what icon riders see. |
+   | **Total Seats** | Number of available seats in your vehicle. | 1–8. |
+   | **Total Fare** | The fare for the complete journey (start to end). | ₹1 to ₹9,999 (configurable). Individual riders pay proportionally based on distance. |
+   | **Departure Date & Time** | When you plan to leave. | Must be in the future. Can be up to 7 days in advance. |
+   | **Route Preference** | How flexible you are about pickup/drop-off locations. | See below. |
+
+4. **Route Preferences Explained:**
+
+   | Preference | Description |
+   |-----------|-------------|
+   | **Flexible** | Riders can board and alight at any point along your route. This maximizes the number of potential matches. Ideal for long-distance trips. |
+   | **Shared Start** | Riders must board near the beginning of your route (within the first 10%). They can be dropped off anywhere. Good for daily commutes where everyone starts from the same area. |
+   | **Nonstop** | Riders must board near the start AND be dropped off near the end. The most restrictive option — essentially only matches riders going the full distance with you. |
+
+5. **Tap "Publish Ride."**
+
+### 11.3 What Happens When You Publish
+
+- Your ride is saved to the MongoDB database with all details.
+- The route polyline is stored as an array of `{lat, lng}` coordinates.
+- If your route has more than 500 points (the server limit), it is automatically downsampled while preserving the start and end points.
+- Your ride immediately appears in search results for riders looking for rides along your route.
+- You are joined to the ride's Socket.IO room for real-time updates.
+- The ride has an automatic expiry: it expires **15 minutes after the departure time** you set.
+
+### 11.4 Route Distance and Fare Calculation
+
+- The total route distance is calculated using the Turf.js geospatial library, summing up the distances between consecutive route points.
+- When a rider searches and finds your ride, their individual fare is computed as:
+  ```
+  Rider Fare = Your Total Fare × (Rider's Segment Distance / Your Total Route Distance)
+  ```
+- This is recalculated on the server — even if a malicious client sends a tampered fare, the server recomputes it independently.
+
+---
+
+## Chapter 12: Managing Join Requests
+
+### 12.1 Receiving Requests
+
+When a rider requests to join your ride:
+1. You receive a real-time `new_ride_request` Socket.IO event.
+2. The app shows a notification with the rider's name and their requested segment.
+3. In the Ride Details screen, the pending request appears with:
+   - Rider's name and verification status (Not Verified / Pending / Verified).
+   - Their pickup and drop-off locations.
+   - Number of seats they need.
+   - Their computed fare.
+
+### 12.2 Accepting a Rider
+
+1. Tap **"Accept"** on the rider's request.
+2. The server performs a final **sweep-line capacity check** to ensure the seat(s) are still available for the rider's segment.
+3. If capacity is confirmed:
+   - The rider moves from `requests` to `passengers`.
+   - If this is the first accepted rider, the ride status changes from `available` to `accepted`.
+   - All participants are notified via the `ride_accepted` Socket.IO event.
+   - The rider is automatically joined to the ride's Socket.IO room.
+4. **Auto-Decline on Full:** If accepting this rider causes other pending requests to no longer fit (capacity exceeded on overlapping segments), those conflicting requests are automatically declined and the affected riders are notified.
+5. **Full Status:** If the vehicle is now completely full on every segment of the route, the ride status changes to `full` and it no longer appears in search results.
+
+### 12.3 Declining a Rider
+
+1. Tap **"Decline"** on the rider's request.
+2. The rider is moved from `requests` to `declined`.
+3. The declined rider receives a `ride_cancelled` event and is removed from the ride's Socket.IO room.
+4. A declined rider **cannot re-request** the same ride — they will need to find another one.
+5. If all requests and passengers are removed, the ride returns to `available` status.
+
+### 12.4 Kicking a Passenger
+
+If you need to remove an already-accepted passenger (before or during the ride):
+1. In the Ride Details or Live Tracking screen, find the passenger you want to remove.
+2. Tap **"Kick"**.
+3. The passenger is removed from `passengers`, `boardedPassengers`, and `arrivedAt` lists.
+4. Their `kickedAt` timestamp is recorded.
+5. They receive a `passenger_kicked` event and are removed from the ride room.
+6. Kicked passengers **cannot re-request** the same ride.
+7. If the ride was `full`, removing a passenger changes the status back to `accepted`, and the ride reappears in search results.
+
+### 12.5 Concurrency & Optimistic Locking
+
+All request acceptance and rider management operations use **optimistic locking** to prevent race conditions:
+- Every ride document has an `optimisticLock` version counter.
+- When the server processes an accept/decline/kick, it includes the current lock version in the database update query.
+- If another update happened in between (e.g., two admins acting simultaneously), the update fails and the system retries automatically (up to 5 times with random 20–100ms jitter).
+- If all retries fail, you'll see a "Concurrent modification detected. Please retry." message.
+
+---
+
+## Chapter 13: Starting & Managing the Trip
+
+### 13.1 Starting the Ride
+
+When you're ready to begin your journey:
+1. Open the ride from **Activity** or the Home Screen.
+2. Tap **"Start Ride"**.
+3. **What happens on the server:**
+   - The ride status changes to `started`.
+   - A `startedAt` timestamp is recorded.
+   - All pending requests are **automatically declined** — the ride is no longer accepting new passengers.
+   - Declined requesters receive a `ride_cancelled` event.
+   - For `nonstop` and `shared_start` rides, all accepted passengers are immediately marked as "arrived at" (ready for boarding).
+   - All participants receive a `ride_started` event.
+   - The ride disappears from search results.
+4. **Live location sharing begins.** Your GPS position is broadcast to all passengers every ~1.5 seconds via Socket.IO.
+
+### 13.2 The Live Tracking Screen (Driver View)
+
+As a driver, the Live Tracking Screen shows:
+- Your current position on the map.
+- The full route polyline.
+- Markers for each passenger's pickup and drop-off points.
+- A panel listing all passengers with their current status:
+  - ⏳ **Waiting** — Accepted but not yet at their pickup.
+  - 📍 **Arrived** — You've marked that you're at their pickup.
+  - 🚗 **Boarded** — They're in the vehicle.
+  - ✅ **Dropped Off** — They've been dropped at their destination.
+
+### 13.3 Managing Passengers During the Trip
+
+#### Marking "Arrived" at a Passenger's Pickup
+
+1. When you reach a passenger's pickup location, tap **"Arrived"** next to their name.
+2. **Behavior varies by route preference:**
+   - **Flexible:** Only the specific passenger is marked as arrived.
+   - **Nonstop / Shared Start:** All accepted passengers are marked as arrived simultaneously (since they all board at roughly the same point).
+3. **Capacity check (flexible only):** The system checks that boarding this passenger won't exceed the vehicle's physical capacity at this moment (considering who is currently boarded).
+4. The passenger receives a `driver_arrived` notification.
+
+#### Boarding a Passenger
+
+1. After the passenger gets into your vehicle, tap **"Board"** next to their name.
+2. A `boardedAt` timestamp is recorded for the passenger.
+3. The system performs a **physical capacity check** — the total seats currently occupied by boarded passengers plus the new boarding request must not exceed `totalSeats`.
+4. The passenger is moved from the "arrived" list to the `boardedPassengers` list.
+5. All participants receive a `passenger_boarded` event.
+
+#### Dropping Off a Passenger
+
+1. When you reach a passenger's destination, tap **"Drop Off"** next to their name.
+2. The passenger must be currently **boarded** to be dropped off.
+3. A `droppedAt` timestamp is recorded.
+4. The passenger is moved from `boardedPassengers` and `passengers` to `droppedPassengers`.
+5. The passenger receives a `passenger_dropped` event with their final fare.
+6. They are removed from the ride's Socket.IO room.
+
+### 13.4 Route Preference Behavior During the Trip
+
+| Action | Flexible | Shared Start | Nonstop |
+|--------|----------|-------------|---------|
+| **Arrive** | Per-passenger | All passengers at once | All passengers at once |
+| **Board** | Per-passenger | Per-passenger | Per-passenger |
+| **Drop Off** | Per-passenger | Per-passenger | Per-passenger (or auto at end) |
+| **End Ride** | Must drop off all first (or use Force End) | Auto-drops all remaining | Auto-drops all remaining |
+
+---
+
+## Chapter 14: Trip Completion & Earnings (Driver)
+
+### 14.1 Ending the Trip
+
+When all passengers have been dropped off:
+1. Tap **"End Trip"**.
+2. **For Nonstop / Shared Start rides:** All remaining active passengers (boarded or accepted) are automatically dropped off with timestamps.
+3. **For Flexible rides:** You must drop off all passengers individually first. If any are still active, you'll see an error message: *"Cannot end trip. Passengers are still active."* You can use **Force End** (`force=true`) to auto-drop everyone.
+4. The ride status changes to `completed` and a `completedAt` timestamp is recorded.
+5. All participants receive a `ride_ended` event.
+
+### 14.2 The Driver Completion Screen
+
+After ending the trip, you see the **Driver Completion Screen** with:
+- Trip summary: starting point, destination, total distance, total duration.
+- List of all passengers who traveled, with their individual fares.
+- Payment status for each passenger (Paid ✅ / Unpaid ❌).
+- Any passengers who haven't marked payment will show as unpaid.
+
+### 14.3 Understanding Earnings
+
+Your total earnings for a ride = Sum of all passengers' individual fares.
+
+Since fares are distance-proportional, if your total fare was ₹500 for a 100 km ride:
+- Rider A traveled 30 km → Paid ₹150
+- Rider B traveled 70 km → Paid ₹350
+- **Your total earnings: ₹500** (matching the fare you set)
+
+Note: In the current version, Ridify does not take a commission. The full fare goes to the driver.
+
+---
+
+## Chapter 15: Driver Statistics Dashboard
+
+### 15.1 Accessing Your Stats
+
+Go to **Profile** → **Driver Stats** (or the stats section on the Home Screen).
+
+### 15.2 Available Metrics
+
+| Metric | Description |
+|--------|-------------|
+| **Total Rides** | Number of completed rides where you were the driver. |
+| **Total Distance (km)** | Sum of `totalDistance` across all your completed rides. |
+| **Total Online Time (minutes)** | Sum of duration (`completedAt - startedAt`) for all completed rides. |
+
+These stats are calculated via a MongoDB aggregation pipeline on the server and are always up-to-date.
+
+---
+
+---
+
+# Part V: Communication & Social
+
+---
+
+## Chapter 16: In-App Chat System
+
+### 16.1 Overview
+
+Every ride has a dedicated **group chat room**. This allows the driver and all accepted co-passengers to communicate without exchanging personal phone numbers or social media accounts.
+
+### 16.2 Who Can Chat?
+
+| Role | Can Send Messages? |
+|------|-------------------|
+| Driver | ✅ Yes |
+| Accepted Passenger | ✅ Yes |
+| Boarded Passenger | ✅ Yes |
+| Pending Requester | ❌ No |
+| Declined/Kicked User | ❌ No |
+| Dropped-Off Passenger | ❌ No (ride must still be active) |
+
+### 16.3 Sending a Message
+
+1. Open the ride from Activity or the Live Tracking Screen.
+2. Tap the **Chat** icon.
+3. Type your message (max 1,000 characters, configurable via `CHAT_MAX_LENGTH`).
+4. Tap **Send**.
+
+### 16.4 Message Features
+
+| Feature | Description |
+|---------|-------------|
+| **Reply-to** | You can reply to a specific message. The reply includes the original sender's name and text. |
+| **Real-time delivery** | Messages are delivered instantly via Socket.IO to all participants — both through the ride room and direct per-user emission for reliability. |
+| **HTML sanitization** | All messages are stripped of HTML tags server-side using `sanitize-html` to prevent XSS attacks. |
+| **Sender name** | The sender's name is always fetched fresh from the database — not from client input — preventing impersonation. |
+| **Chat history** | Messages are stored in the ride document's `chatMessages` array (max 500 messages per ride). The full chat history is available when you open the chat screen. |
+| **Offline resilience** | Messages are emitted to participants' personal socket rooms in addition to the ride room. This ensures delivery even if the user's ride room membership was lost due to a mobile data NAT timeout. |
+
+### 16.5 Chat Limitations
+
+- Chat is **disabled** once a ride is `completed` or `cancelled`.
+- Maximum 500 messages per ride (server-enforced).
+- Each message has a maximum length of 1,000 characters (server-enforced).
+- No image or file sharing (text only in the current version).
+
+---
+
+## Chapter 17: Activity Feed & Ride History
+
+### 17.1 The Activity Screen
+
+The Activity tab shows all rides you are involved in, organized by status:
+
+| Category | What's Shown |
+|----------|-------------|
+| **Active** | Rides you're currently driving or riding in (status: `started`). |
+| **Upcoming** | Rides you've been accepted for that haven't started yet (status: `available`, `accepted`, `full`). |
+| **Pending** | Rides where you have a pending join request. |
+| **Past** | Completed or cancelled rides. |
+
+Each ride card shows the route, driver/rider info, status, and fare.
+
+### 17.2 Pagination
+
+The Activity feed is paginated:
+- Default: 20 rides per page.
+- Maximum: 50 rides per page.
+- Scroll down to load more rides automatically.
+
+### 17.3 The History Screen
+
+The History screen provides a more detailed view of your past rides, focusing on:
+- Complete route maps for each ride.
+- Exact timestamps (started, completed).
+- Fare paid/earned.
+- List of co-passengers.
+
+---
+
+## Chapter 18: Co-Passengers & Community
+
+### 18.1 Viewing Your Co-Passengers
+
+From the History screen, tap on any past ride to expand it and see the full list of co-passengers:
+- Their name and verification status.
+- Whether they paid their fare.
+- The segment they traveled (pickup/drop-off locations).
+
+### 18.2 The Co-Passengers Network
+
+Over time, you build a network of people you've shared rides with. The Co-Passengers view aggregates all unique users from your ride history, letting you recognize familiar faces for future trips.
+
+---
+
+---
+
+# Part VI: Administration
+
+---
+
+## Chapter 19: Admin Panel Overview
+
+### 19.1 What Is the Admin Panel?
+
+The Admin Panel is a secure, dedicated interface within the Ridify app that is accessible only to users whose email addresses are listed in the `ADMIN_EMAILS` environment variable on the server. Admins are regular users with elevated privileges.
+
+### 19.2 Accessing the Admin Panel
+
+1. Log in with an email that is configured as an admin email.
+2. The app automatically detects your admin status from the login response (`isAdmin: true`).
+3. An **Admin** tab appears in the navigation, giving you access to the admin dashboard.
+
+### 19.3 Admin Panel Sections
+
+| Section | Purpose |
+|---------|---------|
+| **Dashboard** | High-level platform statistics. |
+| **Users** | Search, view, edit, ban/unban, and delete user accounts. |
+| **Rides** | View all rides (active, completed, cancelled), force-cancel, or delete. |
+| **Verifications** | Review pending KYC document submissions, approve or reject. |
+
+---
+
+## Chapter 20: User Management & Moderation
+
+### 20.1 Viewing Users
+
+The Users section displays a paginated, searchable list of all registered users.
+
+| Column | Description |
+|--------|-------------|
+| **Name** | The user's full name. |
+| **Email** | Their registered email address. |
+| **Verified** | Their KYC verification status (None / Pending / Verified). |
+| **Banned** | Whether the account is banned. |
+| **Joined** | Account creation date. |
+
+**Search:** You can search by name or email. The search uses case-insensitive regex matching (with special characters escaped to prevent ReDoS attacks).
+
+**Sort:** Sort by name (alphabetical) or creation date.
+
+### 20.2 Viewing User Details
+
+Tap on a user to see:
+- Full profile information (name, age, email, verification status).
+- **Stats:** Number of rides as a driver and as a passenger.
+- Their uploaded ID document URL (if any).
+
+### 20.3 Editing a User
+
+Admins can update a user's:
+- **Name** (max 500 characters).
+- **Age** (max 3 digits).
+- **Email cannot be changed** — this is enforced server-side due to cascade complexities (email is used as the unique identifier in rides, chat messages, and socket rooms).
+
+When you update a user's name, the change is **automatically cascaded** across:
+- All rides where they are the driver (updates `riderName`).
+- All rides where they are a passenger/requester (updates `riderDetails[email].riderName`).
+- All chat messages they've sent (updates `sender` field).
+
+### 20.4 Banning a User
+
+1. Tap **"Ban"** on a user's profile.
+2. Their `isBanned` field is set to `true`.
+3. **Effect:**
+   - The user cannot log in — they receive an "Account suspended" error.
+   - Their existing JWT tokens will fail during refresh (the refresh endpoint checks `isBanned`).
+   - They are effectively locked out of the platform.
+
+### 20.5 Unbanning a User
+
+1. Tap **"Unban"** on a banned user's profile.
+2. Their `isBanned` field is set to `false`.
+3. They can log in normally again.
+
+### 20.6 Deleting a User
+
+1. Tap **"Delete"** on a user's profile.
+2. **Cascade effects:**
+   - All active rides where they are the driver are **cancelled**.
+   - All co-passengers and requesters on those rides are notified via Socket.IO.
+   - Their pending requests on other rides are removed.
+   - Their user record is permanently deleted.
+
+### 20.7 Bulk Delete
+
+Admins can select multiple users and delete them in bulk (max 100 at a time). The admin's own account is protected and cannot be included in a bulk delete.
+
+### 20.8 Delete All Users
+
+The nuclear option: deletes every user **except the admin** who triggered the action, and all rides. A `database_wiped` event is broadcast to all connected clients.
+
+---
+
+## Chapter 21: Ride Monitoring & Force Controls
+
+### 21.1 Viewing All Rides
+
+The Rides section shows all rides with filtering options:
+
+| Filter | Options |
+|--------|---------|
+| **Status** | Available, Accepted, Full, Started, Completed, Cancelled |
+| **Driver Email** | Filter by a specific driver's email. |
+
+Rides are displayed with route information (excluding the full route path for performance) and paginated (max 50 per page).
+
+### 21.2 Force-Cancelling a Ride
+
+If a ride needs to be stopped for safety or policy reasons:
+1. Find the ride and tap **"Force Cancel"**.
+2. All pending requests are automatically declined.
+3. The ride status changes to `cancelled`.
+4. All participants are notified via Socket.IO with `adminCancelled: true`.
+
+### 21.3 Deleting a Ride
+
+Completely removes a ride record from the database. All connected clients receive a `ride_cancelled` event with `adminDeleted: true`.
+
+### 21.4 Wiping All Rides
+
+Permanently deletes every ride in the database. An `all_rides_wiped` event is broadcast to all connected clients.
+
+---
+
+## Chapter 22: KYC Document Verification Workflow
+
+### 22.1 The Verification Queue
+
+Navigate to the **Verifications** section to see all users with `verificationStatus: 'pending'`.
+
+### 22.2 Reviewing a Document
+
+For each pending verification:
+1. The admin can see the user's name, email, and the URL of their uploaded ID document (hosted on Google Drive).
+2. Open the document URL to view the government ID.
+3. **Verification checklist:**
+   - Is the document a valid government-issued ID?
+   - Is the name on the document consistent with the user's registered name?
+   - Is the document legible and not expired?
+   - Are all four corners visible?
+
+### 22.3 Approving a Verification
+
+1. Tap **"Approve"**.
+2. The user's `documentsVerified` is set to `true` and `verificationStatus` to `'verified'`.
+3. **Cascade:** The verification status is propagated to ALL rides where this user is a driver or passenger. The `driverVerificationStatus` field and `riderDetails[email].verificationStatus` fields are updated across all rides.
+4. The user will see a ✅ verified badge next to their name.
+
+### 22.4 Rejecting a Verification
+
+1. Tap **"Reject"**.
+2. The user's `verificationStatus` is reset to `'none'` and their `idUrl` is cleared.
+3. **Cascade:** Same as approval — the status is propagated across all rides.
+4. The user will need to upload a new, valid document.
+
+---
+
+## Chapter 23: Platform Statistics Dashboard
+
+### 23.1 Dashboard Metrics
+
+The admin dashboard provides these real-time metrics:
+
+| Metric | Description |
+|--------|-------------|
+| **Total Users** | All registered accounts. |
+| **Total Rides** | All rides ever created. |
+| **Available Rides** | Rides currently open for requests. |
+| **Accepted Rides** | Rides with at least one accepted passenger. |
+| **Full Rides** | Rides where every segment is at capacity. |
+| **Started Rides** | Rides currently in progress. |
+| **Completed Rides** | Successfully finished rides. |
+| **Cancelled Rides** | Rides that were cancelled. |
+| **Active Rides** | Sum of Available + Accepted + Started + Full. |
+| **Recent Users** | The 5 most recently registered users. |
+
+---
+
+---
+
+# Part VII: Technical Deep Dive
+
+---
+
+## Chapter 24: System Architecture Overview
+
+Ridify follows a **client-server architecture** with four distinct layers:
+
+### 24.1 Client Layer (Flutter)
+
+| Component | Technology | Purpose |
+|-----------|-----------|---------|
+| UI Framework | Flutter 3.x + Dart | Cross-platform mobile user interface. |
+| State Management | Provider | Reactive state management for real-time updates. |
+| Maps | `flutter_map` + OpenStreetMap | Interactive map rendering. |
+| Location | `geolocator` | Device GPS and permission management. |
+| WebSocket Client | `socket_io_client` | Real-time bidirectional communication. |
+| HTTP Client | `http` | REST API calls. |
+| Token Storage | `flutter_secure_storage` | Encrypted, secure JWT token storage on device. |
+| Geocoding | `nominatim_service` | Convert addresses to coordinates and vice-versa. |
+
+### 24.2 Backend Layer (Node.js + Express)
+
+| Component | Technology | Purpose |
+|-----------|-----------|---------|
+| Runtime | Node.js 20+ | JavaScript runtime. |
+| HTTP Framework | Express 5.x | RESTful API routing and middleware. |
+| WebSocket Server | Socket.IO 4.8 | Real-time event broadcasting. |
+| Geospatial Math | `@turf/turf` | Sweep-line calculations, distance measurements, point-in-route matching. |
+| Authentication | `jsonwebtoken` + `bcrypt` | JWT token signing/verification + password hashing. |
+| Logging | `winston` | Structured, leveled logging (info, warn, error). |
+| Security | `helmet` | HTTP security headers (CSP, HSTS, X-Frame-Options, etc.). |
+| Rate Limiting | `express-rate-limit` | Per-IP and per-email request throttling. |
+| Input Sanitization | `sanitize-html` | Strip HTML/XSS from chat messages. |
+
+### 24.3 Database Layer (MongoDB)
+
+| Collection | Purpose |
+|-----------|---------|
+| `users` | User accounts, credentials, verification status, ban status. |
+| `rides` | Ride data including route, passengers, chat messages, lifecycle state. |
+| `otpverifications` | Temporary OTP records for sign-up (auto-deleted after 10 minutes via TTL index). |
+
+### 24.4 External Services
+
+| Service | Integration Method | Purpose |
+|---------|--------------------|---------|
+| OSRM | HTTP (public API or self-hosted) | Calculates optimal driving routes between two points. Returns a polyline of GPS coordinates. |
+| Nominatim | HTTP (OpenStreetMap) | Forward and reverse geocoding — converting between addresses and GPS coordinates. |
+| EmailJS | HTTP API | Sends OTP emails for sign-up and login. |
+| Google Apps Script | HTTP POST webhook | Uploads KYC identity documents to Google Drive. |
+
+---
+
+## Chapter 25: Authentication & Token System
+
+### 25.1 Token Architecture
+
+Ridify uses a **two-token system**:
+
+| Token | Purpose | Lifespan | Storage |
+|-------|---------|---------|---------|
+| **Access Token** | Authorizes API requests. Sent in the `Authorization: Bearer <token>` header. | 15 minutes | In-memory + `flutter_secure_storage` |
+| **Refresh Token** | Used to obtain new access tokens without re-logging in. | 7 days | `flutter_secure_storage` on device; stored as an array in the `user.refreshTokens` field in the database. |
+
+### 25.2 Token Flow
+
+```
+1. User logs in → Server returns accessToken + refreshToken
+2. Client stores both tokens securely
+3. Client sends accessToken with every API request
+4. When accessToken expires (15 min):
+   a. Client sends refreshToken to POST /api/auth/refresh
+   b. Server validates refreshToken exists in user.refreshTokens[]
+   c. Server checks user is not banned
+   d. Server returns new accessToken
+5. When refreshToken expires (7 days):
+   a. User must log in again with password or OTP
+```
+
+### 25.3 Token Revocation
+
+- **On logout:** The specific refresh token is removed from `user.refreshTokens[]`.
+- **On password change:** ALL refresh tokens are cleared, logging the user out everywhere.
+- **On ban:** The refresh endpoint rejects the token with a `ACCOUNT_BANNED` error code.
+- **On account deletion:** The entire user record is deleted, invalidating all tokens.
+
+### 25.4 Socket.IO Authentication
+
+WebSocket connections are also authenticated:
+1. When connecting, the client sends the JWT access token in `socket.handshake.auth.token`.
+2. The Socket.IO middleware (`io.use()`) verifies the token.
+3. If valid, the user's email and ID are attached to the socket object.
+4. If invalid, the connection is rejected with an error.
+
+---
+
+## Chapter 26: Database Schema Reference
+
+### 26.1 User Schema
+
+```javascript
+{
+  name:               String (required, max 500 chars),
+  age:                String (max 3 chars),
+  email:              String (unique, required, lowercase, max 500 chars),
+  password:           String (bcrypt hashed, select: false),
+  isVerified:         Boolean (default: false),
+  otp:                String (SHA-256 hashed, select: false),
+  otpExpiry:          Date (select: false),
+  otpAttempts:        Number (default: 0, select: false),
+  lastOtpSentAt:      Date (select: false),
+  refreshTokens:      [String] (select: false),
+  isBanned:           Boolean (default: false),
+  documentsVerified:  Boolean (default: false),
+  verificationStatus: String (enum: ['none', 'pending', 'verified']),
+  idUrl:              String (Google Drive URL),
+  timestamps:         { createdAt, updatedAt }
+}
+```
+
+**Indexes:** `createdAt: 1`
+
+### 26.2 Ride Schema
+
+```javascript
+{
+  riderName:              String (driver's name),
+  riderEmail:             String (driver's email, required),
+  driverVerificationStatus: String (enum: ['none', 'pending', 'verified']),
+  pickupLocation:         String (human-readable address),
+  pickupLat/pickupLng:    Number (GPS coordinates),
+  destination:            String (human-readable address),
+  destLat/destLng:        Number (GPS coordinates),
+  pickupCoords:           GeoJSON Point (for 2dsphere queries),
+  departureTime:          String (formatted date/time string),
+  expiresAt:              Number (epoch ms — auto-expiry timestamp),
+  optimisticLock:         Number (for concurrency control),
+  fare:                   Number (total fare, min 1),
+  status:                 String (enum: ['available', 'accepted', 'full',
+                                         'started', 'completed', 'cancelled']),
+  vehicleType:            String (enum: ['Bike', 'Sedan', 'SUV']),
+  totalSeats:             Number (1-8),
+  availableSeats:         Number,
+  routePath:              [{lat: Number, lng: Number}] (GPS polyline, max 500 points),
+  totalDistance:           Number (km),
+  routePreference:        String (enum: ['flexible', 'shared_start', 'nonstop']),
+  
+  // Passenger tracking
+  riderDetails:           Map<email → {
+    pickupLat, pickupLng, destLat, destLng,
+    pickupLocation, destination, fare, distance,
+    seats, startIndex, endIndex, paid, riderName,
+    verificationStatus, boardedAt, droppedAt, kickedAt
+  }>,
+  requests:               [String] (emails of pending requesters),
+  passengers:             [String] (emails of accepted passengers),
+  boardedPassengers:      [String] (emails of physically boarded),
+  droppedPassengers:      [String] (emails of dropped-off),
+  paidPassengers:         [String] (emails who marked payment),
+  arrivedAt:              [String] (emails where driver has arrived),
+  declined:               [String] (emails declined by driver),
+  kicked:                 [String] (emails kicked by driver),
+  cancelledRequests:      [String] (emails who self-cancelled their request),
+  seatAllocations:        Map<email → Number>,
+  
+  // Chat
+  chatMessages:           [{
+    sender: String, senderEmail: String,
+    text: String (max 1000 chars),
+    timestamp: String (ISO),
+    replyTo: { sender: String, text: String }
+  }] (max 500 messages),
+  
+  startedAt:              Date,
+  completedAt:            Date,
+  timestamps:             { createdAt, updatedAt }
+}
+```
+
+**Indexes:**
+- `pickupCoords: "2dsphere"` — Geospatial queries.
+- `riderEmail + status` — Find driver's active rides.
+- `passengers` — Find rides where user is a passenger.
+- `requests` — Find rides where user has pending request.
+- `droppedPassengers` — Historical queries.
+- `status + expiresAt` — Efficient expired ride queries.
+- `status + vehicleType + departureTime` — Compound search filter.
+- `updatedAt` (TTL) — **Auto-deletes** completed/cancelled rides after 30 days.
+
+### 26.3 OTP Verification Schema
+
+```javascript
+{
+  email:          String (required, lowercase),
+  otp:            String (plaintext — used only for signup verification),
+  createdAt:      Date (default: now, TTL: 10 minutes — auto-deleted),
+  lastOtpSentAt:  Date
+}
+```
+
+---
+
+## Chapter 27: The Ride Lifecycle State Machine
+
+```
+                    ┌─────────────┐
+                    │  available   │ ← Ride is published, open for requests
+                    └──────┬──────┘
+                           │ First rider accepted
+                           ▼
+                    ┌─────────────┐
+                    │  accepted    │ ← Has passengers, still accepting more
+                    └──────┬──────┘
+                           │ All segments full
+                           ▼
+                    ┌─────────────┐
+                    │    full      │ ← No more capacity on any segment
+                    └──────┬──────┘
+                           │
+              ┌────────────┤ Driver taps "Start Ride"
+              │            ▼
+              │     ┌─────────────┐
+              │     │   started    │ ← Driver is en route, live tracking active
+              │     └──────┬──────┘
+              │            │ Driver taps "End Trip"
+              │            ▼
+              │     ┌─────────────┐
+              │     │  completed   │ ← Trip finished, payments pending
+              │     └─────────────┘
+              │
+              │  Driver/Admin/System cancels at any point
+              │            │
+              └────────────▼
+                    ┌─────────────┐
+                    │  cancelled   │ ← Ride is cancelled
+                    └─────────────┘
+```
+
+**Transition Rules:**
+- `available` → `accepted`: When the first rider is accepted.
+- `accepted` → `full`: When the sweep-line determines every segment is at capacity.
+- `full` → `accepted`: When a passenger is kicked, freeing capacity.
+- `accepted` → `available`: When all passengers and requests are removed.
+- `available`/`accepted`/`full` → `started`: When the driver starts the ride. Pending requests are auto-declined.
+- `started` → `completed`: When the driver ends the ride.
+- Any active state → `cancelled`: By driver, admin, or auto-cleanup (stale rides stuck in `started` for >6 hours).
+- `completed`/`cancelled` → *(auto-deleted)*: After 30 days via MongoDB TTL index.
+
+---
+
+## Chapter 28: The Sweep-Line Matching Algorithm
+
+### 28.1 The Problem
+
+Traditional ride-sharing apps use simple seat counting: "3 seats available, 2 passengers = 1 seat left." But this doesn't account for **segment overlap**. Consider:
+
+- A car has 2 seats.
+- Rider A travels from Point 10 to Point 50 on the route (1 seat).
+- Rider B travels from Point 60 to Point 90 (1 seat).
+- Since their segments don't overlap, both can travel in the car — even though "2 passengers = 0 seats" would suggest the car is full for a third rider.
+- Rider C wants to travel from Point 20 to Point 40 (1 seat). Under simple counting, they'd be rejected. But with sweep-line, we see that at Point 20, only Rider A is in the car (1/2 seats used), so Rider C can fit!
+
+### 28.2 How Ridify Solves It
+
+The sweep-line algorithm works as follows:
+
+1. **Create events:** For each existing passenger, create two events:
+   - A **pickup event** at their `startIndex` with change = `+seats`.
+   - A **dropoff event** at their `endIndex` with change = `-seats`.
+
+2. **Add the new request:** Add the candidate rider's pickup (+seats) and dropoff (-seats) events.
+
+3. **Sort events:** By index first, then by change value (dropoffs before pickups at the same index — so a seat is freed before a new passenger tries to use it).
+
+4. **Sweep:** Walk through the sorted events, maintaining a running count of currently occupied seats. Track the **peak** occupancy.
+
+5. **Decision:** If the peak occupancy ≤ `totalSeats`, the new rider fits. Otherwise, they don't.
+
+### 28.3 Capacity Check Variants
+
+| Function | Used When | Counts |
+|----------|----------|--------|
+| `checkCapacityForSearch` | Searching for rides | Only accepted passengers (pending requests don't count). Ensures rides stay visible until genuinely full. |
+| `checkCapacityForRequest` | Requesting to join | Only accepted passengers (allows multiple simultaneous requests to the same ride). |
+| `checkCapacity` | Accepting a rider | Only accepted passengers (the just-accepted rider is already in the passengers list). |
+
+### 28.4 Example
+
+```
+Route: [0] ───────── [25] ───────── [50] ───────── [75] ───────── [100]
+Car capacity: 2 seats
+
+Rider A: [10 ─────────── 60]  (1 seat)
+Rider B: [40 ─────────────────── 90]  (1 seat)
+
+Events (sorted):
+  Index 10: +1 (A boards)
+  Index 40: +1 (B boards)
+  Index 60: -1 (A alights)
+  Index 90: -1 (B alights)
+
+Sweep:
+  At 10: occupancy = 1  ← OK (≤ 2)
+  At 40: occupancy = 2  ← OK (≤ 2) — peak!
+  At 60: occupancy = 1
+  At 90: occupancy = 0
+
+Peak = 2 = totalSeats → Car is at capacity between [40, 60].
+
+New Rider C: [65 ─── 85] (1 seat)?
+  Add events: Index 65: +1, Index 85: -1
+  New sweep peak would be max(2, 1+1) = 2 ← Still OK! Rider C can board.
+
+New Rider D: [30 ─── 55] (1 seat)?
+  Add events: Index 30: +1, Index 55: -1
+  At Index 40: 1(A) + 1(D) + 1(B) = 3 > 2 ← Exceeds capacity! Rider D rejected.
+```
+
+---
+
+## Chapter 29: Real-Time Communication (Socket.IO)
+
+### 29.1 Connection Architecture
+
+Every authenticated user maintains a persistent WebSocket connection to the Ridify server.
+
+**Room Structure:**
+- Each user joins a **personal room** named after their email address. This enables sending events to a specific user across all their connected devices.
+- Each user automatically joins **ride rooms** for all their active rides (found via database query on connection).
+- The **global search room** (`global_search_room`) is joined by users who are actively browsing search results.
+
+### 29.2 Event Reference
+
+| Event Name | Direction | Description |
+|------------|-----------|-------------|
+| `new_ride_request` | Server → Client | A rider has requested to join a ride. |
+| `ride_accepted` | Server → Client | A rider's request has been accepted. |
+| `ride_cancelled` | Server → Client | A ride has been cancelled or a request declined. |
+| `ride_updated` | Server → Client | Generic ride state update (capacity change, etc.). |
+| `ride_started` | Server → Client | The driver has started the ride. |
+| `driver_arrived` | Server → Client | The driver has arrived at a passenger's pickup. |
+| `passenger_boarded` | Server → Client | A passenger has boarded the vehicle. |
+| `passenger_dropped` | Server → Client | A passenger has been dropped off. |
+| `passenger_paid` | Server → Client | A passenger has marked their payment as complete. |
+| `passenger_kicked` | Server → Client | A passenger has been kicked from the ride. |
+| `ride_ended` | Server → Client | The trip is complete. |
+| `receive_message` | Server → Client | A new chat message has been sent. |
+| `driver_location_update` | Client → Server → Clients | Driver broadcasts GPS position (throttled to 1 update per 1.5s). |
+| `request_driver_location` | Client → Server → Driver | A passenger requests the driver's current location. |
+| `join_ride` | Client → Server | Explicitly join a ride's room. |
+| `leave_ride` | Client → Server | Leave a ride's room. |
+| `join_global_search_room` | Client → Server | Join the search results room. |
+| `leave_global_search_room` | Client → Server | Leave the search results room. |
+| `database_wiped` | Server → All | Admin wiped the database. |
+
+### 29.3 Reliability
+
+To handle mobile network instability (NAT timeouts, data drops), every event is emitted through **two channels**:
+1. The **ride room** (standard Socket.IO room broadcast).
+2. **Direct per-user emission** via the user's personal room.
+
+This dual-channel approach ensures events are delivered even if a user's ride room membership was silently lost during a reconnect.
+
+### 29.4 Configuration
+
+| Parameter | Default | Description |
+|-----------|---------|-------------|
+| `SOCKET_PING_INTERVAL` | 25,000ms (25s) | How often the server pings the client. Set higher than default for mobile data tolerance. |
+| `SOCKET_PING_TIMEOUT` | 20,000ms (20s) | How long to wait for a pong before considering the connection dead. Generous for mobile. |
+| Location update cooldown | 1,500ms | Minimum interval between location broadcasts from the same driver. |
+
+---
+
+## Chapter 30: REST API Reference
+
+### 30.1 Base URL
+
+```
+http://<server-ip>:<port>/api
+```
+
+### 30.2 Authentication Routes — `/api/auth`
+
+| Method | Endpoint | Auth? | Description |
+|--------|----------|-------|-------------|
+| `POST` | `/signup-otp-request` | No | Request OTP for new account registration. |
+| `POST` | `/register` | No | Register a new account with name, email, password, and OTP. |
+| `POST` | `/login` | No | Log in with email + password or email + OTP. |
+| `POST` | `/login-otp-request` | No | Request OTP for passwordless login. |
+| `POST` | `/refresh` | No | Exchange a refresh token for a new access token. |
+| `POST` | `/logout` | Yes | Revoke the provided refresh token. |
+| `PATCH` | `/change-password` | Yes | Change password (requires current password). |
+| `PATCH` | `/user/:email` | Yes | Update own profile (name, age). |
+| `POST` | `/user/:email/upload-id` | Yes | Upload KYC identity document. |
+| `GET` | `/user/:email/profile` | Yes | Fetch own profile details. |
+| `DELETE` | `/user/:email` | Yes | Delete own account (or admin can delete any). |
+| `DELETE` | `/users` | Yes (Admin) | Delete all users except the requesting admin. |
+
+### 30.3 Ride Routes — `/api/rides`
+
+| Method | Endpoint | Auth? | Description |
+|--------|----------|-------|-------------|
+| `GET` | `/search` | Yes | Search for available rides by coordinates, date, vehicle type. |
+| `GET` | `/stats/driver` | Yes | Get the authenticated driver's statistics. |
+| `GET` | `/` | Yes | Get all rides the user is involved in (paginated). |
+| `GET` | `/:id` | Yes | Get a specific ride by ID (full details including chat). |
+| `POST` | `/` | Yes | Create a new ride. |
+| `PATCH` | `/cancel/:id` | Yes | Cancel a ride (driver or admin only). |
+| `PATCH` | `/request/:id` | Yes | Request to join a ride. |
+| `PATCH` | `/accept/:id/:passengerEmail` | Yes | Accept a rider's request (driver only). |
+| `PATCH` | `/decline/:id/:passengerEmail` | Yes | Decline a rider's request (driver or self). |
+| `PATCH` | `/kick/:id/:passengerEmail` | Yes | Kick a passenger (driver only). |
+| `PATCH` | `/arrive/:id/:passengerEmail` | Yes | Mark driver arrived at passenger's pickup. |
+| `PATCH` | `/board/:id/:passengerEmail` | Yes | Mark passenger as boarded. |
+| `PATCH` | `/dropoff/:id/:passengerEmail` | Yes | Drop off a boarded passenger. |
+| `PATCH` | `/pay/:id/:passengerEmail` | Yes | Mark self as paid (passenger only). |
+| `PATCH` | `/start/:id` | Yes | Start the ride (driver only). |
+| `PATCH` | `/end/:id` | Yes | End the ride (driver only). Use `?force=true` to auto-drop all. |
+| `POST` | `/:id/chat` | Yes | Send a chat message. |
+| `DELETE` | `/` | Yes (Admin) | Delete all rides. |
+
+### 30.4 Admin Routes — `/api/admin`
+
+All admin routes require authentication + admin email verification.
+
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| `GET` | `/users` | List users (paginated, searchable). |
+| `GET` | `/users/:id` | Get user details + ride stats. |
+| `POST` | `/users/create` | Create a new user (no OTP required). |
+| `PATCH` | `/users/:id` | Update user profile. |
+| `DELETE` | `/users/:id` | Delete a specific user. |
+| `POST` | `/users/bulk-delete` | Delete multiple users (max 100). |
+| `POST` | `/users/:id/ban` | Ban a user. |
+| `POST` | `/users/:id/unban` | Unban a user. |
+| `PATCH` | `/users/:id/verify` | Approve KYC verification. |
+| `PATCH` | `/users/:id/reject-verification` | Reject KYC verification. |
+| `GET` | `/verifications/pending` | List all pending KYC submissions. |
+| `GET` | `/rides` | List all rides (paginated, filterable). |
+| `GET` | `/rides/:id` | Get full ride details (including chat). |
+| `DELETE` | `/rides/:id` | Delete a specific ride. |
+| `DELETE` | `/rides` | Delete all rides. |
+| `PATCH` | `/rides/:id/cancel` | Force-cancel a ride. |
+| `GET` | `/stats` | Get platform statistics. |
+
+### 30.5 Utility Routes
+
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| `GET` | `/health` | Health check — returns `200 OK` if MongoDB is connected, `503` otherwise. |
+| `GET` | `/` | Root — returns a text message confirming the API is running. |
+| `GET` | `/api/config` | Returns configurable constants (max field length, max message length, max price, min ride distance, max route points, default search radius). |
+
+---
+
+## Chapter 31: Security Architecture
+
+### 31.1 HTTP Security Headers (Helmet)
+
+Ridify configures Helmet with the following policies:
+
+| Header | Configuration |
+|--------|--------------|
+| **Content-Security-Policy** | `default-src: 'self'`, `script-src: 'self'`, `object-src: 'none'`, `upgrade-insecure-requests` |
+| **Strict-Transport-Security** | `max-age: 31536000` (1 year), `includeSubDomains` |
+| **X-Content-Type-Options** | `nosniff` |
+| **X-Frame-Options** | `DENY` |
+
+### 31.2 CORS Policy
+
+- **Production:** Only origins listed in the `ALLOWED_ORIGIN` environment variable are permitted. Requests from unlisted origins are rejected.
+- **Development:** Allows all origins (or configured origins) for easier testing.
+- **Allowed Methods:** GET, POST, PATCH, DELETE, OPTIONS.
+- **Allowed Headers:** Content-Type, Authorization, x-admin-email, x-admin-secret.
+- **Credentials:** Allowed.
+
+### 31.3 Password Security
+
+- Passwords are hashed using **bcrypt** with a configurable number of salt rounds (default: 12).
+- OTPs for login are hashed using **SHA-256** before storage, preventing plaintext OTP leaks even if the database is compromised.
+- Sign-up OTPs are stored as plaintext in the temporary `OtpVerification` collection (which auto-deletes after 10 minutes).
+
+### 31.4 Input Validation & Sanitization
+
+- **Email validation:** Regex-based format check (`^[^\s@]+@[^\s@]+\.[a-zA-Z]{2,}$`).
+- **ObjectId validation:** MongoDB `ObjectId.isValid()` check on all ID parameters.
+- **Field length limits:** Configurable `MAX_FIELD_LENGTH` (default 500) enforced on names, emails, and search queries.
+- **Chat sanitization:** All chat messages pass through `sanitize-html` with zero allowed tags — stripping all HTML to prevent XSS.
+- **Regex escaping:** Admin search queries have special regex characters escaped to prevent ReDoS attacks.
+- **JSON body limit:** Requests are limited to 1 MB.
+- **API caching disabled:** All `/api` routes set `Cache-Control: no-store` to prevent stale data.
+
+---
+
+## Chapter 32: Rate Limiting & Abuse Prevention
+
+### 32.1 Rate Limit Tiers
+
+| Limiter | Scope | Window | Max Requests | Applied To |
+|---------|-------|--------|-------------|------------|
+| **Global** | Per IP | 1 minute | 200 | All routes |
+| **Auth** | Per IP + Email | 15 minutes | 1,000 | `/api/auth/*` |
+| **Ride** | Per User Email or IP | 1 minute | 300 | `/api/rides/*` |
+
+### 32.2 OTP Brute Force Protection
+
+- **Signup OTP:** Cannot request another OTP within 10 minutes of the last request.
+- **Login OTP:** Cannot request another OTP within 10 minutes. Max 5 wrong OTP attempts — after that, the OTP is invalidated.
+- **Login OTP Expiry:** OTPs expire after 10 minutes.
+
+### 32.3 Optimistic Locking
+
+Critical ride operations (request, accept, board, dropoff, arrive, start) use optimistic locking:
+- Each ride document has an `optimisticLock` counter.
+- Update operations include the current lock value in the query filter.
+- If a concurrent modification changed the lock, the update returns null and the operation retries (up to 5 times with 20-100ms random jitter).
+
+### 32.4 Stale Ride Auto-Cleanup
+
+A background job runs every 30 minutes (first run after 5 minutes of server start):
+- Finds rides with status `started` where `startedAt` is more than 6 hours ago.
+- Automatically cancels them to prevent orphaned "in progress" rides.
+- Logged as a warning: `Auto-cancelled N stale ride(s)`.
+
+---
+
+---
+
+# Part VIII: Policies & Legal
+
+---
+
+## Chapter 33: Terms of Service
+
+### 33.1 Acceptance
+
+By creating an account on Ridify, you agree to these Terms of Service. If you do not agree, you must discontinue use of the application immediately.
+
+### 33.2 Eligibility
+
+- You must be at least 18 years old to use Ridify.
+- You must have a valid email address.
+- If operating as a driver, you must hold a valid driver's license and adequate vehicle insurance as required by your local jurisdiction.
+
+### 33.3 Account Responsibilities
+
+- You are responsible for maintaining the confidentiality of your account credentials.
+- You may not share your account with others.
+- You are responsible for all activity that occurs under your account.
+- You must provide accurate information during registration and KYC verification.
+
+### 33.4 Ride Conduct
+
+- Drivers must operate their vehicles safely and in compliance with all traffic laws.
+- Riders must behave respectfully toward drivers and co-passengers.
+- Harassment, discrimination, or threatening behavior toward any user is strictly prohibited.
+- Smoking, alcohol consumption, and illegal substance use during rides is prohibited.
+- Both drivers and riders must wear seatbelts where required by law.
+
+### 33.5 Payment Terms
+
+- Ridify calculates fare splits as a facilitation service. Actual payments are settled directly between parties.
+- Ridify does not guarantee payment collection. Riders are expected to pay their computed fare promptly upon trip completion.
+- Ridify does not currently charge a commission or service fee.
+
+### 33.6 Prohibited Activities
+
+- Manipulating the app or its API to falsify ride data, fares, or locations.
+- Creating multiple accounts to circumvent bans or restrictions.
+- Using the platform for commercial transportation services (e.g., operating as an unlicensed taxi).
+- Uploading false or fraudulent identity documents.
+- Spamming the chat system or harassing other users.
+- Attempting to reverse-engineer, decompile, or exploit the Ridify software.
+
+### 33.7 Account Suspension and Termination
+
+- Ridify reserves the right to suspend or permanently ban any account that violates these Terms.
+- Suspended users will receive an "Account suspended" message when attempting to log in.
+- You may delete your own account at any time via Profile → Delete Account. This action is irreversible.
+
+### 33.8 Limitation of Liability
+
+- Ridify is a platform that connects drivers and riders. It is not a transportation company.
+- Ridify does not guarantee the safety, quality, or legality of rides.
+- Ridify is not liable for any accidents, injuries, property damage, or losses that occur during rides.
+- Users participate in rides at their own risk.
+
+### 33.9 Modifications
+
+Ridify reserves the right to modify these Terms at any time. Continued use of the platform after modifications constitutes acceptance of the updated Terms.
+
+---
+
+## Chapter 34: Privacy Policy
+
+### 34.1 Information We Collect
+
+| Data Type | What We Collect | Why |
+|-----------|----------------|-----|
+| **Account Data** | Name, email, age, password (hashed). | To create and manage your account. |
+| **Location Data** | GPS coordinates during ride creation, search, and live tracking. | To match rides, display maps, and enable real-time tracking. |
+| **Identity Documents** | Government-issued ID photos (uploaded to Google Drive). | For KYC verification to build community trust. |
+| **Ride Data** | Routes, pickup/dropoff locations, fares, timestamps, passenger lists. | To facilitate ride-sharing and cost-splitting. |
+| **Chat Messages** | Text messages sent within ride chat rooms. | To enable in-ride communication. |
+| **Device Data** | IP address (for rate limiting). | To prevent abuse and ensure security. |
+
+### 34.2 How We Use Your Data
+
+- **Ride Matching:** Your pickup and destination coordinates are compared against driver routes to find compatible rides.
+- **Live Tracking:** During active rides, the driver's GPS position is shared with co-passengers via Socket.IO.
+- **Communication:** Chat messages are stored in the ride document and visible to all ride participants.
+- **Security:** IP addresses are used for rate limiting. Email addresses are used for OTP delivery and admin identification.
+
+### 34.3 Data Sharing
+
+- **With Co-Passengers and Drivers:** Your name, verification status, and ride-specific details (pickup, dropoff, fare) are shared with other participants in your ride.
+- **With Admins:** Admins can view all user profiles, ride data, and KYC documents.
+- **With Third Parties:**
+  - **EmailJS:** Your email address is sent to EmailJS to deliver OTP emails.
+  - **Google Drive:** Your KYC document is uploaded to Google Drive via Google Apps Script.
+  - **OSRM / Nominatim:** Your requested pickup and destination coordinates are sent to these open-source services for route calculation and geocoding. These services are operated by the OpenStreetMap community.
+- **We do not sell your personal data** to advertisers or third-party marketers.
+
+### 34.4 Data Retention
+
+| Data | Retention Period |
+|------|-----------------|
+| **Active user accounts** | Retained indefinitely until the user deletes their account. |
+| **Completed/Cancelled rides** | Auto-deleted 30 days after the last update (MongoDB TTL index). |
+| **OTP verification records** | Auto-deleted 10 minutes after creation (MongoDB TTL index). |
+| **KYC documents** | Stored on Google Drive. Not automatically deleted. Admins can manually remove rejected documents. |
+| **Chat messages** | Deleted with the ride document (30 days after completion). |
+| **Server logs** | Retained per your server deployment's logging configuration. |
+
+### 34.5 Your Rights
+
+- **Access:** You can view your profile data at any time via Profile → View Profile.
+- **Correction:** You can update your name and age via Profile → Edit Profile.
+- **Deletion:** You can delete your entire account via Profile → Delete Account. This removes your user record and cancels all active rides.
+- **Portability:** Contact the platform administrator to request an export of your data.
+
+### 34.6 Security Measures
+
+- Passwords are hashed with bcrypt (12 rounds).
+- Login OTPs are hashed with SHA-256.
+- JWT tokens are stored in encrypted device storage.
+- API communications use HTTPS in production (enforced by `upgrade-insecure-requests` CSP directive).
+- Rate limiting prevents brute-force attacks.
+- Helmet security headers protect against common web vulnerabilities.
+
+---
+
+## Chapter 35: Community Guidelines
+
+### 35.1 Be Respectful
+
+Treat every user — driver, rider, and co-passenger — with courtesy and respect. Ridify is a shared community platform.
+
+### 35.2 Be Punctual
+
+- **Drivers:** Start your ride on time. Riders are counting on you.
+- **Riders:** Be at your pickup location when the driver arrives. Don't keep the driver (and other co-passengers) waiting.
+
+### 35.3 Be Honest
+
+- Set fair and reasonable fares.
+- Provide accurate pickup and drop-off locations.
+- Pay the full computed fare promptly after being dropped off.
+- Do not submit fraudulent verification documents.
+
+### 35.4 Be Safe
+
+- Drivers: ensure your vehicle is in safe operating condition.
+- Follow all traffic laws and speed limits.
+- Do not drive under the influence of drugs or alcohol.
+- Share your ride details with a trusted contact if you feel more comfortable.
+
+### 35.5 Reporting Violations
+
+If you experience or witness a violation of these guidelines:
+- Contact a platform administrator via the contact information in [Chapter 40](#chapter-40-contact--support).
+- Provide the ride ID, user email, and a description of the incident.
+- Admins can ban violating users and force-cancel problematic rides.
+
+---
+
+## Chapter 36: Data Retention & Deletion
+
+### 36.1 Automatic Data Lifecycle
+
+| Stage | What Happens | Timeline |
+|-------|-------------|----------|
+| **OTP Created** | OTP record exists in `otpverifications` collection. | Auto-deleted after **10 minutes** (MongoDB TTL). |
+| **Ride Active** | Full ride data retained with real-time updates. | Indefinite while active. |
+| **Ride Completed/Cancelled** | Ride data retained for history access. | Auto-deleted after **30 days** (MongoDB TTL on `updatedAt`). |
+| **Account Deleted** | User record purged; active rides cancelled; requests removed. | Immediate and irreversible. |
+
+### 36.2 Manual Deletion by Admins
+
+Admins have the ability to:
+- Delete individual users (cascades to their rides).
+- Delete individual rides.
+- Wipe all rides from the database.
+- Wipe all users (except themselves) and all rides.
+
+### 36.3 Important Note on Archiving
+
+The codebase includes a policy comment noting that before production deployment, an **archive job** should be implemented to copy completed/cancelled rides to a `ride_archive` collection before TTL deletion. This ensures ride history is preserved for regulatory or analytics purposes.
+
+---
+
+---
+
+# Part IX: Reference
+
+---
+
+## Chapter 37: Troubleshooting Guide
+
+### 37.1 Authentication Issues
+
+| Problem | Cause | Solution |
+|---------|-------|----------|
+| "Email already registered. Please log in." | You're trying to sign up with an email that already has an account. | Use the Login screen instead. |
+| "User not registered. Please sign up first." | You're trying to log in with an email that doesn't have an account. | Use the Sign Up flow instead. |
+| "Invalid OTP" | The OTP you entered doesn't match. | Check your email for the most recent OTP. Make sure you didn't enter a previous OTP. |
+| "OTP has expired" | More than 10 minutes passed since the OTP was sent. | Request a new OTP. |
+| "Too many wrong attempts" | You entered 5 incorrect OTPs. | Request a new OTP and enter it carefully. |
+| "Please wait N minute(s) before requesting another OTP" | You requested an OTP too recently. | Wait for the cooldown period to expire (10 minutes). |
+| "Your account has been suspended" | An admin has banned your account. | Contact the platform administrator. |
+| "Only emails from @domain are allowed" | Your organization restricts registrations to specific email domains. | Use an email from the allowed domain. |
+| "New password must be different" | You're trying to change your password to the same one. | Choose a genuinely different password. |
+| "Incorrect current password" | The password you entered as "current" doesn't match. | Enter your actual current password. |
+
+### 37.2 Ride Search Issues
+
+| Problem | Cause | Solution |
+|---------|-------|----------|
+| No rides found | No drivers have published rides matching your route, time, and vehicle preference. | Try widening your time window, removing the vehicle filter, or checking back later. |
+| Ride disappeared from results | The ride was cancelled, started, or filled while you were browsing. | This is expected real-time behavior. Search again for updated results. |
+| "Missing coordinates" error | The search was submitted without valid GPS coordinates. | Ensure you selected both pickup and destination on the map. |
+| Fare seems too high/low | The fare is proportional to your segment distance vs. the total route. | This is normal — short segments cost less, long segments cost more. |
+
+### 37.3 Ride Request Issues
+
+| Problem | Cause | Solution |
+|---------|-------|----------|
+| "You cannot request your own ride" | You're trying to join a ride you created. | You can only be a rider on someone else's ride. |
+| "This ride has expired" | The ride's departure time + 15 minutes has passed. | Search for a newer ride. |
+| "You have already requested or joined this ride" | Duplicate request prevention. | Wait for the driver to respond to your existing request. |
+| "You were already declined for this ride" | The driver previously declined your request. | Find a different ride. |
+| "You were removed from this ride" | The driver kicked you. | Find a different ride. |
+| "Capacity exceeded for this segment" | The seats on your specific route segment are full. | Try requesting fewer seats or find another ride. |
+| "Concurrent modification detected. Please retry." | Another request was being processed simultaneously. | The system retries automatically (up to 5 times). If you still see this, try again manually. |
+
+### 37.4 Live Tracking Issues
+
+| Problem | Cause | Solution |
+|---------|-------|----------|
+| Driver's position not updating | WebSocket connection lost or driver's GPS is off. | Check your internet connection. The driver may have entered an area with poor GPS/data. The system will auto-reconnect. |
+| Map not loading | Network issue or OpenStreetMap tile server is slow. | Ensure you have internet connectivity. Try scrolling/zooming the map to trigger tile loading. |
+| "Physical car is full!" error when boarding | The total seats currently occupied by boarded passengers equals `totalSeats`. | A passenger must be dropped off before another can board. |
+
+### 37.5 Admin Panel Issues
+
+| Problem | Cause | Solution |
+|---------|-------|----------|
+| Admin tab not visible | Your email is not in the `ADMIN_EMAILS` environment variable. | Contact the server administrator to add your email. |
+| "Cannot delete your own admin account" | The bulk delete endpoint protects admin self-deletion. | This is a safety feature. Delete other users or use single-user delete for non-admin accounts. |
+| "Email cannot be updated" | Email changes are blocked due to database cascade complexities. | This is by design. Users must create new accounts if they need a different email. |
+
+### 37.6 Connection & Network Issues
+
+| Problem | Cause | Solution |
+|---------|-------|----------|
+| "Too many requests, please slow down" | You've exceeded the global rate limit (200 req/min). | Wait a moment and try again. |
+| "Too many auth attempts" | You've exceeded the auth rate limit (1000 req/15 min). | Wait 15 minutes. |
+| Socket disconnects frequently | Mobile data instability, NAT timeouts. | The app auto-reconnects with generous ping settings (25s interval, 20s timeout). Ensure you have stable connectivity. |
+| Events not received in real-time | Socket room membership lost after reconnect. | The app uses dual-channel emission (room + direct). If still missing events, close and reopen the ride screen. |
+
+---
+
+## Chapter 38: Frequently Asked Questions (FAQ)
+
+### General
+
+**Q: Is Ridify free to use?**
+A: Yes. There are no fees for creating an account, searching for rides, or offering rides. Ridify does not charge a commission on fares.
+
+**Q: Can I use Ridify for daily commuting?**
+A: Absolutely! Ridify is ideal for daily commutes. Publish your route with a recurring departure time, and nearby riders can request to join every day.
+
+**Q: Do I need to be KYC verified?**
+A: KYC is optional but recommended. Being verified shows a ✅ badge next to your name, which builds trust with other users.
+
+### For Riders
+
+**Q: How is my fare calculated?**
+A: Your fare is proportional to the distance you travel. If you travel 40% of the driver's total route, you pay approximately 40% of the total fare.
+
+**Q: Do I pay through the app?**
+A: No. The app calculates the exact fare split, but payment is settled directly between you and the driver — cash, UPI, Venmo, bank transfer, or any method you both agree on.
+
+**Q: What if the driver doesn't show up?**
+A: If the driver cancels the ride, you'll be notified immediately. If the ride is still in `available` or `accepted` status and the departure time passes, the ride automatically expires after 15 minutes.
+
+**Q: Can I request multiple rides simultaneously?**
+A: Yes. You can have pending requests on multiple rides. However, once you are accepted for one ride, you should cancel your other requests.
+
+**Q: What if I need to cancel after the driver accepted me?**
+A: The driver can kick you from the ride, or you can contact the driver via chat to arrange the cancellation.
+
+### For Drivers
+
+**Q: How do I set the right fare?**
+A: Consider your total trip cost (fuel, tolls, wear) and set a fare that is reasonable to split among 2-4 passengers. Ridify splits the fare proportionally based on distance.
+
+**Q: Can passengers board and alight at different points?**
+A: Yes, if you set your route preference to **Flexible**. This allows multiple riders to use the same seat on non-overlapping segments of your route.
+
+**Q: What's the maximum number of seats I can offer?**
+A: 8 seats maximum.
+
+**Q: What happens if a passenger doesn't pay?**
+A: The system logs unpaid passengers, but payment enforcement is currently outside the app. Settle any disputes directly with the passenger.
+
+**Q: Can I cancel a ride after passengers have been accepted?**
+A: Yes. All accepted passengers and pending requesters will be notified immediately.
+
+**Q: How far in advance can I schedule a ride?**
+A: Up to 7 days in advance.
+
+### Technical
+
+**Q: What happens if I lose internet during a ride?**
+A: The app maintains a persistent WebSocket connection with generous timeouts (25s ping interval, 20s timeout). If you lose connectivity, the app will auto-reconnect when your connection is restored. Location data will resume broadcasting.
+
+**Q: Is my data encrypted?**
+A: Passwords are hashed with bcrypt (12 rounds). Login OTPs are hashed with SHA-256. JWT tokens are stored in encrypted device storage. In production, all API communication uses HTTPS.
+
+**Q: How long is ride data kept?**
+A: Active rides are retained indefinitely. Completed and cancelled rides are automatically deleted 30 days after their last update.
+
+**Q: Can multiple people use the same account?**
+A: No. Account sharing is prohibited per the Terms of Service.
+
+**Q: What vehicles are supported?**
+A: Bike, Sedan, and SUV. This is an identifier for riders to know what type of vehicle to expect.
+
+---
+
+## Chapter 39: Glossary of Terms
+
+| Term | Definition |
+|------|------------|
+| **Access Token** | A short-lived JWT token (15 min) used to authenticate API requests. |
+| **Admin** | A platform moderator with elevated privileges, identified by email in `ADMIN_EMAILS`. |
+| **bcrypt** | A password hashing algorithm used by Ridify with 12 salt rounds. |
+| **Co-Passenger** | An accepted rider on a shared ride. All accepted riders are co-passengers of each other. |
+| **Driver** | A user who creates and offers a ride. Also referred to as the ride owner. |
+| **EmailJS** | Third-party service used to send OTP emails. |
+| **Fare Split** | The proportional division of the total ride fare based on each rider's segment distance. |
+| **Flutter** | Google's UI toolkit for building cross-platform mobile applications. Used for Ridify's frontend. |
+| **GeoJSON** | A format for encoding geographic data. Used for the `pickupCoords` field with a `2dsphere` index. |
+| **Helmet** | Express middleware that sets various HTTP headers for security. |
+| **JWT** | JSON Web Token — a compact, URL-safe token format used for authentication. |
+| **KYC** | Know Your Customer — an identity verification process requiring government ID upload. |
+| **Nominatim** | An OpenStreetMap service for geocoding (address ↔ coordinates conversion). |
+| **Optimistic Locking** | A concurrency control method where the `optimisticLock` counter prevents conflicting simultaneous updates. |
+| **OSRM** | Open Source Routing Machine — calculates driving routes and returns GPS polylines. |
+| **OTP** | One-Time Password — a 6-digit code sent via email for account verification. |
+| **Provider** | Flutter's reactive state management solution used throughout the Ridify frontend. |
+| **Rate Limiting** | Restricting the number of API requests a user/IP can make in a given time window. |
+| **Refresh Token** | A long-lived token (7 days) used to obtain new access tokens without re-authentication. |
+| **Rider** | A user who searches for and joins an existing ride. |
+| **Route Path** | An ordered array of `{lat, lng}` coordinates representing the driver's planned route. |
+| **Route Preference** | The driver's setting for how flexible pickup/drop-off locations can be along the route. |
+| **Segment** | A portion of the route path between a rider's pickup index and drop-off index. |
+| **SHA-256** | A cryptographic hash function used to hash login OTPs before database storage. |
+| **Socket.IO** | A library enabling real-time, bidirectional communication between client and server. |
+| **Sweep-Line Algorithm** | An algorithm that checks seat availability per-segment rather than globally, enabling efficient capacity management for overlapping rider segments. |
+| **TTL Index** | A MongoDB index that automatically deletes documents after a specified time period. |
+| **WebSocket** | A protocol providing full-duplex communication channels over a single TCP connection. Used via Socket.IO. |
+
+---
+
+## Chapter 40: Contact & Support
+
+### 40.1 Getting Help
+
+If you encounter any issues not covered in this manual:
+
+1. **In-App:** Check the Troubleshooting Guide (Chapter 37) and FAQ (Chapter 38).
+2. **Email:** Contact the platform administrator at the email address provided by your organization.
+3. **GitHub:** For open-source contributions or bug reports, visit the Ridify repository:
+   - **Repository:** [github.com/priyanshusharan-cmd/ridify](https://github.com/priyanshusharan-cmd/ridify)
+   - **Issues:** Submit bug reports or feature requests via GitHub Issues.
+
+### 40.2 Contributing
+
+Ridify is open-source software licensed under the MIT License. Contributions are welcome:
+1. Fork the repository.
+2. Create a feature branch.
+3. Submit a pull request with a clear description of your changes.
+
+---
+
+## Appendix A: Complete Environment Variable Reference
+
+This appendix documents every environment variable used by the Ridify backend server. All variables are configured in the `backend/.env` file.
+
+### A.1 Server & Database
+
+| Variable | Required? | Default | Description |
+|----------|----------|---------|-------------|
+| `PORT` | No | `5001` | The TCP port the HTTP server listens on. |
+| `NODE_ENV` | No | `development` | Runtime environment. Set to `production` for production deployments. In production, CORS is strictly enforced and error messages are generic. |
+| `MONGO_URI` | ✅ Yes | — | MongoDB connection string. Supports both local MongoDB instances (`mongodb://localhost:27017/ridify`) and MongoDB Atlas cloud clusters (`mongodb+srv://...`). |
+
+### A.2 JWT Authentication
+
+| Variable | Required? | Default | Description |
+|----------|----------|---------|-------------|
+| `JWT_SECRET` | ✅ Yes | — | Secret key for signing JWT access tokens. Must be a strong random string (recommended: 64 bytes hex). Generate with: `node -e "console.log(require('crypto').randomBytes(64).toString('hex'))"` |
+| `JWT_REFRESH_SECRET` | ✅ Yes | — | Separate secret key for signing JWT refresh tokens. Must be different from `JWT_SECRET`. Generate with the same command as above. |
+| `JWT_EXPIRES_IN` | No | `24h` | How long access tokens remain valid. Accepts values like `15m`, `1h`, `24h`, `7d`. |
+| `JWT_REFRESH_EXPIRES_IN` | No | `7d` | How long refresh tokens remain valid before requiring re-authentication. |
+
+### A.3 App Security & Admin
+
+| Variable | Required? | Default | Description |
+|----------|----------|---------|-------------|
+| `ADMIN_EMAILS` | ✅ Yes | — | Comma-separated list of email addresses that have admin privileges. These users can access the Admin Panel, manage users, and moderate rides. Example: `admin@example.com,moderator@example.com` |
+| `ADMIN_SECRET` | ✅ Yes | — | A secret string used for admin API authentication via the `x-admin-secret` header. Generate with: `node -e "console.log(require('crypto').randomBytes(32).toString('hex'))"` |
+| `ALLOWED_ORIGIN` | No | `*` | Comma-separated list of allowed CORS origins. In production, set this to your frontend's URL. Set to `*` for mobile-only deployments (mobile apps don't send CORS origin headers). |
+
+### A.4 Security Tuning
+
+| Variable | Required? | Default | Description |
+|----------|----------|---------|-------------|
+| `BCRYPT_ROUNDS` | No | `12` | Number of bcrypt salt rounds for password hashing. Higher values are more secure but slower. 12 is a good balance. |
+| `MAX_FIELD_LENGTH` | No | `500` | Maximum character length for text fields (names, emails, search queries). Prevents oversized inputs. |
+| `LOG_LEVEL` | No | `debug` | Winston logger level. Options: `debug`, `info`, `warn`, `error`. In production, set to `info` or `warn`. |
+
+### A.5 Socket.IO Configuration
+
+| Variable | Required? | Default | Description |
+|----------|----------|---------|-------------|
+| `SOCKET_PING_INTERVAL` | No | `25000` (25s) | How frequently the Socket.IO server pings connected clients (in milliseconds). Higher values are more tolerant of poor mobile connections but detect disconnections slower. |
+| `SOCKET_PING_TIMEOUT` | No | `20000` (20s) | How long the server waits for a pong response before considering the client disconnected (in milliseconds). Must be less than `SOCKET_PING_INTERVAL`. |
+
+### A.6 Ride Configuration
+
+| Variable | Required? | Default | Description |
+|----------|----------|---------|-------------|
+| `MAX_ROUTE_POINTS` | No | `500` | Maximum number of GPS coordinates stored in a ride's `routePath` array. Routes with more points are automatically downsampled. Higher values provide more accurate route matching but increase database storage and query time. |
+| `MIN_RIDE_DISTANCE_KM` | No | `1.5` | Minimum trip distance (in kilometers) for a rider's segment to be considered a valid match. Prevents trivially short ride matches. |
+| `SEARCH_RADIUS_DEFAULT_M` | No | `2000` | Default search radius (in meters) for matching pickup/dropoff points to the driver's route. A rider's pickup/dropoff must be within this distance of the closest route point. |
+| `SEARCH_TIME_WINDOW_MS` | No | `3600000` (1 hour) | Maximum time difference (in milliseconds) between the rider's search time and the ride's departure time for a match. Default is 1 hour. |
+| `CHAT_MAX_LENGTH` | No | `1000` | Maximum character length for a single chat message. Messages exceeding this length are rejected. |
+| `MAX_FARE` | No | `9999` | Maximum fare (in ₹) that a driver can set for a ride. Prevents unreasonable fare entries. |
+| `MAX_PRICE_RUPEES` | No | `99999` | Maximum price value exposed via the `/api/config` endpoint for client-side validation. |
+
+### A.7 Email Configuration (EmailJS)
+
+| Variable | Required? | Default | Description |
+|----------|----------|---------|-------------|
+| `EMAILJS_SERVICE_ID` | ✅ Yes | — | Your EmailJS service ID. Found in your EmailJS dashboard under Email Services. |
+| `EMAILJS_TEMPLATE_ID` | ✅ Yes | — | The ID of the email template configured in EmailJS for OTP delivery. The template should have a `{{otp}}` variable placeholder. |
+| `EMAILJS_PUBLIC_KEY` | ✅ Yes | — | Your EmailJS public API key. Found in your EmailJS dashboard under Account → API Keys. |
+| `EMAILJS_PRIVATE_KEY` | ✅ Yes | — | Your EmailJS private API key. Used for server-side API authentication. |
+
+### A.8 Google Apps Script (KYC Upload)
+
+| Variable | Required? | Default | Description |
+|----------|----------|---------|-------------|
+| `GOOGLE_APPS_SCRIPT_URL` | ✅ Yes | — | The deployed URL of your Google Apps Script web app that handles KYC document uploads to Google Drive. The script receives a JSON payload with `filename` and `base64` fields and returns `{ status: 'success', url: '<drive_url>' }`. |
+
+### A.9 Domain Restriction
+
+| Variable | Required? | Default | Description |
+|----------|----------|---------|-------------|
+| `ALLOWED_EMAIL_DOMAIN` | No | *(empty)* | If set, only email addresses ending with `@<this_domain>` can register. Useful for university or corporate deployments. Example: `university.edu`. Leave empty to allow any email domain. |
+
+---
+
+## Appendix B: Server Deployment Guide
+
+### B.1 Prerequisites
+
+| Software | Version | Purpose |
+|----------|---------|---------|
+| Node.js | 20+ | Backend runtime |
+| npm | 9+ | Package manager |
+| MongoDB | 7.x | Database (local or MongoDB Atlas) |
+| Flutter SDK | 3.x | Frontend build tool |
+| Git | Any | Version control |
+
+### B.2 Backend Deployment Steps
+
+```bash
+# 1. Clone the repository
+git clone https://github.com/priyanshusharan-cmd/ridify.git
+cd ridify/backend
+
+# 2. Install dependencies
+npm install
+
+# 3. Configure environment
+cp .env.example .env
+# Edit .env with your actual values (see Appendix A)
+
+# 4. Verify required environment variables
+# The server checks for JWT_SECRET, JWT_REFRESH_SECRET, MONGO_URI,
+# ADMIN_SECRET, and ADMIN_EMAILS on startup. It exits with an error
+# if any are missing or contain placeholder values.
+
+# 5. Start the server
+node server.js
+# Server will log: 🚀 Server running on http://<your-ip>:<port>
+```
+
+### B.3 Frontend Build & Run
+
+```bash
+cd ridify/frontend
+
+# 1. Install Flutter dependencies
+flutter pub get
+
+# 2. Create frontend environment file
+echo 'BASE_URL=http://<your-server-ip>:<port>' > .env
+# For Android emulator pointing to host: http://10.0.2.2:5001
+# For physical device on same network: http://<lan-ip>:5001
+
+# 3. Run the app
+flutter run
+```
+
+### B.4 Production Considerations
+
+| Concern | Recommendation |
+|---------|---------------|
+| **HTTPS** | Place the Node.js server behind a reverse proxy (nginx, Caddy) with TLS certificates. The Helmet middleware's `upgrade-insecure-requests` CSP directive encourages HTTPS. |
+| **Database** | Use MongoDB Atlas for managed hosting with automatic backups, or configure replica sets for local deployments. |
+| **Process Management** | Use PM2 or systemd to keep the Node.js process running and auto-restart on crashes. |
+| **CORS** | Set `ALLOWED_ORIGIN` to your specific frontend URL(s). Never use `*` in production for web clients. |
+| **Logging** | Set `LOG_LEVEL=info` or `LOG_LEVEL=warn` in production to reduce log volume. |
+| **Rate Limiting** | The default limits (200 req/min global, 1000 auth/15min) are suitable for moderate traffic. Adjust for larger deployments. |
+| **Stale Ride Cleanup** | The built-in cleanup job runs every 30 minutes. For production, consider implementing a dedicated ride archival job before TTL deletion. |
+| **Monitoring** | Use the `/health` endpoint for uptime monitoring (returns 200 when MongoDB is connected, 503 otherwise). |
+
+### B.5 EmailJS Setup Guide
+
+1. Create an account at [emailjs.com](https://www.emailjs.com/).
+2. Add an Email Service (e.g., Gmail, Outlook).
+3. Create an Email Template with the following structure:
+   ```
+   Subject: Your Ridify OTP
+   Body: Your OTP code is: {{otp}}
+   ```
+4. Note down the Service ID, Template ID, Public Key, and Private Key.
+5. Add these to your `.env` file.
+
+### B.6 Google Apps Script Setup Guide
+
+1. Open [Google Apps Script](https://script.google.com/).
+2. Create a new project.
+3. Write a `doPost(e)` function that:
+   - Accepts `{ filename, base64 }` as JSON input.
+   - Decodes the Base64 data.
+   - Creates a file in a designated Google Drive folder.
+   - Returns `{ status: 'success', url: '<shareable_drive_url>' }`.
+4. Deploy as a Web App with access set to "Anyone".
+5. Copy the deployment URL and add it to your `.env` as `GOOGLE_APPS_SCRIPT_URL`.
+
+---
+
+## Appendix C: Complete Screen Inventory
+
+This appendix catalogs every screen in the Ridify Flutter application, its file location, and its purpose.
+
+### C.1 Onboarding & Auth Screens
+
+| Screen | File | Purpose |
+|--------|------|---------|
+| **Splash Screen** | `splash_screen.dart` | Animated app intro with logo animation. Checks for existing authentication tokens and routes to Home or Login accordingly. |
+| **Login Screen** | `login_screen.dart` | Email + password login, OTP login toggle, and "Sign Up" link. Handles both authentication methods. |
+
+### C.2 Main App Screens
+
+| Screen | File | Purpose |
+|--------|------|---------|
+| **Home Screen** | `home_screen.dart` | Central hub with "Offer a Ride" and "Find a Ride" cards. Shows driver stats and recent activity. Contains the bottom navigation bar. |
+| **Find Ride Screen** | `find_ride_screen.dart` | Form to enter pickup/destination, date/time, seats, and vehicle type for ride search. Launches the Map Picker for location selection. |
+| **Map Picker Screen** | `map_picker_screen.dart` | Interactive OpenStreetMap with tap-to-select location, search bar (Nominatim geocoding), and GPS current-location button. |
+| **Available Rides Screen** | `available_rides_screen.dart` | Displays search results as ride cards with real-time updates. Includes filter popup. |
+| **Offer Ride Screen** | `offer_ride_screen.dart` | Form to create a new ride: set route, vehicle type, seats, fare, departure time, and route preference. |
+| **Profile Screen** | `profile_screen.dart` | View/edit profile, KYC upload, change password, driver stats, delete account, logout. |
+
+### C.3 Live Ride Screens
+
+| Screen | File | Purpose |
+|--------|------|---------|
+| **Live Tracking Screen** | `live_tracking_screen.dart` | Real-time map with driver position, route polyline, passenger markers. Controls for arrive/board/dropoff/start/end. Adapts UI based on whether user is driver or rider. |
+| **Chat Screen** | `chat_screen.dart` | Per-ride group chat with message list, reply-to support, and real-time message delivery. |
+
+### C.4 Trip Completion Screens
+
+| Screen | File | Purpose |
+|--------|------|---------|
+| **Driver Completing Screen** | `driver_completing_screen.dart` | Shows trip summary, passenger list, payment statuses, and total earnings after the driver ends a ride. |
+| **Rider Completing Screen** | `rider_completing_screen.dart` | Shows trip summary, fare owed, and "Mark as Paid" button after the rider is dropped off. |
+
+### C.5 History & Activity Screens
+
+| Screen | File | Purpose |
+|--------|------|---------|
+| **Ride History Screen** | `ride_history_screen.dart` | Chronological list of past rides with details, fares, and co-passenger popup. |
+
+### C.6 Admin Screen
+
+| Screen | File | Purpose |
+|--------|------|---------|
+| **Admin Panel Screen** | `admin_panel_screen.dart` | Full admin interface: dashboard stats, user management (search, view, edit, ban, unban, delete, bulk delete), ride management (list, filter, force-cancel, delete), and KYC verification workflow. |
+
+---
+
+## Appendix D: Frontend Service Layer Reference
+
+### D.1 Services Overview
+
+| Service | File | Purpose |
+|---------|------|---------|
+| **API Client** | `api_client.dart` | Centralized HTTP client with automatic JWT token attachment, silent refresh on 401, and base URL configuration. |
+| **Auth Service** | `auth_service.dart` | Handles signup OTP requests, registration, login (password/OTP), logout, and password change API calls. |
+| **Token Service** | `token_service.dart` | Manages secure storage of access and refresh tokens using `flutter_secure_storage`. |
+| **Ride Service** | `ride_service.dart` | All ride-related API calls: create, search, request, accept, decline, kick, arrive, board, dropoff, pay, start, end, chat. |
+| **Admin Service** | `admin_service.dart` | Admin API calls: list/create/update/delete users, list/delete rides, ban/unban, verify/reject KYC, get stats. |
+| **Chat Service** | `chat_service.dart` | Sends chat messages via REST API (Socket.IO handles real-time delivery). |
+| **Location Service** | `location_service.dart` | Manages GPS permissions, gets current location, and streams location updates for live tracking. |
+| **Nominatim Service** | `nominatim_service.dart` | Reverse geocoding: converts GPS coordinates to human-readable addresses via the Nominatim API. |
+| **Config Service** | `config_service.dart` | Fetches server configuration (max field lengths, max fares, etc.) from the `/api/config` endpoint. |
+| **Health Service** | `health_service.dart` | Checks server health via the `/health` endpoint. Used to verify connectivity on app startup. |
+
+### D.2 API Client Architecture
+
+The API Client (`api_client.dart`) is the backbone of all HTTP communication:
+
+1. **Base URL:** Loaded from the frontend `.env` file.
+2. **Token Management:** Every request automatically includes the `Authorization: Bearer <accessToken>` header.
+3. **Silent Refresh:** If a request returns HTTP 401 (Unauthorized), the client:
+   - Attempts to refresh the access token using the stored refresh token.
+   - If refresh succeeds, retries the original request with the new token.
+   - If refresh fails, redirects the user to the Login screen.
+4. **Error Handling:** Network errors, timeouts, and server errors are caught and surfaced to the UI layer.
+
+---
+
+## Appendix E: Advanced Troubleshooting Scenarios
+
+### E.1 Ride Shows "Available" But No One Can Request
+
+**Possible causes:**
+- The ride has expired (`expiresAt` is in the past). The ride remains in the database but is filtered out of search results.
+- The `routePath` has fewer than 2 points, which is invalid.
+- The ride's departure time doesn't fall within any searcher's time window.
+
+**Resolution:** Check the ride's `expiresAt` field. If expired, the driver should create a new ride.
+
+### E.2 Optimistic Lock Conflicts Occur Frequently
+
+**Possible cause:** High concurrency — many users are simultaneously requesting or being accepted on the same ride.
+
+**Resolution:** This is expected behavior under heavy load. The system retries automatically up to 5 times with random jitter (20-100ms). If conflicts persist, it may indicate that the MongoDB instance is experiencing write contention. Consider upgrading your database tier or reducing the number of concurrent operations per ride.
+
+### E.3 Chat Messages Not Delivering
+
+**Possible causes:**
+1. The recipient lost their Socket.IO room membership due to a mobile data reconnect.
+2. The ride has been completed or cancelled (chat is disabled on these statuses).
+3. The sender is not a driver, accepted passenger, or boarded passenger.
+
+**Resolution:** Ridify uses dual-channel emission (ride room + personal room) to mitigate cause 1. If messages are still missing, the user should close and reopen the chat screen. Check that the ride status is still active.
+
+### E.4 Driver Location Not Updating on Rider's Map
+
+**Possible causes:**
+1. The driver's GPS is turned off or set to low-accuracy mode.
+2. The driver's internet connection dropped.
+3. The location update cooldown (1.5 seconds) is being enforced.
+4. The Socket.IO server verified that the emitting user is not the ride's driver and silently dropped the update.
+
+**Resolution:** Ensure the driver has GPS enabled in high-accuracy mode with a stable internet connection. The rider can send a `request_driver_location` event by tapping the refresh button on the map.
+
+### E.5 KYC Document Upload Fails
+
+**Possible causes:**
+1. The `GOOGLE_APPS_SCRIPT_URL` environment variable is not set.
+2. The Google Apps Script web app is not properly deployed or has an error.
+3. Network connectivity between the Ridify backend and Google's servers is interrupted.
+4. The document image exceeds the 1 MB JSON body limit (extremely large photos).
+
+**Resolution:** Check the server logs for the specific error message. Verify the Google Apps Script URL is correct and the script is deployed with "Anyone" access. If the upload fails, the user's verification status is automatically reset to `none`, allowing them to retry.
+
+### E.6 Ride Stuck in "Started" Status
+
+**Possible cause:** The driver force-closed the app without ending the trip, or lost connectivity permanently.
+
+**Resolution:** The server runs a **stale ride cleanup job** every 30 minutes. Any ride stuck in `started` for more than 6 hours is automatically cancelled. Admins can also force-cancel the ride from the Admin Panel at any time.
+
+### E.7 Passenger Shows Wrong Name
+
+**Possible cause:** The passenger updated their profile name after requesting/joining the ride. The cascade should have updated it, but if the cascade failed (e.g., a save error on one of many rides), stale data may remain.
+
+**Resolution:** The admin can trigger a name update via the Admin Panel's user edit feature, which re-cascades the name across all rides.
+
+### E.8 Server Crashes on Startup
+
+**Possible causes:**
+1. Missing required environment variables (`JWT_SECRET`, `JWT_REFRESH_SECRET`, `MONGO_URI`, `ADMIN_SECRET`, `ADMIN_EMAILS`).
+2. Environment variables contain placeholder values like `your-` or `example.com`.
+3. MongoDB is not running or the connection string is incorrect.
+
+**Resolution:** The server checks for these on startup and prints the specific missing variables before exiting: `FATAL: Missing or placeholder env vars: <list>`. Fix the `.env` file and restart.
+
+### E.9 Users Cannot Register (Specific Email Domain Only)
+
+**Possible cause:** The `ALLOWED_EMAIL_DOMAIN` environment variable is set to a specific domain (e.g., `university.edu`), and the user is trying to register with an email from a different domain.
+
+**Resolution:** If intentional (e.g., a university deployment), inform the user they must use their institutional email. If unintentional, clear the `ALLOWED_EMAIL_DOMAIN` variable and restart the server.
+
+### E.10 Ride Auto-Deleted Before User Could View History
+
+**Possible cause:** Completed and cancelled rides are automatically deleted 30 days after their last update via a MongoDB TTL index on the `updatedAt` field (partitioned to only affect `completed` and `cancelled` rides).
+
+**Resolution:** This is by design. For production deployments, implement an archive job that copies ride data to a separate `ride_archive` collection before TTL deletion. The codebase includes a policy comment about this: *"ACTION REQUIRED before production: implement archive job that copies to ride_archive collection."*
+
+---
+
+
+---
+
+## Appendix G: Accessibility & Usability Best Practices
+
+### G.1 For Users with Visual Impairments
+
+Ridify's Flutter frontend uses semantic widgets that are compatible with screen readers:
+- All interactive buttons have descriptive labels.
+- Map interactions provide haptic feedback on tap.
+- Color contrast ratios meet WCAG 2.1 AA standards in both Light and Dark themes.
+
+### G.2 For Users with Limited Connectivity
+
+Ridify is designed to work gracefully under poor network conditions:
+
+| Feature | Offline Behavior |
+|---------|-----------------|
+| **Login** | Requires internet. Cached tokens allow re-opening the app without re-authenticating. |
+| **Ride Search** | Requires internet to query the server. Cached results are not displayed. |
+| **Live Tracking** | Driver location updates pause when connectivity drops and resume automatically upon reconnection. |
+| **Chat** | Messages are sent when connectivity is restored. The app does not display unsent messages. |
+| **Map Tiles** | OpenStreetMap tiles are cached locally by `flutter_map`. Previously viewed areas remain visible offline. |
+
+### G.3 For Users Unfamiliar with Technology
+
+The following design choices make Ridify accessible to non-technical users:
+
+1. **Clear iconography:** Every action button uses universally understood icons (➕ for Add, ✕ for Cancel, ✓ for Confirm).
+2. **Progressive disclosure:** The Home Screen shows only two options (Offer/Find). Advanced features are nested in Profile and Activity tabs.
+3. **Error messages in plain language:** Instead of HTTP status codes, users see messages like "Please wait 5 minutes before requesting another OTP" rather than "HTTP 429 Rate Limited."
+4. **Visual status indicators:** Ride statuses use color-coded badges — green for active, yellow for pending, red for cancelled.
+5. **Confirmation dialogs:** Destructive actions (Delete Account, Cancel Ride, Kick Passenger) always require a confirmation tap.
+
+### G.4 Internationalization (i18n)
+
+The current version of Ridify uses English for all user-facing text. The Flutter frontend is built with i18n-ready architecture — all user-facing strings can be extracted to ARB (Application Resource Bundle) files for translation into other languages in future releases.
+
+### G.5 Font & Text Sizing
+
+- Ridify uses the device's system font size settings. Users who increase their device's font size will see larger text throughout the app.
+- All text elements use scalable font units (sp) rather than fixed pixel sizes.
+- Long text (addresses, names) is automatically truncated with ellipsis to prevent layout overflow.
+
+---
+
+## Appendix H: Performance Optimization Tips
+
+### H.1 For Drivers
+
+| Tip | Why It Helps |
+|-----|-------------|
+| **Keep GPS set to "High Accuracy"** | Ensures smooth, accurate location updates on the map. Battery-saving GPS modes may cause jumpy tracking. |
+| **Close unused apps** | Frees RAM for Ridify to maintain its WebSocket connection without being killed by the OS. |
+| **Use Wi-Fi when creating rides** | Route calculation (OSRM) downloads the full route polyline, which can be several KB. |
+| **Limit route length** | Very long routes (cross-country) generate large `routePath` arrays. The server caps at 500 points, but shorter routes provide faster search matching. |
+
+### H.2 For Riders
+
+| Tip | Why It Helps |
+|-----|-------------|
+| **Set precise pickup/destination** | The more accurate your coordinates, the better the route matching algorithm works. Use the map tap rather than address search for precision. |
+| **Use specific vehicle filters** | Filtering by vehicle type reduces the number of rides the server needs to process. |
+| **Don't leave the search screen idle** | The global search room keeps your WebSocket connection busy with updates. Leave the screen when you've found a ride. |
+
+### H.3 For Server Administrators
+
+| Optimization | Impact |
+|-------------|--------|
+| **MongoDB Index Maintenance** | Run `db.rides.getIndexes()` periodically to verify all expected indexes exist. Missing indexes cause slow queries. |
+| **Reduce `MAX_ROUTE_POINTS`** | Lower values (e.g., 200) reduce database document size and speed up the sweep-line algorithm, at the cost of slightly less precise route matching. |
+| **Tune `SEARCH_RADIUS_DEFAULT_M`** | Smaller radius = fewer matches but faster search. Larger radius = more matches but slower. 2,000m is a good default for urban areas; increase for rural. |
+| **Use MongoDB Atlas** | Atlas provides automatic scaling, backups, and performance insights. The free tier (M0) supports up to 500 concurrent connections. |
+| **Enable PM2 Cluster Mode** | For multi-core servers, run multiple Node.js instances behind PM2's cluster mode. Socket.IO requires the `@socket.io/cluster-adapter` to work in cluster mode. |
+| **Monitor WebSocket Memory** | Each active Socket.IO connection consumes ~5 KB of server memory. For 10,000 concurrent users, expect ~50 MB of WebSocket overhead. |
+| **Archive Completed Rides** | Implement an archive job to move completed rides to a separate collection before the 30-day TTL deletes them. This preserves historical data for analytics without growing the primary collection. |
+
+---
+
+## Appendix I: Version History
+
+| Version | Date | Changes |
+|---------|------|---------|
+| 1.0 | July 2026 | Initial release of the comprehensive user manual. Covers all features of Ridify v1.0 including authentication, ride lifecycle, sweep-line algorithm, admin panel, Socket.IO real-time events, REST API reference, security architecture, and legal policies. |
+
+---
+
+
+<div align="center">
+
+---
+
+**Ridify User Manual v1.0** · July 2026
+
+Crafted with ❤️ by Priyanshu Sharan
+
+[![LinkedIn](https://upload.wikimedia.org/wikipedia/commons/c/ca/LinkedIn_logo_initials.png)](https://www.linkedin.com/in/priyanshusharan/)
+
+Licensed under the MIT License — see the [LICENSE](LICENSE) file for details.
+
+</div>
 
