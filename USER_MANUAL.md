@@ -12,11 +12,9 @@
 
 ---
 
-> **About this manual**
->
-> This document is the single authoritative reference for every feature, workflow, and technical detail in the Ridify application. It is structured so that **casual users** can jump straight to the [Quick-Start Guide](#part-i-quick-start-guide-5-minutes) and start using the app immediately, while **power users, developers, and administrators** can find exhaustive technical detail in the later parts.
->
-> Screenshots referenced throughout correspond to both **Light** and **Dark** theme variants.
+| **About this manual** |
+| :--- |
+| This document is the single authoritative reference for every feature, workflow, and technical detail in the Ridify application. It is structured so that **casual users** can jump straight to the [Quick-Start Guide](#part-i-quick-start-guide-5-minutes) and start using the app immediately, while **power users, developers, and administrators** can find exhaustive technical detail in the later parts.<br><br>Screenshots referenced throughout correspond to both **Light** and **Dark** theme variants. |
 
 ---
 
