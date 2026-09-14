@@ -18,6 +18,12 @@
 
 ---
 
+## 🎥 Video Demo
+
+<!-- Drag and Drop your video demo here -->
+
+---
+
 ## Overview
 
 Ridify is a **production-grade, real-time ride-sharing and cost-splitting application** that connects drivers and riders for shared journeys. With live map tracking, instant in-app messaging, transparent fare splitting, and a dedicated admin moderation layer, Ridify delivers a complete end-to-end mobility experience — from OTP-verified sign-up to trip completion.
