@@ -1,3 +1,5 @@
+
+https://github.com/user-attachments/assets/0c9f9df8-1440-44ed-9f8b-a0bc12903423
 <div align="center">
 
 <img src="frontend/assets/icon.png" alt="Ridify Logo" width="120"/>
@@ -20,7 +22,7 @@
 
 ## 🎥 Video Demo
 
-Uploading demo.mp4…
+https://github.com/user-attachments/assets/3a826832-d1e9-4e3c-9112-752425a210ce
 
 ---
 
