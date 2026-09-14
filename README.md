@@ -20,7 +20,7 @@
 
 ## 🎥 Video Demo
 
-<!-- Drag and Drop your video demo here -->
+Uploading demo.mp4…
 
 ---
 
