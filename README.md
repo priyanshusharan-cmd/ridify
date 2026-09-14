@@ -1,5 +1,3 @@
-
-https://github.com/user-attachments/assets/0c9f9df8-1440-44ed-9f8b-a0bc12903423
 <div align="center">
 
 <img src="frontend/assets/icon.png" alt="Ridify Logo" width="120"/>
