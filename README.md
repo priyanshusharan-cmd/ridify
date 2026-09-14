@@ -18,17 +18,21 @@
 
 ---
 
-## 🎥 Video Demo
 
-https://github.com/user-attachments/assets/3a826832-d1e9-4e3c-9112-752425a210ce
-
----
 
 ## Overview
 
 Ridify is a **production-grade, real-time ride-sharing and cost-splitting application** that connects drivers and riders for shared journeys. With live map tracking, instant in-app messaging, transparent fare splitting, and a dedicated admin moderation layer, Ridify delivers a complete end-to-end mobility experience — from OTP-verified sign-up to trip completion.
 
 Built with Flutter for mobile and Node.js + Express + MongoDB on the backend, Ridify features JWT authentication with silent refresh, Socket.IO-powered real-time updates, OpenStreetMap routing via OSRM, and a sweep-line capacity algorithm for optimal ride matching.
+
+---
+
+## 🎥 Video Demo
+
+<div align="center">
+  <video src="https://github.com/user-attachments/assets/3a826832-d1e9-4e3c-9112-752425a210ce" controls="controls" style="max-width: 100%; height: auto;"></video>
+</div>
 
 ---
 
