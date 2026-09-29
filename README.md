@@ -298,7 +298,7 @@ Copy `backend/.env.example` to `backend/.env` and fill in each value.
 
 <br>
 
-#### Splash Screen
+<h4 align="center">Splash Screen</h4>
 
 <p align="center">
 <img src="frontend/assets/screenshots/splashScreenLightGIF.gif" width="38%"/>
@@ -308,7 +308,7 @@ Copy `backend/.env.example` to `backend/.env` and fill in each value.
 
 <br>
 
-#### Login
+<h4 align="center">Login</h4>
 
 <p align="center">
 <img src="frontend/assets/screenshots/loginScreenLight.png" width="38%"/>
@@ -318,7 +318,7 @@ Copy `backend/.env.example` to `backend/.env` and fill in each value.
 
 <br>
 
-#### Sign Up
+<h4 align="center">Sign Up</h4>
 
 <p align="center">
 <img src="frontend/assets/screenshots/signupScreenLight.png" width="38%"/>
@@ -335,7 +335,7 @@ Copy `backend/.env.example` to `backend/.env` and fill in each value.
 
 <br>
 
-#### Home Screen
+<h4 align="center">Home Screen</h4>
 
 <p align="center">
 <img src="frontend/assets/screenshots/homeScreenLightGIF.gif" width="38%"/>
@@ -345,7 +345,7 @@ Copy `backend/.env.example` to `backend/.env` and fill in each value.
 
 <br>
 
-#### Offer a Ride
+<h4 align="center">Offer a Ride</h4>
 
 <p align="center">
 <img src="frontend/assets/screenshots/offerRideLight.png" width="38%"/>
@@ -355,7 +355,7 @@ Copy `backend/.env.example` to `backend/.env` and fill in each value.
 
 <br>
 
-#### Location Picker
+<h4 align="center">Location Picker</h4>
 
 <p align="center">
 <img src="frontend/assets/screenshots/locationPickerScreenLight.png" width="38%"/>
@@ -365,7 +365,7 @@ Copy `backend/.env.example` to `backend/.env` and fill in each value.
 
 <br>
 
-#### Find a Ride
+<h4 align="center">Find a Ride</h4>
 
 <p align="center">
 <img src="frontend/assets/screenshots/findRIdeLight.png" width="38%"/>
@@ -375,7 +375,7 @@ Copy `backend/.env.example` to `backend/.env` and fill in each value.
 
 <br>
 
-#### Available Rides
+<h4 align="center">Available Rides</h4>
 
 <p align="center">
 <img src="frontend/assets/screenshots/availableRidesScreenLight.png" width="38%"/>
@@ -385,7 +385,7 @@ Copy `backend/.env.example` to `backend/.env` and fill in each value.
 
 <br>
 
-#### Filters
+<h4 align="center">Filters</h4>
 
 <p align="center">
 <img src="frontend/assets/screenshots/filtersPopupLight.png" width="38%"/>
@@ -402,7 +402,7 @@ Copy `backend/.env.example` to `backend/.env` and fill in each value.
 
 <br>
 
-#### Activity Screen
+<h4 align="center">Activity Screen</h4>
 
 <p align="center">
 <img src="frontend/assets/screenshots/activityScreenLight.png" width="38%"/>
@@ -412,7 +412,7 @@ Copy `backend/.env.example` to `backend/.env` and fill in each value.
 
 <br>
 
-#### Ride Details
+<h4 align="center">Ride Details</h4>
 
 <p align="center">
 <img src="frontend/assets/screenshots/rideDetailScreenLight.png" width="38%"/>
@@ -429,7 +429,7 @@ Copy `backend/.env.example` to `backend/.env` and fill in each value.
 
 <br>
 
-#### Driver — Ride Started
+<h4 align="center">Driver — Ride Started</h4>
 
 <p align="center">
 <img src="frontend/assets/screenshots/liveRideScreenDriver1Light.png" width="38%"/>
@@ -439,7 +439,7 @@ Copy `backend/.env.example` to `backend/.env` and fill in each value.
 
 <br>
 
-#### Rider — Waiting for Pickup
+<h4 align="center">Rider — Waiting for Pickup</h4>
 
 <p align="center">
 <img src="frontend/assets/screenshots/liveRideScreenRider1Light.png" width="38%"/>
@@ -449,7 +449,7 @@ Copy `backend/.env.example` to `backend/.env` and fill in each value.
 
 <br>
 
-#### Driver — At Boarding Point
+<h4 align="center">Driver — At Boarding Point</h4>
 
 <p align="center">
 <img src="frontend/assets/screenshots/liveRideScreenDriver2Light.png" width="38%"/>
@@ -459,7 +459,7 @@ Copy `backend/.env.example` to `backend/.env` and fill in each value.
 
 <br>
 
-#### Rider — Driver Arrived
+<h4 align="center">Rider — Driver Arrived</h4>
 
 <p align="center">
 <img src="frontend/assets/screenshots/liveRideScreenRider2Light.png" width="38%"/>
@@ -469,7 +469,7 @@ Copy `backend/.env.example` to `backend/.env` and fill in each value.
 
 <br>
 
-#### Driver — Rider Boarded
+<h4 align="center">Driver — Rider Boarded</h4>
 
 <p align="center">
 <img src="frontend/assets/screenshots/liveRideScreenDriver3Light.png" width="38%"/>
@@ -479,7 +479,7 @@ Copy `backend/.env.example` to `backend/.env` and fill in each value.
 
 <br>
 
-#### Rider — In Transit
+<h4 align="center">Rider — In Transit</h4>
 
 <p align="center">
 <img src="frontend/assets/screenshots/liveRideScreenRider3Light.png" width="38%"/>
@@ -489,7 +489,7 @@ Copy `backend/.env.example` to `backend/.env` and fill in each value.
 
 <br>
 
-#### In-app Chat
+<h4 align="center">In-app Chat</h4>
 
 <p align="center">
 <img src="frontend/assets/screenshots/chatScreenLight.png" width="38%"/>
@@ -499,7 +499,7 @@ Copy `backend/.env.example` to `backend/.env` and fill in each value.
 
 <br>
 
-#### Driver — Trip Complete
+<h4 align="center">Driver — Trip Complete</h4>
 
 <p align="center">
 <img src="frontend/assets/screenshots/driverCompletionScreenLight.png" width="38%"/>
@@ -509,7 +509,7 @@ Copy `backend/.env.example` to `backend/.env` and fill in each value.
 
 <br>
 
-#### Rider — Trip Complete
+<h4 align="center">Rider — Trip Complete</h4>
 
 <p align="center">
 <img src="frontend/assets/screenshots/riderCompletionScreenLight.png" width="38%"/>
@@ -526,7 +526,7 @@ Copy `backend/.env.example` to `backend/.env` and fill in each value.
 
 <br>
 
-#### Ride History
+<h4 align="center">Ride History</h4>
 
 <p align="center">
 <img src="frontend/assets/screenshots/historyScreenLight.png" width="38%"/>
@@ -536,7 +536,7 @@ Copy `backend/.env.example` to `backend/.env` and fill in each value.
 
 <br>
 
-#### Co-Passengers
+<h4 align="center">Co-Passengers</h4>
 
 <p align="center">
 <img src="frontend/assets/screenshots/passengersTravelledPopupLight.png" width="38%"/>
@@ -546,7 +546,7 @@ Copy `backend/.env.example` to `backend/.env` and fill in each value.
 
 <br>
 
-#### Profile
+<h4 align="center">Profile</h4>
 
 <p align="center">
 <img src="frontend/assets/screenshots/profileScreenLight.png" width="38%"/>
@@ -563,7 +563,7 @@ Copy `backend/.env.example` to `backend/.env` and fill in each value.
 
 <br>
 
-#### Admin Dashboard
+<h4 align="center">Admin Dashboard</h4>
 
 <p align="center">
 <img src="frontend/assets/screenshots/adminDashboardLight.png" width="38%"/>
@@ -573,7 +573,7 @@ Copy `backend/.env.example` to `backend/.env` and fill in each value.
 
 <br>
 
-#### Admin — Users
+<h4 align="center">Admin — Users</h4>
 
 <p align="center">
 <img src="frontend/assets/screenshots/adminUsersLight.png" width="38%"/>
@@ -583,7 +583,7 @@ Copy `backend/.env.example` to `backend/.env` and fill in each value.
 
 <br>
 
-#### Admin — User Actions
+<h4 align="center">Admin — User Actions</h4>
 
 <p align="center">
 <img src="frontend/assets/screenshots/userPopupLight.png" width="38%"/>
@@ -593,7 +593,7 @@ Copy `backend/.env.example` to `backend/.env` and fill in each value.
 
 <br>
 
-#### Admin — Active Rides
+<h4 align="center">Admin — Active Rides</h4>
 
 <p align="center">
 <img src="frontend/assets/screenshots/adminRidesLight.png" width="38%"/>
@@ -603,7 +603,7 @@ Copy `backend/.env.example` to `backend/.env` and fill in each value.
 
 <br>
 
-#### Admin — KYC Verification
+<h4 align="center">Admin — KYC Verification</h4>
 
 <p align="center">
 <img src="frontend/assets/screenshots/adminVerifyLight.png" width="38%"/>
