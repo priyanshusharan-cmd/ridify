@@ -9,12 +9,12 @@ source, so future app changes are automatically included.
 ## Publish on Render
 
 1. Push this repository to GitHub, then in Render select **New → Blueprint**
-   and connect the repository. The root `render.yaml` creates `ridify-web` as a
+   and connect the repository. The root `render.yaml` creates `ridify` as a
    **Static Site**; it does not recreate your API or database.
-2. Set `BACKEND_URL` to your **existing backend's HTTPS origin**, for example
-   `https://your-api.onrender.com`. Do not include `/api` or a trailing path.
+2. The Blueprint sets `BACKEND_URL` to the `ridify-backend` service at
+   `https://ridify-backend.onrender.com`.
 3. On the existing backend service, set **`ALLOWED_ORIGIN`** (singular) to the
-   exact website origin Render assigns, for example `https://ridify-web.onrender.com`.
+   exact website origin Render assigns, `https://ridify.onrender.com`.
    Redeploy the backend after the environment change. Use the actual assigned
    hostname, which may include a suffix.
 4. Open the website. Existing accounts and rides use the same backend/database.

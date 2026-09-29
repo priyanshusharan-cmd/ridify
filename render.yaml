@@ -1,13 +1,48 @@
-# Creates only a browser frontend. Your existing backend remains independent.
+# Free Render deployment for the API and browser app.
 services:
   - type: web
-    name: ridify-web
+    name: ridify-backend
+    runtime: node
+    plan: free
+    rootDir: backend
+    buildCommand: npm ci
+    startCommand: npm start
+    healthCheckPath: /health
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: MONGO_URI
+        sync: false
+      - key: JWT_SECRET
+        sync: false
+      - key: JWT_REFRESH_SECRET
+        sync: false
+      - key: ADMIN_EMAILS
+        sync: false
+      - key: ADMIN_SECRET
+        sync: false
+      - key: ALLOWED_ORIGIN
+        sync: false
+      - key: EMAILJS_SERVICE_ID
+        sync: false
+      - key: EMAILJS_TEMPLATE_ID
+        sync: false
+      - key: EMAILJS_PUBLIC_KEY
+        sync: false
+      - key: EMAILJS_PRIVATE_KEY
+        sync: false
+      - key: GOOGLE_APPS_SCRIPT_URL
+        sync: false
+      - key: ALLOWED_EMAIL_DOMAIN
+        sync: false
+  - type: web
+    name: ridify
     runtime: static
     buildCommand: bash web-app/build.sh
     staticPublishPath: web-app/dist
     envVars:
       - key: BACKEND_URL
-        sync: false
+        value: https://ridify-backend.onrender.com
     headers:
       - path: /*
         name: Cache-Control
