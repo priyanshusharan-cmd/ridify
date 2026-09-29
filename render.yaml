@@ -1,0 +1,30 @@
+# Creates only a browser frontend. Your existing backend remains independent.
+services:
+  - type: web
+    name: ridify-web
+    runtime: static
+    buildCommand: bash web-app/build.sh
+    staticPublishPath: web-app/dist
+    envVars:
+      - key: BACKEND_URL
+        sync: false
+    headers:
+      - path: /*
+        name: Cache-Control
+        value: no-cache
+      - path: /*
+        name: X-Content-Type-Options
+        value: nosniff
+      - path: /*
+        name: X-Frame-Options
+        value: DENY
+      - path: /*
+        name: Referrer-Policy
+        value: strict-origin-when-cross-origin
+      - path: /*
+        name: Permissions-Policy
+        value: geolocation=(self), camera=(self), microphone=()
+    routes:
+      - type: rewrite
+        source: /*
+        destination: /index.html
