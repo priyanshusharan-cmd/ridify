@@ -301,9 +301,9 @@ Copy `backend/.env.example` to `backend/.env` and fill in each value.
 <h4 align="center">Splash Screen</h4>
 
 <p align="center">
-<img src="frontend/assets/screenshots/splashScreenLightGIF.gif" width="38%"/>
+<img src="screenshots/splashScreenLightGIF.gif" width="38%"/>
 &nbsp;&nbsp;
-<img src="frontend/assets/screenshots/splashScreenDarkGIF.gif" width="38%"/>
+<img src="screenshots/splashScreenDarkGIF.gif" width="38%"/>
 </p>
 
 <br>
@@ -311,9 +311,9 @@ Copy `backend/.env.example` to `backend/.env` and fill in each value.
 <h4 align="center">Login</h4>
 
 <p align="center">
-<img src="frontend/assets/screenshots/loginScreenLight.png" width="38%"/>
+<img src="screenshots/loginScreenLight.png" width="38%"/>
 &nbsp;&nbsp;
-<img src="frontend/assets/screenshots/loginScreenDark.png" width="38%"/>
+<img src="screenshots/loginScreenDark.png" width="38%"/>
 </p>
 
 <br>
@@ -321,9 +321,9 @@ Copy `backend/.env.example` to `backend/.env` and fill in each value.
 <h4 align="center">Sign Up</h4>
 
 <p align="center">
-<img src="frontend/assets/screenshots/signupScreenLight.png" width="38%"/>
+<img src="screenshots/signupScreenLight.png" width="38%"/>
 &nbsp;&nbsp;
-<img src="frontend/assets/screenshots/signupScreenDark.png" width="38%"/>
+<img src="screenshots/signupScreenDark.png" width="38%"/>
 </p>
 
 <br>
@@ -338,9 +338,9 @@ Copy `backend/.env.example` to `backend/.env` and fill in each value.
 <h4 align="center">Home Screen</h4>
 
 <p align="center">
-<img src="frontend/assets/screenshots/homeScreenLightGIF.gif" width="38%"/>
+<img src="screenshots/homeScreenLightGIF.gif" width="38%"/>
 &nbsp;&nbsp;
-<img src="frontend/assets/screenshots/homeScreenDarkGIF.gif" width="38%"/>
+<img src="screenshots/homeScreenDarkGIF.gif" width="38%"/>
 </p>
 
 <br>
@@ -348,9 +348,9 @@ Copy `backend/.env.example` to `backend/.env` and fill in each value.
 <h4 align="center">Offer a Ride</h4>
 
 <p align="center">
-<img src="frontend/assets/screenshots/offerRideLight.png" width="38%"/>
+<img src="screenshots/offerRideLight.png" width="38%"/>
 &nbsp;&nbsp;
-<img src="frontend/assets/screenshots/offerRideDark.png" width="38%"/>
+<img src="screenshots/offerRideDark.png" width="38%"/>
 </p>
 
 <br>
@@ -358,9 +358,9 @@ Copy `backend/.env.example` to `backend/.env` and fill in each value.
 <h4 align="center">Location Picker</h4>
 
 <p align="center">
-<img src="frontend/assets/screenshots/locationPickerScreenLight.png" width="38%"/>
+<img src="screenshots/locationPickerScreenLight.png" width="38%"/>
 &nbsp;&nbsp;
-<img src="frontend/assets/screenshots/locationPickerScreenDark.png" width="38%"/>
+<img src="screenshots/locationPickerScreenDark.png" width="38%"/>
 </p>
 
 <br>
@@ -368,9 +368,9 @@ Copy `backend/.env.example` to `backend/.env` and fill in each value.
 <h4 align="center">Find a Ride</h4>
 
 <p align="center">
-<img src="frontend/assets/screenshots/findRIdeLight.png" width="38%"/>
+<img src="screenshots/findRIdeLight.png" width="38%"/>
 &nbsp;&nbsp;
-<img src="frontend/assets/screenshots/findRideDark.png" width="38%"/>
+<img src="screenshots/findRideDark.png" width="38%"/>
 </p>
 
 <br>
@@ -378,9 +378,9 @@ Copy `backend/.env.example` to `backend/.env` and fill in each value.
 <h4 align="center">Available Rides</h4>
 
 <p align="center">
-<img src="frontend/assets/screenshots/availableRidesScreenLight.png" width="38%"/>
+<img src="screenshots/availableRidesScreenLight.png" width="38%"/>
 &nbsp;&nbsp;
-<img src="frontend/assets/screenshots/availableRidesScreenDark.png" width="38%"/>
+<img src="screenshots/availableRidesScreenDark.png" width="38%"/>
 </p>
 
 <br>
@@ -388,9 +388,9 @@ Copy `backend/.env.example` to `backend/.env` and fill in each value.
 <h4 align="center">Filters</h4>
 
 <p align="center">
-<img src="frontend/assets/screenshots/filtersPopupLight.png" width="38%"/>
+<img src="screenshots/filtersPopupLight.png" width="38%"/>
 &nbsp;&nbsp;
-<img src="frontend/assets/screenshots/filtersPopupDark.png" width="38%"/>
+<img src="screenshots/filtersPopupDark.png" width="38%"/>
 </p>
 
 <br>
@@ -405,9 +405,9 @@ Copy `backend/.env.example` to `backend/.env` and fill in each value.
 <h4 align="center">Activity Screen</h4>
 
 <p align="center">
-<img src="frontend/assets/screenshots/activityScreenLight.png" width="38%"/>
+<img src="screenshots/activityScreenLight.png" width="38%"/>
 &nbsp;&nbsp;
-<img src="frontend/assets/screenshots/activityScreenDark.png" width="38%"/>
+<img src="screenshots/activityScreenDark.png" width="38%"/>
 </p>
 
 <br>
@@ -415,9 +415,9 @@ Copy `backend/.env.example` to `backend/.env` and fill in each value.
 <h4 align="center">Ride Details</h4>
 
 <p align="center">
-<img src="frontend/assets/screenshots/rideDetailScreenLight.png" width="38%"/>
+<img src="screenshots/rideDetailScreenLight.png" width="38%"/>
 &nbsp;&nbsp;
-<img src="frontend/assets/screenshots/rideDetailScreenDark.png" width="38%"/>
+<img src="screenshots/rideDetailScreenDark.png" width="38%"/>
 </p>
 
 <br>
@@ -432,9 +432,9 @@ Copy `backend/.env.example` to `backend/.env` and fill in each value.
 <h4 align="center">Driver — Ride Started</h4>
 
 <p align="center">
-<img src="frontend/assets/screenshots/liveRideScreenDriver1Light.png" width="38%"/>
+<img src="screenshots/liveRideScreenDriver1Light.png" width="38%"/>
 &nbsp;&nbsp;
-<img src="frontend/assets/screenshots/liveRideScreenDriver1Dark.png" width="38%"/>
+<img src="screenshots/liveRideScreenDriver1Dark.png" width="38%"/>
 </p>
 
 <br>
@@ -442,9 +442,9 @@ Copy `backend/.env.example` to `backend/.env` and fill in each value.
 <h4 align="center">Rider — Waiting for Pickup</h4>
 
 <p align="center">
-<img src="frontend/assets/screenshots/liveRideScreenRider1Light.png" width="38%"/>
+<img src="screenshots/liveRideScreenRider1Light.png" width="38%"/>
 &nbsp;&nbsp;
-<img src="frontend/assets/screenshots/liveRideScreenRider1Dark.png" width="38%"/>
+<img src="screenshots/liveRideScreenRider1Dark.png" width="38%"/>
 </p>
 
 <br>
@@ -452,9 +452,9 @@ Copy `backend/.env.example` to `backend/.env` and fill in each value.
 <h4 align="center">Driver — At Boarding Point</h4>
 
 <p align="center">
-<img src="frontend/assets/screenshots/liveRideScreenDriver2Light.png" width="38%"/>
+<img src="screenshots/liveRideScreenDriver2Light.png" width="38%"/>
 &nbsp;&nbsp;
-<img src="frontend/assets/screenshots/liveRideScreenDriver2Dark.png" width="38%"/>
+<img src="screenshots/liveRideScreenDriver2Dark.png" width="38%"/>
 </p>
 
 <br>
@@ -462,9 +462,9 @@ Copy `backend/.env.example` to `backend/.env` and fill in each value.
 <h4 align="center">Rider — Driver Arrived</h4>
 
 <p align="center">
-<img src="frontend/assets/screenshots/liveRideScreenRider2Light.png" width="38%"/>
+<img src="screenshots/liveRideScreenRider2Light.png" width="38%"/>
 &nbsp;&nbsp;
-<img src="frontend/assets/screenshots/liveRideScreenRider2Dark.png" width="38%"/>
+<img src="screenshots/liveRideScreenRider2Dark.png" width="38%"/>
 </p>
 
 <br>
@@ -472,9 +472,9 @@ Copy `backend/.env.example` to `backend/.env` and fill in each value.
 <h4 align="center">Driver — Rider Boarded</h4>
 
 <p align="center">
-<img src="frontend/assets/screenshots/liveRideScreenDriver3Light.png" width="38%"/>
+<img src="screenshots/liveRideScreenDriver3Light.png" width="38%"/>
 &nbsp;&nbsp;
-<img src="frontend/assets/screenshots/liveRideScreenDriver3Dark.png" width="38%"/>
+<img src="screenshots/liveRideScreenDriver3Dark.png" width="38%"/>
 </p>
 
 <br>
@@ -482,9 +482,9 @@ Copy `backend/.env.example` to `backend/.env` and fill in each value.
 <h4 align="center">Rider — In Transit</h4>
 
 <p align="center">
-<img src="frontend/assets/screenshots/liveRideScreenRider3Light.png" width="38%"/>
+<img src="screenshots/liveRideScreenRider3Light.png" width="38%"/>
 &nbsp;&nbsp;
-<img src="frontend/assets/screenshots/liveRideScreenRider3Dark.png" width="38%"/>
+<img src="screenshots/liveRideScreenRider3Dark.png" width="38%"/>
 </p>
 
 <br>
@@ -492,9 +492,9 @@ Copy `backend/.env.example` to `backend/.env` and fill in each value.
 <h4 align="center">In-app Chat</h4>
 
 <p align="center">
-<img src="frontend/assets/screenshots/chatScreenLight.png" width="38%"/>
+<img src="screenshots/chatScreenLight.png" width="38%"/>
 &nbsp;&nbsp;
-<img src="frontend/assets/screenshots/chatScreenDark.png" width="38%"/>
+<img src="screenshots/chatScreenDark.png" width="38%"/>
 </p>
 
 <br>
@@ -502,9 +502,9 @@ Copy `backend/.env.example` to `backend/.env` and fill in each value.
 <h4 align="center">Driver — Trip Complete</h4>
 
 <p align="center">
-<img src="frontend/assets/screenshots/driverCompletionScreenLight.png" width="38%"/>
+<img src="screenshots/driverCompletionScreenLight.png" width="38%"/>
 &nbsp;&nbsp;
-<img src="frontend/assets/screenshots/driverCompletionScreenDark.png" width="38%"/>
+<img src="screenshots/driverCompletionScreenDark.png" width="38%"/>
 </p>
 
 <br>
@@ -512,9 +512,9 @@ Copy `backend/.env.example` to `backend/.env` and fill in each value.
 <h4 align="center">Rider — Trip Complete</h4>
 
 <p align="center">
-<img src="frontend/assets/screenshots/riderCompletionScreenLight.png" width="38%"/>
+<img src="screenshots/riderCompletionScreenLight.png" width="38%"/>
 &nbsp;&nbsp;
-<img src="frontend/assets/screenshots/riderCompletionScreenDark.png" width="38%"/>
+<img src="screenshots/riderCompletionScreenDark.png" width="38%"/>
 </p>
 
 <br>
@@ -529,9 +529,9 @@ Copy `backend/.env.example` to `backend/.env` and fill in each value.
 <h4 align="center">Ride History</h4>
 
 <p align="center">
-<img src="frontend/assets/screenshots/historyScreenLight.png" width="38%"/>
+<img src="screenshots/historyScreenLight.png" width="38%"/>
 &nbsp;&nbsp;
-<img src="frontend/assets/screenshots/historyScreenDark.png" width="38%"/>
+<img src="screenshots/historyScreenDark.png" width="38%"/>
 </p>
 
 <br>
@@ -539,9 +539,9 @@ Copy `backend/.env.example` to `backend/.env` and fill in each value.
 <h4 align="center">Co-Passengers</h4>
 
 <p align="center">
-<img src="frontend/assets/screenshots/passengersTravelledPopupLight.png" width="38%"/>
+<img src="screenshots/passengersTravelledPopupLight.png" width="38%"/>
 &nbsp;&nbsp;
-<img src="frontend/assets/screenshots/passengersTravelledPopupDark.png" width="38%"/>
+<img src="screenshots/passengersTravelledPopupDark.png" width="38%"/>
 </p>
 
 <br>
@@ -549,9 +549,9 @@ Copy `backend/.env.example` to `backend/.env` and fill in each value.
 <h4 align="center">Profile</h4>
 
 <p align="center">
-<img src="frontend/assets/screenshots/profileScreenLight.png" width="38%"/>
+<img src="screenshots/profileScreenLight.png" width="38%"/>
 &nbsp;&nbsp;
-<img src="frontend/assets/screenshots/profileScreenDark.png" width="38%"/>
+<img src="screenshots/profileScreenDark.png" width="38%"/>
 </p>
 
 <br>
@@ -566,9 +566,9 @@ Copy `backend/.env.example` to `backend/.env` and fill in each value.
 <h4 align="center">Admin Dashboard</h4>
 
 <p align="center">
-<img src="frontend/assets/screenshots/adminDashboardLight.png" width="38%"/>
+<img src="screenshots/adminDashboardLight.png" width="38%"/>
 &nbsp;&nbsp;
-<img src="frontend/assets/screenshots/adminDashboardDark.png" width="38%"/>
+<img src="screenshots/adminDashboardDark.png" width="38%"/>
 </p>
 
 <br>
@@ -576,9 +576,9 @@ Copy `backend/.env.example` to `backend/.env` and fill in each value.
 <h4 align="center">Admin — Users</h4>
 
 <p align="center">
-<img src="frontend/assets/screenshots/adminUsersLight.png" width="38%"/>
+<img src="screenshots/adminUsersLight.png" width="38%"/>
 &nbsp;&nbsp;
-<img src="frontend/assets/screenshots/adminUsersDark.png" width="38%"/>
+<img src="screenshots/adminUsersDark.png" width="38%"/>
 </p>
 
 <br>
@@ -586,9 +586,9 @@ Copy `backend/.env.example` to `backend/.env` and fill in each value.
 <h4 align="center">Admin — User Actions</h4>
 
 <p align="center">
-<img src="frontend/assets/screenshots/userPopupLight.png" width="38%"/>
+<img src="screenshots/userPopupLight.png" width="38%"/>
 &nbsp;&nbsp;
-<img src="frontend/assets/screenshots/userPopupDark.png" width="38%"/>
+<img src="screenshots/userPopupDark.png" width="38%"/>
 </p>
 
 <br>
@@ -596,9 +596,9 @@ Copy `backend/.env.example` to `backend/.env` and fill in each value.
 <h4 align="center">Admin — Active Rides</h4>
 
 <p align="center">
-<img src="frontend/assets/screenshots/adminRidesLight.png" width="38%"/>
+<img src="screenshots/adminRidesLight.png" width="38%"/>
 &nbsp;&nbsp;
-<img src="frontend/assets/screenshots/adminRidesDark.png" width="38%"/>
+<img src="screenshots/adminRidesDark.png" width="38%"/>
 </p>
 
 <br>
@@ -606,9 +606,9 @@ Copy `backend/.env.example` to `backend/.env` and fill in each value.
 <h4 align="center">Admin — KYC Verification</h4>
 
 <p align="center">
-<img src="frontend/assets/screenshots/adminVerifyLight.png" width="38%"/>
+<img src="screenshots/adminVerifyLight.png" width="38%"/>
 &nbsp;&nbsp;
-<img src="frontend/assets/screenshots/adminVerifyDark.png" width="38%"/>
+<img src="screenshots/adminVerifyDark.png" width="38%"/>
 </p>
 
 <br>
