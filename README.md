@@ -19,10 +19,6 @@
 
 **[Features](#-features)** &nbsp;·&nbsp; **[Architecture](#-architecture)** &nbsp;·&nbsp; **[How it works](#-how-it-works)** &nbsp;·&nbsp; **[Tech stack](#-tech-stack)** &nbsp;·&nbsp; **[Getting started](#-getting-started)** &nbsp;·&nbsp; **[Screenshots](#-screenshots)** &nbsp;·&nbsp; **[User manual](USER_MANUAL.md)**
 
-<br/>
-
-<a href="USER_MANUAL.md"><img src="assets/readme/manual.svg" alt="Read the Ridify User Manual" width="100%"/></a>
-
 </div>
 
 <img src="assets/readme/divider.svg" width="100%" alt=""/>
@@ -717,6 +713,12 @@ Every screen ships in **light** and **dark**. Expand a section to browse.
 <br>
 
 </details>
+
+<img src="assets/readme/divider.svg" width="100%" alt=""/>
+
+## 📖 User manual
+
+<a href="USER_MANUAL.md"><img src="assets/readme/manual.svg" alt="Read the Ridify User Manual" width="100%"/></a>
 
 <img src="assets/readme/divider.svg" width="100%" alt=""/>
 
