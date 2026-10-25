@@ -1,24 +1,39 @@
 <div align="center">
 
-<img src="frontend/assets/icon.png" alt="Ridify Logo" width="120"/>
+<img src="assets/manual/hero.svg" alt="Ridify — Comprehensive User Manual, version 1.0" width="100%"/>
 
-# Ridify — Comprehensive User Manual
+<br/>
 
-### Version 1.0 · July 2026
+[![Back to README](https://img.shields.io/badge/←_BACK_TO-README-000000?style=for-the-badge&logo=github&logoColor=white&labelColor=1E1E1E)](README.md)
+[![Live Demo](https://img.shields.io/badge/LIVE_DEMO-ridify.onrender.com-000000?style=for-the-badge&logo=render&logoColor=white&labelColor=1E1E1E)](https://ridify.onrender.com)
+[![Version](https://img.shields.io/badge/MANUAL-v1.0_·_July_2026-000000?style=for-the-badge&labelColor=1E1E1E)](#appendix-i-version-history)
 
-**Real-time peer-to-peer ride-sharing & cost-splitting — built for everyone.**
+**Ridify — Comprehensive User Manual** · Version 1.0 · July 2026<br/>
+<sub>Real-time peer-to-peer ride-sharing & cost-splitting — built for everyone.</sub>
+
+<a href="#part-i-quick-start-guide-5-minutes"><b>Quick start</b></a> &nbsp;·&nbsp; <a href="#part-ii-detailed-user-guide"><b>User guide</b></a> &nbsp;·&nbsp; <a href="#part-iii-riders-handbook"><b>Rider's handbook</b></a> &nbsp;·&nbsp; <a href="#part-iv-drivers-handbook"><b>Driver's handbook</b></a> &nbsp;·&nbsp; <a href="#part-v-communication--social"><b>Chat &amp; social</b></a> &nbsp;·&nbsp; <a href="#part-vi-administration"><b>Administration</b></a> &nbsp;·&nbsp; <a href="#part-vii-technical-deep-dive"><b>Technical deep dive</b></a> &nbsp;·&nbsp; <a href="#part-viii-policies--legal"><b>Policies &amp; legal</b></a> &nbsp;·&nbsp; <a href="#part-ix-reference"><b>Reference</b></a>
 
 </div>
 
----
+<img src="assets/readme/divider.svg" width="100%" alt=""/>
 
-| **About this manual** |
-| :--- |
-| This document is the single authoritative reference for every feature, workflow, and technical detail in the Ridify application. It is structured so that **casual users** can jump straight to the [Quick-Start Guide](#part-i-quick-start-guide-5-minutes) and start using the app immediately, while **power users, developers, and administrators** can find exhaustive technical detail in the later parts.<br><br>Screenshots referenced throughout correspond to both **Light** and **Dark** theme variants. |
+> [!NOTE]
+> **About this manual**
+>
+> This document is the single authoritative reference for every feature, workflow, and technical detail in the Ridify application. It is structured so that **casual users** can jump straight to the [Quick-Start Guide](#part-i-quick-start-guide-5-minutes) and start using the app immediately, while **power users, developers, and administrators** can find exhaustive technical detail in the later parts.<br><br>Screenshots referenced throughout correspond to both **Light** and **Dark** theme variants.
 
----
+<img src="assets/readme/divider.svg" width="100%" alt=""/>
 
 ## Table of Contents
+
+<table>
+<tr><td align="center" width="33%"><a href="#part-i-quick-start-guide-5-minutes"><b>⚡ Part I</b></a><br/><b>Quick start</b><br/><sub>5-minute setup</sub></td><td align="center" width="33%"><a href="#part-ii-detailed-user-guide"><b>📘 Part II</b></a><br/><b>User guide</b><br/><sub>Ch. 1–5</sub></td><td align="center" width="33%"><a href="#part-iii-riders-handbook"><b>🧍 Part III</b></a><br/><b>Rider's handbook</b><br/><sub>Ch. 6–10</sub></td></tr>
+<tr><td align="center" width="33%"><a href="#part-iv-drivers-handbook"><b>🚗 Part IV</b></a><br/><b>Driver's handbook</b><br/><sub>Ch. 11–15</sub></td><td align="center" width="33%"><a href="#part-v-communication--social"><b>💬 Part V</b></a><br/><b>Chat &amp; social</b><br/><sub>Ch. 16–18</sub></td><td align="center" width="33%"><a href="#part-vi-administration"><b>🛡️ Part VI</b></a><br/><b>Administration</b><br/><sub>Ch. 19–23</sub></td></tr>
+<tr><td align="center" width="33%"><a href="#part-vii-technical-deep-dive"><b>⚙️ Part VII</b></a><br/><b>Technical deep dive</b><br/><sub>Ch. 24–32</sub></td><td align="center" width="33%"><a href="#part-viii-policies--legal"><b>⚖️ Part VIII</b></a><br/><b>Policies &amp; legal</b><br/><sub>Ch. 33–36</sub></td><td align="center" width="33%"><a href="#part-ix-reference"><b>📚 Part IX</b></a><br/><b>Reference</b><br/><sub>Ch. 37–40 · Appendices</sub></td></tr>
+</table>
+
+<details>
+<summary><b>📑 Full chapter list</b></summary>
 
 ### Part I — Quick-Start Guide
 1. [Quick-Start Guide (5 minutes)](#part-i-quick-start-guide-5-minutes)
@@ -79,12 +94,16 @@
 40. [Glossary of Terms](#chapter-39-glossary-of-terms)
 41. [Contact & Support](#chapter-40-contact--support)
 
----
+</details>
 
----
+<img src="assets/readme/divider.svg" width="100%" alt=""/>
+
+
+<img src="assets/manual/part-1.svg" width="100%" alt="Part I"/>
 
 # Part I: Quick-Start Guide (5 minutes)
 
+> [!TIP]
 > **This section is designed for users who want to get on the road immediately.** Read this, and you'll be sharing rides within minutes. For in-depth explanations of every feature, see Parts II through IX.
 
 ### For Riders — Find a Ride in 4 Steps
@@ -107,13 +126,16 @@
 
 **That's it!** For everything else — chat, history, admin tools, how the algorithm works — keep reading.
 
----
+<p align="right"><sub><a href="#table-of-contents">↑ Back to contents</a></sub></p>
 
----
+<img src="assets/readme/divider.svg" width="100%" alt=""/>
+
+
+<img src="assets/manual/part-2.svg" width="100%" alt="Part II"/>
 
 # Part II: Detailed User Guide
 
----
+<img src="assets/readme/divider.svg" width="100%" alt=""/>
 
 ## Chapter 1: Introduction to Ridify
 
@@ -159,7 +181,9 @@ Before diving into the app, it helps to understand these core concepts:
 - `completed` — The trip is finished and all passengers have been dropped off.
 - `cancelled` — The ride has been cancelled by the driver, admin, or system.
 
----
+<p align="right"><sub><a href="#table-of-contents">↑ Back to contents</a></sub></p>
+
+<img src="assets/readme/divider.svg" width="100%" alt=""/>
 
 ## Chapter 2: Installation & Device Requirements
 
@@ -201,9 +225,16 @@ When you first open Ridify, you'll be asked to grant the following permissions:
 3. Open the installer and follow the on-screen prompts.
 4. Once installed, launch Ridify.
 
----
+<p align="right"><sub><a href="#table-of-contents">↑ Back to contents</a></sub></p>
+
+<img src="assets/readme/divider.svg" width="100%" alt=""/>
 
 ## Chapter 3: Account Registration & Authentication
+
+<table>
+<tr><th colspan="2">Login</th><th colspan="2">Sign up</th></tr>
+<tr><td align="center" width="25%"><img src="screenshots/loginScreenLight.png" width="100%" alt="Login, light"/></td><td align="center" width="25%"><img src="screenshots/loginScreenDark.png" width="100%" alt="Login, dark"/></td><td align="center" width="25%"><img src="screenshots/signupScreenLight.png" width="100%" alt="Sign up, light"/></td><td align="center" width="25%"><img src="screenshots/signupScreenDark.png" width="100%" alt="Sign up, dark"/></td></tr>
+</table>
 
 ### 3.1 How Ridify Authentication Works
 
@@ -273,9 +304,13 @@ Ridify uses a **dual authentication system** combining traditional passwords wit
 - This process is completely invisible to you — you don't need to do anything.
 - Your refresh token is valid for **7 days**. If you don't open the app for more than 7 days, you'll need to log in again.
 
----
+<p align="right"><sub><a href="#table-of-contents">↑ Back to contents</a></sub></p>
+
+<img src="assets/readme/divider.svg" width="100%" alt=""/>
 
 ## Chapter 4: Your Profile & Identity Verification (KYC)
+
+<p align="center"><img src="screenshots/profileScreenLight.png" width="30%" alt="Profile, light"/>&nbsp;&nbsp;<img src="screenshots/profileScreenDark.png" width="30%" alt="Profile, dark"/><br/><sub><b>Profile</b> · light &amp; dark</sub></p>
 
 ### 4.1 Viewing and Editing Your Profile
 
@@ -339,9 +374,13 @@ KYC (Know Your Customer) is an identity verification process that enhances trust
    - Your pending requests on other users' rides are automatically removed.
    - This action is **irreversible**.
 
----
+<p align="right"><sub><a href="#table-of-contents">↑ Back to contents</a></sub></p>
+
+<img src="assets/readme/divider.svg" width="100%" alt=""/>
 
 ## Chapter 5: The Home Screen — Your Command Center
+
+<p align="center"><img src="screenshots/homeScreenLightGIF.gif" width="30%" alt="Home, light"/>&nbsp;&nbsp;<img src="screenshots/homeScreenDarkGIF.gif" width="30%" alt="Home, dark"/><br/><sub><b>Home</b> · light &amp; dark</sub></p>
 
 The Home Screen is the first thing you see after logging in. It is designed to give you instant access to the two primary actions:
 
@@ -368,15 +407,23 @@ As soon as you open the Home Screen, the app establishes a **WebSocket connectio
 - Listens for real-time updates: new ride requests, acceptances, status changes, chat messages, and location updates.
 - Reconnects automatically if your internet drops temporarily.
 
----
+<p align="right"><sub><a href="#table-of-contents">↑ Back to contents</a></sub></p>
 
----
+<img src="assets/readme/divider.svg" width="100%" alt=""/>
+
+
+<img src="assets/manual/part-3.svg" width="100%" alt="Part III"/>
 
 # Part III: Rider's Handbook
 
----
+<img src="assets/readme/divider.svg" width="100%" alt=""/>
 
 ## Chapter 6: Finding a Ride
+
+<table>
+<tr><th colspan="2">Find a ride</th><th colspan="2">Location picker</th></tr>
+<tr><td align="center" width="25%"><img src="screenshots/findRIdeLight.png" width="100%" alt="Find a ride, light"/></td><td align="center" width="25%"><img src="screenshots/findRideDark.png" width="100%" alt="Find a ride, dark"/></td><td align="center" width="25%"><img src="screenshots/locationPickerScreenLight.png" width="100%" alt="Location picker, light"/></td><td align="center" width="25%"><img src="screenshots/locationPickerScreenDark.png" width="100%" alt="Location picker, dark"/></td></tr>
+</table>
 
 ### 6.1 Starting a Search
 
@@ -451,9 +498,16 @@ The search returns a list of rides ranked by relevance. Each result includes com
 - `computedDistance` — The distance you would travel.
 - `startIndex` / `endIndex` — Your boarding and alighting points on the route.
 
----
+<p align="right"><sub><a href="#table-of-contents">↑ Back to contents</a></sub></p>
+
+<img src="assets/readme/divider.svg" width="100%" alt=""/>
 
 ## Chapter 7: Browsing & Filtering Available Rides
+
+<table>
+<tr><th colspan="2">Available rides</th><th colspan="2">Filters</th></tr>
+<tr><td align="center" width="25%"><img src="screenshots/availableRidesScreenLight.png" width="100%" alt="Available rides, light"/></td><td align="center" width="25%"><img src="screenshots/availableRidesScreenDark.png" width="100%" alt="Available rides, dark"/></td><td align="center" width="25%"><img src="screenshots/filtersPopupLight.png" width="100%" alt="Filters, light"/></td><td align="center" width="25%"><img src="screenshots/filtersPopupDark.png" width="100%" alt="Filters, dark"/></td></tr>
+</table>
 
 ### 7.1 The Available Rides Screen
 
@@ -487,9 +541,13 @@ The Available Rides screen is **live**. While you're browsing:
 - If new rides are published matching your criteria, they appear automatically.
 - This is powered by the `global_search_room` Socket.IO room that your device joins while viewing search results.
 
----
+<p align="right"><sub><a href="#table-of-contents">↑ Back to contents</a></sub></p>
+
+<img src="assets/readme/divider.svg" width="100%" alt=""/>
 
 ## Chapter 8: Joining a Ride & Cost-Splitting
+
+<p align="center"><img src="screenshots/rideDetailScreenLight.png" width="30%" alt="Ride details, light"/>&nbsp;&nbsp;<img src="screenshots/rideDetailScreenDark.png" width="30%" alt="Ride details, dark"/><br/><sub><b>Ride details</b> · light &amp; dark</sub></p>
 
 ### 8.1 Viewing Ride Details
 
@@ -546,9 +604,18 @@ If you change your mind before the driver accepts you:
 2. Tap **Cancel Request**.
 3. Your request is removed. If the driver hasn't seen it yet, it simply disappears. The ride's `cancelledRequests` array tracks this for history purposes.
 
----
+<p align="right"><sub><a href="#table-of-contents">↑ Back to contents</a></sub></p>
+
+<img src="assets/readme/divider.svg" width="100%" alt=""/>
 
 ## Chapter 9: The Live Ride Experience (Rider Perspective)
+
+<table>
+<tr><th colspan="2">Waiting for pickup</th><th colspan="2">Driver arrived</th></tr>
+<tr><td align="center" width="25%"><img src="screenshots/liveRideScreenRider1Light.png" width="100%" alt="Waiting for pickup, light"/></td><td align="center" width="25%"><img src="screenshots/liveRideScreenRider1Dark.png" width="100%" alt="Waiting for pickup, dark"/></td><td align="center" width="25%"><img src="screenshots/liveRideScreenRider2Light.png" width="100%" alt="Driver arrived, light"/></td><td align="center" width="25%"><img src="screenshots/liveRideScreenRider2Dark.png" width="100%" alt="Driver arrived, dark"/></td></tr>
+<tr><th colspan="4">In transit</th></tr>
+<tr><td colspan="4" align="center"><img src="screenshots/liveRideScreenRider3Light.png" width="25%" alt="In transit, light"/>&nbsp;&nbsp;<img src="screenshots/liveRideScreenRider3Dark.png" width="25%" alt="In transit, dark"/></td></tr>
+</table>
 
 ### 9.1 Waiting for Pickup
 
@@ -594,9 +661,13 @@ When you reach your drop-off point:
    - Your final fare amount.
    - A "Mark as Paid" button.
 
----
+<p align="right"><sub><a href="#table-of-contents">↑ Back to contents</a></sub></p>
+
+<img src="assets/readme/divider.svg" width="100%" alt=""/>
 
 ## Chapter 10: Trip Completion & Payment (Rider)
+
+<p align="center"><img src="screenshots/riderCompletionScreenLight.png" width="30%" alt="Trip complete (rider), light"/>&nbsp;&nbsp;<img src="screenshots/riderCompletionScreenDark.png" width="30%" alt="Trip complete (rider), dark"/><br/><sub><b>Trip complete (rider)</b> · light &amp; dark</sub></p>
 
 ### 10.1 The Payment Model
 
@@ -619,15 +690,20 @@ Ridify currently operates on a **facilitated direct payment** model:
 - This is logged as a warning in the server logs: `Ride ${rideId} ended with N unpaid passenger(s)`.
 - In future versions, a reputation system will track payment reliability.
 
----
+<p align="right"><sub><a href="#table-of-contents">↑ Back to contents</a></sub></p>
 
----
+<img src="assets/readme/divider.svg" width="100%" alt=""/>
+
+
+<img src="assets/manual/part-4.svg" width="100%" alt="Part IV"/>
 
 # Part IV: Driver's Handbook
 
----
+<img src="assets/readme/divider.svg" width="100%" alt=""/>
 
 ## Chapter 11: Offering a Ride
+
+<p align="center"><img src="screenshots/offerRideLight.png" width="30%" alt="Offer a ride, light"/>&nbsp;&nbsp;<img src="screenshots/offerRideDark.png" width="30%" alt="Offer a ride, dark"/><br/><sub><b>Offer a ride</b> · light &amp; dark</sub></p>
 
 ### 11.1 Prerequisites
 
@@ -682,7 +758,9 @@ To offer a ride, you need:
   ```
 - This is recalculated on the server — even if a malicious client sends a tampered fare, the server recomputes it independently.
 
----
+<p align="right"><sub><a href="#table-of-contents">↑ Back to contents</a></sub></p>
+
+<img src="assets/readme/divider.svg" width="100%" alt=""/>
 
 ## Chapter 12: Managing Join Requests
 
@@ -736,9 +814,18 @@ All request acceptance and rider management operations use **optimistic locking*
 - If another update happened in between (e.g., two admins acting simultaneously), the update fails and the system retries automatically (up to 5 times with random 20–100ms jitter).
 - If all retries fail, you'll see a "Concurrent modification detected. Please retry." message.
 
----
+<p align="right"><sub><a href="#table-of-contents">↑ Back to contents</a></sub></p>
+
+<img src="assets/readme/divider.svg" width="100%" alt=""/>
 
 ## Chapter 13: Starting & Managing the Trip
+
+<table>
+<tr><th colspan="2">Ride started</th><th colspan="2">At boarding point</th></tr>
+<tr><td align="center" width="25%"><img src="screenshots/liveRideScreenDriver1Light.png" width="100%" alt="Ride started, light"/></td><td align="center" width="25%"><img src="screenshots/liveRideScreenDriver1Dark.png" width="100%" alt="Ride started, dark"/></td><td align="center" width="25%"><img src="screenshots/liveRideScreenDriver2Light.png" width="100%" alt="At boarding point, light"/></td><td align="center" width="25%"><img src="screenshots/liveRideScreenDriver2Dark.png" width="100%" alt="At boarding point, dark"/></td></tr>
+<tr><th colspan="4">Rider boarded</th></tr>
+<tr><td colspan="4" align="center"><img src="screenshots/liveRideScreenDriver3Light.png" width="25%" alt="Rider boarded, light"/>&nbsp;&nbsp;<img src="screenshots/liveRideScreenDriver3Dark.png" width="25%" alt="Rider boarded, dark"/></td></tr>
+</table>
 
 ### 13.1 Starting the Ride
 
@@ -804,9 +891,13 @@ As a driver, the Live Tracking Screen shows:
 | **Drop Off** | Per-passenger | Per-passenger | Per-passenger (or auto at end) |
 | **End Ride** | Must drop off all first (or use Force End) | Auto-drops all remaining | Auto-drops all remaining |
 
----
+<p align="right"><sub><a href="#table-of-contents">↑ Back to contents</a></sub></p>
+
+<img src="assets/readme/divider.svg" width="100%" alt=""/>
 
 ## Chapter 14: Trip Completion & Earnings (Driver)
+
+<p align="center"><img src="screenshots/driverCompletionScreenLight.png" width="30%" alt="Trip complete (driver), light"/>&nbsp;&nbsp;<img src="screenshots/driverCompletionScreenDark.png" width="30%" alt="Trip complete (driver), dark"/><br/><sub><b>Trip complete (driver)</b> · light &amp; dark</sub></p>
 
 ### 14.1 Ending the Trip
 
@@ -836,7 +927,9 @@ Since fares are distance-proportional, if your total fare was ₹500 for a 100 k
 
 Note: In the current version, Ridify does not take a commission. The full fare goes to the driver.
 
----
+<p align="right"><sub><a href="#table-of-contents">↑ Back to contents</a></sub></p>
+
+<img src="assets/readme/divider.svg" width="100%" alt=""/>
 
 ## Chapter 15: Driver Statistics Dashboard
 
@@ -854,15 +947,20 @@ Go to **Profile** → **Driver Stats** (or the stats section on the Home Screen)
 
 These stats are calculated via a MongoDB aggregation pipeline on the server and are always up-to-date.
 
----
+<p align="right"><sub><a href="#table-of-contents">↑ Back to contents</a></sub></p>
 
----
+<img src="assets/readme/divider.svg" width="100%" alt=""/>
+
+
+<img src="assets/manual/part-5.svg" width="100%" alt="Part V"/>
 
 # Part V: Communication & Social
 
----
+<img src="assets/readme/divider.svg" width="100%" alt=""/>
 
 ## Chapter 16: In-App Chat System
+
+<p align="center"><img src="screenshots/chatScreenLight.png" width="30%" alt="In-app chat, light"/>&nbsp;&nbsp;<img src="screenshots/chatScreenDark.png" width="30%" alt="In-app chat, dark"/><br/><sub><b>In-app chat</b> · light &amp; dark</sub></p>
 
 ### 16.1 Overview
 
@@ -904,9 +1002,16 @@ Every ride has a dedicated **group chat room**. This allows the driver and all a
 - Each message has a maximum length of 1,000 characters (server-enforced).
 - No image or file sharing (text only in the current version).
 
----
+<p align="right"><sub><a href="#table-of-contents">↑ Back to contents</a></sub></p>
+
+<img src="assets/readme/divider.svg" width="100%" alt=""/>
 
 ## Chapter 17: Activity Feed & Ride History
+
+<table>
+<tr><th colspan="2">Activity</th><th colspan="2">Ride history</th></tr>
+<tr><td align="center" width="25%"><img src="screenshots/activityScreenLight.png" width="100%" alt="Activity, light"/></td><td align="center" width="25%"><img src="screenshots/activityScreenDark.png" width="100%" alt="Activity, dark"/></td><td align="center" width="25%"><img src="screenshots/historyScreenLight.png" width="100%" alt="Ride history, light"/></td><td align="center" width="25%"><img src="screenshots/historyScreenDark.png" width="100%" alt="Ride history, dark"/></td></tr>
+</table>
 
 ### 17.1 The Activity Screen
 
@@ -936,9 +1041,13 @@ The History screen provides a more detailed view of your past rides, focusing on
 - Fare paid/earned.
 - List of co-passengers.
 
----
+<p align="right"><sub><a href="#table-of-contents">↑ Back to contents</a></sub></p>
+
+<img src="assets/readme/divider.svg" width="100%" alt=""/>
 
 ## Chapter 18: Co-Passengers & Community
+
+<p align="center"><img src="screenshots/passengersTravelledPopupLight.png" width="30%" alt="Co-passengers, light"/>&nbsp;&nbsp;<img src="screenshots/passengersTravelledPopupDark.png" width="30%" alt="Co-passengers, dark"/><br/><sub><b>Co-passengers</b> · light &amp; dark</sub></p>
 
 ### 18.1 Viewing Your Co-Passengers
 
@@ -951,15 +1060,20 @@ From the History screen, tap on any past ride to expand it and see the full list
 
 Over time, you build a network of people you've shared rides with. The Co-Passengers view aggregates all unique users from your ride history, letting you recognize familiar faces for future trips.
 
----
+<p align="right"><sub><a href="#table-of-contents">↑ Back to contents</a></sub></p>
 
----
+<img src="assets/readme/divider.svg" width="100%" alt=""/>
+
+
+<img src="assets/manual/part-6.svg" width="100%" alt="Part VI"/>
 
 # Part VI: Administration
 
----
+<img src="assets/readme/divider.svg" width="100%" alt=""/>
 
 ## Chapter 19: Admin Panel Overview
+
+<p align="center"><img src="screenshots/adminDashboardLight.png" width="30%" alt="Admin dashboard, light"/>&nbsp;&nbsp;<img src="screenshots/adminDashboardDark.png" width="30%" alt="Admin dashboard, dark"/><br/><sub><b>Admin dashboard</b> · light &amp; dark</sub></p>
 
 ### 19.1 What Is the Admin Panel?
 
@@ -980,9 +1094,16 @@ The Admin Panel is a secure, dedicated interface within the Ridify app that is a
 | **Rides** | View all rides (active, completed, cancelled), force-cancel, or delete. |
 | **Verifications** | Review pending KYC document submissions, approve or reject. |
 
----
+<p align="right"><sub><a href="#table-of-contents">↑ Back to contents</a></sub></p>
+
+<img src="assets/readme/divider.svg" width="100%" alt=""/>
 
 ## Chapter 20: User Management & Moderation
+
+<table>
+<tr><th colspan="2">Users</th><th colspan="2">User actions</th></tr>
+<tr><td align="center" width="25%"><img src="screenshots/adminUsersLight.png" width="100%" alt="Users, light"/></td><td align="center" width="25%"><img src="screenshots/adminUsersDark.png" width="100%" alt="Users, dark"/></td><td align="center" width="25%"><img src="screenshots/userPopupLight.png" width="100%" alt="User actions, light"/></td><td align="center" width="25%"><img src="screenshots/userPopupDark.png" width="100%" alt="User actions, dark"/></td></tr>
+</table>
 
 ### 20.1 Viewing Users
 
@@ -1051,9 +1172,13 @@ Admins can select multiple users and delete them in bulk (max 100 at a time). Th
 
 The nuclear option: deletes every user **except the admin** who triggered the action, and all rides. A `database_wiped` event is broadcast to all connected clients.
 
----
+<p align="right"><sub><a href="#table-of-contents">↑ Back to contents</a></sub></p>
+
+<img src="assets/readme/divider.svg" width="100%" alt=""/>
 
 ## Chapter 21: Ride Monitoring & Force Controls
+
+<p align="center"><img src="screenshots/adminRidesLight.png" width="30%" alt="Active rides, light"/>&nbsp;&nbsp;<img src="screenshots/adminRidesDark.png" width="30%" alt="Active rides, dark"/><br/><sub><b>Active rides</b> · light &amp; dark</sub></p>
 
 ### 21.1 Viewing All Rides
 
@@ -1082,9 +1207,13 @@ Completely removes a ride record from the database. All connected clients receiv
 
 Permanently deletes every ride in the database. An `all_rides_wiped` event is broadcast to all connected clients.
 
----
+<p align="right"><sub><a href="#table-of-contents">↑ Back to contents</a></sub></p>
+
+<img src="assets/readme/divider.svg" width="100%" alt=""/>
 
 ## Chapter 22: KYC Document Verification Workflow
+
+<p align="center"><img src="screenshots/adminVerifyLight.png" width="30%" alt="KYC verification, light"/>&nbsp;&nbsp;<img src="screenshots/adminVerifyDark.png" width="30%" alt="KYC verification, dark"/><br/><sub><b>KYC verification</b> · light &amp; dark</sub></p>
 
 ### 22.1 The Verification Queue
 
@@ -1115,7 +1244,9 @@ For each pending verification:
 3. **Cascade:** Same as approval — the status is propagated across all rides.
 4. The user will need to upload a new, valid document.
 
----
+<p align="right"><sub><a href="#table-of-contents">↑ Back to contents</a></sub></p>
+
+<img src="assets/readme/divider.svg" width="100%" alt=""/>
 
 ## Chapter 23: Platform Statistics Dashboard
 
@@ -1136,15 +1267,20 @@ The admin dashboard provides these real-time metrics:
 | **Active Rides** | Sum of Available + Accepted + Started + Full. |
 | **Recent Users** | The 5 most recently registered users. |
 
----
+<p align="right"><sub><a href="#table-of-contents">↑ Back to contents</a></sub></p>
 
----
+<img src="assets/readme/divider.svg" width="100%" alt=""/>
+
+
+<img src="assets/manual/part-7.svg" width="100%" alt="Part VII"/>
 
 # Part VII: Technical Deep Dive
 
----
+<img src="assets/readme/divider.svg" width="100%" alt=""/>
 
 ## Chapter 24: System Architecture Overview
+
+<p align="center"><img src="assets/readme/architecture.svg" width="100%" alt="Ridify system architecture"/></p>
 
 Ridify follows a **client-server architecture** with four distinct layers:
 
@@ -1192,9 +1328,13 @@ Ridify follows a **client-server architecture** with four distinct layers:
 | EmailJS | HTTP API | Sends OTP emails for sign-up and login. |
 | Google Apps Script | HTTP POST webhook | Uploads KYC identity documents to Google Drive. |
 
----
+<p align="right"><sub><a href="#table-of-contents">↑ Back to contents</a></sub></p>
+
+<img src="assets/readme/divider.svg" width="100%" alt=""/>
 
 ## Chapter 25: Authentication & Token System
+
+<p align="center"><img src="assets/readme/authflow.svg" width="100%" alt="Authentication and token flow"/></p>
 
 ### 25.1 Token Architecture
 
@@ -1235,7 +1375,9 @@ WebSocket connections are also authenticated:
 3. If valid, the user's email and ID are attached to the socket object.
 4. If invalid, the connection is rejected with an error.
 
----
+<p align="right"><sub><a href="#table-of-contents">↑ Back to contents</a></sub></p>
+
+<img src="assets/readme/divider.svg" width="100%" alt=""/>
 
 ## Chapter 26: Database Schema Reference
 
@@ -1341,9 +1483,13 @@ WebSocket connections are also authenticated:
 }
 ```
 
----
+<p align="right"><sub><a href="#table-of-contents">↑ Back to contents</a></sub></p>
+
+<img src="assets/readme/divider.svg" width="100%" alt=""/>
 
 ## Chapter 27: The Ride Lifecycle State Machine
+
+<p align="center"><img src="assets/readme/lifecycle.svg" width="100%" alt="Animated ride lifecycle"/></p>
 
 ```
                     ┌─────────────┐
@@ -1389,9 +1535,13 @@ WebSocket connections are also authenticated:
 - Any active state → `cancelled`: By driver, admin, or auto-cleanup (stale rides stuck in `started` for >6 hours).
 - `completed`/`cancelled` → *(auto-deleted)*: After 30 days via MongoDB TTL index.
 
----
+<p align="right"><sub><a href="#table-of-contents">↑ Back to contents</a></sub></p>
+
+<img src="assets/readme/divider.svg" width="100%" alt=""/>
 
 ## Chapter 28: The Sweep-Line Matching Algorithm
+
+<p align="center"><img src="assets/readme/sweepline.svg" width="100%" alt="Animated sweep-line capacity check"/></p>
 
 ### 28.1 The Problem
 
@@ -1459,7 +1609,9 @@ New Rider D: [30 ─── 55] (1 seat)?
   At Index 40: 1(A) + 1(D) + 1(B) = 3 > 2 ← Exceeds capacity! Rider D rejected.
 ```
 
----
+<p align="right"><sub><a href="#table-of-contents">↑ Back to contents</a></sub></p>
+
+<img src="assets/readme/divider.svg" width="100%" alt=""/>
 
 ## Chapter 29: Real-Time Communication (Socket.IO)
 
@@ -1512,7 +1664,9 @@ This dual-channel approach ensures events are delivered even if a user's ride ro
 | `SOCKET_PING_TIMEOUT` | 20,000ms (20s) | How long to wait for a pong before considering the connection dead. Generous for mobile. |
 | Location update cooldown | 1,500ms | Minimum interval between location broadcasts from the same driver. |
 
----
+<p align="right"><sub><a href="#table-of-contents">↑ Back to contents</a></sub></p>
+
+<img src="assets/readme/divider.svg" width="100%" alt=""/>
 
 ## Chapter 30: REST API Reference
 
@@ -1594,7 +1748,9 @@ All admin routes require authentication + admin email verification.
 | `GET` | `/` | Root — returns a text message confirming the API is running. |
 | `GET` | `/api/config` | Returns configurable constants (max field length, max message length, max price, min ride distance, max route points, default search radius). |
 
----
+<p align="right"><sub><a href="#table-of-contents">↑ Back to contents</a></sub></p>
+
+<img src="assets/readme/divider.svg" width="100%" alt=""/>
 
 ## Chapter 31: Security Architecture
 
@@ -1633,7 +1789,9 @@ Ridify configures Helmet with the following policies:
 - **JSON body limit:** Requests are limited to 1 MB.
 - **API caching disabled:** All `/api` routes set `Cache-Control: no-store` to prevent stale data.
 
----
+<p align="right"><sub><a href="#table-of-contents">↑ Back to contents</a></sub></p>
+
+<img src="assets/readme/divider.svg" width="100%" alt=""/>
 
 ## Chapter 32: Rate Limiting & Abuse Prevention
 
@@ -1665,13 +1823,16 @@ A background job runs every 30 minutes (first run after 5 minutes of server star
 - Automatically cancels them to prevent orphaned "in progress" rides.
 - Logged as a warning: `Auto-cancelled N stale ride(s)`.
 
----
+<p align="right"><sub><a href="#table-of-contents">↑ Back to contents</a></sub></p>
 
----
+<img src="assets/readme/divider.svg" width="100%" alt=""/>
+
+
+<img src="assets/manual/part-8.svg" width="100%" alt="Part VIII"/>
 
 # Part VIII: Policies & Legal
 
----
+<img src="assets/readme/divider.svg" width="100%" alt=""/>
 
 ## Chapter 33: Terms of Service
 
@@ -1732,7 +1893,9 @@ By creating an account on Ridify, you agree to these Terms of Service. If you do
 
 Ridify reserves the right to modify these Terms at any time. Continued use of the platform after modifications constitutes acceptance of the updated Terms.
 
----
+<p align="right"><sub><a href="#table-of-contents">↑ Back to contents</a></sub></p>
+
+<img src="assets/readme/divider.svg" width="100%" alt=""/>
 
 ## Chapter 34: Privacy Policy
 
@@ -1791,7 +1954,9 @@ Ridify reserves the right to modify these Terms at any time. Continued use of th
 - Rate limiting prevents brute-force attacks.
 - Helmet security headers protect against common web vulnerabilities.
 
----
+<p align="right"><sub><a href="#table-of-contents">↑ Back to contents</a></sub></p>
+
+<img src="assets/readme/divider.svg" width="100%" alt=""/>
 
 ## Chapter 35: Community Guidelines
 
@@ -1825,7 +1990,9 @@ If you experience or witness a violation of these guidelines:
 - Provide the ride ID, user email, and a description of the incident.
 - Admins can ban violating users and force-cancel problematic rides.
 
----
+<p align="right"><sub><a href="#table-of-contents">↑ Back to contents</a></sub></p>
+
+<img src="assets/readme/divider.svg" width="100%" alt=""/>
 
 ## Chapter 36: Data Retention & Deletion
 
@@ -1850,13 +2017,16 @@ Admins have the ability to:
 
 The codebase includes a policy comment noting that before production deployment, an **archive job** should be implemented to copy completed/cancelled rides to a `ride_archive` collection before TTL deletion. This ensures ride history is preserved for regulatory or analytics purposes.
 
----
+<p align="right"><sub><a href="#table-of-contents">↑ Back to contents</a></sub></p>
 
----
+<img src="assets/readme/divider.svg" width="100%" alt=""/>
+
+
+<img src="assets/manual/part-9.svg" width="100%" alt="Part IX"/>
 
 # Part IX: Reference
 
----
+<img src="assets/readme/divider.svg" width="100%" alt=""/>
 
 ## Chapter 37: Troubleshooting Guide
 
@@ -1921,7 +2091,9 @@ The codebase includes a policy comment noting that before production deployment,
 | Socket disconnects frequently | Mobile data instability, NAT timeouts. | The app auto-reconnects with generous ping settings (25s interval, 20s timeout). Ensure you have stable connectivity. |
 | Events not received in real-time | Socket room membership lost after reconnect. | The app uses dual-channel emission (room + direct). If still missing events, close and reopen the ride screen. |
 
----
+<p align="right"><sub><a href="#table-of-contents">↑ Back to contents</a></sub></p>
+
+<img src="assets/readme/divider.svg" width="100%" alt=""/>
 
 ## Chapter 38: Frequently Asked Questions (FAQ)
 
@@ -1990,7 +2162,9 @@ A: No. Account sharing is prohibited per the Terms of Service.
 **Q: What vehicles are supported?**
 A: Bike, Sedan, and SUV. This is an identifier for riders to know what type of vehicle to expect.
 
----
+<p align="right"><sub><a href="#table-of-contents">↑ Back to contents</a></sub></p>
+
+<img src="assets/readme/divider.svg" width="100%" alt=""/>
 
 ## Chapter 39: Glossary of Terms
 
@@ -2025,7 +2199,9 @@ A: Bike, Sedan, and SUV. This is an identifier for riders to know what type of v
 | **TTL Index** | A MongoDB index that automatically deletes documents after a specified time period. |
 | **WebSocket** | A protocol providing full-duplex communication channels over a single TCP connection. Used via Socket.IO. |
 
----
+<p align="right"><sub><a href="#table-of-contents">↑ Back to contents</a></sub></p>
+
+<img src="assets/readme/divider.svg" width="100%" alt=""/>
 
 ## Chapter 40: Contact & Support
 
@@ -2046,7 +2222,9 @@ Ridify is open-source software licensed under the MIT License. Contributions are
 2. Create a feature branch.
 3. Submit a pull request with a clear description of your changes.
 
----
+<p align="right"><sub><a href="#table-of-contents">↑ Back to contents</a></sub></p>
+
+<img src="assets/readme/divider.svg" width="100%" alt=""/>
 
 ## Appendix A: Complete Environment Variable Reference
 
@@ -2125,7 +2303,9 @@ This appendix documents every environment variable used by the Ridify backend se
 |----------|----------|---------|-------------|
 | `ALLOWED_EMAIL_DOMAIN` | No | *(empty)* | If set, only email addresses ending with `@<this_domain>` can register. Useful for university or corporate deployments. Example: `university.edu`. Leave empty to allow any email domain. |
 
----
+<p align="right"><sub><a href="#table-of-contents">↑ Back to contents</a></sub></p>
+
+<img src="assets/readme/divider.svg" width="100%" alt=""/>
 
 ## Appendix B: Server Deployment Guide
 
@@ -2217,7 +2397,9 @@ flutter run
 4. Deploy as a Web App with access set to "Anyone".
 5. Copy the deployment URL and add it to your `.env` as `GOOGLE_APPS_SCRIPT_URL`.
 
----
+<p align="right"><sub><a href="#table-of-contents">↑ Back to contents</a></sub></p>
+
+<img src="assets/readme/divider.svg" width="100%" alt=""/>
 
 ## Appendix C: Complete Screen Inventory
 
@@ -2267,7 +2449,9 @@ This appendix catalogs every screen in the Ridify Flutter application, its file 
 |--------|------|---------|
 | **Admin Panel Screen** | `admin_panel_screen.dart` | Full admin interface: dashboard stats, user management (search, view, edit, ban, unban, delete, bulk delete), ride management (list, filter, force-cancel, delete), and KYC verification workflow. |
 
----
+<p align="right"><sub><a href="#table-of-contents">↑ Back to contents</a></sub></p>
+
+<img src="assets/readme/divider.svg" width="100%" alt=""/>
 
 ## Appendix D: Frontend Service Layer Reference
 
@@ -2298,7 +2482,9 @@ The API Client (`api_client.dart`) is the backbone of all HTTP communication:
    - If refresh fails, redirects the user to the Login screen.
 4. **Error Handling:** Network errors, timeouts, and server errors are caught and surfaced to the UI layer.
 
----
+<p align="right"><sub><a href="#table-of-contents">↑ Back to contents</a></sub></p>
+
+<img src="assets/readme/divider.svg" width="100%" alt=""/>
 
 ## Appendix E: Advanced Troubleshooting Scenarios
 
@@ -2379,10 +2565,11 @@ The API Client (`api_client.dart`) is the backbone of all HTTP communication:
 
 **Resolution:** This is by design. For production deployments, implement an archive job that copies ride data to a separate `ride_archive` collection before TTL deletion. The codebase includes a policy comment about this: *"ACTION REQUIRED before production: implement archive job that copies to ride_archive collection."*
 
----
+<p align="right"><sub><a href="#table-of-contents">↑ Back to contents</a></sub></p>
+
+<img src="assets/readme/divider.svg" width="100%" alt=""/>
 
 
----
 
 ## Appendix G: Accessibility & Usability Best Practices
 
@@ -2425,7 +2612,9 @@ The current version of Ridify uses English for all user-facing text. The Flutter
 - All text elements use scalable font units (sp) rather than fixed pixel sizes.
 - Long text (addresses, names) is automatically truncated with ellipsis to prevent layout overflow.
 
----
+<p align="right"><sub><a href="#table-of-contents">↑ Back to contents</a></sub></p>
+
+<img src="assets/readme/divider.svg" width="100%" alt=""/>
 
 ## Appendix H: Performance Optimization Tips
 
@@ -2458,7 +2647,9 @@ The current version of Ridify uses English for all user-facing text. The Flutter
 | **Monitor WebSocket Memory** | Each active Socket.IO connection consumes ~5 KB of server memory. For 10,000 concurrent users, expect ~50 MB of WebSocket overhead. |
 | **Archive Completed Rides** | Implement an archive job to move completed rides to a separate collection before the 30-day TTL deletes them. This preserves historical data for analytics without growing the primary collection. |
 
----
+<p align="right"><sub><a href="#table-of-contents">↑ Back to contents</a></sub></p>
+
+<img src="assets/readme/divider.svg" width="100%" alt=""/>
 
 ## Appendix I: Version History
 
@@ -2466,20 +2657,20 @@ The current version of Ridify uses English for all user-facing text. The Flutter
 |---------|------|---------|
 | 1.0 | July 2026 | Initial release of the comprehensive user manual. Covers all features of Ridify v1.0 including authentication, ride lifecycle, sweep-line algorithm, admin panel, Socket.IO real-time events, REST API reference, security architecture, and legal policies. |
 
----
+<img src="assets/readme/divider.svg" width="100%" alt=""/>
 
 
 <div align="center">
 
----
+<img src="frontend/assets/icon.png" width="72" alt="Ridify icon"/>
 
 **Ridify User Manual v1.0** · July 2026
 
-Crafted with ❤️ by Priyanshu Sharan
+Crafted with ❤️ by **Priyanshu Sharan**
 
-<a href="https://www.linkedin.com/in/priyanshusharan/"><img src="https://upload.wikimedia.org/wikipedia/commons/c/ca/LinkedIn_logo_initials.png" alt="LinkedIn" width="24" height="24"/></a>
+[![LinkedIn](https://img.shields.io/badge/LinkedIn-Priyanshu_Sharan-000000?style=for-the-badge&logo=linkedin&logoColor=white&labelColor=1E1E1E)](https://www.linkedin.com/in/priyanshusharan/)
+[![README](https://img.shields.io/badge/←_BACK_TO-README-000000?style=for-the-badge&logo=github&logoColor=white&labelColor=1E1E1E)](README.md)
 
-Licensed under the MIT License — see the [LICENSE](LICENSE) file for details.
+<sub>Licensed under the MIT License — see the [LICENSE](LICENSE) file for details.</sub>
 
 </div>
-
