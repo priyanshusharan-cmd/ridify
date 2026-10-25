@@ -14,10 +14,14 @@
 [![Express](https://img.shields.io/badge/Express-5-000000?style=flat-square&logo=express&logoColor=white&labelColor=1E1E1E)](https://expressjs.com)
 [![MongoDB](https://img.shields.io/badge/MongoDB-Mongoose_9-000000?style=flat-square&logo=mongodb&logoColor=white&labelColor=1E1E1E)](https://www.mongodb.com)
 [![Socket.IO](https://img.shields.io/badge/Socket.IO-4.8-000000?style=flat-square&logo=socketdotio&logoColor=white&labelColor=1E1E1E)](https://socket.io)
-[![CI](https://img.shields.io/github/actions/workflow/status/priyanshusharan-cmd/ridify/security-check.yml?style=flat-square&label=security%20checks&logo=githubactions&logoColor=white&labelColor=1E1E1E&color=4ADE80)](.github/workflows/security-check.yml)
+[![Security checks](https://img.shields.io/badge/security_checks-npm_audit_·_secret_scan_·_flutter_analyze-4ADE80?style=flat-square&logo=githubactions&logoColor=white&labelColor=1E1E1E)](.github/workflows/security-check.yml)
 [![License: MIT](https://img.shields.io/badge/License-MIT-000000?style=flat-square&labelColor=1E1E1E)](LICENSE)
 
-**[Features](#-features)** &nbsp;·&nbsp; **[Architecture](#-architecture)** &nbsp;·&nbsp; **[How it works](#-how-it-works)** &nbsp;·&nbsp; **[Tech stack](#-tech-stack)** &nbsp;·&nbsp; **[Getting started](#-getting-started)** &nbsp;·&nbsp; **[Screens](#-screens)**
+**[Features](#-features)** &nbsp;·&nbsp; **[Architecture](#-architecture)** &nbsp;·&nbsp; **[How it works](#-how-it-works)** &nbsp;·&nbsp; **[Tech stack](#-tech-stack)** &nbsp;·&nbsp; **[Getting started](#-getting-started)** &nbsp;·&nbsp; **[Screenshots](#-screenshots)** &nbsp;·&nbsp; **[User manual](USER_MANUAL.md)**
+
+<br/>
+
+<a href="USER_MANUAL.md"><img src="assets/readme/manual.svg" alt="Read the Ridify User Manual" width="100%"/></a>
 
 </div>
 
@@ -43,14 +47,6 @@ One Flutter codebase runs on **Android, iOS and the web**. It talks to a **Node.
   <video src="https://github.com/user-attachments/assets/3a826832-d1e9-4e3c-9112-752425a210ce" controls="controls" style="max-width: 100%; height: auto;"></video>
 </div>
 
-<table>
-<tr>
-<td align="center" width="25%"><img src="screenshots/splashScreenLightGIF.gif" width="100%" alt="Splash, light"/><br/><sub><b>Splash</b> · light</sub></td>
-<td align="center" width="25%"><img src="screenshots/splashScreenDarkGIF.gif" width="100%" alt="Splash, dark"/><br/><sub><b>Splash</b> · dark</sub></td>
-<td align="center" width="25%"><img src="screenshots/homeScreenLightGIF.gif" width="100%" alt="Home, light"/><br/><sub><b>Home</b> · light</sub></td>
-<td align="center" width="25%"><img src="screenshots/homeScreenDarkGIF.gif" width="100%" alt="Home, dark"/><br/><sub><b>Home</b> · dark</sub></td>
-</tr>
-</table>
 
 <img src="assets/readme/divider.svg" width="100%" alt=""/>
 
@@ -187,25 +183,9 @@ So a rider covering 40% of a ₹200 trip pays **₹80**. Anyone riding 99% or mo
 
 ### Authentication flow
 
-```mermaid
-%%{init: {'theme':'neutral'}}%%
-sequenceDiagram
-    autonumber
-    participant App as Flutter app
-    participant API as Express API
-    participant DB as MongoDB
-    participant Mail as EmailJS
-    App->>API: POST /api/auth/signup-otp-request
-    API->>DB: store SHA-256(OTP) + expiry
-    API->>Mail: send 6-digit OTP
-    App->>API: POST /api/auth/register (OTP, password)
-    API->>DB: verify hash (max 5 tries) · bcrypt(password)
-    API-->>App: access token + refresh token
-    Note over App: tokens kept in flutter_secure_storage
-    App->>API: any request → 401 (access expired)
-    App->>API: POST /api/auth/refresh
-    API-->>App: new access token, original request retried
-```
+<div align="center">
+  <img src="assets/readme/authflow.svg" alt="Authentication flow: OTP sign-up, JWT issue and silent refresh" width="100%"/>
+</div>
 
 <img src="assets/readme/divider.svg" width="100%" alt=""/>
 
@@ -412,75 +392,330 @@ ridify/
 
 <img src="assets/readme/divider.svg" width="100%" alt=""/>
 
-## 📸 Screens
+## 📸 Screenshots
 
 Every screen ships in **light** and **dark**. Expand a section to browse.
 
-<details open>
-<summary><b>🎬 Onboarding & home</b></summary>
-<br/>
-<table>
-<tr><th colspan="2">Splash</th><th colspan="2">Login</th></tr>
-<tr><td align="center" width="25%"><img src="screenshots/splashScreenLight.png" width="100%" alt="Splash, light"/><br/><sub>light</sub></td><td align="center" width="25%"><img src="screenshots/splashScreenDark.png" width="100%" alt="Splash, dark"/><br/><sub>dark</sub></td><td align="center" width="25%"><img src="screenshots/loginScreenLight.png" width="100%" alt="Login, light"/><br/><sub>light</sub></td><td align="center" width="25%"><img src="screenshots/loginScreenDark.png" width="100%" alt="Login, dark"/><br/><sub>dark</sub></td></tr>
-<tr><th colspan="2">Sign up</th><th colspan="2">Home</th></tr>
-<tr><td align="center" width="25%"><img src="screenshots/signupScreenLight.png" width="100%" alt="Sign up, light"/><br/><sub>light</sub></td><td align="center" width="25%"><img src="screenshots/signupScreenDark.png" width="100%" alt="Sign up, dark"/><br/><sub>dark</sub></td><td align="center" width="25%"><img src="screenshots/homeScreenLight.png" width="100%" alt="Home, light"/><br/><sub>light</sub></td><td align="center" width="25%"><img src="screenshots/homeScreenDark.png" width="100%" alt="Home, dark"/><br/><sub>dark</sub></td></tr>
-</table>
+<details>
+<summary><strong>🎬 Onboarding & Auth</strong></summary>
+
+<br>
+
+<h4 align="center">Splash Screen</h4>
+
+<p align="center">
+<img src="screenshots/splashScreenLightGIF.gif" width="38%"/>
+&nbsp;&nbsp;
+<img src="screenshots/splashScreenDarkGIF.gif" width="38%"/>
+</p>
+
+<br>
+
+<h4 align="center">Login</h4>
+
+<p align="center">
+<img src="screenshots/loginScreenLight.png" width="38%"/>
+&nbsp;&nbsp;
+<img src="screenshots/loginScreenDark.png" width="38%"/>
+</p>
+
+<br>
+
+<h4 align="center">Sign Up</h4>
+
+<p align="center">
+<img src="screenshots/signupScreenLight.png" width="38%"/>
+&nbsp;&nbsp;
+<img src="screenshots/signupScreenDark.png" width="38%"/>
+</p>
+
+<br>
+
 </details>
 
 <details>
-<summary><b>🔎 Offer & find a ride</b></summary>
-<br/>
-<table>
-<tr><th colspan="2">Offer a ride</th><th colspan="2">Location picker</th></tr>
-<tr><td align="center" width="25%"><img src="screenshots/offerRideLight.png" width="100%" alt="Offer a ride, light"/><br/><sub>light</sub></td><td align="center" width="25%"><img src="screenshots/offerRideDark.png" width="100%" alt="Offer a ride, dark"/><br/><sub>dark</sub></td><td align="center" width="25%"><img src="screenshots/locationPickerScreenLight.png" width="100%" alt="Location picker, light"/><br/><sub>light</sub></td><td align="center" width="25%"><img src="screenshots/locationPickerScreenDark.png" width="100%" alt="Location picker, dark"/><br/><sub>dark</sub></td></tr>
-<tr><th colspan="2">Find a ride</th><th colspan="2">Filters</th></tr>
-<tr><td align="center" width="25%"><img src="screenshots/findRIdeLight.png" width="100%" alt="Find a ride, light"/><br/><sub>light</sub></td><td align="center" width="25%"><img src="screenshots/findRideDark.png" width="100%" alt="Find a ride, dark"/><br/><sub>dark</sub></td><td align="center" width="25%"><img src="screenshots/filtersPopupLight.png" width="100%" alt="Filters, light"/><br/><sub>light</sub></td><td align="center" width="25%"><img src="screenshots/filtersPopupDark.png" width="100%" alt="Filters, dark"/><br/><sub>dark</sub></td></tr>
-<tr><th colspan="2">Available rides</th><th colspan="2">Activity</th></tr>
-<tr><td align="center" width="25%"><img src="screenshots/availableRidesScreenLight.png" width="100%" alt="Available rides, light"/><br/><sub>light</sub></td><td align="center" width="25%"><img src="screenshots/availableRidesScreenDark.png" width="100%" alt="Available rides, dark"/><br/><sub>dark</sub></td><td align="center" width="25%"><img src="screenshots/activityScreenLight.png" width="100%" alt="Activity, light"/><br/><sub>light</sub></td><td align="center" width="25%"><img src="screenshots/activityScreenDark.png" width="100%" alt="Activity, dark"/><br/><sub>dark</sub></td></tr>
-<tr><th colspan="2">Ride details</th><th colspan="2"></th></tr>
-<tr><td align="center" width="25%"><img src="screenshots/rideDetailScreenLight.png" width="100%" alt="Ride details, light"/><br/><sub>light</sub></td><td align="center" width="25%"><img src="screenshots/rideDetailScreenDark.png" width="100%" alt="Ride details, dark"/><br/><sub>dark</sub></td><td width="25%"></td><td width="25%"></td></tr>
-</table>
+<summary><strong>🏠 Home & Ride Discovery</strong></summary>
+
+<br>
+
+<h4 align="center">Home Screen</h4>
+
+<p align="center">
+<img src="screenshots/homeScreenLightGIF.gif" width="38%"/>
+&nbsp;&nbsp;
+<img src="screenshots/homeScreenDarkGIF.gif" width="38%"/>
+</p>
+
+<br>
+
+<h4 align="center">Offer a Ride</h4>
+
+<p align="center">
+<img src="screenshots/offerRideLight.png" width="38%"/>
+&nbsp;&nbsp;
+<img src="screenshots/offerRideDark.png" width="38%"/>
+</p>
+
+<br>
+
+<h4 align="center">Location Picker</h4>
+
+<p align="center">
+<img src="screenshots/locationPickerScreenLight.png" width="38%"/>
+&nbsp;&nbsp;
+<img src="screenshots/locationPickerScreenDark.png" width="38%"/>
+</p>
+
+<br>
+
+<h4 align="center">Find a Ride</h4>
+
+<p align="center">
+<img src="screenshots/findRIdeLight.png" width="38%"/>
+&nbsp;&nbsp;
+<img src="screenshots/findRideDark.png" width="38%"/>
+</p>
+
+<br>
+
+<h4 align="center">Available Rides</h4>
+
+<p align="center">
+<img src="screenshots/availableRidesScreenLight.png" width="38%"/>
+&nbsp;&nbsp;
+<img src="screenshots/availableRidesScreenDark.png" width="38%"/>
+</p>
+
+<br>
+
+<h4 align="center">Filters</h4>
+
+<p align="center">
+<img src="screenshots/filtersPopupLight.png" width="38%"/>
+&nbsp;&nbsp;
+<img src="screenshots/filtersPopupDark.png" width="38%"/>
+</p>
+
+<br>
+
 </details>
 
 <details>
-<summary><b>🚦 Live ride</b></summary>
-<br/>
-<table>
-<tr><th colspan="2">Driver · ride started</th><th colspan="2">Rider · waiting for pickup</th></tr>
-<tr><td align="center" width="25%"><img src="screenshots/liveRideScreenDriver1Light.png" width="100%" alt="Driver · ride started, light"/><br/><sub>light</sub></td><td align="center" width="25%"><img src="screenshots/liveRideScreenDriver1Dark.png" width="100%" alt="Driver · ride started, dark"/><br/><sub>dark</sub></td><td align="center" width="25%"><img src="screenshots/liveRideScreenRider1Light.png" width="100%" alt="Rider · waiting for pickup, light"/><br/><sub>light</sub></td><td align="center" width="25%"><img src="screenshots/liveRideScreenRider1Dark.png" width="100%" alt="Rider · waiting for pickup, dark"/><br/><sub>dark</sub></td></tr>
-<tr><th colspan="2">Driver · at boarding point</th><th colspan="2">Rider · driver arrived</th></tr>
-<tr><td align="center" width="25%"><img src="screenshots/liveRideScreenDriver2Light.png" width="100%" alt="Driver · at boarding point, light"/><br/><sub>light</sub></td><td align="center" width="25%"><img src="screenshots/liveRideScreenDriver2Dark.png" width="100%" alt="Driver · at boarding point, dark"/><br/><sub>dark</sub></td><td align="center" width="25%"><img src="screenshots/liveRideScreenRider2Light.png" width="100%" alt="Rider · driver arrived, light"/><br/><sub>light</sub></td><td align="center" width="25%"><img src="screenshots/liveRideScreenRider2Dark.png" width="100%" alt="Rider · driver arrived, dark"/><br/><sub>dark</sub></td></tr>
-<tr><th colspan="2">Driver · rider boarded</th><th colspan="2">Rider · in transit</th></tr>
-<tr><td align="center" width="25%"><img src="screenshots/liveRideScreenDriver3Light.png" width="100%" alt="Driver · rider boarded, light"/><br/><sub>light</sub></td><td align="center" width="25%"><img src="screenshots/liveRideScreenDriver3Dark.png" width="100%" alt="Driver · rider boarded, dark"/><br/><sub>dark</sub></td><td align="center" width="25%"><img src="screenshots/liveRideScreenRider3Light.png" width="100%" alt="Rider · in transit, light"/><br/><sub>light</sub></td><td align="center" width="25%"><img src="screenshots/liveRideScreenRider3Dark.png" width="100%" alt="Rider · in transit, dark"/><br/><sub>dark</sub></td></tr>
-<tr><th colspan="2">In-ride chat</th><th colspan="2">Driver · trip complete</th></tr>
-<tr><td align="center" width="25%"><img src="screenshots/chatScreenLight.png" width="100%" alt="In-ride chat, light"/><br/><sub>light</sub></td><td align="center" width="25%"><img src="screenshots/chatScreenDark.png" width="100%" alt="In-ride chat, dark"/><br/><sub>dark</sub></td><td align="center" width="25%"><img src="screenshots/driverCompletionScreenLight.png" width="100%" alt="Driver · trip complete, light"/><br/><sub>light</sub></td><td align="center" width="25%"><img src="screenshots/driverCompletionScreenDark.png" width="100%" alt="Driver · trip complete, dark"/><br/><sub>dark</sub></td></tr>
-<tr><th colspan="2">Rider · trip complete</th><th colspan="2"></th></tr>
-<tr><td align="center" width="25%"><img src="screenshots/riderCompletionScreenLight.png" width="100%" alt="Rider · trip complete, light"/><br/><sub>light</sub></td><td align="center" width="25%"><img src="screenshots/riderCompletionScreenDark.png" width="100%" alt="Rider · trip complete, dark"/><br/><sub>dark</sub></td><td width="25%"></td><td width="25%"></td></tr>
-</table>
+<summary><strong>📋 Activity & Ride Details</strong></summary>
+
+<br>
+
+<h4 align="center">Activity Screen</h4>
+
+<p align="center">
+<img src="screenshots/activityScreenLight.png" width="38%"/>
+&nbsp;&nbsp;
+<img src="screenshots/activityScreenDark.png" width="38%"/>
+</p>
+
+<br>
+
+<h4 align="center">Ride Details</h4>
+
+<p align="center">
+<img src="screenshots/rideDetailScreenLight.png" width="38%"/>
+&nbsp;&nbsp;
+<img src="screenshots/rideDetailScreenDark.png" width="38%"/>
+</p>
+
+<br>
+
 </details>
 
 <details>
-<summary><b>📜 History & profile</b></summary>
-<br/>
-<table>
-<tr><th colspan="2">Ride history</th><th colspan="2">Co-passengers</th></tr>
-<tr><td align="center" width="25%"><img src="screenshots/historyScreenLight.png" width="100%" alt="Ride history, light"/><br/><sub>light</sub></td><td align="center" width="25%"><img src="screenshots/historyScreenDark.png" width="100%" alt="Ride history, dark"/><br/><sub>dark</sub></td><td align="center" width="25%"><img src="screenshots/passengersTravelledPopupLight.png" width="100%" alt="Co-passengers, light"/><br/><sub>light</sub></td><td align="center" width="25%"><img src="screenshots/passengersTravelledPopupDark.png" width="100%" alt="Co-passengers, dark"/><br/><sub>dark</sub></td></tr>
-<tr><th colspan="2">Profile</th><th colspan="2"></th></tr>
-<tr><td align="center" width="25%"><img src="screenshots/profileScreenLight.png" width="100%" alt="Profile, light"/><br/><sub>light</sub></td><td align="center" width="25%"><img src="screenshots/profileScreenDark.png" width="100%" alt="Profile, dark"/><br/><sub>dark</sub></td><td width="25%"></td><td width="25%"></td></tr>
-</table>
+<summary><strong>🚦 Live Ride Tracking</strong></summary>
+
+<br>
+
+<h4 align="center">Driver — Ride Started</h4>
+
+<p align="center">
+<img src="screenshots/liveRideScreenDriver1Light.png" width="38%"/>
+&nbsp;&nbsp;
+<img src="screenshots/liveRideScreenDriver1Dark.png" width="38%"/>
+</p>
+
+<br>
+
+<h4 align="center">Rider — Waiting for Pickup</h4>
+
+<p align="center">
+<img src="screenshots/liveRideScreenRider1Light.png" width="38%"/>
+&nbsp;&nbsp;
+<img src="screenshots/liveRideScreenRider1Dark.png" width="38%"/>
+</p>
+
+<br>
+
+<h4 align="center">Driver — At Boarding Point</h4>
+
+<p align="center">
+<img src="screenshots/liveRideScreenDriver2Light.png" width="38%"/>
+&nbsp;&nbsp;
+<img src="screenshots/liveRideScreenDriver2Dark.png" width="38%"/>
+</p>
+
+<br>
+
+<h4 align="center">Rider — Driver Arrived</h4>
+
+<p align="center">
+<img src="screenshots/liveRideScreenRider2Light.png" width="38%"/>
+&nbsp;&nbsp;
+<img src="screenshots/liveRideScreenRider2Dark.png" width="38%"/>
+</p>
+
+<br>
+
+<h4 align="center">Driver — Rider Boarded</h4>
+
+<p align="center">
+<img src="screenshots/liveRideScreenDriver3Light.png" width="38%"/>
+&nbsp;&nbsp;
+<img src="screenshots/liveRideScreenDriver3Dark.png" width="38%"/>
+</p>
+
+<br>
+
+<h4 align="center">Rider — In Transit</h4>
+
+<p align="center">
+<img src="screenshots/liveRideScreenRider3Light.png" width="38%"/>
+&nbsp;&nbsp;
+<img src="screenshots/liveRideScreenRider3Dark.png" width="38%"/>
+</p>
+
+<br>
+
+<h4 align="center">In-app Chat</h4>
+
+<p align="center">
+<img src="screenshots/chatScreenLight.png" width="38%"/>
+&nbsp;&nbsp;
+<img src="screenshots/chatScreenDark.png" width="38%"/>
+</p>
+
+<br>
+
+<h4 align="center">Driver — Trip Complete</h4>
+
+<p align="center">
+<img src="screenshots/driverCompletionScreenLight.png" width="38%"/>
+&nbsp;&nbsp;
+<img src="screenshots/driverCompletionScreenDark.png" width="38%"/>
+</p>
+
+<br>
+
+<h4 align="center">Rider — Trip Complete</h4>
+
+<p align="center">
+<img src="screenshots/riderCompletionScreenLight.png" width="38%"/>
+&nbsp;&nbsp;
+<img src="screenshots/riderCompletionScreenDark.png" width="38%"/>
+</p>
+
+<br>
+
 </details>
 
 <details>
-<summary><b>🛡️ Admin panel</b></summary>
-<br/>
-<table>
-<tr><th colspan="2">Dashboard</th><th colspan="2">Users</th></tr>
-<tr><td align="center" width="25%"><img src="screenshots/adminDashboardLight.png" width="100%" alt="Dashboard, light"/><br/><sub>light</sub></td><td align="center" width="25%"><img src="screenshots/adminDashboardDark.png" width="100%" alt="Dashboard, dark"/><br/><sub>dark</sub></td><td align="center" width="25%"><img src="screenshots/adminUsersLight.png" width="100%" alt="Users, light"/><br/><sub>light</sub></td><td align="center" width="25%"><img src="screenshots/adminUsersDark.png" width="100%" alt="Users, dark"/><br/><sub>dark</sub></td></tr>
-<tr><th colspan="2">User actions</th><th colspan="2">Active rides</th></tr>
-<tr><td align="center" width="25%"><img src="screenshots/userPopupLight.png" width="100%" alt="User actions, light"/><br/><sub>light</sub></td><td align="center" width="25%"><img src="screenshots/userPopupDark.png" width="100%" alt="User actions, dark"/><br/><sub>dark</sub></td><td align="center" width="25%"><img src="screenshots/adminRidesLight.png" width="100%" alt="Active rides, light"/><br/><sub>light</sub></td><td align="center" width="25%"><img src="screenshots/adminRidesDark.png" width="100%" alt="Active rides, dark"/><br/><sub>dark</sub></td></tr>
-<tr><th colspan="2">KYC verification</th><th colspan="2"></th></tr>
-<tr><td align="center" width="25%"><img src="screenshots/adminVerifyLight.png" width="100%" alt="KYC verification, light"/><br/><sub>light</sub></td><td align="center" width="25%"><img src="screenshots/adminVerifyDark.png" width="100%" alt="KYC verification, dark"/><br/><sub>dark</sub></td><td width="25%"></td><td width="25%"></td></tr>
-</table>
+<summary><strong>📜 History & Profile</strong></summary>
+
+<br>
+
+<h4 align="center">Ride History</h4>
+
+<p align="center">
+<img src="screenshots/historyScreenLight.png" width="38%"/>
+&nbsp;&nbsp;
+<img src="screenshots/historyScreenDark.png" width="38%"/>
+</p>
+
+<br>
+
+<h4 align="center">Co-Passengers</h4>
+
+<p align="center">
+<img src="screenshots/passengersTravelledPopupLight.png" width="38%"/>
+&nbsp;&nbsp;
+<img src="screenshots/passengersTravelledPopupDark.png" width="38%"/>
+</p>
+
+<br>
+
+<h4 align="center">Profile</h4>
+
+<p align="center">
+<img src="screenshots/profileScreenLight.png" width="38%"/>
+&nbsp;&nbsp;
+<img src="screenshots/profileScreenDark.png" width="38%"/>
+</p>
+
+<br>
+
+</details>
+
+<details>
+<summary><strong>🛡️ Admin Panel</strong></summary>
+
+<br>
+
+<h4 align="center">Admin Dashboard</h4>
+
+<p align="center">
+<img src="screenshots/adminDashboardLight.png" width="38%"/>
+&nbsp;&nbsp;
+<img src="screenshots/adminDashboardDark.png" width="38%"/>
+</p>
+
+<br>
+
+<h4 align="center">Admin — Users</h4>
+
+<p align="center">
+<img src="screenshots/adminUsersLight.png" width="38%"/>
+&nbsp;&nbsp;
+<img src="screenshots/adminUsersDark.png" width="38%"/>
+</p>
+
+<br>
+
+<h4 align="center">Admin — User Actions</h4>
+
+<p align="center">
+<img src="screenshots/userPopupLight.png" width="38%"/>
+&nbsp;&nbsp;
+<img src="screenshots/userPopupDark.png" width="38%"/>
+</p>
+
+<br>
+
+<h4 align="center">Admin — Active Rides</h4>
+
+<p align="center">
+<img src="screenshots/adminRidesLight.png" width="38%"/>
+&nbsp;&nbsp;
+<img src="screenshots/adminRidesDark.png" width="38%"/>
+</p>
+
+<br>
+
+<h4 align="center">Admin — KYC Verification</h4>
+
+<p align="center">
+<img src="screenshots/adminVerifyLight.png" width="38%"/>
+&nbsp;&nbsp;
+<img src="screenshots/adminVerifyDark.png" width="38%"/>
+</p>
+
+<br>
+
 </details>
 
 <img src="assets/readme/divider.svg" width="100%" alt=""/>

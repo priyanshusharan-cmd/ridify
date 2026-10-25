@@ -1,0 +1,85 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1280" height="700" viewBox="0 0 1280 700" font-family="Roboto, 'Segoe UI', -apple-system, BlinkMacSystemFont, 'Helvetica Neue', Helvetica, Arial, sans-serif">
+<defs>
+<linearGradient id="bg" x1="0" y1="0" x2="0" y2="1">
+  <stop offset="0" stop-color="#050505"/><stop offset=".55" stop-color="#0E0E0E"/><stop offset="1" stop-color="#121212"/>
+</linearGradient>
+<pattern id="dots" width="26" height="26" patternUnits="userSpaceOnUse">
+  <circle cx="2" cy="2" r="1.1" fill="#9E9E9E" opacity=".09"/>
+</pattern>
+<clipPath id="frame"><rect width="1280" height="700" rx="28"/></clipPath><marker id="kw" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto"><path d="M0 1 L9 5 L0 9z" fill="#FFFFFF"/></marker><marker id="kg" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto"><path d="M0 1 L9 5 L0 9z" fill="#4ADE80"/></marker><marker id="ka" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto"><path d="M0 1 L9 5 L0 9z" fill="#FFC107"/></marker><marker id="kr" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto"><path d="M0 1 L9 5 L0 9z" fill="#F44336"/></marker></defs>
+<style>.m{font-family:ui-monospace, SFMono-Regular, 'SF Mono', Menlo, Consolas, 'Liberation Mono', monospace;font-size:12.5px}.t{font-size:15px;font-weight:700;fill:#FFFFFF}.s{font-size:12px;fill:#9E9E9E}
+@keyframes h0{0%,2.46%{opacity:0}2.82%,12.82%{opacity:1}13.87%,100%{opacity:0}}.h0{opacity:0;animation:h0 14.2s linear infinite}
+@keyframes p0{0%,2.75%{transform:translateX(0);opacity:0}2.82%{transform:translateX(0);opacity:1}10.70%{transform:translateX(310px);opacity:1}11.76%,100%{transform:translateX(310px);opacity:0}}.p0{opacity:0;animation:p0 14.2s linear infinite}
+@keyframes h1{0%,12.32%{opacity:0}12.68%,22.68%{opacity:1}23.73%,100%{opacity:0}}.h1{opacity:0;animation:h1 14.2s linear infinite}
+@keyframes p1{0%,12.61%{transform:translateX(0);opacity:0}12.68%{transform:translateX(0);opacity:1}20.56%{transform:translateX(310px);opacity:1}21.62%,100%{transform:translateX(310px);opacity:0}}.p1{opacity:0;animation:p1 14.2s linear infinite}
+@keyframes h2{0%,22.18%{opacity:0}22.54%,32.54%{opacity:1}33.59%,100%{opacity:0}}.h2{opacity:0;animation:h2 14.2s linear infinite}
+@keyframes p2{0%,22.46%{transform:translateX(0);opacity:0}22.54%{transform:translateX(0);opacity:1}30.42%{transform:translateX(580px);opacity:1}31.48%,100%{transform:translateX(580px);opacity:0}}.p2{opacity:0;animation:p2 14.2s linear infinite}
+@keyframes h3{0%,32.04%{opacity:0}32.39%,42.39%{opacity:1}43.45%,100%{opacity:0}}.h3{opacity:0;animation:h3 14.2s linear infinite}
+@keyframes p3{0%,32.32%{transform:translateX(0);opacity:0}32.39%{transform:translateX(0);opacity:1}40.28%{transform:translateX(310px);opacity:1}41.34%,100%{transform:translateX(310px);opacity:0}}.p3{opacity:0;animation:p3 14.2s linear infinite}
+@keyframes h4{0%,41.90%{opacity:0}42.25%,52.25%{opacity:1}53.31%,100%{opacity:0}}.h4{opacity:0;animation:h4 14.2s linear infinite}
+@keyframes p4{0%,42.18%{transform:translateX(0);opacity:0}42.25%{transform:translateX(0);opacity:1}50.14%{transform:translateX(310px);opacity:1}51.20%,100%{transform:translateX(310px);opacity:0}}.p4{opacity:0;animation:p4 14.2s linear infinite}
+@keyframes h5{0%,51.76%{opacity:0}52.11%,62.11%{opacity:1}63.17%,100%{opacity:0}}.h5{opacity:0;animation:h5 14.2s linear infinite}
+@keyframes p5{0%,52.04%{transform:translateX(0);opacity:0}52.11%{transform:translateX(0);opacity:1}60.00%{transform:translateX(-310px);opacity:1}61.06%,100%{transform:translateX(-310px);opacity:0}}.p5{opacity:0;animation:p5 14.2s linear infinite}
+@keyframes h6{0%,61.62%{opacity:0}61.97%,71.97%{opacity:1}73.03%,100%{opacity:0}}.h6{opacity:0;animation:h6 14.2s linear infinite}
+@keyframes p6{0%,61.90%{transform:translateX(0);opacity:0}61.97%{transform:translateX(0);opacity:1}69.86%{transform:translateX(310px);opacity:1}70.92%,100%{transform:translateX(310px);opacity:0}}.p6{opacity:0;animation:p6 14.2s linear infinite}
+@keyframes h7{0%,71.48%{opacity:0}71.83%,81.83%{opacity:1}82.89%,100%{opacity:0}}.h7{opacity:0;animation:h7 14.2s linear infinite}
+@keyframes p7{0%,71.76%{transform:translateX(0);opacity:0}71.83%{transform:translateX(0);opacity:1}79.72%{transform:translateX(310px);opacity:1}80.77%,100%{transform:translateX(310px);opacity:0}}.p7{opacity:0;animation:p7 14.2s linear infinite}
+@keyframes h8{0%,81.34%{opacity:0}81.69%,91.69%{opacity:1}92.75%,100%{opacity:0}}.h8{opacity:0;animation:h8 14.2s linear infinite}
+@keyframes p8{0%,81.62%{transform:translateX(0);opacity:0}81.69%{transform:translateX(0);opacity:1}89.58%{transform:translateX(-310px);opacity:1}90.63%,100%{transform:translateX(-310px);opacity:0}}.p8{opacity:0;animation:p8 14.2s linear infinite}
+</style>
+<g clip-path="url(#frame)">
+<rect width="1280" height="700" rx="28" fill="url(#bg)"/><rect width="1280" height="700" rx="28" fill="url(#dots)"/>
+<text x="48" y="58" font-size="26" font-weight="800" fill="#FFFFFF">Authentication flow</text><text x="48" y="84" font-size="14" fill="#9E9E9E">Email OTP sign-up, bcrypt passwords, and short-lived JWTs that refresh silently in the background</text>
+<line x1="190" y1="168" x2="190" y2="664" stroke="#5A5A5A" stroke-width="2" stroke-dasharray="6 6"/><rect x="98" y="112" width="184" height="56" rx="16" fill="#1E1E1E" stroke="#3A3A3A" stroke-width="1.5"/><text x="190" y="137" text-anchor="middle" class="t">Flutter app</text><text x="190" y="155" text-anchor="middle" class="s">lib/services</text>
+<line x1="520" y1="168" x2="520" y2="664" stroke="#5A5A5A" stroke-width="2" stroke-dasharray="6 6"/><rect x="428" y="112" width="184" height="56" rx="16" fill="#1E1E1E" stroke="#3A3A3A" stroke-width="1.5"/><text x="520" y="137" text-anchor="middle" class="t">Express API</text><text x="520" y="155" text-anchor="middle" class="s">/api/auth</text>
+<line x1="850" y1="168" x2="850" y2="664" stroke="#5A5A5A" stroke-width="2" stroke-dasharray="6 6"/><rect x="758" y="112" width="184" height="56" rx="16" fill="#1E1E1E" stroke="#3A3A3A" stroke-width="1.5"/><text x="850" y="137" text-anchor="middle" class="t">MongoDB</text><text x="850" y="155" text-anchor="middle" class="s">users · otpverifications</text>
+<line x1="1120" y1="168" x2="1120" y2="664" stroke="#5A5A5A" stroke-width="2" stroke-dasharray="6 6"/><rect x="1028" y="112" width="184" height="56" rx="16" fill="#1E1E1E" stroke="#3A3A3A" stroke-width="1.5"/><text x="1120" y="137" text-anchor="middle" class="t">EmailJS</text><text x="1120" y="155" text-anchor="middle" class="s">OTP delivery</text>
+<rect x="160" y="184" width="390" height="44" rx="12" fill="#FFFFFF" fill-opacity=".05" class="h0"/>
+<line x1="204" y1="214" x2="514" y2="214" stroke="#FFFFFF" stroke-width="2.2" marker-end="url(#kw)"/>
+<text x="355.0" y="204" text-anchor="middle" class="m" fill="#EDEDED">POST /api/auth/signup-otp-request</text>
+<g class="p0"><circle cx="204" cy="214" r="9" fill="#FFFFFF" opacity=".25"/><circle cx="204" cy="214" r="4.5" fill="#FFFFFF"/></g>
+<circle cx="190" cy="214" r="11" fill="#FFFFFF"/><text x="190" y="218.5" text-anchor="middle" font-size="12" font-weight="800" fill="#000">1</text>
+<rect x="490" y="234" width="390" height="44" rx="12" fill="#FFFFFF" fill-opacity=".05" class="h1"/>
+<line x1="534" y1="264" x2="844" y2="264" stroke="#4ADE80" stroke-width="2.2" marker-end="url(#kg)"/>
+<text x="685.0" y="254" text-anchor="middle" class="m" fill="#EDEDED">store SHA-256(OTP) + expiry</text>
+<g class="p1"><circle cx="534" cy="264" r="9" fill="#4ADE80" opacity=".25"/><circle cx="534" cy="264" r="4.5" fill="#4ADE80"/></g>
+<circle cx="520" cy="264" r="11" fill="#FFFFFF"/><text x="520" y="268.5" text-anchor="middle" font-size="12" font-weight="800" fill="#000">2</text>
+<rect x="490" y="284" width="660" height="44" rx="12" fill="#FFFFFF" fill-opacity=".05" class="h2"/>
+<line x1="534" y1="314" x2="1114" y2="314" stroke="#FFC107" stroke-width="2.2" marker-end="url(#ka)"/>
+<text x="820.0" y="304" text-anchor="middle" class="m" fill="#EDEDED">send 6-digit OTP</text>
+<g class="p2"><circle cx="534" cy="314" r="9" fill="#FFC107" opacity=".25"/><circle cx="534" cy="314" r="4.5" fill="#FFC107"/></g>
+<circle cx="520" cy="314" r="11" fill="#FFFFFF"/><text x="520" y="318.5" text-anchor="middle" font-size="12" font-weight="800" fill="#000">3</text>
+<rect x="160" y="334" width="390" height="44" rx="12" fill="#FFFFFF" fill-opacity=".05" class="h3"/>
+<line x1="204" y1="364" x2="514" y2="364" stroke="#FFFFFF" stroke-width="2.2" marker-end="url(#kw)"/>
+<text x="355.0" y="354" text-anchor="middle" class="m" fill="#EDEDED">POST /api/auth/register (OTP, pwd)</text>
+<g class="p3"><circle cx="204" cy="364" r="9" fill="#FFFFFF" opacity=".25"/><circle cx="204" cy="364" r="4.5" fill="#FFFFFF"/></g>
+<circle cx="190" cy="364" r="11" fill="#FFFFFF"/><text x="190" y="368.5" text-anchor="middle" font-size="12" font-weight="800" fill="#000">4</text>
+<rect x="490" y="384" width="390" height="44" rx="12" fill="#FFFFFF" fill-opacity=".05" class="h4"/>
+<line x1="534" y1="414" x2="844" y2="414" stroke="#4ADE80" stroke-width="2.2" marker-end="url(#kg)"/>
+<text x="685.0" y="404" text-anchor="middle" class="m" fill="#EDEDED">verify OTP hash (≤ 5 tries) · bcrypt</text>
+<g class="p4"><circle cx="534" cy="414" r="9" fill="#4ADE80" opacity=".25"/><circle cx="534" cy="414" r="4.5" fill="#4ADE80"/></g>
+<circle cx="520" cy="414" r="11" fill="#FFFFFF"/><text x="520" y="418.5" text-anchor="middle" font-size="12" font-weight="800" fill="#000">5</text>
+<rect x="160" y="434" width="390" height="44" rx="12" fill="#FFFFFF" fill-opacity=".05" class="h5"/>
+<line x1="506" y1="464" x2="196" y2="464" stroke="#4ADE80" stroke-width="2.2" stroke-dasharray="8 6" marker-end="url(#kg)"/>
+<text x="355.0" y="454" text-anchor="middle" class="m" fill="#EDEDED">access token + refresh token</text>
+<g class="p5"><circle cx="506" cy="464" r="9" fill="#4ADE80" opacity=".25"/><circle cx="506" cy="464" r="4.5" fill="#4ADE80"/></g>
+<circle cx="520" cy="464" r="11" fill="#FFFFFF"/><text x="520" y="468.5" text-anchor="middle" font-size="12" font-weight="800" fill="#000">6</text>
+<rect x="70" y="490" width="240" height="32" rx="16" fill="#1E1E1E" stroke="#4ADE80" stroke-opacity=".6"/><text x="190" y="511" text-anchor="middle" font-size="12.5" fill="#4ADE80">🔒 saved in flutter_secure_storage</text>
+<rect x="160" y="518" width="390" height="44" rx="12" fill="#FFFFFF" fill-opacity=".05" class="h6"/>
+<line x1="204" y1="548" x2="514" y2="548" stroke="#F44336" stroke-width="2.2" marker-end="url(#kr)"/>
+<text x="355.0" y="538" text-anchor="middle" class="m" fill="#EDEDED">any request → 401 (token expired)</text>
+<g class="p6"><circle cx="204" cy="548" r="9" fill="#F44336" opacity=".25"/><circle cx="204" cy="548" r="4.5" fill="#F44336"/></g>
+<circle cx="190" cy="548" r="11" fill="#FFFFFF"/><text x="190" y="552.5" text-anchor="middle" font-size="12" font-weight="800" fill="#000">7</text>
+<rect x="160" y="568" width="390" height="44" rx="12" fill="#FFFFFF" fill-opacity=".05" class="h7"/>
+<line x1="204" y1="598" x2="514" y2="598" stroke="#FFFFFF" stroke-width="2.2" marker-end="url(#kw)"/>
+<text x="355.0" y="588" text-anchor="middle" class="m" fill="#EDEDED">POST /api/auth/refresh</text>
+<g class="p7"><circle cx="204" cy="598" r="9" fill="#FFFFFF" opacity=".25"/><circle cx="204" cy="598" r="4.5" fill="#FFFFFF"/></g>
+<circle cx="190" cy="598" r="11" fill="#FFFFFF"/><text x="190" y="602.5" text-anchor="middle" font-size="12" font-weight="800" fill="#000">8</text>
+<rect x="160" y="618" width="390" height="44" rx="12" fill="#FFFFFF" fill-opacity=".05" class="h8"/>
+<line x1="506" y1="648" x2="196" y2="648" stroke="#4ADE80" stroke-width="2.2" stroke-dasharray="8 6" marker-end="url(#kg)"/>
+<text x="355.0" y="638" text-anchor="middle" class="m" fill="#EDEDED">new access token → request retried</text>
+<g class="p8"><circle cx="506" cy="648" r="9" fill="#4ADE80" opacity=".25"/><circle cx="506" cy="648" r="4.5" fill="#4ADE80"/></g>
+<circle cx="520" cy="648" r="11" fill="#FFFFFF"/><text x="520" y="652.5" text-anchor="middle" font-size="12" font-weight="800" fill="#000">9</text>
+</g>
+<rect x=".75" y=".75" width="1278.5" height="698.5" rx="28" fill="none" stroke="#9E9E9E" stroke-opacity=".16" stroke-width="1.5"/>
+</svg>
