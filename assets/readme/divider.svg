@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1280" height="10" viewBox="0 0 1280 10" font-family="Roboto, 'Segoe UI', -apple-system, BlinkMacSystemFont, 'Helvetica Neue', Helvetica, Arial, sans-serif">
+<defs>
+<linearGradient id="base" x1="0" x2="1"><stop offset="0" stop-color="#757575" stop-opacity="0"/>
+<stop offset=".5" stop-color="#757575" stop-opacity=".55"/><stop offset="1" stop-color="#757575" stop-opacity="0"/></linearGradient>
+<linearGradient id="spark" x1="0" x2="1"><stop offset="0" stop-color="#FFFFFF" stop-opacity="0"/>
+<stop offset=".5" stop-color="#FFFFFF"/><stop offset="1" stop-color="#4ADE80" stop-opacity="0"/></linearGradient></defs>
+<style>.s{animation:s 4s cubic-bezier(.6,0,.4,1) infinite}@keyframes s{from{transform:translateX(-320px)}to{transform:translateX(1280px)}}</style>
+<rect y="4.5" width="1280" height="1" fill="url(#base)"/><g class="s"><rect y="3.5" width="300" height="3" rx="1.5" fill="url(#spark)"/></g>
+</svg>

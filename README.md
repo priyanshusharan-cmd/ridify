@@ -1,631 +1,507 @@
 <div align="center">
 
-<img src="frontend/assets/icon.png" alt="Ridify Logo" width="120"/>
+<img src="assets/readme/banner.svg" alt="Ridify: share the ride, split the fare, track it live" width="100%"/>
 
-# Ridify
+<br/>
 
-### Real-time peer-to-peer ride-sharing & cost-splitting — built for everyone.
+[![Live Demo](https://img.shields.io/badge/LIVE_DEMO-ridify.onrender.com-000000?style=for-the-badge&logo=render&logoColor=white&labelColor=1E1E1E)](https://ridify.onrender.com)
+[![Watch Demo](https://img.shields.io/badge/WATCH-video_demo-000000?style=for-the-badge&logo=youtube&logoColor=white&labelColor=1E1E1E)](#-see-it-in-action)
+[![User Manual](https://img.shields.io/badge/READ-user_manual-000000?style=for-the-badge&logo=readthedocs&logoColor=white&labelColor=1E1E1E)](USER_MANUAL.md)
 
-[![Flutter](https://img.shields.io/badge/Flutter-3.x-02569B?logo=flutter&logoColor=white)](https://flutter.dev)
-[![Dart](https://img.shields.io/badge/Dart-3.x-0175C2?logo=dart&logoColor=white)](https://dart.dev)
-[![Node.js](https://img.shields.io/badge/Node.js-20+-339933?logo=nodedotjs&logoColor=white)](https://nodejs.org)
-[![Express](https://img.shields.io/badge/Express-5.x-000000?logo=express&logoColor=white)](https://expressjs.com)
-[![MongoDB](https://img.shields.io/badge/MongoDB-7.x-47A248?logo=mongodb&logoColor=white)](https://www.mongodb.com)
-[![Socket.IO](https://img.shields.io/badge/Socket.IO-4.8-010101?logo=socketdotio&logoColor=white)](https://socket.io)
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
+[![Flutter](https://img.shields.io/badge/Flutter-3.x-000000?style=flat-square&logo=flutter&logoColor=white&labelColor=1E1E1E)](https://flutter.dev)
+[![Dart](https://img.shields.io/badge/Dart-3.11-000000?style=flat-square&logo=dart&logoColor=white&labelColor=1E1E1E)](https://dart.dev)
+[![Node.js](https://img.shields.io/badge/Node.js-20+-000000?style=flat-square&logo=nodedotjs&logoColor=white&labelColor=1E1E1E)](https://nodejs.org)
+[![Express](https://img.shields.io/badge/Express-5-000000?style=flat-square&logo=express&logoColor=white&labelColor=1E1E1E)](https://expressjs.com)
+[![MongoDB](https://img.shields.io/badge/MongoDB-Mongoose_9-000000?style=flat-square&logo=mongodb&logoColor=white&labelColor=1E1E1E)](https://www.mongodb.com)
+[![Socket.IO](https://img.shields.io/badge/Socket.IO-4.8-000000?style=flat-square&logo=socketdotio&logoColor=white&labelColor=1E1E1E)](https://socket.io)
+[![CI](https://img.shields.io/github/actions/workflow/status/priyanshusharan-cmd/ridify/security-check.yml?style=flat-square&label=security%20checks&logo=githubactions&logoColor=white&labelColor=1E1E1E&color=4ADE80)](.github/workflows/security-check.yml)
+[![License: MIT](https://img.shields.io/badge/License-MIT-000000?style=flat-square&labelColor=1E1E1E)](LICENSE)
+
+**[Features](#-features)** &nbsp;·&nbsp; **[Architecture](#-architecture)** &nbsp;·&nbsp; **[How it works](#-how-it-works)** &nbsp;·&nbsp; **[Tech stack](#-tech-stack)** &nbsp;·&nbsp; **[Getting started](#-getting-started)** &nbsp;·&nbsp; **[Screens](#-screens)**
 
 </div>
 
----
+<img src="assets/readme/divider.svg" width="100%" alt=""/>
 
+<div align="center">
+  <img src="assets/readme/showcase.svg" alt="Ridify app screens: rider, driver and admin views" width="100%"/>
+</div>
 
+## 🚗 What is Ridify?
 
-## Overview
+**Ridify is a real-time, peer-to-peer ride-sharing app.** Drivers who are already making a trip offer their empty seats. Riders going the same way book those seats and pay only for the part of the route they ride.
 
-Ridify is a **production-grade, real-time ride-sharing and cost-splitting application** that connects drivers and riders for shared journeys. With live map tracking, instant in-app messaging, transparent fare splitting, and a dedicated admin moderation layer, Ridify delivers a complete end-to-end mobility experience — from OTP-verified sign-up to trip completion.
+Every ride is live. Drivers stream GPS over WebSockets, riders watch the car approach on the map, and everyone in the car shares a chat. Each step of the trip (request, accept, arrive, board, drop off, pay) is checked by the server and pushed to every phone instantly.
 
-Built with Flutter for mobile and Node.js + Express + MongoDB on the backend, Ridify features JWT authentication with silent refresh, Socket.IO-powered real-time updates, OpenStreetMap routing via OSRM, and a sweep-line capacity algorithm for optimal ride matching.
+One Flutter codebase runs on **Android, iOS and the web**. It talks to a **Node.js + Express 5 + Socket.IO** backend on **MongoDB**, with an admin panel for moderation and KYC.
 
----
+<br/>
 
-## 🎥 Video Demo
+<h2 id="-see-it-in-action">🎥 See it in action</h2>
 
 <div align="center">
   <video src="https://github.com/user-attachments/assets/3a826832-d1e9-4e3c-9112-752425a210ce" controls="controls" style="max-width: 100%; height: auto;"></video>
 </div>
 
----
+<table>
+<tr>
+<td align="center" width="25%"><img src="screenshots/splashScreenLightGIF.gif" width="100%" alt="Splash, light"/><br/><sub><b>Splash</b> · light</sub></td>
+<td align="center" width="25%"><img src="screenshots/splashScreenDarkGIF.gif" width="100%" alt="Splash, dark"/><br/><sub><b>Splash</b> · dark</sub></td>
+<td align="center" width="25%"><img src="screenshots/homeScreenLightGIF.gif" width="100%" alt="Home, light"/><br/><sub><b>Home</b> · light</sub></td>
+<td align="center" width="25%"><img src="screenshots/homeScreenDarkGIF.gif" width="100%" alt="Home, dark"/><br/><sub><b>Home</b> · dark</sub></td>
+</tr>
+</table>
 
-## ✨ Key Features
+<img src="assets/readme/divider.svg" width="100%" alt=""/>
 
-| Feature | Description |
+## ✨ Features
+
+<table>
+<tr>
+<td width="50%" valign="top">
+
+### 🗺️ Live tracking
+Drivers stream their position over Socket.IO. Riders see the car move on an OpenStreetMap view with the route drawn in, from booking to drop-off.
+
+</td>
+<td width="50%" valign="top">
+
+### 🧮 Smart seat matching
+Rides are matched by how close pickup and drop-off are to the driver's route, using **turf.js**. A **sweep-line** check makes sure no part of the route is ever over capacity.
+
+</td>
+</tr>
+<tr>
+<td valign="top">
+
+### 💰 Fair, distance-based fares
+Each rider pays for **their own slice of the route**, not an equal share. The server recalculates every fare, so the client can't change the price.
+
+</td>
+<td valign="top">
+
+### 💬 In-ride chat
+Each ride gets its own chat room for the driver and all co-passengers, with swipe-to-reply threads and messages delivered in real time.
+
+</td>
+</tr>
+<tr>
+<td valign="top">
+
+### 🔐 OTP + JWT auth
+Sign-up and login are verified by an email OTP (stored as a SHA-256 hash, 5 tries max). Passwords use bcrypt. The app keeps you signed in with access and refresh tokens and refreshes them silently.
+
+</td>
+<td valign="top">
+
+### 🚦 Full ride lifecycle
+`available → accepted → full → started → completed`, plus a separate per-passenger flow: request, accept, arrive, board, drop off, pay. Every transition uses optimistic locking.
+
+</td>
+</tr>
+<tr>
+<td valign="top">
+
+### 🛡️ Admin & KYC
+A dashboard with live stats, user management, bans, force-cancel, and review of driver ID documents (uploaded to Google Drive through Apps Script).
+
+</td>
+<td valign="top">
+
+### 🌗 Light & dark, phone & web
+A monochrome Material theme in both modes. The same `lib/` builds for Android, iOS and a Render-hosted web app.
+
+</td>
+</tr>
+</table>
+
+<img src="assets/readme/divider.svg" width="100%" alt=""/>
+
+## 🏗️ Architecture
+
+<div align="center">
+  <img src="assets/readme/architecture.svg" alt="Ridify system architecture" width="100%"/>
+</div>
+
+<br/>
+
+| Layer | What lives there |
 |---|---|
-| 🔐 **Secure Auth** | OTP-verified email sign-up, SHA-256 hashed OTPs, JWT + refresh token rotation |
-| 🗺️ **Live Tracking** | Real-time driver and rider positions on an interactive flutter_map + OpenStreetMap |
-| 🚗 **Ride Lifecycle** | Full state machine: `scheduled → started → boarding → inTransit → completed` |
-| 💬 **In-app Chat** | Per-ride Socket.IO messaging between driver and all co-passengers |
-| 💰 **Cost Splitting** | Automated fare calculation and equal cost-split across all confirmed riders |
-| 🔍 **Smart Matching** | Sweep-line geometry algorithm for pickup/dropoff proximity matching |
-| 👤 **KYC Verification** | Document upload via Google Drive integration with admin-side review |
-| 🛡️ **Admin Panel** | Full user/ride management, ban controls, live ride monitoring, and stats dashboard |
-| ⚡ **Real-time Events** | Ride requests, acceptances, boarding, drop-off, and chat — all over WebSocket |
-| 🔒 **Production Security** | Helmet, rate limiting, input sanitisation, CORS locking, and optimistic locking |
+| **Clients** | Flutter app (`frontend/`) with `Provider` state, `ApiClient` (auto-retries after a silent token refresh), `SocketService`, `flutter_secure_storage` and `geolocator`. The web build (`web-app/`) compiles the same `lib/`. |
+| **Edge** | `helmet`, a locked-down CORS origin, three rate limiters (global 200 req/min, plus stricter auth and ride limiters), a 1 MB JSON cap, `sanitize-html`, the JWT `authenticate` middleware (with a ban check) and an `adminOnly` guard. |
+| **API** | Express 5 routers for `/api/auth`, `/api/rides` and `/api/admin`, plus `/health`. Socket.IO authenticates the JWT during the handshake and auto-joins user, ride and global-search rooms. |
+| **Domain** | Controllers for auth, rides and admin. Geo maths uses `@turf/turf`, seat capacity uses the sweep-line helpers in `utils/rideHelpers.js`, and `winston` handles logging. |
+| **Data & services** | MongoDB (`users`, `rides`, `otpverifications`) with a `2dsphere` index and a 30-day TTL on finished rides. EmailJS sends OTPs and Google Apps Script stores KYC documents. OSM tiles, OSRM and Nominatim are called directly from the app. |
 
----
+<img src="assets/readme/divider.svg" width="100%" alt=""/>
 
-## 🛠️ Tech Stack
+## ⚙️ How it works
 
-### Frontend
+### The life of a ride
 
-| Technology | Purpose |
-|---|---|
-| Flutter | Cross-platform mobile UI framework |
-| Dart | Application language |
-| Provider | Reactive state management |
-| socket_io_client | WebSocket real-time communication |
-| flutter_map | Interactive OpenStreetMap integration |
-| geolocator | Device GPS & location permissions |
-| flutter_secure_storage | Encrypted JWT token storage |
-| http | REST API client |
+<div align="center">
+  <img src="assets/readme/lifecycle.svg" alt="Animated ride lifecycle with Socket.IO events" width="100%"/>
+</div>
 
-### Backend
+<br/>
 
-| Technology | Purpose |
-|---|---|
-| Node.js | Runtime environment |
-| Express | HTTP framework |
-| MongoDB | Primary database |
-| Mongoose | ODM / schema validation |
-| Socket.IO | Bidirectional real-time events |
-| JSON Web Token | Authentication & authorisation |
-| bcrypt | Password hashing |
-| @turf/turf | Geospatial sweep-line calculations |
-| Winston | Structured logging |
-| Helmet | HTTP security headers |
-| express-rate-limit | API abuse prevention |
-| sanitize-html | XSS input sanitisation |
+Every step is a guarded `PATCH` on `/api/rides/...`. The controller checks the current state and who is asking, writes the change with an optimistic lock, and then emits to the ride's room:
 
-### External Services
+| Step | Endpoint | Socket.IO event |
+|---|---|---|
+| Driver offers a ride | `POST /api/rides` | — |
+| Rider requests seats | `PATCH /request/:id` | `new_ride_request` |
+| Driver accepts / declines / removes | `PATCH /accept` · `/decline` · `/kick` | `ride_updated` · `passenger_kicked` |
+| Driver starts the trip | `PATCH /start/:id` | `ride_started` |
+| Live position | socket `driver_location_update` | `driver_location_update` |
+| Arrive → board → drop off → pay | `PATCH /arrive` · `/board` · `/dropoff` · `/pay` | `driver_arrived` · `passenger_boarded` · `passenger_dropped` · `passenger_paid` |
+| Trip ends | `PATCH /end/:id` | `ride_ended` |
+| Chat | `POST /:id/chat` | `receive_message` |
 
-| Service | Purpose |
-|---|---|
-| EmailJS | OTP & transactional email delivery |
-| OSRM | Open-source route calculation engine |
-| Nominatim | Geocoding and reverse geocoding |
-| Google Apps Script | KYC document upload to Google Drive |
+### Sweep-line seat capacity
 
----
+<div align="center">
+  <img src="assets/readme/sweepline.svg" alt="Animated sweep-line capacity check" width="100%"/>
+</div>
 
-## 🏗️ System Architecture
+<br/>
 
-```mermaid
-graph LR
-    %% Theming for Nodes
-    classDef client fill:#E3F2FD,stroke:#1565C0,stroke-width:2px,color:#0D47A1,rx:5,ry:5
-    classDef backend fill:#E8F5E9,stroke:#2E7D32,stroke-width:2px,color:#1B5E20,rx:5,ry:5
-    classDef db fill:#FFF3E0,stroke:#E65100,stroke-width:2px,color:#E65100,rx:5,ry:5
-    classDef external fill:#F3E5F5,stroke:#6A1B9A,stroke-width:2px,color:#4A148C,rx:5,ry:5
+A car with 4 seats can carry far more than 4 riders on one trip if they ride different stretches of it. Ridify turns every accepted booking into two events on the route, **+seats at pickup** and **−seats at drop-off**. It sorts them by route index (with drop-offs before pick-ups at the same index) and sweeps across them, tracking the running total. The request is accepted only if the peak stays within `totalSeats`.
 
-    %% Subgraph Styling to remove default yellow backgrounds
-    style ClientLayer fill:#f8fafc,stroke:#94a3b8,stroke-width:2px,color:#334155,rx:10,ry:10
-    style BackendLayer fill:#f0fdf4,stroke:#86efac,stroke-width:2px,color:#166534,rx:10,ry:10
-    style DataLayer fill:#fff7ed,stroke:#fdba74,stroke-width:2px,color:#9a3412,rx:10,ry:10
-    style ExternalLayer fill:#faf5ff,stroke:#d8b4fe,stroke-width:2px,color:#6b21a8,rx:10,ry:10
-
-    subgraph ClientLayer [📱 Client Layer]
-        UI[Flutter UI & State]
-        AuthSvc[Auth & API Services]
-        RideSvc[Ride & Socket Services]
-        Admin[Admin Web Interface]
-    end
-
-    subgraph BackendLayer [⚙️ Node.js + Express Server]
-        API[Express REST API]
-        WSS[Socket.IO Server]
-        
-        AuthCtrl[Auth Controller]
-        RideCtrl[Ride Controller]
-        AdminCtrl[Admin Controller]
-        
-        SocketMgr[Socket Event Manager]
-    end
-
-    subgraph DataLayer [🗄️ Database Layer]
-        UserMod[(Users Collection)]
-        RideMod[(Rides Collection)]
-        OTPMod[(OTP Verifications)]
-    end
-
-    subgraph ExternalLayer [🌐 External Services]
-        Maps[OSRM & Nominatim]
-        SMTP[EmailJS]
-        Drive[Google Drive KYC]
-    end
-
-    %% Wiring Client Layer Internals
-    UI --> AuthSvc
-    UI --> RideSvc
-
-    %% Wiring Client to Backend
-    AuthSvc <-->|REST| API
-    RideSvc <-->|REST| API
-    RideSvc <-->|WSS| WSS
-    Admin <-->|REST| API
-
-    %% Wiring Backend Internals
-    API --> AuthCtrl
-    API --> RideCtrl
-    API --> AdminCtrl
-    WSS --> SocketMgr
-
-    %% Wiring Backend to DB
-    AuthCtrl --> UserMod
-    AuthCtrl --> OTPMod
-    
-    RideCtrl --> RideMod
-    RideCtrl --> UserMod
-    
-    AdminCtrl --> UserMod
-    AdminCtrl --> RideMod
-
-    SocketMgr --> RideMod
-
-    %% Wiring Backend to External
-    RideCtrl -->|Routing| Maps
-    AuthCtrl -->|OTP| SMTP
-    AuthCtrl -->|KYC Upload| Drive
-
-    %% Apply Classes
-    class UI,AuthSvc,RideSvc,Admin client;
-    class API,WSS,AuthCtrl,RideCtrl,AdminCtrl,SocketMgr backend;
-    class UserMod,RideMod,OTPMod db;
-    class Maps,SMTP,Drive external;
+```js
+changes.sort((a, b) => a.index - b.index || a.change - b.change);   // drop-offs first
+let current = 0, peak = 0;
+for (const c of changes) { current += c.change; peak = Math.max(peak, current); }
+return peak <= ride.totalSeats;
 ```
 
----
+### Fair fares
 
-## 🚀 Installation & Setup
+Each rider's fare is worked out **on the server** from the part of the driver's route they actually ride:
 
-### Prerequisites
+```
+rider fare = ride fare × (rider's segment distance ÷ total route distance)
+```
 
-- **Node.js** v20 or higher
-- **npm** v9 or higher
-- **Flutter SDK** 3.x — [Flutter install guide](https://docs.flutter.dev/get-started/install)
-- **MongoDB** 7.x — local instance or [MongoDB Atlas](https://www.mongodb.com/atlas)
-- **Android** device or emulator (iOS support planned)
+So a rider covering 40% of a ₹200 trip pays **₹80**. Anyone riding 99% or more pays the full fare, which avoids rounding losses.
 
----
+### Authentication flow
 
-### 1. Clone the Repository
+```mermaid
+%%{init: {'theme':'neutral'}}%%
+sequenceDiagram
+    autonumber
+    participant App as Flutter app
+    participant API as Express API
+    participant DB as MongoDB
+    participant Mail as EmailJS
+    App->>API: POST /api/auth/signup-otp-request
+    API->>DB: store SHA-256(OTP) + expiry
+    API->>Mail: send 6-digit OTP
+    App->>API: POST /api/auth/register (OTP, password)
+    API->>DB: verify hash (max 5 tries) · bcrypt(password)
+    API-->>App: access token + refresh token
+    Note over App: tokens kept in flutter_secure_storage
+    App->>API: any request → 401 (access expired)
+    App->>API: POST /api/auth/refresh
+    API-->>App: new access token, original request retried
+```
+
+<img src="assets/readme/divider.svg" width="100%" alt=""/>
+
+## 🧰 Tech stack
+
+<div align="center">
+  <img src="https://skillicons.dev/icons?i=flutter,dart,nodejs,express,mongodb,githubactions&theme=dark" alt="Flutter, Dart, Node.js, Express, MongoDB, GitHub Actions"/>
+</div>
+
+<br/>
+
+<table>
+<tr>
+<th width="33%">📱 Frontend</th>
+<th width="33%">⚙️ Backend</th>
+<th width="33%">🌐 Services</th>
+</tr>
+<tr>
+<td valign="top">
+
+- **Flutter** · Dart 3
+- `provider`: state
+- `socket_io_client`: realtime
+- `flutter_map` + `latlong2`: maps
+- `geolocator`: GPS
+- `flutter_secure_storage`: tokens
+- `image_picker`: KYC uploads
+- `http`: REST
+
+</td>
+<td valign="top">
+
+- **Node.js** · **Express 5**
+- **MongoDB** · Mongoose 9
+- **Socket.IO** 4.8
+- `jsonwebtoken` · `bcrypt`
+- `@turf/turf`: geo maths
+- `helmet` · `express-rate-limit`
+- `sanitize-html` · `winston`
+- `jest` · `supertest`
+
+</td>
+<td valign="top">
+
+- **Render**: API + static web
+- **MongoDB Atlas**: database
+- **EmailJS**: OTP email
+- **Google Apps Script**: KYC
+- **OSRM**: routing
+- **Nominatim**: geocoding
+- **OpenStreetMap**: tiles
+- **GitHub Actions**: CI
+
+</td>
+</tr>
+</table>
+
+<img src="assets/readme/divider.svg" width="100%" alt=""/>
+
+## 🚀 Getting started
+
+> **Prerequisites:** Node.js 20+, Flutter 3.x (Dart ≥ 3.11), a MongoDB database (local or [Atlas](https://www.mongodb.com/atlas)), and an Android/iOS device or emulator.
+
+**1. Clone**
 
 ```bash
 git clone https://github.com/priyanshusharan-cmd/ridify.git
 cd ridify
 ```
 
----
-
-### 2. Backend Setup
+**2. Backend**
 
 ```bash
 cd backend
 npm install
-cp .env.example .env
-# Fill in your .env values — see the Environment Variables section below
-node server.js
+cp .env.example .env     # fill in the values below
+npm run dev              # validates env, then starts on http://localhost:5001
 ```
 
-The server starts on `http://localhost:3000` by default.
-
----
-
-### 3. Frontend Setup
+**3. Frontend**
 
 ```bash
 cd frontend
+cp .env.example .env     # BACKEND_URL=http://10.0.2.2:5001 for the Android emulator
 flutter pub get
-```
-
-Create a `.env` file in the `frontend/` directory:
-
-```env
-BASE_URL=http://10.0.2.2:3000     # Android emulator pointing to host localhost
-# BASE_URL=http://<your-lan-ip>:3000  # Physical device on the same network
-```
-
-Run the app:
-
-```bash
 flutter run
 ```
 
----
+> 💡 On a physical phone, point `BACKEND_URL` at your computer's LAN IP. For release builds, pass it in with `--dart-define=BACKEND_URL=https://your-api.example.com`.
 
-## 🔧 Environment Variables
+<details>
+<summary><b>🔧 Backend environment variables</b></summary>
 
-Copy `backend/.env.example` to `backend/.env` and fill in each value.
+<br/>
 
-### Server
+| Variable | Required | Description |
+|---|:---:|---|
+| `PORT` | | HTTP port (default `5001`) |
+| `MONGO_URI` | ✅ | MongoDB connection string |
+| `JWT_SECRET` | ✅ | Access-token secret (64-byte hex) |
+| `JWT_REFRESH_SECRET` | ✅ | Refresh-token secret, different from the above |
+| `JWT_EXPIRES_IN` / `JWT_REFRESH_EXPIRES_IN` | | Token lifetimes (default `24h` / `7d`) |
+| `ADMIN_EMAILS` | ✅ | Comma-separated admin accounts |
+| `ADMIN_SECRET` | ✅ | Secret for admin operations |
+| `ALLOWED_ORIGIN` | ✅ | CORS + Socket.IO origin (`*` for mobile-only) |
+| `EMAILJS_SERVICE_ID` · `EMAILJS_TEMPLATE_ID` · `EMAILJS_PUBLIC_KEY` · `EMAILJS_PRIVATE_KEY` | ✅ | OTP email delivery |
+| `GOOGLE_APPS_SCRIPT_URL` | ✅ | Apps Script endpoint for KYC uploads |
+| `ALLOWED_EMAIL_DOMAIN` | | Limit sign-ups to one email domain |
+| `BCRYPT_ROUNDS` · `MAX_FARE` · `SEARCH_RADIUS_DEFAULT_M` · `MIN_RIDE_DISTANCE_KM` … | | Tuning knobs, see `backend/.env.example` |
 
-| Variable | Description | Example |
+Generate a secret with:
+
+```bash
+node -e "console.log(require('crypto').randomBytes(64).toString('hex'))"
+```
+
+</details>
+
+<details>
+<summary><b>☁️ Deploy to Render (one blueprint)</b></summary>
+
+<br/>
+
+The root [`render.yaml`](render.yaml) sets up both services on Render's free tier:
+
+| Service | Type | What it does |
 |---|---|---|
-| `PORT` | HTTP server port | `3000` |
-| `NODE_ENV` | Runtime environment | `development` |
-| `ALLOWED_ORIGINS` | CORS whitelist (comma-separated) | `http://localhost:3000` |
+| `ridify-backend` | Node web service | `npm ci` → `npm start`, health-checked on `/health` |
+| `ridify` | Static site | `bash web-app/build.sh` compiles the Flutter web app against `BACKEND_URL` |
 
-### Database
+In Render, choose **New → Blueprint**, connect this repo, fill in the secret env vars, and set `ALLOWED_ORIGIN` on the backend to the static site's URL. See [`web-app/README.md`](web-app/README.md) for details.
 
-| Variable | Description | Example |
+</details>
+
+<details>
+<summary><b>📡 REST API reference</b></summary>
+
+<br/>
+
+| Area | Method & path | Purpose |
 |---|---|---|
-| `MONGODB_URI` | MongoDB connection string | `mongodb://localhost:27017/ridify` |
-
-### Authentication
-
-| Variable | Description | How to Generate |
-|---|---|---|
-| `JWT_SECRET` | Access token signing secret | `node -e "console.log(require('crypto').randomBytes(64).toString('hex'))"` |
-| `JWT_REFRESH_SECRET` | Refresh token signing secret | `node -e "console.log(require('crypto').randomBytes(64).toString('hex'))"` |
-| `JWT_EXPIRY` | Access token TTL | `15m` |
-| `JWT_REFRESH_EXPIRY` | Refresh token TTL | `7d` |
-
-### Email (EmailJS)
-
-| Variable | Description |
-|---|---|
-| `EMAILJS_SERVICE_ID` | Your EmailJS service ID |
-| `EMAILJS_TEMPLATE_ID` | OTP email template ID |
-| `EMAILJS_PUBLIC_KEY` | EmailJS public API key |
-| `EMAILJS_PRIVATE_KEY` | EmailJS private API key |
-
-### KYC Storage (Google Apps Script)
-
-| Variable | Description |
-|---|---|
-| `GOOGLE_SCRIPT_URL` | Deployed Apps Script web app URL |
-
-### Routing (OSRM)
-
-| Variable | Description | Default |
-|---|---|---|
-| `OSRM_URL` | OSRM instance base URL | `http://router.project-osrm.org` |
-
----
-
-## 📸 Screenshots
-
-<details>
-<summary><strong>🎬 Onboarding & Auth</strong></summary>
-
-<br>
-
-<h4 align="center">Splash Screen</h4>
-
-<p align="center">
-<img src="screenshots/splashScreenLightGIF.gif" width="38%"/>
-&nbsp;&nbsp;
-<img src="screenshots/splashScreenDarkGIF.gif" width="38%"/>
-</p>
-
-<br>
-
-<h4 align="center">Login</h4>
-
-<p align="center">
-<img src="screenshots/loginScreenLight.png" width="38%"/>
-&nbsp;&nbsp;
-<img src="screenshots/loginScreenDark.png" width="38%"/>
-</p>
-
-<br>
-
-<h4 align="center">Sign Up</h4>
-
-<p align="center">
-<img src="screenshots/signupScreenLight.png" width="38%"/>
-&nbsp;&nbsp;
-<img src="screenshots/signupScreenDark.png" width="38%"/>
-</p>
-
-<br>
+| Auth | `POST /api/auth/signup-otp-request` · `/register` | Email OTP sign-up |
+| | `POST /api/auth/login` · `/login-otp-request` | Password or OTP login |
+| | `POST /api/auth/refresh` · `/logout` | Token refresh / sign out |
+| | `PATCH /api/auth/change-password` | Change password |
+| | `GET /api/auth/user/:email/profile` · `POST /user/:email/upload-id` | Profile · KYC upload |
+| Rides | `GET /api/rides/search` | Route-aware search |
+| | `POST /api/rides` · `GET /api/rides/:id` | Offer / fetch a ride |
+| | `PATCH /request` `/accept` `/decline` `/kick` `/arrive` `/board` `/dropoff` `/pay` `/start` `/end` `/cancel` | Lifecycle |
+| | `POST /api/rides/:id/chat` | In-ride message |
+| | `GET /api/rides/stats/driver` | Driver earnings |
+| Admin | `GET /api/admin/stats` · `/users` · `/rides` · `/verifications/pending` | Dashboard data |
+| | `POST /users/:id/ban` · `/unban` · `PATCH /users/:id/verify` · `/reject-verification` | Moderation & KYC |
+| | `PATCH /rides/:id/cancel` · `DELETE /rides/:id` | Ride control |
 
 </details>
 
 <details>
-<summary><strong>🏠 Home & Ride Discovery</strong></summary>
+<summary><b>🗂️ Project structure</b></summary>
 
-<br>
+<br/>
 
-<h4 align="center">Home Screen</h4>
+```
+ridify/
+├── backend/                 Node.js + Express 5 + Socket.IO API
+│   ├── config/              db.js · socket.js (JWT handshake, rooms)
+│   ├── controllers/         auth · ride · admin
+│   ├── middleware/          authenticate · adminOnly
+│   ├── models/              user · ride · OtpVerification
+│   ├── routes/              /api/auth · /api/rides · /api/admin
+│   └── utils/               rideHelpers (sweep-line) · jwt · otp · logger · validators
+├── frontend/                Flutter app (Android · iOS · desktop)
+│   └── lib/
+│       ├── core/            theme · providers · socket_service · constants
+│       ├── screens/         home · find/offer · live tracking · chat · admin …
+│       ├── services/        api_client · auth · ride · location · nominatim …
+│       └── widgets/         swipe_to_reply · address_search · verified_badge …
+├── web-app/                 isolated Flutter-web build for Render
+├── screenshots/             light & dark captures used below
+├── render.yaml              one-click Render blueprint
+└── USER_MANUAL.md           the full user guide
+```
 
-<p align="center">
-<img src="screenshots/homeScreenLightGIF.gif" width="38%"/>
-&nbsp;&nbsp;
-<img src="screenshots/homeScreenDarkGIF.gif" width="38%"/>
-</p>
+</details>
 
-<br>
+<img src="assets/readme/divider.svg" width="100%" alt=""/>
 
-<h4 align="center">Offer a Ride</h4>
+## 🔒 Security at a glance
 
-<p align="center">
-<img src="screenshots/offerRideLight.png" width="38%"/>
-&nbsp;&nbsp;
-<img src="screenshots/offerRideDark.png" width="38%"/>
-</p>
+<table>
+<tr>
+<td align="center" width="25%"><b>🧂 Hashed secrets</b><br/><sub>bcrypt passwords<br/>SHA-256 OTPs, 5 tries</sub></td>
+<td align="center" width="25%"><b>🎟️ Short-lived JWTs</b><br/><sub>separate access & refresh secrets<br/>verified on every socket</sub></td>
+<td align="center" width="25%"><b>🚧 Rate limits</b><br/><sub>global + auth + ride limiters<br/>1 MB body cap</sub></td>
+<td align="center" width="25%"><b>🧼 Clean input</b><br/><sub>sanitize-html, validators<br/>server-side fare maths</sub></td>
+</tr>
+<tr>
+<td align="center"><b>🪖 Helmet</b><br/><sub>secure HTTP headers</sub></td>
+<td align="center"><b>🔐 CORS lock</b><br/><sub>single allowed origin</sub></td>
+<td align="center"><b>🔁 Optimistic locking</b><br/><sub>no double-booked seats</sub></td>
+<td align="center"><b>🤖 CI checks</b><br/><sub>npm audit · secret scan<br/>flutter analyze</sub></td>
+</tr>
+</table>
 
-<br>
+<img src="assets/readme/divider.svg" width="100%" alt=""/>
 
-<h4 align="center">Location Picker</h4>
+## 📸 Screens
 
-<p align="center">
-<img src="screenshots/locationPickerScreenLight.png" width="38%"/>
-&nbsp;&nbsp;
-<img src="screenshots/locationPickerScreenDark.png" width="38%"/>
-</p>
+Every screen ships in **light** and **dark**. Expand a section to browse.
 
-<br>
-
-<h4 align="center">Find a Ride</h4>
-
-<p align="center">
-<img src="screenshots/findRIdeLight.png" width="38%"/>
-&nbsp;&nbsp;
-<img src="screenshots/findRideDark.png" width="38%"/>
-</p>
-
-<br>
-
-<h4 align="center">Available Rides</h4>
-
-<p align="center">
-<img src="screenshots/availableRidesScreenLight.png" width="38%"/>
-&nbsp;&nbsp;
-<img src="screenshots/availableRidesScreenDark.png" width="38%"/>
-</p>
-
-<br>
-
-<h4 align="center">Filters</h4>
-
-<p align="center">
-<img src="screenshots/filtersPopupLight.png" width="38%"/>
-&nbsp;&nbsp;
-<img src="screenshots/filtersPopupDark.png" width="38%"/>
-</p>
-
-<br>
-
+<details open>
+<summary><b>🎬 Onboarding & home</b></summary>
+<br/>
+<table>
+<tr><th colspan="2">Splash</th><th colspan="2">Login</th></tr>
+<tr><td align="center" width="25%"><img src="screenshots/splashScreenLight.png" width="100%" alt="Splash, light"/><br/><sub>light</sub></td><td align="center" width="25%"><img src="screenshots/splashScreenDark.png" width="100%" alt="Splash, dark"/><br/><sub>dark</sub></td><td align="center" width="25%"><img src="screenshots/loginScreenLight.png" width="100%" alt="Login, light"/><br/><sub>light</sub></td><td align="center" width="25%"><img src="screenshots/loginScreenDark.png" width="100%" alt="Login, dark"/><br/><sub>dark</sub></td></tr>
+<tr><th colspan="2">Sign up</th><th colspan="2">Home</th></tr>
+<tr><td align="center" width="25%"><img src="screenshots/signupScreenLight.png" width="100%" alt="Sign up, light"/><br/><sub>light</sub></td><td align="center" width="25%"><img src="screenshots/signupScreenDark.png" width="100%" alt="Sign up, dark"/><br/><sub>dark</sub></td><td align="center" width="25%"><img src="screenshots/homeScreenLight.png" width="100%" alt="Home, light"/><br/><sub>light</sub></td><td align="center" width="25%"><img src="screenshots/homeScreenDark.png" width="100%" alt="Home, dark"/><br/><sub>dark</sub></td></tr>
+</table>
 </details>
 
 <details>
-<summary><strong>📋 Activity & Ride Details</strong></summary>
-
-<br>
-
-<h4 align="center">Activity Screen</h4>
-
-<p align="center">
-<img src="screenshots/activityScreenLight.png" width="38%"/>
-&nbsp;&nbsp;
-<img src="screenshots/activityScreenDark.png" width="38%"/>
-</p>
-
-<br>
-
-<h4 align="center">Ride Details</h4>
-
-<p align="center">
-<img src="screenshots/rideDetailScreenLight.png" width="38%"/>
-&nbsp;&nbsp;
-<img src="screenshots/rideDetailScreenDark.png" width="38%"/>
-</p>
-
-<br>
-
+<summary><b>🔎 Offer & find a ride</b></summary>
+<br/>
+<table>
+<tr><th colspan="2">Offer a ride</th><th colspan="2">Location picker</th></tr>
+<tr><td align="center" width="25%"><img src="screenshots/offerRideLight.png" width="100%" alt="Offer a ride, light"/><br/><sub>light</sub></td><td align="center" width="25%"><img src="screenshots/offerRideDark.png" width="100%" alt="Offer a ride, dark"/><br/><sub>dark</sub></td><td align="center" width="25%"><img src="screenshots/locationPickerScreenLight.png" width="100%" alt="Location picker, light"/><br/><sub>light</sub></td><td align="center" width="25%"><img src="screenshots/locationPickerScreenDark.png" width="100%" alt="Location picker, dark"/><br/><sub>dark</sub></td></tr>
+<tr><th colspan="2">Find a ride</th><th colspan="2">Filters</th></tr>
+<tr><td align="center" width="25%"><img src="screenshots/findRIdeLight.png" width="100%" alt="Find a ride, light"/><br/><sub>light</sub></td><td align="center" width="25%"><img src="screenshots/findRideDark.png" width="100%" alt="Find a ride, dark"/><br/><sub>dark</sub></td><td align="center" width="25%"><img src="screenshots/filtersPopupLight.png" width="100%" alt="Filters, light"/><br/><sub>light</sub></td><td align="center" width="25%"><img src="screenshots/filtersPopupDark.png" width="100%" alt="Filters, dark"/><br/><sub>dark</sub></td></tr>
+<tr><th colspan="2">Available rides</th><th colspan="2">Activity</th></tr>
+<tr><td align="center" width="25%"><img src="screenshots/availableRidesScreenLight.png" width="100%" alt="Available rides, light"/><br/><sub>light</sub></td><td align="center" width="25%"><img src="screenshots/availableRidesScreenDark.png" width="100%" alt="Available rides, dark"/><br/><sub>dark</sub></td><td align="center" width="25%"><img src="screenshots/activityScreenLight.png" width="100%" alt="Activity, light"/><br/><sub>light</sub></td><td align="center" width="25%"><img src="screenshots/activityScreenDark.png" width="100%" alt="Activity, dark"/><br/><sub>dark</sub></td></tr>
+<tr><th colspan="2">Ride details</th><th colspan="2"></th></tr>
+<tr><td align="center" width="25%"><img src="screenshots/rideDetailScreenLight.png" width="100%" alt="Ride details, light"/><br/><sub>light</sub></td><td align="center" width="25%"><img src="screenshots/rideDetailScreenDark.png" width="100%" alt="Ride details, dark"/><br/><sub>dark</sub></td><td width="25%"></td><td width="25%"></td></tr>
+</table>
 </details>
 
 <details>
-<summary><strong>🚦 Live Ride Tracking</strong></summary>
-
-<br>
-
-<h4 align="center">Driver — Ride Started</h4>
-
-<p align="center">
-<img src="screenshots/liveRideScreenDriver1Light.png" width="38%"/>
-&nbsp;&nbsp;
-<img src="screenshots/liveRideScreenDriver1Dark.png" width="38%"/>
-</p>
-
-<br>
-
-<h4 align="center">Rider — Waiting for Pickup</h4>
-
-<p align="center">
-<img src="screenshots/liveRideScreenRider1Light.png" width="38%"/>
-&nbsp;&nbsp;
-<img src="screenshots/liveRideScreenRider1Dark.png" width="38%"/>
-</p>
-
-<br>
-
-<h4 align="center">Driver — At Boarding Point</h4>
-
-<p align="center">
-<img src="screenshots/liveRideScreenDriver2Light.png" width="38%"/>
-&nbsp;&nbsp;
-<img src="screenshots/liveRideScreenDriver2Dark.png" width="38%"/>
-</p>
-
-<br>
-
-<h4 align="center">Rider — Driver Arrived</h4>
-
-<p align="center">
-<img src="screenshots/liveRideScreenRider2Light.png" width="38%"/>
-&nbsp;&nbsp;
-<img src="screenshots/liveRideScreenRider2Dark.png" width="38%"/>
-</p>
-
-<br>
-
-<h4 align="center">Driver — Rider Boarded</h4>
-
-<p align="center">
-<img src="screenshots/liveRideScreenDriver3Light.png" width="38%"/>
-&nbsp;&nbsp;
-<img src="screenshots/liveRideScreenDriver3Dark.png" width="38%"/>
-</p>
-
-<br>
-
-<h4 align="center">Rider — In Transit</h4>
-
-<p align="center">
-<img src="screenshots/liveRideScreenRider3Light.png" width="38%"/>
-&nbsp;&nbsp;
-<img src="screenshots/liveRideScreenRider3Dark.png" width="38%"/>
-</p>
-
-<br>
-
-<h4 align="center">In-app Chat</h4>
-
-<p align="center">
-<img src="screenshots/chatScreenLight.png" width="38%"/>
-&nbsp;&nbsp;
-<img src="screenshots/chatScreenDark.png" width="38%"/>
-</p>
-
-<br>
-
-<h4 align="center">Driver — Trip Complete</h4>
-
-<p align="center">
-<img src="screenshots/driverCompletionScreenLight.png" width="38%"/>
-&nbsp;&nbsp;
-<img src="screenshots/driverCompletionScreenDark.png" width="38%"/>
-</p>
-
-<br>
-
-<h4 align="center">Rider — Trip Complete</h4>
-
-<p align="center">
-<img src="screenshots/riderCompletionScreenLight.png" width="38%"/>
-&nbsp;&nbsp;
-<img src="screenshots/riderCompletionScreenDark.png" width="38%"/>
-</p>
-
-<br>
-
+<summary><b>🚦 Live ride</b></summary>
+<br/>
+<table>
+<tr><th colspan="2">Driver · ride started</th><th colspan="2">Rider · waiting for pickup</th></tr>
+<tr><td align="center" width="25%"><img src="screenshots/liveRideScreenDriver1Light.png" width="100%" alt="Driver · ride started, light"/><br/><sub>light</sub></td><td align="center" width="25%"><img src="screenshots/liveRideScreenDriver1Dark.png" width="100%" alt="Driver · ride started, dark"/><br/><sub>dark</sub></td><td align="center" width="25%"><img src="screenshots/liveRideScreenRider1Light.png" width="100%" alt="Rider · waiting for pickup, light"/><br/><sub>light</sub></td><td align="center" width="25%"><img src="screenshots/liveRideScreenRider1Dark.png" width="100%" alt="Rider · waiting for pickup, dark"/><br/><sub>dark</sub></td></tr>
+<tr><th colspan="2">Driver · at boarding point</th><th colspan="2">Rider · driver arrived</th></tr>
+<tr><td align="center" width="25%"><img src="screenshots/liveRideScreenDriver2Light.png" width="100%" alt="Driver · at boarding point, light"/><br/><sub>light</sub></td><td align="center" width="25%"><img src="screenshots/liveRideScreenDriver2Dark.png" width="100%" alt="Driver · at boarding point, dark"/><br/><sub>dark</sub></td><td align="center" width="25%"><img src="screenshots/liveRideScreenRider2Light.png" width="100%" alt="Rider · driver arrived, light"/><br/><sub>light</sub></td><td align="center" width="25%"><img src="screenshots/liveRideScreenRider2Dark.png" width="100%" alt="Rider · driver arrived, dark"/><br/><sub>dark</sub></td></tr>
+<tr><th colspan="2">Driver · rider boarded</th><th colspan="2">Rider · in transit</th></tr>
+<tr><td align="center" width="25%"><img src="screenshots/liveRideScreenDriver3Light.png" width="100%" alt="Driver · rider boarded, light"/><br/><sub>light</sub></td><td align="center" width="25%"><img src="screenshots/liveRideScreenDriver3Dark.png" width="100%" alt="Driver · rider boarded, dark"/><br/><sub>dark</sub></td><td align="center" width="25%"><img src="screenshots/liveRideScreenRider3Light.png" width="100%" alt="Rider · in transit, light"/><br/><sub>light</sub></td><td align="center" width="25%"><img src="screenshots/liveRideScreenRider3Dark.png" width="100%" alt="Rider · in transit, dark"/><br/><sub>dark</sub></td></tr>
+<tr><th colspan="2">In-ride chat</th><th colspan="2">Driver · trip complete</th></tr>
+<tr><td align="center" width="25%"><img src="screenshots/chatScreenLight.png" width="100%" alt="In-ride chat, light"/><br/><sub>light</sub></td><td align="center" width="25%"><img src="screenshots/chatScreenDark.png" width="100%" alt="In-ride chat, dark"/><br/><sub>dark</sub></td><td align="center" width="25%"><img src="screenshots/driverCompletionScreenLight.png" width="100%" alt="Driver · trip complete, light"/><br/><sub>light</sub></td><td align="center" width="25%"><img src="screenshots/driverCompletionScreenDark.png" width="100%" alt="Driver · trip complete, dark"/><br/><sub>dark</sub></td></tr>
+<tr><th colspan="2">Rider · trip complete</th><th colspan="2"></th></tr>
+<tr><td align="center" width="25%"><img src="screenshots/riderCompletionScreenLight.png" width="100%" alt="Rider · trip complete, light"/><br/><sub>light</sub></td><td align="center" width="25%"><img src="screenshots/riderCompletionScreenDark.png" width="100%" alt="Rider · trip complete, dark"/><br/><sub>dark</sub></td><td width="25%"></td><td width="25%"></td></tr>
+</table>
 </details>
 
 <details>
-<summary><strong>📜 History & Profile</strong></summary>
-
-<br>
-
-<h4 align="center">Ride History</h4>
-
-<p align="center">
-<img src="screenshots/historyScreenLight.png" width="38%"/>
-&nbsp;&nbsp;
-<img src="screenshots/historyScreenDark.png" width="38%"/>
-</p>
-
-<br>
-
-<h4 align="center">Co-Passengers</h4>
-
-<p align="center">
-<img src="screenshots/passengersTravelledPopupLight.png" width="38%"/>
-&nbsp;&nbsp;
-<img src="screenshots/passengersTravelledPopupDark.png" width="38%"/>
-</p>
-
-<br>
-
-<h4 align="center">Profile</h4>
-
-<p align="center">
-<img src="screenshots/profileScreenLight.png" width="38%"/>
-&nbsp;&nbsp;
-<img src="screenshots/profileScreenDark.png" width="38%"/>
-</p>
-
-<br>
-
+<summary><b>📜 History & profile</b></summary>
+<br/>
+<table>
+<tr><th colspan="2">Ride history</th><th colspan="2">Co-passengers</th></tr>
+<tr><td align="center" width="25%"><img src="screenshots/historyScreenLight.png" width="100%" alt="Ride history, light"/><br/><sub>light</sub></td><td align="center" width="25%"><img src="screenshots/historyScreenDark.png" width="100%" alt="Ride history, dark"/><br/><sub>dark</sub></td><td align="center" width="25%"><img src="screenshots/passengersTravelledPopupLight.png" width="100%" alt="Co-passengers, light"/><br/><sub>light</sub></td><td align="center" width="25%"><img src="screenshots/passengersTravelledPopupDark.png" width="100%" alt="Co-passengers, dark"/><br/><sub>dark</sub></td></tr>
+<tr><th colspan="2">Profile</th><th colspan="2"></th></tr>
+<tr><td align="center" width="25%"><img src="screenshots/profileScreenLight.png" width="100%" alt="Profile, light"/><br/><sub>light</sub></td><td align="center" width="25%"><img src="screenshots/profileScreenDark.png" width="100%" alt="Profile, dark"/><br/><sub>dark</sub></td><td width="25%"></td><td width="25%"></td></tr>
+</table>
 </details>
 
 <details>
-<summary><strong>🛡️ Admin Panel</strong></summary>
-
-<br>
-
-<h4 align="center">Admin Dashboard</h4>
-
-<p align="center">
-<img src="screenshots/adminDashboardLight.png" width="38%"/>
-&nbsp;&nbsp;
-<img src="screenshots/adminDashboardDark.png" width="38%"/>
-</p>
-
-<br>
-
-<h4 align="center">Admin — Users</h4>
-
-<p align="center">
-<img src="screenshots/adminUsersLight.png" width="38%"/>
-&nbsp;&nbsp;
-<img src="screenshots/adminUsersDark.png" width="38%"/>
-</p>
-
-<br>
-
-<h4 align="center">Admin — User Actions</h4>
-
-<p align="center">
-<img src="screenshots/userPopupLight.png" width="38%"/>
-&nbsp;&nbsp;
-<img src="screenshots/userPopupDark.png" width="38%"/>
-</p>
-
-<br>
-
-<h4 align="center">Admin — Active Rides</h4>
-
-<p align="center">
-<img src="screenshots/adminRidesLight.png" width="38%"/>
-&nbsp;&nbsp;
-<img src="screenshots/adminRidesDark.png" width="38%"/>
-</p>
-
-<br>
-
-<h4 align="center">Admin — KYC Verification</h4>
-
-<p align="center">
-<img src="screenshots/adminVerifyLight.png" width="38%"/>
-&nbsp;&nbsp;
-<img src="screenshots/adminVerifyDark.png" width="38%"/>
-</p>
-
-<br>
-
+<summary><b>🛡️ Admin panel</b></summary>
+<br/>
+<table>
+<tr><th colspan="2">Dashboard</th><th colspan="2">Users</th></tr>
+<tr><td align="center" width="25%"><img src="screenshots/adminDashboardLight.png" width="100%" alt="Dashboard, light"/><br/><sub>light</sub></td><td align="center" width="25%"><img src="screenshots/adminDashboardDark.png" width="100%" alt="Dashboard, dark"/><br/><sub>dark</sub></td><td align="center" width="25%"><img src="screenshots/adminUsersLight.png" width="100%" alt="Users, light"/><br/><sub>light</sub></td><td align="center" width="25%"><img src="screenshots/adminUsersDark.png" width="100%" alt="Users, dark"/><br/><sub>dark</sub></td></tr>
+<tr><th colspan="2">User actions</th><th colspan="2">Active rides</th></tr>
+<tr><td align="center" width="25%"><img src="screenshots/userPopupLight.png" width="100%" alt="User actions, light"/><br/><sub>light</sub></td><td align="center" width="25%"><img src="screenshots/userPopupDark.png" width="100%" alt="User actions, dark"/><br/><sub>dark</sub></td><td align="center" width="25%"><img src="screenshots/adminRidesLight.png" width="100%" alt="Active rides, light"/><br/><sub>light</sub></td><td align="center" width="25%"><img src="screenshots/adminRidesDark.png" width="100%" alt="Active rides, dark"/><br/><sub>dark</sub></td></tr>
+<tr><th colspan="2">KYC verification</th><th colspan="2"></th></tr>
+<tr><td align="center" width="25%"><img src="screenshots/adminVerifyLight.png" width="100%" alt="KYC verification, light"/><br/><sub>light</sub></td><td align="center" width="25%"><img src="screenshots/adminVerifyDark.png" width="100%" alt="KYC verification, dark"/><br/><sub>dark</sub></td><td width="25%"></td><td width="25%"></td></tr>
+</table>
 </details>
 
----
-
-
+<img src="assets/readme/divider.svg" width="100%" alt=""/>
 
 ## 📄 License
 
-This project is licensed under the **MIT License** — see the [LICENSE](LICENSE) file for details.
+Released under the **MIT License**. See [LICENSE](LICENSE).
 
----
+<br/>
 
 <div align="center">
-Crafted with ❤️ by Priyanshu Sharan<br>
-<a href="https://www.linkedin.com/in/priyanshusharan/"><img src="https://upload.wikimedia.org/wikipedia/commons/c/ca/LinkedIn_logo_initials.png" width="24" height="24" alt="LinkedIn"></a>
+
+<img src="frontend/assets/icon.png" width="72" alt="Ridify icon"/>
+
+**Ridify** · share the ride, split the fare.
+
+Crafted with ❤️ by **Priyanshu Sharan**
+
+[![LinkedIn](https://img.shields.io/badge/LinkedIn-Priyanshu_Sharan-000000?style=for-the-badge&logo=linkedin&logoColor=white&labelColor=1E1E1E)](https://www.linkedin.com/in/priyanshusharan/)
+[![GitHub](https://img.shields.io/badge/GitHub-priyanshusharan--cmd-000000?style=for-the-badge&logo=github&logoColor=white&labelColor=1E1E1E)](https://github.com/priyanshusharan-cmd)
+
+<sub>If Ridify helped or inspired you, a ⭐ on the repo means a lot.</sub>
+
 </div>

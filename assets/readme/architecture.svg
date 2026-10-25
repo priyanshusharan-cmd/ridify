@@ -1,0 +1,94 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1280" height="860" viewBox="0 0 1280 860" font-family="Roboto, 'Segoe UI', -apple-system, BlinkMacSystemFont, 'Helvetica Neue', Helvetica, Arial, sans-serif">
+<defs>
+<linearGradient id="bg" x1="0" y1="0" x2="0" y2="1">
+  <stop offset="0" stop-color="#050505"/><stop offset=".55" stop-color="#0E0E0E"/><stop offset="1" stop-color="#121212"/>
+</linearGradient>
+<pattern id="dots" width="26" height="26" patternUnits="userSpaceOnUse">
+  <circle cx="2" cy="2" r="1.1" fill="#9E9E9E" opacity=".09"/>
+</pattern>
+<clipPath id="frame"><rect width="1280" height="860" rx="28"/></clipPath><marker id="mc" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 1 L9 5 L0 9z" fill="#FFFFFF"/></marker><marker id="mv" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 1 L9 5 L0 9z" fill="#2196F3"/></marker><marker id="me" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 1 L9 5 L0 9z" fill="#4ADE80"/></marker><marker id="ma" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 1 L9 5 L0 9z" fill="#FFC107"/></marker><marker id="mb" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 1 L9 5 L0 9z" fill="#2196F3"/></marker><filter id="glow" x="-50%" y="-50%" width="200%" height="200%"><feGaussianBlur stdDeviation="3" result="b"/>
+<feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter></defs>
+<style>
+.flow{stroke-dasharray:7 7;animation:flow 1s linear infinite}
+.flowS{stroke-dasharray:3 6;animation:flow .7s linear infinite}
+@keyframes flow{to{stroke-dashoffset:-28}}
+.lbl{font-size:11px;fill:#9E9E9E;letter-spacing:.3px}
+.t{font-size:15px;font-weight:700;fill:#FFFFFF}
+.s{font-size:12px;fill:#9E9E9E}
+.m{font-family:ui-monospace, SFMono-Regular, 'SF Mono', Menlo, Consolas, 'Liberation Mono', monospace;font-size:12.5px;fill:#FFFFFF}
+.hd{font-size:12px;font-weight:800;letter-spacing:2.6px}
+.layer{animation:layer 4.2s ease-in-out infinite}
+@keyframes layer{0%,100%{stroke-opacity:.18}8%{stroke-opacity:.9}20%{stroke-opacity:.18}}
+.ev{animation:ev 9s linear infinite}
+@keyframes ev{from{transform:translateX(0)}to{transform:translateX(-640px)}}
+</style>
+<g clip-path="url(#frame)">
+<rect width="1280" height="860" rx="28" fill="url(#bg)"/><rect width="1280" height="860" rx="28" fill="url(#dots)"/>
+<text x="48" y="60" font-size="26" font-weight="800" fill="#FFFFFF">System architecture</text><text x="48" y="86" font-size="14" fill="#9E9E9E">Flutter clients → hardened Express + Socket.IO core → MongoDB</text>
+<line x1="830" y1="54" x2="860" y2="54" stroke="#FFFFFF" stroke-width="2.5" class="flow"/><text x="868" y="58" font-size="12" fill="#9E9E9E">REST</text>
+<line x1="919.92" y1="54" x2="949.92" y2="54" stroke="#2196F3" stroke-width="2.5" class="flowS"/><text x="957.92" y="58" font-size="12" fill="#9E9E9E">WebSocket</text>
+<line x1="1042.24" y1="54" x2="1072.24" y2="54" stroke="#4ADE80" stroke-width="2.5" class="flow"/><text x="1080.24" y="58" font-size="12" fill="#9E9E9E">Database</text>
+<line x1="1158.08" y1="54" x2="1188.08" y2="54" stroke="#FFC107" stroke-width="2.5" class="flow"/><text x="1196.08" y="58" font-size="12" fill="#9E9E9E">External</text>
+<rect x="30" y="118" width="240" height="510" rx="18" fill="#9E9E9E" fill-opacity=".028" stroke="#9E9E9E" stroke-opacity=".08"/><text x="150.0" y="143" text-anchor="middle" class="hd" fill="#FFFFFF">CLIENTS</text>
+<rect x="280" y="118" width="240" height="510" rx="18" fill="#9E9E9E" fill-opacity=".028" stroke="#9E9E9E" stroke-opacity=".08"/><text x="400.0" y="143" text-anchor="middle" class="hd" fill="#F44336">EDGE · SECURITY</text>
+<rect x="530" y="118" width="240" height="510" rx="18" fill="#9E9E9E" fill-opacity=".028" stroke="#9E9E9E" stroke-opacity=".08"/><text x="650.0" y="143" text-anchor="middle" class="hd" fill="#FFFFFF">API LAYER</text>
+<rect x="780" y="118" width="240" height="510" rx="18" fill="#9E9E9E" fill-opacity=".028" stroke="#9E9E9E" stroke-opacity=".08"/><text x="900.0" y="143" text-anchor="middle" class="hd" fill="#FFFFFF">DOMAIN LOGIC</text>
+<rect x="1030" y="118" width="220" height="510" rx="18" fill="#9E9E9E" fill-opacity=".028" stroke="#9E9E9E" stroke-opacity=".08"/><text x="1140.0" y="143" text-anchor="middle" class="hd" fill="#4ADE80">DATA &amp; SERVICES</text>
+<rect x="40" y="162" width="220" height="92" rx="14" fill="#1E1E1E" stroke="#2C2C2C"/><rect x="56" y="162" width="188" height="2.5" rx="1.25" fill="#FFFFFF"/><text x="56" y="192" class="t">Flutter Mobile</text><text x="56" y="211" class="s">Android · iOS</text><circle cx="60" cy="239" r="3" fill="#FFFFFF"/><text x="72" y="243" class="s" style="fill:#E0E0E0">Provider · flutter_map</text>
+<rect x="40" y="272" width="220" height="92" rx="14" fill="#1E1E1E" stroke="#2C2C2C"/><rect x="56" y="272" width="188" height="2.5" rx="1.25" fill="#FFFFFF"/><text x="56" y="302" class="t">Flutter Web</text><text x="56" y="321" class="s">same lib/ · Render static</text><circle cx="60" cy="349" r="3" fill="#FFFFFF"/><text x="72" y="353" class="s" style="fill:#E0E0E0">phone layout ≤ 480 px</text>
+<rect x="40" y="382" width="220" height="206" rx="14" fill="#1E1E1E" stroke="#2C2C2C"/><rect x="56" y="382" width="188" height="2.5" rx="1.25" fill="#FFFFFF"/><text x="56" y="412" class="t">Client core</text><text x="56" y="431" class="s">lib/core · lib/services</text><circle cx="60" cy="459" r="3" fill="#FFFFFF"/><text x="72" y="463" class="s" style="fill:#E0E0E0">ApiClient · silent refresh</text><circle cx="60" cy="481" r="3" fill="#FFFFFF"/><text x="72" y="485" class="s" style="fill:#E0E0E0">SocketService · live events</text><circle cx="60" cy="503" r="3" fill="#FFFFFF"/><text x="72" y="507" class="s" style="fill:#E0E0E0">secure_storage · tokens</text><circle cx="60" cy="525" r="3" fill="#FFFFFF"/><text x="72" y="529" class="s" style="fill:#E0E0E0">geolocator · GPS</text><circle cx="60" cy="547" r="3" fill="#FFFFFF"/><text x="72" y="551" class="s" style="fill:#E0E0E0">ThemeProvider · light/dark</text>
+<rect x="290" y="162" width="220" height="426" rx="14" fill="#1E1E1E" stroke="#2C2C2C"/><rect x="306" y="162" width="188" height="2.5" rx="1.25" fill="#F44336"/><text x="306" y="192" class="t">Request pipeline</text>
+<rect x="306" y="210" width="188" height="42" rx="10" fill="#2A2A2A" stroke="#F44336" class="layer" style="animation-delay:0.00s"/><text x="320" y="228" class="m">helmet</text><text x="320" y="244" class="s" font-size="11">secure headers</text>
+<rect x="306" y="262" width="188" height="42" rx="10" fill="#2A2A2A" stroke="#F44336" class="layer" style="animation-delay:0.42s"/><text x="320" y="280" class="m">cors</text><text x="320" y="296" class="s" font-size="11">ALLOWED_ORIGIN lock</text>
+<rect x="306" y="314" width="188" height="42" rx="10" fill="#2A2A2A" stroke="#F44336" class="layer" style="animation-delay:0.84s"/><text x="320" y="332" class="m">rate-limit</text><text x="320" y="348" class="s" font-size="11">global · auth · rides</text>
+<rect x="306" y="366" width="188" height="42" rx="10" fill="#2A2A2A" stroke="#F44336" class="layer" style="animation-delay:1.26s"/><text x="320" y="384" class="m">json ≤ 1 MB</text><text x="320" y="400" class="s" font-size="11">body size cap</text>
+<rect x="306" y="418" width="188" height="42" rx="10" fill="#2A2A2A" stroke="#F44336" class="layer" style="animation-delay:1.68s"/><text x="320" y="436" class="m">sanitize</text><text x="320" y="452" class="s" font-size="11">sanitize-html · validators</text>
+<rect x="306" y="470" width="188" height="42" rx="10" fill="#2A2A2A" stroke="#F44336" class="layer" style="animation-delay:2.10s"/><text x="320" y="488" class="m">authenticate</text><text x="320" y="504" class="s" font-size="11">JWT · ban check</text>
+<rect x="306" y="522" width="188" height="42" rx="10" fill="#2A2A2A" stroke="#F44336" class="layer" style="animation-delay:2.52s"/><text x="320" y="540" class="m">adminOnly</text><text x="320" y="556" class="s" font-size="11">admin routes only</text>
+<circle r="5" fill="#F44336" filter="url(#glow)"><animateMotion path="M 300 214 L 300 568" dur="4.2s" repeatCount="indefinite" keyPoints="0;1;1" keyTimes="0;.85;1" calcMode="linear"/></circle>
+<rect x="540" y="162" width="220" height="206" rx="14" fill="#1E1E1E" stroke="#2C2C2C"/><rect x="556" y="162" width="188" height="2.5" rx="1.25" fill="#FFFFFF"/><text x="556" y="192" class="t">Express 5 REST</text><text x="556" y="211" class="s">routes/ · controllers/</text><text x="556" y="247" class="m" fill="#FFFFFF">/api/auth</text><text x="746" y="247" class="s" text-anchor="end">otp · jwt</text><text x="556" y="273" class="m" fill="#FFFFFF">/api/rides</text><text x="746" y="273" class="s" text-anchor="end">match · trip</text><text x="556" y="299" class="m" fill="#FFFFFF">/api/admin</text><text x="746" y="299" class="s" text-anchor="end">moderation</text><text x="556" y="325" class="m" fill="#FFFFFF">/health</text><text x="746" y="325" class="s" text-anchor="end">probe</text>
+<rect x="540" y="386" width="220" height="202" rx="14" fill="#1E1E1E" stroke="#2C2C2C"/><rect x="556" y="386" width="188" height="2.5" rx="1.25" fill="#2196F3"/><text x="556" y="416" class="t">Socket.IO 4.8</text><text x="556" y="435" class="s">JWT handshake middleware</text><circle cx="560" cy="465" r="3" fill="#2196F3"/><text x="572" y="469" class="s" style="fill:#E0E0E0">room: user email</text><circle cx="560" cy="489" r="3" fill="#2196F3"/><text x="572" y="493" class="s" style="fill:#E0E0E0">room: ride id</text><circle cx="560" cy="513" r="3" fill="#2196F3"/><text x="572" y="517" class="s" style="fill:#E0E0E0">room: global search</text><circle cx="560" cy="537" r="3" fill="#2196F3"/><text x="572" y="541" class="s" style="fill:#E0E0E0">driver_location_update</text>
+<rect x="790" y="162" width="220" height="128" rx="14" fill="#1E1E1E" stroke="#2C2C2C"/><rect x="806" y="162" width="188" height="2.5" rx="1.25" fill="#FFFFFF"/><text x="806" y="192" class="t">authController</text><circle cx="810" cy="220" r="3" fill="#FFFFFF"/><text x="822" y="224" class="s" style="fill:#E0E0E0">OTP → SHA-256 · 5 tries</text><circle cx="810" cy="242" r="3" fill="#FFFFFF"/><text x="822" y="246" class="s" style="fill:#E0E0E0">bcrypt password hashing</text><circle cx="810" cy="264" r="3" fill="#FFFFFF"/><text x="822" y="268" class="s" style="fill:#E0E0E0">access + refresh JWT</text>
+<rect x="790" y="306" width="220" height="152" rx="14" fill="#1E1E1E" stroke="#2C2C2C"/><rect x="806" y="306" width="188" height="2.5" rx="1.25" fill="#FFFFFF"/><text x="806" y="336" class="t">rideController</text><circle cx="810" cy="364" r="3" fill="#FFFFFF"/><text x="822" y="368" class="s" style="fill:#E0E0E0">turf.js geo matching</text><circle cx="810" cy="386" r="3" fill="#FFFFFF"/><text x="822" y="390" class="s" style="fill:#E0E0E0">sweep-line seat capacity</text><circle cx="810" cy="408" r="3" fill="#FFFFFF"/><text x="822" y="412" class="s" style="fill:#E0E0E0">pro-rata fare by distance</text><circle cx="810" cy="430" r="3" fill="#FFFFFF"/><text x="822" y="434" class="s" style="fill:#E0E0E0">optimistic locking</text>
+<rect x="790" y="474" width="220" height="114" rx="14" fill="#1E1E1E" stroke="#2C2C2C"/><rect x="806" y="474" width="188" height="2.5" rx="1.25" fill="#FFFFFF"/><text x="806" y="504" class="t">adminController</text><circle cx="810" cy="532" r="3" fill="#FFFFFF"/><text x="822" y="536" class="s" style="fill:#E0E0E0">users · bans · KYC review</text><circle cx="810" cy="554" r="3" fill="#FFFFFF"/><text x="822" y="558" class="s" style="fill:#E0E0E0">force-cancel · live stats</text>
+<rect x="1040" y="162" width="200" height="176" rx="14" fill="#1E1E1E" stroke="#2C2C2C"/><rect x="1056" y="162" width="168" height="2.5" rx="1.25" fill="#4ADE80"/><text x="1056" y="192" class="t">MongoDB Atlas</text><text x="1056" y="211" class="s">Mongoose 9 ODM</text>
+<rect x="1056" y="224" width="60" height="22" rx="11" fill="#4ADE80" fill-opacity=".1" stroke="#4ADE80" stroke-opacity=".4"/><text x="1069" y="239" class="m" style="fill:#4ADE80">users</text>
+<rect x="1056" y="252" width="60" height="22" rx="11" fill="#4ADE80" fill-opacity=".1" stroke="#4ADE80" stroke-opacity=".4"/><text x="1069" y="267" class="m" style="fill:#4ADE80">rides</text>
+<rect x="1056" y="280" width="134" height="22" rx="11" fill="#4ADE80" fill-opacity=".1" stroke="#4ADE80" stroke-opacity=".4"/><text x="1069" y="295" class="m" style="fill:#4ADE80">otpverifications</text>
+<text x="1056" y="324" class="s">2dsphere · TTL 30-day cleanup</text>
+<rect x="1040" y="354" width="200" height="70" rx="14" fill="#1E1E1E" stroke="#2C2C2C"/><rect x="1056" y="354" width="168" height="2.5" rx="1.25" fill="#FFC107"/><text x="1056" y="384" class="t">EmailJS</text><text x="1056" y="403" class="s">OTP email delivery</text>
+<rect x="1040" y="438" width="200" height="70" rx="14" fill="#1E1E1E" stroke="#2C2C2C"/><rect x="1056" y="438" width="168" height="2.5" rx="1.25" fill="#FFC107"/><text x="1056" y="468" class="t">Google Apps Script</text><text x="1056" y="487" class="s">KYC docs → Drive</text>
+<rect x="1040" y="522" width="200" height="66" rx="14" fill="#1E1E1E" stroke="#2C2C2C"/><rect x="1056" y="522" width="168" height="2.5" rx="1.25" fill="#FFC107"/><text x="1056" y="552" class="t">Open map stack</text><text x="1056" y="571" class="s">OSM · OSRM · Nominatim</text>
+<path d="M 260 208 L 288 208" fill="none" stroke="#FFFFFF" stroke-width="2" stroke-opacity=".85" class="flow" marker-end="url(#mc)"/>
+<path d="M 260 318 L 288 318" fill="none" stroke="#FFFFFF" stroke-width="2" stroke-opacity=".85" class="flow" marker-end="url(#mc)"/>
+<path d="M 260 440 L 288 440" fill="none" stroke="#FFFFFF" stroke-width="2" stroke-opacity=".85" class="flow" marker-end="url(#mc)"/>
+<path d="M 510 260 L 538 260" fill="none" stroke="#FFFFFF" stroke-width="2" stroke-opacity=".85" class="flow" marker-end="url(#mc)"/>
+<path d="M 150 590 L 150 646 Q 150 656 160 656 L 640 656 Q 650 656 650 646 L 650 592" fill="none" stroke="#2196F3" stroke-width="2" stroke-opacity=".85" class="flowS" marker-end="url(#mb)" marker-start="url(#mb)"/>
+<text x="400" y="676" class="lbl" text-anchor="middle">WebSocket · JWT-authenticated handshake · auto-joins ride rooms</text>
+<circle r="4.5" fill="#2196F3" filter="url(#glow)"><animateMotion dur="3.2s" repeatCount="indefinite" keyPoints="0;1" keyTimes="0;1" calcMode="linear" path="M 150 590 L 150 646 Q 150 656 160 656 L 640 656 Q 650 656 650 646 L 650 592"/></circle>
+<circle r="4.5" fill="#2196F3" filter="url(#glow)"><animateMotion dur="3.2s" repeatCount="indefinite" keyPoints="1;0" keyTimes="0;1" calcMode="linear" path="M 150 590 L 150 646 Q 150 656 160 656 L 640 656 Q 650 656 650 646 L 650 592"/></circle>
+<path d="M 760 226 L 788 226" fill="none" stroke="#FFFFFF" stroke-width="2" stroke-opacity=".85" class="flow" marker-end="url(#mc)"/>
+<path d="M 760 262 C 776 262, 772 380, 788 380" fill="none" stroke="#FFFFFF" stroke-width="2" stroke-opacity=".85" class="flow" marker-end="url(#mc)"/>
+<path d="M 760 290 C 780 290, 770 530, 788 530" fill="none" stroke="#FFFFFF" stroke-width="2" stroke-opacity=".85" class="flow" marker-end="url(#mc)"/>
+<path d="M 790 430 C 772 430, 778 470, 762 470" fill="none" stroke="#2196F3" stroke-width="2" stroke-opacity=".85" class="flowS" marker-end="url(#mb)"/>
+<path d="M 1010 200 L 1038 200" fill="none" stroke="#4ADE80" stroke-width="2" stroke-opacity=".85" class="flow" marker-end="url(#me)"/>
+<path d="M 1010 360 C 1026 360, 1022 260, 1038 260" fill="none" stroke="#4ADE80" stroke-width="2" stroke-opacity=".85" class="flow" marker-end="url(#me)"/>
+<path d="M 1010 520 C 1030 520, 1020 300, 1038 300" fill="none" stroke="#4ADE80" stroke-width="2" stroke-opacity=".85" class="flow" marker-end="url(#me)"/>
+<path d="M 1010 240 C 1026 240, 1022 388, 1038 388" fill="none" stroke="#FFC107" stroke-width="2" stroke-opacity=".85" class="flow" marker-end="url(#ma)"/>
+<path d="M 1010 270 C 1030 270, 1018 470, 1038 470" fill="none" stroke="#FFC107" stroke-width="2" stroke-opacity=".85" class="flow" marker-end="url(#ma)"/>
+<path d="M 150 162 L 150 112 Q 150 104 158 104 L 1252 104 Q 1260 104 1260 112 L 1260 547 Q 1260 555 1252 555 L 1242 555" fill="none" stroke="#FFC107" stroke-width="2" stroke-opacity=".85" class="flow" marker-end="url(#ma)"/>
+<text x="900" y="98" class="lbl" text-anchor="middle">map tiles · geocoding · OSRM routing — straight from the app</text>
+<circle r="4" fill="#FFC107" filter="url(#glow)"><animateMotion dur="6s" repeatCount="indefinite" path="M 150 162 L 150 112 Q 150 104 158 104 L 1252 104 Q 1260 104 1260 112 L 1260 547 Q 1260 555 1252 555 L 1242 555"/></circle>
+<rect x="40" y="700" width="1200" height="128" rx="18" fill="#9E9E9E" fill-opacity=".03" stroke="#9E9E9E" stroke-opacity=".1"/><text x="64" y="730" class="hd" fill="#9E9E9E">SHIP &amp; RUN</text>
+<rect x="64" y="748" width="180" height="60" rx="12" fill="#1E1E1E" stroke="#9E9E9E" stroke-opacity=".5"/><text x="80" y="774" class="t" font-size="14">git push</text><text x="80" y="793" class="s">main · develop</text>
+<rect x="282" y="748" width="260" height="60" rx="12" fill="#1E1E1E" stroke="#F44336" stroke-opacity=".5"/><text x="298" y="774" class="t" font-size="14">GitHub Actions</text><text x="298" y="793" class="s">npm audit · secret scan · flutter analyze</text>
+<rect x="580" y="748" width="180" height="60" rx="12" fill="#1E1E1E" stroke="#FFFFFF" stroke-opacity=".5"/><text x="596" y="774" class="t" font-size="14">Render Blueprint</text><text x="596" y="793" class="s">render.yaml</text>
+<rect x="798" y="748" width="180" height="60" rx="12" fill="#1E1E1E" stroke="#2196F3" stroke-opacity=".5"/><text x="814" y="774" class="t" font-size="14">ridify</text><text x="814" y="793" class="s">Flutter web · static</text>
+<rect x="1016" y="748" width="200" height="60" rx="12" fill="#1E1E1E" stroke="#4ADE80" stroke-opacity=".5"/><text x="1032" y="774" class="t" font-size="14">ridify-backend</text><text x="1032" y="793" class="s">Node · /health check</text>
+<path d="M 244 778 L 280 778" stroke="#9E9E9E" stroke-width="2" class="flow" marker-end="url(#mc)" fill="none"/>
+<path d="M 542 778 L 578 778" stroke="#9E9E9E" stroke-width="2" class="flow" marker-end="url(#mc)" fill="none"/>
+<path d="M 760 778 L 796 778" stroke="#9E9E9E" stroke-width="2" class="flow" marker-end="url(#mc)" fill="none"/>
+<path d="M 978 778 L 1014 778" stroke="#9E9E9E" stroke-width="2" class="flow" marker-end="url(#mc)" fill="none"/>
+</g>
+<rect x=".75" y=".75" width="1278.5" height="858.5" rx="28" fill="none" stroke="#9E9E9E" stroke-opacity=".16" stroke-width="1.5"/>
+</svg>
