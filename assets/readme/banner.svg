@@ -38,8 +38,8 @@
 @keyframes fl{0%,100%{opacity:.75}40%{opacity:.2}55%{opacity:.75}}
 .dash{animation:dash .55s linear infinite}
 @keyframes dash{to{transform:translateX(-80px)}}
-.drive{animation:drive 10s linear infinite}
-@keyframes drive{from{transform:translateX(-300px)}to{transform:translateX(1320px)}}
+.drive{animation:drive 12s linear infinite}
+@keyframes drive{from{transform:translateX(-500px)}to{transform:translateX(1460px)}}
 .bob{animation:bob .45s ease-in-out infinite alternate}
 @keyframes bob{to{transform:translateY(-1.6px)}}
 .blink{animation:blink 1.1s steps(1) infinite}
