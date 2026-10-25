@@ -14,7 +14,6 @@
 [![Express](https://img.shields.io/badge/Express-5-000000?style=flat-square&logo=express&logoColor=white&labelColor=1E1E1E)](https://expressjs.com)
 [![MongoDB](https://img.shields.io/badge/MongoDB-Mongoose_9-000000?style=flat-square&logo=mongodb&logoColor=white&labelColor=1E1E1E)](https://www.mongodb.com)
 [![Socket.IO](https://img.shields.io/badge/Socket.IO-4.8-000000?style=flat-square&logo=socketdotio&logoColor=white&labelColor=1E1E1E)](https://socket.io)
-[![Security checks](https://img.shields.io/badge/security_checks-npm_audit_·_secret_scan_·_flutter_analyze-4ADE80?style=flat-square&logo=githubactions&logoColor=white&labelColor=1E1E1E)](.github/workflows/security-check.yml)
 [![License: MIT](https://img.shields.io/badge/License-MIT-000000?style=flat-square&labelColor=1E1E1E)](LICENSE)
 
 **[Features](#-features)** &nbsp;·&nbsp; **[Architecture](#-architecture)** &nbsp;·&nbsp; **[How it works](#-how-it-works)** &nbsp;·&nbsp; **[Tech stack](#-tech-stack)** &nbsp;·&nbsp; **[Getting started](#-getting-started)** &nbsp;·&nbsp; **[Screenshots](#-screenshots)** &nbsp;·&nbsp; **[User manual](USER_MANUAL.md)**
