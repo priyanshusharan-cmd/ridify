@@ -36,6 +36,10 @@ jobs:
         with:
           flutter-version: '3.x'
           channel: 'stable'
+      # .env is gitignored but bundled as an asset in pubspec.yaml; use the example values in CI
+      - name: Create .env for analysis
+        working-directory: frontend
+        run: cp .env.example .env
       - name: Flutter pub get
         working-directory: frontend
         run: flutter pub get
