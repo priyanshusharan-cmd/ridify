@@ -76,6 +76,24 @@ async function collectStatus(io) {
     components.rides = { state: 'down', value: 'Unknown', sub: 'Needs the database' };
   }
 
+  // Users: registered accounts, verified drivers and this week's sign-ups.
+  if (dbOk) {
+    try {
+      const User = require('../models/user');
+      const weekAgo = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000);
+      const [total, verified, recent] = await withTimeout(Promise.all([
+        User.estimatedDocumentCount(),
+        User.countDocuments({ verificationStatus: 'verified' }),
+        User.countDocuments({ createdAt: { $gte: weekAgo } }),
+      ]), CHECK_TIMEOUT_MS);
+      components.users = { state: 'ok', value: `${total} ${total === 1 ? 'member' : 'members'}`, sub: `${verified} verified · +${recent} this week` };
+    } catch {
+      components.users = { state: 'degraded', value: 'Unknown', sub: 'User query failed' };
+    }
+  } else {
+    components.users = { state: 'down', value: 'Unknown', sub: 'Needs the database' };
+  }
+
   const mem = process.memoryUsage().rss / 1024 / 1024;
   components.api = { state: 'ok', value: `v${version}`, sub: `Node ${process.version} · ${Date.now() - started} ms checks` };
   components.uptime = { state: 'ok', value: formatUptime(process.uptime()), sub: `${Math.round(mem)} MB memory` };
@@ -85,8 +103,16 @@ async function collectStatus(io) {
 
 const CARD_ORDER = [
   ['api', 'API'], ['database', 'Database'], ['realtime', 'Realtime'],
-  ['rides', 'Rides'], ['uptime', 'Uptime'],
+  ['rides', 'Rides'], ['users', 'Users'], ['uptime', 'Uptime'],
 ];
+const ICONS = {
+  api: '<polyline points="8 6 2 12 8 18"/><polyline points="16 6 22 12 16 18"/>',
+  database: '<ellipse cx="12" cy="5" rx="8" ry="3"/><path d="M4 5v14c0 1.7 3.6 3 8 3s8-1.3 8-3V5"/><path d="M4 12c0 1.7 3.6 3 8 3s8-1.3 8-3"/>',
+  realtime: '<circle cx="12" cy="12" r="2"/><path d="M16.2 7.8a6 6 0 0 1 0 8.4M7.8 16.2a6 6 0 0 1 0-8.4M19 5a10 10 0 0 1 0 14M5 19A10 10 0 0 1 5 5"/>',
+  rides: '<path d="M12 21s-6-5.5-6-10a6 6 0 0 1 12 0c0 4.5-6 10-6 10z"/><circle cx="12" cy="11" r="2"/>',
+  users: '<circle cx="9" cy="8" r="3.5"/><path d="M2.5 20a6.5 6.5 0 0 1 13 0"/><path d="M16 4.5a3.5 3.5 0 0 1 0 7M18 14.5a6.5 6.5 0 0 1 3.5 5.5"/>',
+  uptime: '<circle cx="12" cy="12" r="9"/><polyline points="12 7 12 12 15.5 14"/>',
+};
 const STATE_LABEL = { ok: 'Operational', degraded: 'Degraded', down: 'Down' };
 
 function summary(components) {
@@ -106,7 +132,7 @@ function skyline() {
   let out = '';
   for (let x = -10; x < 1290;) {
     const w = 44 + Math.floor(rand() * 60);
-    const h = 22 + Math.floor(rand() * 46);
+    const h = 16 + Math.floor(rand() * 26);
     const top = 300 - h;
     out += `<rect x="${x}" y="${top}" width="${w - 6}" height="${h}" fill="#141414"/>`;
     for (let wy = top + 10; wy < 290; wy += 12) {
@@ -148,7 +174,11 @@ function renderStatusPage(components, refreshCount = 0) {
     const c = components[key];
     return `
       <div class="card ${c.state}" style="animation-delay:${0.35 + i * 0.07}s">
-        <div class="card-top"><span class="label">${label}</span><span class="badge ${c.state}"><i></i>${STATE_LABEL[c.state]}</span></div>
+        <div class="card-top">
+          <span class="ico"><svg viewBox="0 0 24 24" aria-hidden="true">${ICONS[key]}</svg></span>
+          <span class="label">${label}</span>
+          <span class="badge ${c.state}" title="${STATE_LABEL[c.state]}"><i></i><b>${STATE_LABEL[c.state]}</b></span>
+        </div>
         <div class="value">${c.value}</div>
         <div class="sub">${c.sub}</div>
       </div>`;
@@ -235,22 +265,35 @@ ${refreshing ? `<meta http-equiv="refresh" content="${REFRESH_SECONDS};url=/?r=$
   .settled .rise, .settled .card { opacity: 1; animation: none; }
 
   /* Component cards */
-  .grid { margin-top: 16px; display: grid; grid-template-columns: repeat(5, 1fr); gap: 12px; }
-  @media (max-width: 900px) { .grid { grid-template-columns: repeat(3, 1fr); } }
-  @media (max-width: 560px) { .grid { grid-template-columns: repeat(2, 1fr); } }
-  .card { min-width: 0; opacity: 0; animation: rise .6s cubic-bezier(.2,.7,.2,1) forwards; background: var(--surface); border: 1px solid var(--surface-2); border-radius: 16px; padding: 16px; transition: border-color .2s, transform .2s; }
+  .grid { margin-top: 16px; display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; }
+  .card { min-width: 0; opacity: 0; animation: rise .6s cubic-bezier(.2,.7,.2,1) forwards; background: var(--surface); border: 1px solid var(--surface-2); border-radius: 18px; padding: 20px; transition: border-color .2s, transform .2s; }
   .card:hover { border-color: var(--line); transform: translateY(-2px); }
   .card.degraded { border-color: rgba(255,193,7,.4); }
   .card.down { border-color: rgba(244,67,54,.45); background: linear-gradient(180deg, rgba(244,67,54,.08), var(--surface)); }
-  .card-top { display: flex; justify-content: space-between; align-items: center; gap: 8px; }
-  .label { font-size: 12px; letter-spacing: .12em; text-transform: uppercase; color: var(--muted); }
-  .badge { display: inline-flex; align-items: center; gap: 5px; font-size: 11px; font-weight: 600; color: var(--muted); }
-  .badge i { width: 7px; height: 7px; border-radius: 50%; }
-  .badge.ok i { background: var(--ok); box-shadow: 0 0 8px rgba(74,222,128,.6); }
-  .badge.degraded { color: var(--degraded); } .badge.degraded i { background: var(--degraded); box-shadow: 0 0 8px rgba(255,193,7,.6); }
-  .badge.down { color: var(--down); } .badge.down i { background: var(--down); box-shadow: 0 0 8px rgba(244,67,54,.6); }
-  .value { margin-top: 10px; font-size: clamp(17px, 2vw, 21px); font-weight: 700; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-  .sub { margin-top: 4px; font-size: 12.5px; color: var(--faint); }
+  .card-top { display: flex; align-items: center; gap: 10px; }
+  .ico { flex: none; width: 36px; height: 36px; border-radius: 10px; display: grid; place-items: center; background: var(--surface-2); color: #fff; }
+  .ico svg { width: 18px; height: 18px; fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
+  .card.degraded .ico { color: var(--degraded); } .card.down .ico { color: var(--down); }
+  .label { font-size: 12px; font-weight: 600; letter-spacing: .14em; text-transform: uppercase; color: var(--muted); min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .badge { margin-left: auto; flex: none; display: inline-flex; align-items: center; gap: 6px; padding: 4px 10px 4px 8px; border-radius: 999px; font-size: 11.5px; font-weight: 600; color: var(--ok); background: rgba(74,222,128,.1); }
+  .badge b { font-weight: 600; }
+  .badge i { width: 7px; height: 7px; border-radius: 50%; background: currentColor; box-shadow: 0 0 8px currentColor; }
+  .badge.degraded { color: var(--degraded); background: rgba(255,193,7,.1); }
+  .badge.down { color: var(--down); background: rgba(244,67,54,.12); }
+  .value { margin-top: 18px; font-size: clamp(22px, 2.6vw, 30px); font-weight: 700; letter-spacing: -.01em; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .sub { margin-top: 6px; font-size: 13.5px; color: var(--muted); opacity: .8; }
+  @media (max-width: 860px) { .grid { grid-template-columns: repeat(2, 1fr); } }
+  @media (max-width: 480px) {
+    .grid { gap: 10px; }
+    .card { padding: 14px; border-radius: 16px; }
+    .ico { width: 30px; height: 30px; border-radius: 9px; }
+    .ico svg { width: 16px; height: 16px; }
+    .label { font-size: 11px; letter-spacing: .1em; }
+    .badge { padding: 0; background: none; }
+    .badge b { display: none; }
+    .value { margin-top: 12px; font-size: 20px; }
+    .sub { font-size: 12px; }
+  }
 
   .actions { margin-top: 24px; display: flex; flex-wrap: wrap; gap: 12px; }
   .btn { display: inline-flex; align-items: center; gap: 8px; padding: 13px 22px; border-radius: 12px; font-weight: 600; font-size: 15px; text-decoration: none; transition: transform .15s, background .2s; }
