@@ -130,12 +130,14 @@ app.get('/health', (req, res) => {
   // Don't reveal DB state details publicly
   res.status(503).json({ status: 'unavailable' });
 });
-app.get('/', (req, res) => {
-  const { renderStatusPage } = require('./utils/statusPage');
-  res.send(renderStatusPage({
-    dbConnected: require('mongoose').connection.readyState === 1,
-    uptimeSeconds: process.uptime(),
-  }));
+app.get('/favicon.ico', (req, res) => res.sendFile(require('path').join(__dirname, 'public', 'favicon.png'), { maxAge: '7d' }));
+app.use('/static', express.static(require('path').join(__dirname, 'public'), { maxAge: '7d' }));
+app.get('/', async (req, res, next) => {
+  try {
+    const { collectStatus, renderStatusPage } = require('./utils/statusPage');
+    res.set('Cache-Control', 'no-store');
+    res.send(renderStatusPage(await collectStatus(io)));
+  } catch (err) { next(err); }
 });
 app.get('/api/config', (req, res) => {
   res.json({
