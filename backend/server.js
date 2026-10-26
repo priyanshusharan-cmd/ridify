@@ -130,7 +130,13 @@ app.get('/health', (req, res) => {
   // Don't reveal DB state details publicly
   res.status(503).json({ status: 'unavailable' });
 });
-app.get('/', (req, res) => { res.send('🚗 Ridify Backend API is running!'); });
+app.get('/', (req, res) => {
+  const { renderStatusPage } = require('./utils/statusPage');
+  res.send(renderStatusPage({
+    dbConnected: require('mongoose').connection.readyState === 1,
+    uptimeSeconds: process.uptime(),
+  }));
+});
 app.get('/api/config', (req, res) => {
   res.json({
     kMaxFieldLength: parseInt(process.env.MAX_FIELD_LENGTH) || 500,
