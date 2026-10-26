@@ -7,6 +7,9 @@ const { version } = require('../package.json');
 const APP_URL = 'https://ridify.onrender.com';
 const REPO_URL = 'https://github.com/priyanshusharan-cmd/ridify';
 const REFRESH_SECONDS = 30;
+// Stop after this many reloads so a forgotten tab can't keep the free Render
+// instance awake (it only sleeps after 15 min with no inbound requests).
+const MAX_REFRESHES = 10;
 const CHECK_TIMEOUT_MS = 2000;
 
 function withTimeout(promise, ms) {
@@ -134,7 +137,9 @@ const STARS = stars();
 const DASHES = Array.from({ length: 18 }, (_, i) =>
   `<rect x="${i * 80}" y="334" width="40" height="3" rx="1.5" fill="#E0E0E0" opacity=".35"/>`).join('');
 
-function renderStatusPage(components) {
+function renderStatusPage(components, refreshCount = 0) {
+  const count = Math.min(Math.max(parseInt(refreshCount, 10) || 0, 0), MAX_REFRESHES);
+  const refreshing = count < MAX_REFRESHES;
   const overall = summary(components);
   const checkedAt = new Date().toUTCString().replace(' GMT', ' UTC');
   const year = new Date().getFullYear();
@@ -154,7 +159,7 @@ function renderStatusPage(components) {
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<meta http-equiv="refresh" content="${REFRESH_SECONDS}">
+${refreshing ? `<meta http-equiv="refresh" content="${REFRESH_SECONDS};url=/?r=${count + 1}">` : ''}
 <meta name="robots" content="noindex">
 <title>Ridify API · ${overall.state === 'ok' ? 'Operational' : 'Issues detected'}</title>
 <link rel="icon" type="image/png" href="/static/favicon.png">
@@ -224,6 +229,10 @@ function renderStatusPage(components) {
   .dot::after { content: ''; position: absolute; inset: 0; border-radius: 50%; background: inherit; animation: ping 2s ease-out infinite; }
   @keyframes ping { from { transform: scale(1); opacity: .7; } to { transform: scale(2.8); opacity: 0; } }
   .checked { font-size: 12.5px; color: var(--faint); }
+  .checked a { color: var(--muted); }
+  .checked a:hover { color: #fff; }
+  /* Skip the intro animation on auto-refreshes so the page doesn't flash */
+  .settled .rise, .settled .card { opacity: 1; animation: none; }
 
   /* Component cards */
   .grid { margin-top: 16px; display: grid; grid-template-columns: repeat(5, 1fr); gap: 12px; }
@@ -264,7 +273,7 @@ function renderStatusPage(components) {
   }
 </style>
 </head>
-<body>
+<body${count > 0 ? ' class="settled"' : ''}>
 <main>
   <section class="hero rise">
     <svg class="scene" viewBox="0 0 1280 400" aria-hidden="true">
@@ -303,7 +312,7 @@ function renderStatusPage(components) {
 
   <div class="status-row rise" style="animation-delay:.2s">
     <div class="status ${overall.state}" role="status"><span class="dot ${overall.state}"></span>${overall.text}</div>
-    <div class="checked">Checked ${checkedAt} · refreshes every ${REFRESH_SECONDS}s</div>
+    <div class="checked">Checked ${checkedAt} · ${refreshing ? `refreshes every ${REFRESH_SECONDS}s` : '<a href="/">Auto-refresh paused · reload to check again</a>'}</div>
   </div>
 
   <div class="grid">${cardHtml}

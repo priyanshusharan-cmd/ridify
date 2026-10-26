@@ -136,7 +136,7 @@ app.get('/', async (req, res, next) => {
   try {
     const { collectStatus, renderStatusPage } = require('./utils/statusPage');
     res.set('Cache-Control', 'no-store');
-    res.send(renderStatusPage(await collectStatus(io)));
+    res.send(renderStatusPage(await collectStatus(io), req.query.r));
   } catch (err) { next(err); }
 });
 app.get('/api/config', (req, res) => {
