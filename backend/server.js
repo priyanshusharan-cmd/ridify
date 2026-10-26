@@ -44,8 +44,11 @@ const allowedOrigins = (process.env.ALLOWED_ORIGIN || '').split(',').map(s => s.
 app.use(cors({
   origin: (origin, callback) => {
     // No origin = server-to-server (curl, Postman etc)
+    // Requests without an Origin (Render health checks, curl, direct visits)
+    // aren't browser cross-origin requests, so CORS doesn't apply to them.
+    if (!origin) return callback(null, true);
     if (process.env.NODE_ENV === 'production') {
-      if (!origin || !allowedOrigins.includes(origin)) {
+      if (!allowedOrigins.includes(origin)) {
         return callback(new Error(`CORS: Origin '${origin}' not allowed`));
       }
       return callback(null, true);
