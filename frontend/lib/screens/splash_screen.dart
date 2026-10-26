@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import '../core/constants.dart';
 import '../services/config_service.dart';
+import '../services/health_service.dart';
 import '../services/token_service.dart';
 import 'home_screen.dart';
 import 'login_screen.dart';
@@ -24,6 +26,11 @@ class _SplashScreenState extends State<SplashScreen>
 
   // Guards against starting the animation before the image is decoded.
   bool _imageReady = false;
+
+  // Backend health check, started immediately so it runs during the animation.
+  Future<BackendStatus>? _backendCheck;
+  BackendStatus? _backendStatus;
+  bool _animationDone = false;
 
   static const String _appName = 'Ridify';
   static const String _carAsset = 'assets/splashScreenCar.png';
@@ -53,6 +60,7 @@ class _SplashScreenState extends State<SplashScreen>
     // Fire off a background request to wake up the Render backend server.
     // This happens asynchronously and will NOT block the splash animation.
     _wakeBackendServer();
+    _startBackendCheck();
 
     // ── CHANGE: Use a cubic Bézier that mimics a real car's acceleration
     // profile — a brief "pull-away" ease-in that transitions into a smooth,
@@ -78,10 +86,11 @@ class _SplashScreenState extends State<SplashScreen>
 
     _controller.addStatusListener((status) {
       if (status == AnimationStatus.completed) {
-        Future.delayed(
-          const Duration(milliseconds: 300),
-          _checkSessionAndNavigate,
-        );
+        Future.delayed(const Duration(milliseconds: 300), () {
+          if (!mounted) return;
+          setState(() => _animationDone = true);
+          _proceedWhenBackendChecked();
+        });
       }
     });
 
@@ -222,6 +231,82 @@ class _SplashScreenState extends State<SplashScreen>
     );
   }
 
+  void _startBackendCheck() {
+    _backendStatus = null;
+    final check = HealthService().checkBackend();
+    _backendCheck = check;
+    check.then((status) {
+      if (mounted && identical(check, _backendCheck)) {
+        setState(() => _backendStatus = status);
+      }
+    });
+  }
+
+  /// Waits for the health check, then continues into the app or, if the
+  /// backend is down, tells the user and lets them retry or carry on.
+  Future<void> _proceedWhenBackendChecked() async {
+    final status = await _backendCheck!;
+    if (!mounted) return;
+    if (status == BackendStatus.up) {
+      _checkSessionAndNavigate();
+      return;
+    }
+    final retry = await _showBackendDownDialog(status);
+    if (!mounted) return;
+    if (retry) {
+      setState(_startBackendCheck);
+      _proceedWhenBackendChecked();
+    } else {
+      _checkSessionAndNavigate();
+    }
+  }
+
+  Future<bool> _showBackendDownDialog(BackendStatus status) async {
+    final unreachable = status == BackendStatus.unreachable;
+    final host = Uri.tryParse(kBaseUrl)?.host ?? kBaseUrl;
+    final result = await showDialog<bool>(
+      context: context,
+      barrierDismissible: false,
+      builder: (ctx) => AlertDialog(
+        icon: Icon(
+          unreachable ? Icons.cloud_off_rounded : Icons.warning_amber_rounded,
+          color: unreachable ? Colors.red : Colors.amber,
+          size: 36,
+        ),
+        title: Text(unreachable ? 'Server is down' : 'Server is having issues'),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Text(
+              unreachable
+                  ? "Ridify can't reach its server right now, so rides, chat and live tracking won't work. Check your internet connection and try again in a minute."
+                  : "The Ridify server is running but its database isn't responding, so rides and accounts may not load. Please try again in a minute.",
+              textAlign: TextAlign.center,
+            ),
+            const SizedBox(height: 12),
+            Text(
+              host,
+              textAlign: TextAlign.center,
+              style: TextStyle(fontSize: 12, color: Theme.of(ctx).hintColor),
+            ),
+          ],
+        ),
+        actionsAlignment: MainAxisAlignment.spaceBetween,
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(ctx, false),
+            child: const Text('Continue anyway'),
+          ),
+          ElevatedButton(
+            onPressed: () => Navigator.pop(ctx, true),
+            child: const Text('Retry'),
+          ),
+        ],
+      ),
+    );
+    return result ?? false;
+  }
+
   /// Sends a lightweight, non-blocking ping to the backend server.
   /// Since the backend is hosted on a free tier (e.g., Render), it might
   /// be asleep. Waking it up during the splash screen ensures it's ready
@@ -296,6 +381,32 @@ class _SplashScreenState extends State<SplashScreen>
                   ),
                 ),
               ),
+
+              // ── 3. Shown only if the animation finished before the backend answered ──
+              if (_animationDone && _backendStatus == null)
+                Positioned(
+                  left: 0,
+                  right: 0,
+                  bottom: 48,
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      SizedBox(
+                        width: 16,
+                        height: 16,
+                        child: CircularProgressIndicator(
+                          strokeWidth: 2,
+                          color: Theme.of(context).hintColor,
+                        ),
+                      ),
+                      const SizedBox(width: 10),
+                      Text(
+                        'Connecting to server…',
+                        style: TextStyle(color: Theme.of(context).hintColor),
+                      ),
+                    ],
+                  ),
+                ),
             ],
           );
         },
