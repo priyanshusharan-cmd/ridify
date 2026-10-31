@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'dart:async';
-import '../services/nominatim_service.dart';
+import '../services/place_search_service.dart';
 
 class AddressSearchWidget extends StatefulWidget {
   final String hintText;
@@ -28,6 +28,9 @@ class _AddressSearchWidgetState extends State<AddressSearchWidget> {
   Timer? _debounce;
   List<Map<String, dynamic>> _suggestions = [];
   bool _isLoading = false;
+  bool _searchFailed = false;
+  // Ignores responses to older queries that arrive after newer ones
+  int _searchId = 0;
   OverlayEntry? _overlayEntry;
   final LayerLink _layerLink = LayerLink();
   final FocusNode _focusNode = FocusNode();
@@ -37,7 +40,7 @@ class _AddressSearchWidgetState extends State<AddressSearchWidget> {
     super.initState();
     _focusNode.addListener(() {
       if (_focusNode.hasFocus) {
-        if (_suggestions.isNotEmpty) {
+        if (_suggestions.isNotEmpty || _searchFailed) {
           _showOverlay();
         }
       } else {
@@ -56,31 +59,34 @@ class _AddressSearchWidgetState extends State<AddressSearchWidget> {
       if (!mounted) return;
       setState(() {
         _suggestions = [];
+        _searchFailed = false;
       });
       _removeOverlay();
       return;
     }
 
     if (!mounted) return;
+    final searchId = ++_searchId;
     setState(() => _isLoading = true);
 
+    List<Map<String, dynamic>> suggestions = [];
+    bool failed = false;
     try {
-      final suggestions = await NominatimService.searchAddress(query);
-      if (!mounted) return;
-      setState(() {
-        _suggestions = suggestions;
-      });
-      if (_suggestions.isNotEmpty && _focusNode.hasFocus) {
-        _showOverlay();
-      } else {
-        _removeOverlay();
-      }
+      suggestions = await PlaceSearchService.searchAddress(query);
     } catch (e) {
       debugPrint("Search error: $e");
-    } finally {
-      if (mounted) {
-        setState(() => _isLoading = false);
-      }
+      failed = true;
+    }
+    if (!mounted || searchId != _searchId) return;
+    setState(() {
+      _suggestions = suggestions;
+      _searchFailed = failed;
+      _isLoading = false;
+    });
+    if ((_suggestions.isNotEmpty || _searchFailed) && _focusNode.hasFocus) {
+      _showOverlay();
+    } else {
+      _removeOverlay();
     }
   }
 
@@ -118,7 +124,17 @@ class _AddressSearchWidgetState extends State<AddressSearchWidget> {
                   borderRadius: BorderRadius.circular(10),
                   border: Border.all(color: Theme.of(context).dividerColor),
                 ),
-              child: ListView.builder(
+              child: _searchFailed
+                  ? Padding(
+                      padding: const EdgeInsets.all(14),
+                      child: Text(
+                        widget.onMapTap != null
+                            ? "Search is unavailable right now. Try again, or pick the spot on the map."
+                            : "Search is unavailable right now. Please try again.",
+                        style: TextStyle(fontSize: 13, color: Theme.of(context).textTheme.bodyMedium?.color),
+                      ),
+                    )
+                  : ListView.builder(
                 padding: EdgeInsets.zero,
                 shrinkWrap: true,
                 itemCount: _suggestions.length,
@@ -126,15 +142,28 @@ class _AddressSearchWidgetState extends State<AddressSearchWidget> {
                   final item = _suggestions[index];
                   return ListTile(
                     title: Text(
-                      item['display_name'],
-                      maxLines: 2,
+                      item['title'],
+                      maxLines: 1,
                       overflow: TextOverflow.ellipsis,
                       style: TextStyle(
-                        fontSize: 13,
+                        fontSize: 14,
+                        fontWeight: FontWeight.w600,
                         color: Theme.of(context).textTheme.bodyLarge?.color,
                       ),
                     ),
+                    subtitle: (item['subtitle'] as String).isEmpty
+                        ? null
+                        : Text(
+                            item['subtitle'],
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                            style: TextStyle(
+                              fontSize: 12,
+                              color: Theme.of(context).textTheme.bodyMedium?.color?.withValues(alpha: 0.6),
+                            ),
+                          ),
                     onTap: () {
+                      PlaceSearchService.setBias(item['lat'], item['lon']);
                       widget.controller.text = item['display_name'];
                       widget.onSelected(
                         item['display_name'],

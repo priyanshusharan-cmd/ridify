@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:geolocator/geolocator.dart';
+import 'place_search_service.dart';
 
 class LocationService {
   static Future<Position?> getCurrentPosition() async {
@@ -42,8 +43,10 @@ class LocationService {
   }
 
   static Future<String?> reverseGeocode(double lat, double lng) async {
+    // The user is near this point, so rank nearby places first in search
+    PlaceSearchService.setBias(lat, lng);
     try {
-      final url = "https://nominatim.openstreetmap.org/reverse?format=json&lat=$lat&lon=$lng";
+      final url = "https://nominatim.openstreetmap.org/reverse?format=json&accept-language=en&lat=$lat&lon=$lng";
       final response = await http.get(
         Uri.parse(url),
         headers: {'User-Agent': 'Ridify-App/1.0'},
