@@ -37,6 +37,7 @@ class _OfferRideScreenState extends State<OfferRideScreen> {
 
   DateTime? _selectedDate;
   TimeOfDay? _selectedTime;
+  bool _scheduleLater = false;
 
   final String serverUrl = "$kBaseUrl/api/rides";
 
@@ -129,6 +130,40 @@ class _OfferRideScreenState extends State<OfferRideScreen> {
                     : "Could not fetch route. Check your connection.", backgroundColor: Colors.orange);
       }
     }
+  }
+
+  Future<void> _selectLater(BuildContext context) async {
+    setState(() => _scheduleLater = true);
+    await _pickDate(context);
+    if (!context.mounted || _selectedDate == null) return;
+    await _pickTime(context);
+  }
+
+  Widget _buildScheduleCard(String title, String subtitle, IconData icon, bool isSelected, VoidCallback onTap) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    return Expanded(
+      child: GestureDetector(
+        onTap: onTap,
+        child: Container(
+          height: 85,
+          margin: const EdgeInsets.symmetric(horizontal: 5),
+          decoration: BoxDecoration(
+            color: isSelected ? (isDark ? const Color(0xFF2C2C2C) : Colors.black) : Theme.of(context).cardColor,
+            borderRadius: BorderRadius.circular(15),
+            border: Border.all(color: isSelected ? Colors.white : Colors.transparent, width: 2.0),
+          ),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Icon(icon, color: isSelected ? Colors.white : Theme.of(context).textTheme.bodyMedium?.color?.withValues(alpha: 0.5)),
+              const SizedBox(height: 5),
+              Text(title, style: TextStyle(color: isSelected ? Colors.white : Theme.of(context).textTheme.bodyLarge?.color, fontWeight: FontWeight.bold)),
+              Text(subtitle, style: TextStyle(fontSize: 12, color: isSelected ? Colors.white70 : Theme.of(context).textTheme.bodyMedium?.color?.withValues(alpha: 0.6))),
+            ],
+          ),
+        ),
+      ),
+    );
   }
 
   Future<void> _pickDate(BuildContext context) async {
@@ -512,6 +547,18 @@ class _OfferRideScreenState extends State<OfferRideScreen> {
             const SizedBox(height: 10),
             Row(
               children: [
+                _buildScheduleCard("Now", "Leave right away", Icons.flash_on, !_scheduleLater, () => setState(() {
+                  _scheduleLater = false;
+                  _selectedDate = null;
+                  _selectedTime = null;
+                })),
+                _buildScheduleCard("Later", "Pick date & time", Icons.event, _scheduleLater, () => _selectLater(context)),
+              ],
+            ),
+            if (_scheduleLater) ...[
+            const SizedBox(height: 12),
+            Row(
+              children: [
                 Expanded(
                   child: GestureDetector(
                     onTap: () => _pickDate(context),
@@ -567,6 +614,7 @@ class _OfferRideScreenState extends State<OfferRideScreen> {
                 ),
               ],
             ),
+            ],
             const SizedBox(height: 30),
 
             Row(
