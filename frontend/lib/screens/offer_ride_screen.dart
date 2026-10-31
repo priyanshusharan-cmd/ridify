@@ -133,10 +133,26 @@ class _OfferRideScreenState extends State<OfferRideScreen> {
   }
 
   Future<void> _selectLater(BuildContext context) async {
-    setState(() => _scheduleLater = true);
+    setState(() {
+      _scheduleLater = true;
+      _selectedDate = null;
+      _selectedTime = null;
+    });
     await _pickDate(context);
-    if (!context.mounted || _selectedDate == null) return;
+    if (!context.mounted) return;
+    // Cancelling either picker falls back to "Now"
+    if (_selectedDate == null) {
+      setState(() => _scheduleLater = false);
+      return;
+    }
     await _pickTime(context);
+    if (!context.mounted) return;
+    if (_selectedTime == null) {
+      setState(() {
+        _scheduleLater = false;
+        _selectedDate = null;
+      });
+    }
   }
 
   Widget _buildScheduleCard(String title, String subtitle, IconData icon, bool isSelected, VoidCallback onTap) {
