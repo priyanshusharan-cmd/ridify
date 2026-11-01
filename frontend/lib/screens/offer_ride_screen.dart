@@ -133,6 +133,9 @@ class _OfferRideScreenState extends State<OfferRideScreen> {
   }
 
   Future<void> _selectLater(BuildContext context) async {
+    final prevLater = _scheduleLater;
+    final prevDate = _selectedDate;
+    final prevTime = _selectedTime;
     setState(() {
       _scheduleLater = true;
       _selectedDate = null;
@@ -140,19 +143,23 @@ class _OfferRideScreenState extends State<OfferRideScreen> {
     });
     await _pickDate(context);
     if (!context.mounted) return;
-    // Cancelling either picker falls back to "Now"
-    if (_selectedDate == null) {
-      setState(() => _scheduleLater = false);
-      return;
+    if (_selectedDate != null) {
+      await _pickTime(context);
+      if (!context.mounted) return;
     }
-    await _pickTime(context);
-    if (!context.mounted) return;
-    if (_selectedTime == null) {
+    // Cancelling either picker keeps the previous choice ("Now" if none)
+    if (_selectedDate == null || _selectedTime == null) {
       setState(() {
-        _scheduleLater = false;
-        _selectedDate = null;
+        _scheduleLater = prevLater;
+        _selectedDate = prevDate;
+        _selectedTime = prevTime;
       });
     }
+  }
+
+  String _laterSubtitle() {
+    if (!_scheduleLater || _selectedDate == null || _selectedTime == null) return "Pick date & time";
+    return "${_selectedDate!.day}/${_selectedDate!.month}/${_selectedDate!.year} · ${_selectedTime!.format(context)}";
   }
 
   Widget _buildScheduleCard(String title, String subtitle, IconData icon, bool isSelected, VoidCallback onTap) {
@@ -368,8 +375,6 @@ class _OfferRideScreenState extends State<OfferRideScreen> {
 
   @override
   Widget build(BuildContext context) {
-    String dateText = _selectedDate == null ? "dd/mm/yyyy" : "${_selectedDate!.day}/${_selectedDate!.month}/${_selectedDate!.year}";
-    String timeText = _selectedTime == null ? "--:--" : _selectedTime!.format(context);
 
     return Scaffold(
       backgroundColor: Theme.of(context).scaffoldBackgroundColor,
@@ -568,69 +573,9 @@ class _OfferRideScreenState extends State<OfferRideScreen> {
                   _selectedDate = null;
                   _selectedTime = null;
                 })),
-                _buildScheduleCard("Later", "Pick date & time", Icons.event, _scheduleLater, () => _selectLater(context)),
+                _buildScheduleCard("Later", _laterSubtitle(), Icons.event, _scheduleLater, () => _selectLater(context)),
               ],
             ),
-            if (_scheduleLater) ...[
-            const SizedBox(height: 12),
-            Row(
-              children: [
-                Expanded(
-                  child: GestureDetector(
-                    onTap: () => _pickDate(context),
-                    child: Container(
-                      padding: const EdgeInsets.all(16),
-                      decoration: BoxDecoration(
-                        color: Theme.of(context).cardColor,
-                        borderRadius: BorderRadius.circular(15),
-                        border: Border.all(color: Theme.of(context).dividerColor),
-                      ),
-                      child: Row(
-                        children: [
-                          Icon(Icons.calendar_today_outlined, size: 20, color: Theme.of(context).iconTheme.color?.withValues(alpha: 0.6)),
-                          const SizedBox(width: 10),
-                          Text(
-                            dateText,
-                            style: TextStyle(
-                              color: _selectedDate == null ? Theme.of(context).textTheme.bodyMedium?.color?.withValues(alpha: 0.5) : Theme.of(context).textTheme.bodyLarge?.color,
-                              fontWeight: _selectedDate == null ? FontWeight.normal : FontWeight.bold,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
-                ),
-                const SizedBox(width: 15),
-                Expanded(
-                  child: GestureDetector(
-                    onTap: () => _pickTime(context),
-                    child: Container(
-                      padding: const EdgeInsets.all(16),
-                      decoration: BoxDecoration(
-                        color: Theme.of(context).cardColor,
-                        borderRadius: BorderRadius.circular(15),
-                        border: Border.all(color: Theme.of(context).dividerColor),
-                      ),
-                      child: Row(
-                        children: [
-                          Icon(Icons.access_time, size: 20, color: Theme.of(context).iconTheme.color?.withValues(alpha: 0.6)),
-                          const SizedBox(width: 10),
-                          Text(
-                            timeText,
-                            style: TextStyle(
-                              color: _selectedTime == null ? Theme.of(context).textTheme.bodyMedium?.color?.withValues(alpha: 0.5) : Theme.of(context).textTheme.bodyLarge?.color,
-                              fontWeight: _selectedTime == null ? FontWeight.normal : FontWeight.bold,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
-                ),
-              ],
-            ),
-            ],
             const SizedBox(height: 30),
 
             Row(
