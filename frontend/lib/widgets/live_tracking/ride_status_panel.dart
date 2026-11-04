@@ -82,7 +82,11 @@ class RideStatusPanel extends StatelessWidget {
       );
     }
 
-    return DraggableScrollableSheet(
+    // The sheet's own scrolling must not reach the screen's pull-to-refresh,
+    // otherwise dragging the sheet down can trigger (and stick) a refresh.
+    return NotificationListener<ScrollNotification>(
+      onNotification: (_) => true,
+      child: DraggableScrollableSheet(
       initialChildSize: minSize,
       minChildSize: minSize,
       maxChildSize: maxSize,
@@ -109,6 +113,7 @@ class RideStatusPanel extends StatelessWidget {
           child: _buildList(context, scrollController, isDark, panelText, panelSub),
         );
       },
+    ),
     );
   }
 
@@ -122,7 +127,11 @@ class RideStatusPanel extends StatelessWidget {
               },
             ).copyWith(scrollbars: false),
             child: ListView(
-              physics: const BouncingScrollPhysics(parent: AlwaysScrollableScrollPhysics()),
+              // Full screen: clamping physics so pull-to-refresh springs back cleanly
+              // (bouncing physics overscrolls the list itself and can leave it stuck).
+              physics: fullScreen
+                  ? const ClampingScrollPhysics(parent: AlwaysScrollableScrollPhysics())
+                  : const BouncingScrollPhysics(parent: AlwaysScrollableScrollPhysics()),
               controller: scrollController,
               padding: fullScreen ? const EdgeInsets.fromLTRB(20, 24, 20, 32) : const EdgeInsets.fromLTRB(20, 10, 20, 20),
               children: [

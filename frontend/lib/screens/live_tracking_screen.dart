@@ -268,6 +268,14 @@ class _LiveTrackingScreenState extends State<LiveTrackingScreen> {
 
   bool _syncInProgress = false;
 
+  /// Pull-to-refresh: always completes so the spinner never hangs,
+  /// even if the network is slow or another sync is already running.
+  Future<void> _pullToRefresh() async {
+    try {
+      await syncRideStatus().timeout(const Duration(seconds: 12));
+    } catch (_) {}
+  }
+
   Future<void> syncRideStatus() async {
     if (mounted) {
       Provider.of<UserProvider>(context, listen: false).fetchProfile();
@@ -1046,13 +1054,13 @@ class _LiveTrackingScreenState extends State<LiveTrackingScreen> {
     // Before the driver starts: full-screen ride panel, no map, no GPS.
     final Widget lobby = RefreshIndicator(
       key: const ValueKey('lobby'),
-      onRefresh: syncRideStatus,
+      onRefresh: _pullToRefresh,
       child: panel,
     );
 
     final Widget live = RefreshIndicator(
       key: const ValueKey('live'),
-      onRefresh: syncRideStatus,
+      onRefresh: _pullToRefresh,
       child: Stack(children: [
         // 1. Map and markers (Base layer)
         Positioned.fill(

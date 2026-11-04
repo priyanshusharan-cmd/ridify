@@ -1,3 +1,4 @@
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:ridify/widgets/live_tracking/ride_status_panel.dart';
@@ -21,12 +22,9 @@ Map<String, dynamic> _ride() => {
       },
     };
 
-Widget _panel({required bool isDriver, required bool fullScreen, String me = 'p1@bmsce.ac.in'}) {
+Widget _panel({required bool isDriver, required bool fullScreen, String me = 'p1@bmsce.ac.in', Future<void> Function()? onRefresh}) {
   final ride = _ride();
-  return MaterialApp(
-    home: Scaffold(
-      body: Stack(children: [
-        RideStatusPanel(
+  final panel = RideStatusPanel(
           fullScreen: fullScreen,
           isDriver: isDriver,
           isAccepted: true,
@@ -51,8 +49,12 @@ Widget _panel({required bool isDriver, required bool fullScreen, String me = 'p1
           onDropOffPassenger: (_) {},
           onConfirmKickPassenger: (_) {},
           onDriverArriveForPassenger: (_) {},
-        ),
-      ]),
+        );
+  return MaterialApp(
+    home: Scaffold(
+      body: onRefresh != null
+          ? RefreshIndicator(onRefresh: onRefresh, child: panel)
+          : Stack(children: [panel]),
     ),
   );
 }
@@ -80,4 +82,24 @@ void main() {
     expect(find.byType(DraggableScrollableSheet), findsOneWidget);
     expect(find.textContaining('Live location is off'), findsNothing);
   });
+
+  for (final kind in [PointerDeviceKind.touch, PointerDeviceKind.mouse]) {
+    testWidgets('pull-to-refresh on the full-screen panel completes and springs back ($kind)', (tester) async {
+      int refreshes = 0;
+      await tester.pumpWidget(_panel(
+        isDriver: false,
+        fullScreen: true,
+        onRefresh: () async { refreshes++; },
+      ));
+      final header = find.text('Priyanshu');
+      final before = tester.getTopLeft(header);
+
+      await tester.fling(find.byType(ListView), const Offset(0, 400), 1200, deviceKind: kind);
+      await tester.pumpAndSettle();
+
+      expect(refreshes, 1);
+      expect(find.byType(RefreshProgressIndicator), findsNothing);
+      expect(tester.getTopLeft(header), before); // no stuck gap above the panel
+    });
+  }
 }
