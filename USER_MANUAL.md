@@ -617,25 +617,36 @@ If you change your mind before the driver accepts you:
 <tr><td colspan="4" align="center"><img src="screen%20images/liveRideScreenRider3Light.png" width="25%" alt="In transit, light"/>&nbsp;&nbsp;<img src="screen%20images/liveRideScreenRider3Dark.png" width="25%" alt="In transit, dark"/></td></tr>
 </table>
 
-### 9.1 Waiting for Pickup
+### 9.1 Before the Ride Starts
 
-Once the driver accepts your request and starts the ride:
-1. The **Live Tracking Screen** opens automatically (or you can access it from Activity).
-2. You see an interactive map with:
-   - **The driver's real-time position** — a moving car icon that updates every ~1.5 seconds via Socket.IO `driver_location_update` events.
-   - **Your pickup point** — highlighted with a marker.
-   - **Your drop-off point** — highlighted with a different marker.
-   - **The full route** — drawn as a polyline on the map.
+Once the driver accepts your request, opening the ride shows a **full-screen ride panel** with no map:
+- Your pickup and drop, the departure time and how many co-riders there are.
+- The driver's name and verification badge, and the **Chat** button.
+- A note that **live location is off**. Nobody's GPS is read or shared at this stage, neither yours nor the driver's. The server also refuses to relay any location for a ride that hasn't started.
+
+The driver's version lists the accepted riders and their pickup addresses, with the **Start** button.
+
+### 9.2 Waiting for Pickup
+
+When the driver taps **Start**, the panel slides away and the live map appears:
+1. You see:
+   - **The driver's real-time position**: a moving car icon that updates every ~1.5 seconds.
+   - **Your own position, your pickup point and your drop-off point.**
+   - **The route** from the car to your pickup and on to your drop.
+2. You never see other riders' positions, pickups or drops.
+3. Your position is shared **with the driver only, and only until you board**.
+
+The driver's map shows every waiting rider's live position and pickup pin, each boarded rider's drop pin, and a multi-stop route through all of them.
 3. An info panel at the bottom shows the driver's name, vehicle type, and current ride status.
 
-### 9.2 Driver Arrived at Your Pickup
+### 9.3 Driver Arrived at Your Pickup
 
 When the driver arrives at your pickup location:
 1. They mark **"Arrived"** in their app.
 2. You receive a `driver_arrived` event and see a notification: "Your driver has arrived!"
 3. The ride status panel updates to show "Driver is waiting at your pickup point."
 
-### 9.3 Boarding the Vehicle
+### 9.4 Boarding the Vehicle
 
 1. Meet the driver at the pickup point.
 2. Verify the driver and vehicle (check the name, vehicle type displayed in the app).
@@ -643,7 +654,7 @@ When the driver arrives at your pickup location:
 4. The driver marks you as **"Boarded"** in their app.
 5. You receive a `passenger_boarded` event and the map interface transitions to the "In Transit" view.
 
-### 9.4 In Transit
+### 9.5 In Transit
 
 While the ride is in progress:
 - The map continues showing the driver's real-time position.
@@ -651,7 +662,7 @@ While the ride is in progress:
 - You can use the **In-App Chat** to communicate with the driver and co-passengers.
 - The estimated time of arrival updates dynamically based on the driver's position.
 
-### 9.5 Arriving at Your Destination
+### 9.6 Arriving at Your Destination
 
 When you reach your drop-off point:
 1. The driver marks you as **"Dropped Off"**.

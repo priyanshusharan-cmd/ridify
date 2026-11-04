@@ -243,8 +243,8 @@ class _LiveTrackingScreenState extends State<LiveTrackingScreen> {
     final center = _mapCenter;
     if (center == null) return;
     final points = <LatLng>[
-      if (driverPosition != null) driverPosition!,
-      if (myPosition != null) myPosition!,
+      ?driverPosition,
+      ?myPosition,
       if (widget.isDriver) ...passengerLivePositions.values,
       ..._remainingStops().take(3),
     ];

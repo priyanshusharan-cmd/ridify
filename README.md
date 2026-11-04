@@ -7,6 +7,7 @@
 [![Live Demo](https://img.shields.io/badge/LIVE_DEMO-ridify.onrender.com-000000?style=for-the-badge&logo=render&logoColor=white&labelColor=1E1E1E)](https://ridify.onrender.com)
 [![Watch Demo](https://img.shields.io/badge/WATCH-video_demo-000000?style=for-the-badge&logo=youtube&logoColor=white&labelColor=1E1E1E)](#-see-it-in-action)
 [![User Manual](https://img.shields.io/badge/READ-user_manual-000000?style=for-the-badge&logo=readthedocs&logoColor=white&labelColor=1E1E1E)](USER_MANUAL.md)
+[![Download](https://img.shields.io/github/v/release/priyanshusharan-cmd/ridify?style=for-the-badge&label=DOWNLOAD&logo=android&logoColor=white&labelColor=1E1E1E&color=000000)](#-download)
 
 [![Flutter](https://img.shields.io/badge/Flutter-3.x-000000?style=flat-square&logo=flutter&logoColor=white&labelColor=1E1E1E)](https://flutter.dev)
 [![Dart](https://img.shields.io/badge/Dart-3.11-000000?style=flat-square&logo=dart&logoColor=white&labelColor=1E1E1E)](https://dart.dev)
@@ -16,7 +17,7 @@
 [![Socket.IO](https://img.shields.io/badge/Socket.IO-4.8-000000?style=flat-square&logo=socketdotio&logoColor=white&labelColor=1E1E1E)](https://socket.io)
 [![License: MIT](https://img.shields.io/badge/License-MIT-000000?style=flat-square&labelColor=1E1E1E)](LICENSE)
 
-**[Features](#-features)** &nbsp;·&nbsp; **[Architecture](#-architecture)** &nbsp;·&nbsp; **[How it works](#-how-it-works)** &nbsp;·&nbsp; **[Tech stack](#-tech-stack)** &nbsp;·&nbsp; **[Getting started](#-getting-started)** &nbsp;·&nbsp; **[Screenshots](#-screenshots)** &nbsp;·&nbsp; **[User manual](USER_MANUAL.md)**
+**[Features](#-features)** &nbsp;·&nbsp; **[Architecture](#-architecture)** &nbsp;·&nbsp; **[How it works](#-how-it-works)** &nbsp;·&nbsp; **[Tech stack](#-tech-stack)** &nbsp;·&nbsp; **[Download](#-download)** &nbsp;·&nbsp; **[Getting started](#-getting-started)** &nbsp;·&nbsp; **[Screenshots](#-screenshots)** &nbsp;·&nbsp; **[User manual](USER_MANUAL.md)**
 
 </div>
 
@@ -52,7 +53,7 @@ One Flutter codebase runs on **Android, iOS and the web**. It talks to a **Node.
 <td width="50%" valign="top">
 
 ### 🗺️ Live tracking
-Drivers stream their position over Socket.IO. Riders see the car move on an OpenStreetMap view with the route drawn in, from booking to drop-off.
+Nothing is tracked until the driver taps **Start**. Before that, the ride is a full-screen panel with no map. Once the ride starts, the driver sees every waiting rider and a multi-stop route, and each rider sees only the car, their own pickup and drop, and their route. A rider's position goes to the driver alone, and only until pickup.
 
 </td>
 <td width="50%" valign="top">
@@ -240,6 +241,20 @@ So a rider covering 40% of a ₹200 trip pays **₹80**. Anyone riding 99% or mo
 
 <img src="assets/readme/divider.svg" width="100%" alt=""/>
 
+## 📲 Download
+
+Grab the latest build from **[Releases](https://github.com/priyanshusharan-cmd/ridify/releases/latest)**. Each release is built by GitHub Actions from the tagged commit.
+
+| Platform | File | How to install |
+|---|---|---|
+| Android | `Ridify-vX.Y.Z.apk` | Open the APK on your phone and allow *Install unknown apps* when prompted. |
+| iOS | `Ridify-vX.Y.Z.ipa` | Unsigned build. Sideload it with [AltStore](https://altstore.io) or [Sideloadly](https://sideloadly.io) using your Apple ID, or build from source with Xcode. |
+| Web | — | [ridify.onrender.com](https://ridify.onrender.com) |
+
+`SHA256SUMS.txt` in each release lets you verify the files.
+
+<img src="assets/readme/divider.svg" width="100%" alt=""/>
+
 ## 🚀 Getting started
 
 > **Prerequisites:** Node.js 20+, Flutter 3.x (Dart ≥ 3.11), a MongoDB database (local or [Atlas](https://www.mongodb.com/atlas)), and an Android/iOS device or emulator.
@@ -381,7 +396,13 @@ ridify/
 <td align="center"><b>🪖 Helmet</b><br/><sub>secure HTTP headers</sub></td>
 <td align="center"><b>🔐 CORS lock</b><br/><sub>single allowed origin</sub></td>
 <td align="center"><b>🔁 Optimistic locking</b><br/><sub>no double-booked seats</sub></td>
-<td align="center"><b>🤖 CI checks</b><br/><sub>npm audit · secret scan<br/>flutter analyze</sub></td>
+<td align="center"><b>🤖 CI checks</b><br/><sub>npm audit · secret scan<br/>flutter analyze · tests</sub></td>
+</tr>
+<tr>
+<td align="center"><b>📍 Location gate</b><br/><sub>no GPS before the ride starts</sub></td>
+<td align="center"><b>🎯 Targeted relay</b><br/><sub>driver → riders, rider → driver<br/>never broadcast</sub></td>
+<td align="center"><b>👁️ Per-viewer data</b><br/><sub>riders never get each other's<br/>pickup or drop</sub></td>
+<td align="center"><b>🚪 Member-only rooms</b><br/><sub>sockets checked against the ride</sub></td>
 </tr>
 </table>
 
