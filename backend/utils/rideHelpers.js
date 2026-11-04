@@ -129,20 +129,68 @@ function decodeRiderDetailsForSocket(rideObj) {
   return rideObj;
 }
 
-function sanitizeRideForBroadcast(rideObj, viewerEmail) {
-  const sanitized = { ...rideObj };
-  if (sanitized.riderDetails && typeof sanitized.riderDetails === 'object') {
+/**
+ * Build the view of a ride that a given viewer is allowed to see.
+ *
+ * - The driver (ride.riderEmail) sees every passenger's pickup/drop details,
+ *   because they need them to plan the route.
+ * - A passenger or requester sees only their own pickup/drop details; other
+ *   riders are reduced to name, seats and paid status.
+ * - Anyone else (search results, the global search room) sees no per-rider
+ *   location data and no chat history.
+ *
+ * Pass `{ isAdmin: true }` to skip filtering for the admin panel.
+ */
+function viewRideFor(rideObj, viewerEmail, { isAdmin = false } = {}) {
+  if (!rideObj || typeof rideObj !== 'object') return rideObj;
+  if (isAdmin) return rideObj;
+
+  const viewer = viewerEmail ? String(viewerEmail).trim().toLowerCase() : '';
+  const isDriver = viewer !== '' && viewer === rideObj.riderEmail;
+  const view = { ...rideObj };
+
+  if (view.riderDetails && typeof view.riderDetails === 'object') {
     const filtered = {};
-    for (const [email, details] of Object.entries(sanitized.riderDetails)) {
-      if (email === viewerEmail || email === sanitized.riderEmail) {
+    for (const [email, details] of Object.entries(view.riderDetails)) {
+      if (isDriver || email === viewer || !details) {
         filtered[email] = details;
       } else {
         filtered[email] = { riderName: details.riderName, paid: details.paid, seats: details.seats };
       }
     }
-    sanitized.riderDetails = filtered;
+    view.riderDetails = filtered;
   }
-  return sanitized;
+
+  const inList = (list) => Array.isArray(list) && viewer !== '' && list.includes(viewer);
+  const isParticipant = isDriver || inList(view.passengers) || inList(view.boardedPassengers) || inList(view.droppedPassengers);
+  if (!isParticipant) delete view.chatMessages;
+
+  return view;
+}
+
+/** Same as viewRideFor; kept for existing call sites. */
+function sanitizeRideForBroadcast(rideObj, viewerEmail) {
+  return viewRideFor(rideObj, viewerEmail);
+}
+
+/** True when the user takes part in the ride as driver, passenger or requester. */
+function isRideMember(ride, email) {
+  if (!ride || !email) return false;
+  const e = String(email).trim().toLowerCase();
+  return ride.riderEmail === e ||
+    (ride.passengers || []).includes(e) ||
+    (ride.boardedPassengers || []).includes(e) ||
+    (ride.droppedPassengers || []).includes(e) ||
+    (ride.requests || []).includes(e);
+}
+
+/** Validate a lat/lng pair coming from a client. Returns {lat, lng} or null. */
+function parseCoords(lat, lng) {
+  const la = Number(lat);
+  const ln = Number(lng);
+  if (!Number.isFinite(la) || !Number.isFinite(ln)) return null;
+  if (la < -90 || la > 90 || ln < -180 || ln > 180) return null;
+  return { lat: la, lng: ln };
 }
 
 module.exports = {
@@ -153,5 +201,8 @@ module.exports = {
   checkCapacityForRequest,
   checkCapacity,
   decodeRiderDetailsForSocket,
-  sanitizeRideForBroadcast
+  sanitizeRideForBroadcast,
+  viewRideFor,
+  isRideMember,
+  parseCoords
 };

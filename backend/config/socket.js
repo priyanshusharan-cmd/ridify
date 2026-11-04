@@ -2,6 +2,19 @@ const { Server } = require('socket.io');
 const Ride = require('../models/ride');
 const { verifyAccessToken } = require('../utils/jwt');
 const logger = require('../utils/logger');
+const { viewRideFor, isRideMember, parseCoords } = require('../utils/rideHelpers');
+
+// Live location is only shared while a ride is in progress. Before the driver
+// starts the ride nobody's position leaves their phone.
+const LIVE_STATUS = 'started';
+const LOCATION_MIN_INTERVAL_MS = 1500;
+const RIDE_LOOKUP_FIELDS = 'riderEmail passengers boardedPassengers droppedPassengers requests status';
+
+/** Attach a per-viewer view of payload.ride (if present). */
+function viewPayloadFor(payload, viewerEmail) {
+  if (!payload || typeof payload !== 'object' || !payload.ride) return payload;
+  return { ...payload, ride: viewRideFor(payload.ride, viewerEmail) };
+}
 
 function initSocket(server, app) {
   const allowedOrigin = process.env.ALLOWED_ORIGIN;
@@ -23,8 +36,35 @@ function initSocket(server, app) {
    */
   function emitToUser(userEmail, event, data) {
     if (userEmail) {
-      io.to(userEmail.toLowerCase()).emit(event, data);
+      const email = userEmail.toLowerCase();
+      io.to(email).emit(event, viewPayloadFor(data, email));
     }
+  }
+
+  /**
+   * Emit a ride event to everyone in the ride room, giving each socket only
+   * the view of the ride it is allowed to see (see viewRideFor).
+   */
+  function emitRideEvent(rideId, event, payload) {
+    if (!rideId) return;
+    // Synchronous so that a removeUserFromRide() right after still lets the
+    // removed user receive this event (same semantics as io.to(room).emit).
+    const ids = io.sockets.adapter.rooms.get(rideId.toString());
+    if (!ids) return;
+    for (const id of ids) {
+      const s = io.sockets.sockets.get(id);
+      if (s) s.emit(event, viewPayloadFor(payload, s.data?.userEmail));
+    }
+  }
+
+  /**
+   * Emit a ride event to the search room with no per-rider location data.
+   * Members of the ride room are skipped; they get their own view above.
+   */
+  function emitRidePublic(rideId, event, payload) {
+    const room = io.to('global_search_room');
+    const target = rideId ? room.except(rideId.toString()) : room;
+    target.emit(event, viewPayloadFor(payload, null));
   }
 
   /**
@@ -51,6 +91,8 @@ function initSocket(server, app) {
     req.emitToUser = emitToUser;
     req.joinUserToRide = joinUserToRide;
     req.removeUserFromRide = removeUserFromRide;
+    req.emitRideEvent = emitRideEvent;
+    req.emitRidePublic = emitRidePublic;
     next();
   });
 
@@ -66,6 +108,7 @@ function initSocket(server, app) {
       const payload = verifyAccessToken(token);
       socket.userEmail = payload.email.trim().toLowerCase();
       socket.userId = payload.id;
+      socket.data.userEmail = socket.userEmail;
       next();
     } catch (err) {
       return next(new Error('Invalid or expired token. Please re-authenticate.'));
@@ -112,11 +155,14 @@ function initSocket(server, app) {
     }
 
     // ── Explicit room management ───────────────────────────────────────
-    socket.on('join_ride', (data) => {
-      if (!socket.userEmail) return; // Must register first
-      if (data?.rideId) {
-        socket.join(data.rideId);
-      }
+    // Only people who are part of the ride may join its room.
+    socket.on('join_ride', async (data) => {
+      const rideId = data?.rideId;
+      if (!socket.userEmail || !rideId || typeof rideId !== 'string') return;
+      try {
+        const ride = await Ride.findById(rideId, RIDE_LOOKUP_FIELDS).lean();
+        if (ride && isRideMember(ride, socket.userEmail)) socket.join(rideId);
+      } catch (_) { /* invalid id */ }
     });
 
     socket.on('leave_ride', (data) => {
@@ -134,34 +180,81 @@ function initSocket(server, app) {
       socket.leave('global_search_room');
     });
 
-    // ── Driver location — verify the emitter is actually the driver ────
-    socket.on('driver_location_update', async (data) => {
-      if (!socket.userEmail || !data?.rideId) return;
+    // ── Live location (only while the ride is started) ─────────────────
+    const throttled = (kind) => {
+      const key = `${kind}_${socket.userEmail}`;
       const now = Date.now();
-      const cooldownKey = `loc_${socket.userEmail}`;
-      const lastUpdate = locationUpdateCooldowns.get(cooldownKey) || 0;
-      if (now - lastUpdate < 1500) return; // max ~1 update per 1.5 seconds
-      locationUpdateCooldowns.set(cooldownKey, now);
+      if (now - (locationUpdateCooldowns.get(key) || 0) < LOCATION_MIN_INTERVAL_MS) return true;
+      locationUpdateCooldowns.set(key, now);
+      return false;
+    };
+
+    const loadLiveRide = async (rideId) => {
+      if (!rideId || typeof rideId !== 'string') return null;
       try {
-        const ride = await Ride.findById(data.rideId, 'riderEmail').lean();
-        if (!ride || ride.riderEmail !== socket.userEmail) return; // not the driver
-        socket.to(data.rideId).emit('driver_location_update', data);
-      } catch (_) {}
+        const ride = await Ride.findById(rideId, RIDE_LOOKUP_FIELDS).lean();
+        return ride && ride.status === LIVE_STATUS ? ride : null;
+      } catch (_) { return null; }
+    };
+
+    const ridingPassengers = (ride) =>
+      (ride.passengers || []).filter((p) => !(ride.droppedPassengers || []).includes(p));
+
+    // Driver → every passenger still on the trip (never requesters or strangers).
+    socket.on('driver_location_update', async (data) => {
+      if (!socket.userEmail || throttled('drv')) return;
+      const coords = parseCoords(data?.lat, data?.lng);
+      if (!coords) return;
+      const ride = await loadLiveRide(data?.rideId);
+      if (!ride || ride.riderEmail !== socket.userEmail) return;
+      const out = { rideId: data.rideId, ...coords, ts: Date.now() };
+      const heading = Number(data?.heading);
+      if (Number.isFinite(heading)) out.heading = heading;
+      for (const p of ridingPassengers(ride)) emitToUser(p, 'driver_location_update', out);
     });
 
-    socket.on('request_driver_location', (data) => {
-      if (!data?.rideId) return;
-      socket.to(data.rideId).emit('request_driver_location', data);
+    // Passenger → driver only, until they are picked up.
+    socket.on('passenger_location_update', async (data) => {
+      if (!socket.userEmail || throttled('pax')) return;
+      const coords = parseCoords(data?.lat, data?.lng);
+      if (!coords) return;
+      const ride = await loadLiveRide(data?.rideId);
+      if (!ride) return;
+      const me = socket.userEmail;
+      const waiting = (ride.passengers || []).includes(me) &&
+        !(ride.boardedPassengers || []).includes(me) &&
+        !(ride.droppedPassengers || []).includes(me);
+      if (!waiting) return;
+      emitToUser(ride.riderEmail, 'passenger_location_update', { rideId: data.rideId, email: me, ...coords, ts: Date.now() });
+    });
+
+    // A passenger opening the map asks the driver for a fresh fix.
+    socket.on('request_driver_location', async (data) => {
+      if (!socket.userEmail) return;
+      const ride = await loadLiveRide(data?.rideId);
+      if (!ride || !ridingPassengers(ride).includes(socket.userEmail)) return;
+      emitToUser(ride.riderEmail, 'request_driver_location', { rideId: data.rideId });
+    });
+
+    // The driver opening the map asks waiting passengers for a fresh fix.
+    socket.on('request_passenger_location', async (data) => {
+      if (!socket.userEmail) return;
+      const ride = await loadLiveRide(data?.rideId);
+      if (!ride || ride.riderEmail !== socket.userEmail) return;
+      for (const p of ridingPassengers(ride)) {
+        if (!(ride.boardedPassengers || []).includes(p)) emitToUser(p, 'request_passenger_location', { rideId: data.rideId });
+      }
     });
 
     // ── Cleanup on disconnect ──────────────────────────────────────────
     socket.on('disconnect', () => {
-      locationUpdateCooldowns.delete(`loc_${socket.userEmail}`);
+      locationUpdateCooldowns.delete(`drv_${socket.userEmail}`);
+      locationUpdateCooldowns.delete(`pax_${socket.userEmail}`);
       logger.info(`Socket disconnected: ${socket.id}`);
     });
   });
 
-  return { io, emitToUser, joinUserToRide, removeUserFromRide };
+  return { io, emitToUser, joinUserToRide, removeUserFromRide, emitRideEvent, emitRidePublic };
 }
 
 module.exports = initSocket;

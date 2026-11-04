@@ -87,6 +87,30 @@ class LocationService {
     return null;
   }
 
+  /// Driving route through several points, in order.
+  /// [points] are `[lng, lat]` pairs (start, stops..., end). Returns the first OSRM route.
+  static Future<Map<String, dynamic>?> fetchOsrmRouteVia(
+    List<List<double>> points, {
+    String overview = 'simplified',
+  }) async {
+    if (points.length < 2) return null;
+    try {
+      final coords = points.map((p) => '${p[0]},${p[1]}').join(';');
+      final url = "https://router.project-osrm.org/route/v1/driving/$coords"
+          "?geometries=geojson&overview=$overview";
+      final response = await http.get(Uri.parse(url)).timeout(const Duration(seconds: 15));
+      if (response.statusCode == 200) {
+        final data = json.decode(response.body);
+        if (data['routes'] != null && data['routes'].isNotEmpty) {
+          return data['routes'][0];
+        }
+      }
+    } catch (e) {
+      // Ignore errors
+    }
+    return null;
+  }
+
   static Stream<Position> getPositionStream({
     LocationAccuracy accuracy = LocationAccuracy.high, 
     int distanceFilter = 10

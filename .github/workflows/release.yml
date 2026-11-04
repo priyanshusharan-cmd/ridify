@@ -1,0 +1,118 @@
+name: Release builds
+
+# Builds the Android APK and iOS IPA and attaches them to a GitHub Release.
+# Publish a release (e.g. tag v1.0.0) and this workflow uploads the binaries
+# to it, or run it manually from the Actions tab for an existing tag.
+on:
+  release:
+    types: [published]
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: Existing release tag to build and attach to (e.g. v1.0.0)
+        required: true
+
+permissions:
+  contents: write
+
+env:
+  FLUTTER_VERSION: '3.44.3'
+  BACKEND_URL: https://ridify-backend.onrender.com
+  TAG: ${{ github.event.release.tag_name || inputs.tag }}
+
+concurrency:
+  group: release-${{ github.event.release.tag_name || inputs.tag }}
+  cancel-in-progress: true
+
+jobs:
+  android:
+    name: Android APK
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: frontend
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ env.TAG }}
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+      - uses: subosito/flutter-action@v2
+        with:
+          flutter-version: ${{ env.FLUTTER_VERSION }}
+          channel: stable
+          cache: true
+      - name: App config
+        run: printf 'BACKEND_URL=%s\n' "$BACKEND_URL" > .env
+      - name: Release keystore (optional)
+        env:
+          KEYSTORE_BASE64: ${{ secrets.RIDIFY_KEYSTORE_BASE64 }}
+        run: |
+          if [ -n "$KEYSTORE_BASE64" ]; then
+            echo "$KEYSTORE_BASE64" | base64 -d > "$RUNNER_TEMP/ridify-release.jks"
+            echo "RIDIFY_KEYSTORE_PATH=$RUNNER_TEMP/ridify-release.jks" >> "$GITHUB_ENV"
+            echo "Signing with the release keystore"
+          else
+            echo "::warning::RIDIFY_KEYSTORE_BASE64 not set - APK is signed with a debug key"
+          fi
+      - run: flutter pub get
+      - name: Build APK
+        env:
+          RIDIFY_KEYSTORE_PASSWORD: ${{ secrets.RIDIFY_KEYSTORE_PASSWORD }}
+          RIDIFY_KEY_ALIAS: ${{ secrets.RIDIFY_KEY_ALIAS }}
+          RIDIFY_KEY_PASSWORD: ${{ secrets.RIDIFY_KEY_PASSWORD }}
+        run: |
+          flutter build apk --release --dart-define=BACKEND_URL="$BACKEND_URL"
+          cp build/app/outputs/flutter-apk/app-release.apk "$GITHUB_WORKSPACE/Ridify-$TAG.apk"
+      - uses: actions/upload-artifact@v4
+        with:
+          name: apk
+          path: Ridify-${{ env.TAG }}.apk
+          if-no-files-found: error
+
+  ios:
+    name: iOS IPA (unsigned)
+    runs-on: macos-latest
+    defaults:
+      run:
+        working-directory: frontend
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ env.TAG }}
+      - uses: subosito/flutter-action@v2
+        with:
+          flutter-version: ${{ env.FLUTTER_VERSION }}
+          channel: stable
+          cache: true
+      - name: App config
+        run: printf 'BACKEND_URL=%s\n' "$BACKEND_URL" > .env
+      - run: flutter pub get
+      - name: Build IPA
+        run: |
+          flutter build ios --release --no-codesign --dart-define=BACKEND_URL="$BACKEND_URL"
+          mkdir -p "$RUNNER_TEMP/ipa/Payload"
+          cp -R build/ios/iphoneos/Runner.app "$RUNNER_TEMP/ipa/Payload/"
+          (cd "$RUNNER_TEMP/ipa" && zip -qry "$GITHUB_WORKSPACE/Ridify-$TAG.ipa" Payload)
+      - uses: actions/upload-artifact@v4
+        with:
+          name: ipa
+          path: Ridify-${{ env.TAG }}.ipa
+          if-no-files-found: error
+
+  attach:
+    name: Attach to release
+    needs: [android, ios]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          merge-multiple: true
+      - name: Upload binaries
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          sha256sum Ridify-*.apk Ridify-*.ipa > SHA256SUMS.txt
+          gh release upload "$TAG" Ridify-*.apk Ridify-*.ipa SHA256SUMS.txt --clobber -R "$GITHUB_REPOSITORY"

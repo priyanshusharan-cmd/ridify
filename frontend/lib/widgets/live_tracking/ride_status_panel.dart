@@ -4,8 +4,11 @@ import '../../screens/chat_screen.dart';
 import '../verified_badge.dart';
 import '../../utils/snackbar_util.dart';
 import 'passenger_tile.dart';
+import '../../core/utils.dart';
 
 class RideStatusPanel extends StatelessWidget {
+  /// Before the ride starts the panel fills the screen (no map, no GPS).
+  final bool fullScreen;
   final bool isDriver;
   final bool isAccepted;
   final bool isStarted;
@@ -32,6 +35,7 @@ class RideStatusPanel extends StatelessWidget {
 
   const RideStatusPanel({
     super.key,
+    this.fullScreen = false,
     required this.isDriver,
     required this.isAccepted,
     required this.isStarted,
@@ -69,6 +73,15 @@ class RideStatusPanel extends StatelessWidget {
         ? (minSize + (activePassengers.length * 0.13)).clamp(minSize + 0.01, 0.85)
         : minSize + 0.01;
 
+    if (fullScreen) {
+      return Container(
+        color: panelBg,
+        child: rideData == null
+            ? const Center(child: CircularProgressIndicator())
+            : _buildList(context, null, isDark, panelText, panelSub),
+      );
+    }
+
     return DraggableScrollableSheet(
       initialChildSize: minSize,
       minChildSize: minSize,
@@ -93,7 +106,14 @@ class RideStatusPanel extends StatelessWidget {
             borderRadius: const BorderRadius.vertical(top: Radius.circular(30)),
             boxShadow: const [BoxShadow(color: Colors.black12, blurRadius: 10)],
           ),
-          child: ScrollConfiguration(
+          child: _buildList(context, scrollController, isDark, panelText, panelSub),
+        );
+      },
+    );
+  }
+
+  Widget _buildList(BuildContext context, ScrollController? scrollController, bool isDark, Color panelText, Color panelSub) {
+    return ScrollConfiguration(
             behavior: ScrollConfiguration.of(context).copyWith(
               dragDevices: {
                 PointerDeviceKind.touch,
@@ -104,10 +124,10 @@ class RideStatusPanel extends StatelessWidget {
             child: ListView(
               physics: const BouncingScrollPhysics(parent: AlwaysScrollableScrollPhysics()),
               controller: scrollController,
-              padding: const EdgeInsets.fromLTRB(20, 10, 20, 20),
+              padding: fullScreen ? const EdgeInsets.fromLTRB(20, 24, 20, 32) : const EdgeInsets.fromLTRB(20, 10, 20, 20),
               children: [
                 // ── Drag handle ──
-                Center(
+                if (!fullScreen) Center(
                   child: Container(
                     width: 40, height: 5,
                     margin: const EdgeInsets.only(bottom: 16),
@@ -246,6 +266,13 @@ class RideStatusPanel extends StatelessWidget {
                       ),
                   ],
                 ]),
+                // ── Trip summary + privacy note (before the ride starts) ──
+                if (fullScreen) ...[
+                  const SizedBox(height: 20),
+                  _TripSummaryCard(rideData: rideData!, myEmail: myEmail.trim().toLowerCase(), isDriver: isDriver, isDark: isDark),
+                  const SizedBox(height: 12),
+                  _PrivacyNotice(isDriver: isDriver, isDark: isDark),
+                ],
                 // ── Capacity indicator ──
                 if (isDriver) ...[
                   const SizedBox(height: 12),
@@ -318,9 +345,86 @@ class RideStatusPanel extends StatelessWidget {
                 ),
               ],
             ),
+          );
+  }
+}
+
+/// From → to, departure time and (for passengers) their own pickup / drop.
+class _TripSummaryCard extends StatelessWidget {
+  final Map<String, dynamic> rideData;
+  final String myEmail;
+  final bool isDriver;
+  final bool isDark;
+  const _TripSummaryCard({required this.rideData, required this.myEmail, required this.isDriver, required this.isDark});
+
+  @override
+  Widget build(BuildContext context) {
+    final text = isDark ? Colors.white : Colors.black;
+    final sub = isDark ? Colors.white54 : Colors.grey.shade600;
+    final mine = rideData['riderDetails']?[myEmail];
+    final String from = (!isDriver && mine?['pickupLocation'] != null) ? mine['pickupLocation'].toString() : (rideData['pickupLocation'] ?? '').toString();
+    final String to = (!isDriver && mine?['destination'] != null) ? mine['destination'].toString() : (rideData['destination'] ?? '').toString();
+    final String when = (rideData['departureTime'] ?? '').toString().replaceAll(' at ', ' • ');
+    final List passengers = rideData['passengers'] ?? [];
+    final int others = isDriver ? passengers.length : passengers.where((p) => p != myEmail).length;
+
+    Widget row(IconData icon, Color color, String label, String value) => Padding(
+      padding: const EdgeInsets.symmetric(vertical: 6),
+      child: Row(crossAxisAlignment: CrossAxisAlignment.start, children: [
+        Icon(icon, size: 18, color: color),
+        const SizedBox(width: 10),
+        Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+          Text(label, style: TextStyle(fontSize: 11, color: sub, fontWeight: FontWeight.w600, letterSpacing: 0.3)),
+          const SizedBox(height: 2),
+          Text(formatAddress(value), maxLines: 2, overflow: TextOverflow.ellipsis, style: TextStyle(fontSize: 14, color: text, fontWeight: FontWeight.w600)),
+        ])),
+      ]),
+    );
+
+    return Container(
+      padding: const EdgeInsets.all(14),
+      decoration: BoxDecoration(
+        color: isDark ? const Color(0xFF252525) : Colors.grey.shade50,
+        borderRadius: BorderRadius.circular(14),
+        border: Border.all(color: isDark ? Colors.white10 : Colors.black12),
+      ),
+      child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+        row(Icons.trip_origin, Colors.green, isDriver ? 'START' : 'YOUR PICKUP', from),
+        row(Icons.location_on, Colors.red, isDriver ? 'DESTINATION' : 'YOUR DROP', to),
+        if (when.isNotEmpty) row(Icons.schedule, Colors.blue, 'DEPARTURE', when),
+        if (!isDriver) row(Icons.group_outlined, Colors.blueGrey, 'CO-RIDERS', others == 0 ? 'Just you so far' : '$others other ${others == 1 ? 'rider' : 'riders'}'),
+      ]),
+    );
+  }
+}
+
+/// Explains that nobody's live location is shared until the driver starts.
+class _PrivacyNotice extends StatelessWidget {
+  final bool isDriver;
+  final bool isDark;
+  const _PrivacyNotice({required this.isDriver, required this.isDark});
+
+  @override
+  Widget build(BuildContext context) {
+    final color = isDark ? Colors.blue.shade200 : Colors.blue.shade800;
+    return Container(
+      padding: const EdgeInsets.all(12),
+      decoration: BoxDecoration(
+        color: Colors.blue.withValues(alpha: isDark ? 0.15 : 0.07),
+        borderRadius: BorderRadius.circular(12),
+      ),
+      child: Row(crossAxisAlignment: CrossAxisAlignment.start, children: [
+        Icon(Icons.lock_outline, size: 18, color: color),
+        const SizedBox(width: 10),
+        Expanded(
+          child: Text(
+            isDriver
+                ? 'Live location is off. When you tap Start, riders see your car and you see where they are waiting.'
+                : 'Live location is off. It turns on when the driver starts the ride: you see the driver, and only the driver sees you until pickup.',
+            style: TextStyle(fontSize: 12.5, height: 1.35, color: color, fontWeight: FontWeight.w500),
           ),
-        );
-      },
+        ),
+      ]),
     );
   }
 }

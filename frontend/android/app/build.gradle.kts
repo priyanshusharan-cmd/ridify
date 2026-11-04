@@ -1,8 +1,21 @@
+import java.util.Properties
+import java.io.FileInputStream
+
 plugins {
     id("com.android.application")
     // The Flutter Gradle Plugin must be applied after the Android and Kotlin Gradle plugins.
     id("dev.flutter.flutter-gradle-plugin")
 }
+
+// Release signing: android/key.properties (local) or the RIDIFY_KEYSTORE_* env vars (CI).
+// Falls back to the debug key when neither is present so `flutter run --release` still works.
+val keystoreProperties = Properties().apply {
+    val f = rootProject.file("key.properties")
+    if (f.exists()) load(FileInputStream(f))
+}
+fun signingValue(prop: String, env: String): String? =
+    (keystoreProperties.getProperty(prop) ?: System.getenv(env))?.takeIf { it.isNotBlank() }
+val releaseStoreFile = signingValue("storeFile", "RIDIFY_KEYSTORE_PATH")
 
 android {
     namespace = "com.example.ridify"
@@ -29,11 +42,21 @@ android {
         versionName = flutter.versionName
     }
 
+    signingConfigs {
+        if (releaseStoreFile != null) {
+            create("release") {
+                storeFile = file(releaseStoreFile)
+                storePassword = signingValue("storePassword", "RIDIFY_KEYSTORE_PASSWORD")
+                keyAlias = signingValue("keyAlias", "RIDIFY_KEY_ALIAS")
+                keyPassword = signingValue("keyPassword", "RIDIFY_KEY_PASSWORD")
+            }
+        }
+    }
+
     buildTypes {
         release {
-            // TODO: Add your own signing config for the release build.
-            // Signing with the debug keys for now, so `flutter run --release` works.
-            signingConfig = signingConfigs.getByName("debug")
+            signingConfig = if (releaseStoreFile != null) signingConfigs.getByName("release")
+                            else signingConfigs.getByName("debug")
         }
     }
 }

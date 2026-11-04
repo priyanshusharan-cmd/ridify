@@ -2,9 +2,10 @@ name: Security & Quality Checks
 
 on:
   push:
-    branches: [ main, develop ]
+    branches: [ main, develop, 'feat/**', 'fix/**' ]
   pull_request:
     branches: [ main ]
+  workflow_dispatch:
 
 jobs:
   backend-security:
@@ -19,6 +20,8 @@ jobs:
           node-version: '20'
       - run: npm ci
       - run: npm audit --audit-level=high
+      - name: Tests
+        run: npm test
       - name: Check for hardcoded secrets
         run: |
           if grep -r "mongodb+srv://[^<]" . --include="*.js" --exclude-dir=node_modules; then
@@ -46,3 +49,6 @@ jobs:
       - name: Flutter analyze
         working-directory: frontend
         run: flutter analyze --fatal-infos --fatal-warnings
+      - name: Flutter tests
+        working-directory: frontend
+        run: flutter test test/ride_status_panel_test.dart test/health_service_test.dart

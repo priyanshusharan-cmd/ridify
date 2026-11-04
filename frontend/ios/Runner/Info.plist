@@ -36,7 +36,7 @@
 		<key>NSCameraUsageDescription</key>
 		<string>Ridify needs camera access so you can take a photo of your ID for account verification.</string>
 		<key>NSLocationWhenInUseUsageDescription</key>
-		<string>This app needs access to location when in the background to show your location on the map and share it with passengers during a ride.</string>
+		<string>Ridify uses your location only during a ride, after the driver starts it. Riders see the driver's car; a rider's position is shown only to their driver until pickup.</string>
 		<key>NSPhotoLibraryUsageDescription</key>
 		<string>Ridify needs photo library access so you can upload an ID image for account verification.</string>
 		<key>UIApplicationSceneManifest</key>
