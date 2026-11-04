@@ -11,6 +11,10 @@ on:
       tag:
         description: Existing release tag to build and attach to (e.g. v1.0.0)
         required: true
+      ref:
+        description: Branch or commit to build from (defaults to the tag)
+        required: false
+        default: ''
 
 permissions:
   contents: write
@@ -19,6 +23,7 @@ env:
   FLUTTER_VERSION: '3.44.3'
   BACKEND_URL: https://ridify-backend.onrender.com
   TAG: ${{ github.event.release.tag_name || inputs.tag }}
+  BUILD_REF: ${{ inputs.ref || github.event.release.tag_name || inputs.tag }}
 
 concurrency:
   group: release-${{ github.event.release.tag_name || inputs.tag }}
@@ -34,7 +39,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
         with:
-          ref: ${{ env.TAG }}
+          ref: ${{ env.BUILD_REF }}
       - uses: actions/setup-java@v4
         with:
           distribution: temurin
@@ -81,7 +86,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
         with:
-          ref: ${{ env.TAG }}
+          ref: ${{ env.BUILD_REF }}
       - uses: subosito/flutter-action@v2
         with:
           flutter-version: ${{ env.FLUTTER_VERSION }}
