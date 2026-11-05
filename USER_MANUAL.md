@@ -233,7 +233,7 @@ When you first open Ridify, you'll be asked to grant the following permissions:
 
 <table>
 <tr><th colspan="2">Login</th><th colspan="2">Sign up</th></tr>
-<tr><td align="center" width="25%"><img src="screen%20images/loginScreenLight.png" width="100%" alt="Login, light"/></td><td align="center" width="25%"><img src="screen%20images/loginScreenDark.png" width="100%" alt="Login, dark"/></td><td align="center" width="25%"><img src="screen%20images/signupScreenLight.png" width="100%" alt="Sign up, light"/></td><td align="center" width="25%"><img src="screen%20images/signupScreenDark.png" width="100%" alt="Sign up, dark"/></td></tr>
+<tr><td align="center" width="25%"><img src="assets/screenshots/loginScreenLight.png" width="100%" alt="Login, light"/></td><td align="center" width="25%"><img src="assets/screenshots/loginScreenDark.png" width="100%" alt="Login, dark"/></td><td align="center" width="25%"><img src="assets/screenshots/signupScreenLight.png" width="100%" alt="Sign up, light"/></td><td align="center" width="25%"><img src="assets/screenshots/signupScreenDark.png" width="100%" alt="Sign up, dark"/></td></tr>
 </table>
 
 ### 3.1 How Ridify Authentication Works
@@ -310,7 +310,7 @@ Ridify uses a **dual authentication system** combining traditional passwords wit
 
 ## Chapter 4: Your Profile & Identity Verification (KYC)
 
-<p align="center"><img src="screen%20images/profileScreenLight.png" width="30%" alt="Profile, light"/>&nbsp;&nbsp;<img src="screen%20images/profileScreenDark.png" width="30%" alt="Profile, dark"/><br/><sub><b>Profile</b> · light &amp; dark</sub></p>
+<p align="center"><img src="assets/screenshots/profileScreenLight.png" width="30%" alt="Profile, light"/>&nbsp;&nbsp;<img src="assets/screenshots/profileScreenDark.png" width="30%" alt="Profile, dark"/><br/><sub><b>Profile</b> · light &amp; dark</sub></p>
 
 ### 4.1 Viewing and Editing Your Profile
 
@@ -380,7 +380,7 @@ KYC (Know Your Customer) is an identity verification process that enhances trust
 
 ## Chapter 5: The Home Screen — Your Command Center
 
-<p align="center"><img src="screen%20images/homeScreenLightGIF.gif" width="30%" alt="Home, light"/>&nbsp;&nbsp;<img src="screen%20images/homeScreenDarkGIF.gif" width="30%" alt="Home, dark"/><br/><sub><b>Home</b> · light &amp; dark</sub></p>
+<p align="center"><img src="assets/screenshots/homeScreenLightGIF.gif" width="30%" alt="Home, light"/>&nbsp;&nbsp;<img src="assets/screenshots/homeScreenDarkGIF.gif" width="30%" alt="Home, dark"/><br/><sub><b>Home</b> · light &amp; dark</sub></p>
 
 The Home Screen is the first thing you see after logging in. It is designed to give you instant access to the two primary actions:
 
@@ -422,7 +422,7 @@ As soon as you open the Home Screen, the app establishes a **WebSocket connectio
 
 <table>
 <tr><th colspan="2">Find a ride</th><th colspan="2">Location picker</th></tr>
-<tr><td align="center" width="25%"><img src="screen%20images/findRIdeLight.png" width="100%" alt="Find a ride, light"/></td><td align="center" width="25%"><img src="screen%20images/findRideDark.png" width="100%" alt="Find a ride, dark"/></td><td align="center" width="25%"><img src="screen%20images/locationPickerScreenLight.png" width="100%" alt="Location picker, light"/></td><td align="center" width="25%"><img src="screen%20images/locationPickerScreenDark.png" width="100%" alt="Location picker, dark"/></td></tr>
+<tr><td align="center" width="25%"><img src="assets/screenshots/findRIdeLight.png" width="100%" alt="Find a ride, light"/></td><td align="center" width="25%"><img src="assets/screenshots/findRideDark.png" width="100%" alt="Find a ride, dark"/></td><td align="center" width="25%"><img src="assets/screenshots/locationPickerScreenLight.png" width="100%" alt="Location picker, light"/></td><td align="center" width="25%"><img src="assets/screenshots/locationPickerScreenDark.png" width="100%" alt="Location picker, dark"/></td></tr>
 </table>
 
 ### 6.1 Starting a Search
@@ -506,7 +506,7 @@ The search returns a list of rides ranked by relevance. Each result includes com
 
 <table>
 <tr><th colspan="2">Available rides</th><th colspan="2">Filters</th></tr>
-<tr><td align="center" width="25%"><img src="screen%20images/availableRidesScreenLight.png" width="100%" alt="Available rides, light"/></td><td align="center" width="25%"><img src="screen%20images/availableRidesScreenDark.png" width="100%" alt="Available rides, dark"/></td><td align="center" width="25%"><img src="screen%20images/filtersPopupLight.png" width="100%" alt="Filters, light"/></td><td align="center" width="25%"><img src="screen%20images/filtersPopupDark.png" width="100%" alt="Filters, dark"/></td></tr>
+<tr><td align="center" width="25%"><img src="assets/screenshots/availableRidesScreenLight.png" width="100%" alt="Available rides, light"/></td><td align="center" width="25%"><img src="assets/screenshots/availableRidesScreenDark.png" width="100%" alt="Available rides, dark"/></td><td align="center" width="25%"><img src="assets/screenshots/filtersPopupLight.png" width="100%" alt="Filters, light"/></td><td align="center" width="25%"><img src="assets/screenshots/filtersPopupDark.png" width="100%" alt="Filters, dark"/></td></tr>
 </table>
 
 ### 7.1 The Available Rides Screen
@@ -547,7 +547,7 @@ The Available Rides screen is **live**. While you're browsing:
 
 ## Chapter 8: Joining a Ride & Cost-Splitting
 
-<p align="center"><img src="screen%20images/rideDetailScreenLight.png" width="30%" alt="Ride details, light"/>&nbsp;&nbsp;<img src="screen%20images/rideDetailScreenDark.png" width="30%" alt="Ride details, dark"/><br/><sub><b>Ride details</b> · light &amp; dark</sub></p>
+<p align="center"><img src="assets/screenshots/rideDetailScreenLight.png" width="30%" alt="Ride details, light"/>&nbsp;&nbsp;<img src="assets/screenshots/rideDetailScreenDark.png" width="30%" alt="Ride details, dark"/><br/><sub><b>Ride details</b> · light &amp; dark</sub></p>
 
 ### 8.1 Viewing Ride Details
 
@@ -612,9 +612,9 @@ If you change your mind before the driver accepts you:
 
 <table>
 <tr><th colspan="2">Waiting for pickup</th><th colspan="2">Driver arrived</th></tr>
-<tr><td align="center" width="25%"><img src="screen%20images/liveRideScreenRider1Light.png" width="100%" alt="Waiting for pickup, light"/></td><td align="center" width="25%"><img src="screen%20images/liveRideScreenRider1Dark.png" width="100%" alt="Waiting for pickup, dark"/></td><td align="center" width="25%"><img src="screen%20images/liveRideScreenRider2Light.png" width="100%" alt="Driver arrived, light"/></td><td align="center" width="25%"><img src="screen%20images/liveRideScreenRider2Dark.png" width="100%" alt="Driver arrived, dark"/></td></tr>
+<tr><td align="center" width="25%"><img src="assets/screenshots/liveRideScreenRider1Light.png" width="100%" alt="Waiting for pickup, light"/></td><td align="center" width="25%"><img src="assets/screenshots/liveRideScreenRider1Dark.png" width="100%" alt="Waiting for pickup, dark"/></td><td align="center" width="25%"><img src="assets/screenshots/liveRideScreenRider2Light.png" width="100%" alt="Driver arrived, light"/></td><td align="center" width="25%"><img src="assets/screenshots/liveRideScreenRider2Dark.png" width="100%" alt="Driver arrived, dark"/></td></tr>
 <tr><th colspan="4">In transit</th></tr>
-<tr><td colspan="4" align="center"><img src="screen%20images/liveRideScreenRider3Light.png" width="25%" alt="In transit, light"/>&nbsp;&nbsp;<img src="screen%20images/liveRideScreenRider3Dark.png" width="25%" alt="In transit, dark"/></td></tr>
+<tr><td colspan="4" align="center"><img src="assets/screenshots/liveRideScreenRider3Light.png" width="25%" alt="In transit, light"/>&nbsp;&nbsp;<img src="assets/screenshots/liveRideScreenRider3Dark.png" width="25%" alt="In transit, dark"/></td></tr>
 </table>
 
 ### 9.1 Before the Ride Starts
@@ -678,7 +678,7 @@ When you reach your drop-off point:
 
 ## Chapter 10: Trip Completion & Payment (Rider)
 
-<p align="center"><img src="screen%20images/riderCompletionScreenLight.png" width="30%" alt="Trip complete (rider), light"/>&nbsp;&nbsp;<img src="screen%20images/riderCompletionScreenDark.png" width="30%" alt="Trip complete (rider), dark"/><br/><sub><b>Trip complete (rider)</b> · light &amp; dark</sub></p>
+<p align="center"><img src="assets/screenshots/riderCompletionScreenLight.png" width="30%" alt="Trip complete (rider), light"/>&nbsp;&nbsp;<img src="assets/screenshots/riderCompletionScreenDark.png" width="30%" alt="Trip complete (rider), dark"/><br/><sub><b>Trip complete (rider)</b> · light &amp; dark</sub></p>
 
 ### 10.1 The Payment Model
 
@@ -714,7 +714,7 @@ Ridify currently operates on a **facilitated direct payment** model:
 
 ## Chapter 11: Offering a Ride
 
-<p align="center"><img src="screen%20images/offerRideLight.png" width="30%" alt="Offer a ride, light"/>&nbsp;&nbsp;<img src="screen%20images/offerRideDark.png" width="30%" alt="Offer a ride, dark"/><br/><sub><b>Offer a ride</b> · light &amp; dark</sub></p>
+<p align="center"><img src="assets/screenshots/offerRideLight.png" width="30%" alt="Offer a ride, light"/>&nbsp;&nbsp;<img src="assets/screenshots/offerRideDark.png" width="30%" alt="Offer a ride, dark"/><br/><sub><b>Offer a ride</b> · light &amp; dark</sub></p>
 
 ### 11.1 Prerequisites
 
@@ -833,9 +833,9 @@ All request acceptance and rider management operations use **optimistic locking*
 
 <table>
 <tr><th colspan="2">Ride started</th><th colspan="2">At boarding point</th></tr>
-<tr><td align="center" width="25%"><img src="screen%20images/liveRideScreenDriver1Light.png" width="100%" alt="Ride started, light"/></td><td align="center" width="25%"><img src="screen%20images/liveRideScreenDriver1Dark.png" width="100%" alt="Ride started, dark"/></td><td align="center" width="25%"><img src="screen%20images/liveRideScreenDriver2Light.png" width="100%" alt="At boarding point, light"/></td><td align="center" width="25%"><img src="screen%20images/liveRideScreenDriver2Dark.png" width="100%" alt="At boarding point, dark"/></td></tr>
+<tr><td align="center" width="25%"><img src="assets/screenshots/liveRideScreenDriver1Light.png" width="100%" alt="Ride started, light"/></td><td align="center" width="25%"><img src="assets/screenshots/liveRideScreenDriver1Dark.png" width="100%" alt="Ride started, dark"/></td><td align="center" width="25%"><img src="assets/screenshots/liveRideScreenDriver2Light.png" width="100%" alt="At boarding point, light"/></td><td align="center" width="25%"><img src="assets/screenshots/liveRideScreenDriver2Dark.png" width="100%" alt="At boarding point, dark"/></td></tr>
 <tr><th colspan="4">Rider boarded</th></tr>
-<tr><td colspan="4" align="center"><img src="screen%20images/liveRideScreenDriver3Light.png" width="25%" alt="Rider boarded, light"/>&nbsp;&nbsp;<img src="screen%20images/liveRideScreenDriver3Dark.png" width="25%" alt="Rider boarded, dark"/></td></tr>
+<tr><td colspan="4" align="center"><img src="assets/screenshots/liveRideScreenDriver3Light.png" width="25%" alt="Rider boarded, light"/>&nbsp;&nbsp;<img src="assets/screenshots/liveRideScreenDriver3Dark.png" width="25%" alt="Rider boarded, dark"/></td></tr>
 </table>
 
 ### 13.1 Starting the Ride
@@ -908,7 +908,7 @@ As a driver, the Live Tracking Screen shows:
 
 ## Chapter 14: Trip Completion & Earnings (Driver)
 
-<p align="center"><img src="screen%20images/driverCompletionScreenLight.png" width="30%" alt="Trip complete (driver), light"/>&nbsp;&nbsp;<img src="screen%20images/driverCompletionScreenDark.png" width="30%" alt="Trip complete (driver), dark"/><br/><sub><b>Trip complete (driver)</b> · light &amp; dark</sub></p>
+<p align="center"><img src="assets/screenshots/driverCompletionScreenLight.png" width="30%" alt="Trip complete (driver), light"/>&nbsp;&nbsp;<img src="assets/screenshots/driverCompletionScreenDark.png" width="30%" alt="Trip complete (driver), dark"/><br/><sub><b>Trip complete (driver)</b> · light &amp; dark</sub></p>
 
 ### 14.1 Ending the Trip
 
@@ -971,7 +971,7 @@ These stats are calculated via a MongoDB aggregation pipeline on the server and 
 
 ## Chapter 16: In-App Chat System
 
-<p align="center"><img src="screen%20images/chatScreenLight.png" width="30%" alt="In-app chat, light"/>&nbsp;&nbsp;<img src="screen%20images/chatScreenDark.png" width="30%" alt="In-app chat, dark"/><br/><sub><b>In-app chat</b> · light &amp; dark</sub></p>
+<p align="center"><img src="assets/screenshots/chatScreenLight.png" width="30%" alt="In-app chat, light"/>&nbsp;&nbsp;<img src="assets/screenshots/chatScreenDark.png" width="30%" alt="In-app chat, dark"/><br/><sub><b>In-app chat</b> · light &amp; dark</sub></p>
 
 ### 16.1 Overview
 
@@ -1021,7 +1021,7 @@ Every ride has a dedicated **group chat room**. This allows the driver and all a
 
 <table>
 <tr><th colspan="2">Activity</th><th colspan="2">Ride history</th></tr>
-<tr><td align="center" width="25%"><img src="screen%20images/activityScreenLight.png" width="100%" alt="Activity, light"/></td><td align="center" width="25%"><img src="screen%20images/activityScreenDark.png" width="100%" alt="Activity, dark"/></td><td align="center" width="25%"><img src="screen%20images/historyScreenLight.png" width="100%" alt="Ride history, light"/></td><td align="center" width="25%"><img src="screen%20images/historyScreenDark.png" width="100%" alt="Ride history, dark"/></td></tr>
+<tr><td align="center" width="25%"><img src="assets/screenshots/activityScreenLight.png" width="100%" alt="Activity, light"/></td><td align="center" width="25%"><img src="assets/screenshots/activityScreenDark.png" width="100%" alt="Activity, dark"/></td><td align="center" width="25%"><img src="assets/screenshots/historyScreenLight.png" width="100%" alt="Ride history, light"/></td><td align="center" width="25%"><img src="assets/screenshots/historyScreenDark.png" width="100%" alt="Ride history, dark"/></td></tr>
 </table>
 
 ### 17.1 The Activity Screen
@@ -1058,7 +1058,7 @@ The History screen provides a more detailed view of your past rides, focusing on
 
 ## Chapter 18: Co-Passengers & Community
 
-<p align="center"><img src="screen%20images/passengersTravelledPopupLight.png" width="30%" alt="Co-passengers, light"/>&nbsp;&nbsp;<img src="screen%20images/passengersTravelledPopupDark.png" width="30%" alt="Co-passengers, dark"/><br/><sub><b>Co-passengers</b> · light &amp; dark</sub></p>
+<p align="center"><img src="assets/screenshots/passengersTravelledPopupLight.png" width="30%" alt="Co-passengers, light"/>&nbsp;&nbsp;<img src="assets/screenshots/passengersTravelledPopupDark.png" width="30%" alt="Co-passengers, dark"/><br/><sub><b>Co-passengers</b> · light &amp; dark</sub></p>
 
 ### 18.1 Viewing Your Co-Passengers
 
@@ -1084,7 +1084,7 @@ Over time, you build a network of people you've shared rides with. The Co-Passen
 
 ## Chapter 19: Admin Panel Overview
 
-<p align="center"><img src="screen%20images/adminDashboardLight.png" width="30%" alt="Admin dashboard, light"/>&nbsp;&nbsp;<img src="screen%20images/adminDashboardDark.png" width="30%" alt="Admin dashboard, dark"/><br/><sub><b>Admin dashboard</b> · light &amp; dark</sub></p>
+<p align="center"><img src="assets/screenshots/adminDashboardLight.png" width="30%" alt="Admin dashboard, light"/>&nbsp;&nbsp;<img src="assets/screenshots/adminDashboardDark.png" width="30%" alt="Admin dashboard, dark"/><br/><sub><b>Admin dashboard</b> · light &amp; dark</sub></p>
 
 ### 19.1 What Is the Admin Panel?
 
@@ -1113,7 +1113,7 @@ The Admin Panel is a secure, dedicated interface within the Ridify app that is a
 
 <table>
 <tr><th colspan="2">Users</th><th colspan="2">User actions</th></tr>
-<tr><td align="center" width="25%"><img src="screen%20images/adminUsersLight.png" width="100%" alt="Users, light"/></td><td align="center" width="25%"><img src="screen%20images/adminUsersDark.png" width="100%" alt="Users, dark"/></td><td align="center" width="25%"><img src="screen%20images/userPopupLight.png" width="100%" alt="User actions, light"/></td><td align="center" width="25%"><img src="screen%20images/userPopupDark.png" width="100%" alt="User actions, dark"/></td></tr>
+<tr><td align="center" width="25%"><img src="assets/screenshots/adminUsersLight.png" width="100%" alt="Users, light"/></td><td align="center" width="25%"><img src="assets/screenshots/adminUsersDark.png" width="100%" alt="Users, dark"/></td><td align="center" width="25%"><img src="assets/screenshots/userPopupLight.png" width="100%" alt="User actions, light"/></td><td align="center" width="25%"><img src="assets/screenshots/userPopupDark.png" width="100%" alt="User actions, dark"/></td></tr>
 </table>
 
 ### 20.1 Viewing Users
@@ -1189,7 +1189,7 @@ The nuclear option: deletes every user **except the admin** who triggered the ac
 
 ## Chapter 21: Ride Monitoring & Force Controls
 
-<p align="center"><img src="screen%20images/adminRidesLight.png" width="30%" alt="Active rides, light"/>&nbsp;&nbsp;<img src="screen%20images/adminRidesDark.png" width="30%" alt="Active rides, dark"/><br/><sub><b>Active rides</b> · light &amp; dark</sub></p>
+<p align="center"><img src="assets/screenshots/adminRidesLight.png" width="30%" alt="Active rides, light"/>&nbsp;&nbsp;<img src="assets/screenshots/adminRidesDark.png" width="30%" alt="Active rides, dark"/><br/><sub><b>Active rides</b> · light &amp; dark</sub></p>
 
 ### 21.1 Viewing All Rides
 
@@ -1224,7 +1224,7 @@ Permanently deletes every ride in the database. An `all_rides_wiped` event is br
 
 ## Chapter 22: KYC Document Verification Workflow
 
-<p align="center"><img src="screen%20images/adminVerifyLight.png" width="30%" alt="KYC verification, light"/>&nbsp;&nbsp;<img src="screen%20images/adminVerifyDark.png" width="30%" alt="KYC verification, dark"/><br/><sub><b>KYC verification</b> · light &amp; dark</sub></p>
+<p align="center"><img src="assets/screenshots/adminVerifyLight.png" width="30%" alt="KYC verification, light"/>&nbsp;&nbsp;<img src="assets/screenshots/adminVerifyDark.png" width="30%" alt="KYC verification, dark"/><br/><sub><b>KYC verification</b> · light &amp; dark</sub></p>
 
 ### 22.1 The Verification Queue
 

@@ -374,7 +374,7 @@ ridify/
 │       ├── services/        api_client · auth · ride · location · nominatim …
 │       └── widgets/         swipe_to_reply · address_search · verified_badge …
 ├── web-app/                 isolated Flutter-web build for Render
-├── screen%20images/             light & dark captures used below
+├── assets/screenshots/             light & dark captures used below
 ├── render.yaml              one-click Render blueprint
 └── USER_MANUAL.md           the full user guide
 ```
@@ -420,9 +420,9 @@ Every screen ships in **light** and **dark**. Expand a section to browse.
 <h4 align="center">Splash Screen</h4>
 
 <p align="center">
-<img src="screen%20images/splashScreenLightGIF.gif" width="38%"/>
+<img src="assets/screenshots/splashScreenLightGIF.gif" width="38%"/>
 &nbsp;&nbsp;
-<img src="screen%20images/splashScreenDarkGIF.gif" width="38%"/>
+<img src="assets/screenshots/splashScreenDarkGIF.gif" width="38%"/>
 </p>
 
 <br>
@@ -430,9 +430,9 @@ Every screen ships in **light** and **dark**. Expand a section to browse.
 <h4 align="center">Login</h4>
 
 <p align="center">
-<img src="screen%20images/loginScreenLight.png" width="38%"/>
+<img src="assets/screenshots/loginScreenLight.png" width="38%"/>
 &nbsp;&nbsp;
-<img src="screen%20images/loginScreenDark.png" width="38%"/>
+<img src="assets/screenshots/loginScreenDark.png" width="38%"/>
 </p>
 
 <br>
@@ -440,9 +440,9 @@ Every screen ships in **light** and **dark**. Expand a section to browse.
 <h4 align="center">Sign Up</h4>
 
 <p align="center">
-<img src="screen%20images/signupScreenLight.png" width="38%"/>
+<img src="assets/screenshots/signupScreenLight.png" width="38%"/>
 &nbsp;&nbsp;
-<img src="screen%20images/signupScreenDark.png" width="38%"/>
+<img src="assets/screenshots/signupScreenDark.png" width="38%"/>
 </p>
 
 <br>
@@ -457,9 +457,9 @@ Every screen ships in **light** and **dark**. Expand a section to browse.
 <h4 align="center">Home Screen</h4>
 
 <p align="center">
-<img src="screen%20images/homeScreenLightGIF.gif" width="38%"/>
+<img src="assets/screenshots/homeScreenLightGIF.gif" width="38%"/>
 &nbsp;&nbsp;
-<img src="screen%20images/homeScreenDarkGIF.gif" width="38%"/>
+<img src="assets/screenshots/homeScreenDarkGIF.gif" width="38%"/>
 </p>
 
 <br>
@@ -467,9 +467,9 @@ Every screen ships in **light** and **dark**. Expand a section to browse.
 <h4 align="center">Offer a Ride</h4>
 
 <p align="center">
-<img src="screen%20images/offerRideLight.png" width="38%"/>
+<img src="assets/screenshots/offerRideLight.png" width="38%"/>
 &nbsp;&nbsp;
-<img src="screen%20images/offerRideDark.png" width="38%"/>
+<img src="assets/screenshots/offerRideDark.png" width="38%"/>
 </p>
 
 <br>
@@ -477,9 +477,9 @@ Every screen ships in **light** and **dark**. Expand a section to browse.
 <h4 align="center">Location Picker</h4>
 
 <p align="center">
-<img src="screen%20images/locationPickerScreenLight.png" width="38%"/>
+<img src="assets/screenshots/locationPickerScreenLight.png" width="38%"/>
 &nbsp;&nbsp;
-<img src="screen%20images/locationPickerScreenDark.png" width="38%"/>
+<img src="assets/screenshots/locationPickerScreenDark.png" width="38%"/>
 </p>
 
 <br>
@@ -487,9 +487,9 @@ Every screen ships in **light** and **dark**. Expand a section to browse.
 <h4 align="center">Find a Ride</h4>
 
 <p align="center">
-<img src="screen%20images/findRIdeLight.png" width="38%"/>
+<img src="assets/screenshots/findRIdeLight.png" width="38%"/>
 &nbsp;&nbsp;
-<img src="screen%20images/findRideDark.png" width="38%"/>
+<img src="assets/screenshots/findRideDark.png" width="38%"/>
 </p>
 
 <br>
@@ -497,9 +497,9 @@ Every screen ships in **light** and **dark**. Expand a section to browse.
 <h4 align="center">Available Rides</h4>
 
 <p align="center">
-<img src="screen%20images/availableRidesScreenLight.png" width="38%"/>
+<img src="assets/screenshots/availableRidesScreenLight.png" width="38%"/>
 &nbsp;&nbsp;
-<img src="screen%20images/availableRidesScreenDark.png" width="38%"/>
+<img src="assets/screenshots/availableRidesScreenDark.png" width="38%"/>
 </p>
 
 <br>
@@ -507,9 +507,9 @@ Every screen ships in **light** and **dark**. Expand a section to browse.
 <h4 align="center">Filters</h4>
 
 <p align="center">
-<img src="screen%20images/filtersPopupLight.png" width="38%"/>
+<img src="assets/screenshots/filtersPopupLight.png" width="38%"/>
 &nbsp;&nbsp;
-<img src="screen%20images/filtersPopupDark.png" width="38%"/>
+<img src="assets/screenshots/filtersPopupDark.png" width="38%"/>
 </p>
 
 <br>
@@ -524,9 +524,9 @@ Every screen ships in **light** and **dark**. Expand a section to browse.
 <h4 align="center">Activity Screen</h4>
 
 <p align="center">
-<img src="screen%20images/activityScreenLight.png" width="38%"/>
+<img src="assets/screenshots/activityScreenLight.png" width="38%"/>
 &nbsp;&nbsp;
-<img src="screen%20images/activityScreenDark.png" width="38%"/>
+<img src="assets/screenshots/activityScreenDark.png" width="38%"/>
 </p>
 
 <br>
@@ -534,9 +534,9 @@ Every screen ships in **light** and **dark**. Expand a section to browse.
 <h4 align="center">Ride Details</h4>
 
 <p align="center">
-<img src="screen%20images/rideDetailScreenLight.png" width="38%"/>
+<img src="assets/screenshots/rideDetailScreenLight.png" width="38%"/>
 &nbsp;&nbsp;
-<img src="screen%20images/rideDetailScreenDark.png" width="38%"/>
+<img src="assets/screenshots/rideDetailScreenDark.png" width="38%"/>
 </p>
 
 <br>
@@ -551,9 +551,9 @@ Every screen ships in **light** and **dark**. Expand a section to browse.
 <h4 align="center">Driver — Ride Started</h4>
 
 <p align="center">
-<img src="screen%20images/liveRideScreenDriver1Light.png" width="38%"/>
+<img src="assets/screenshots/liveRideScreenDriver1Light.png" width="38%"/>
 &nbsp;&nbsp;
-<img src="screen%20images/liveRideScreenDriver1Dark.png" width="38%"/>
+<img src="assets/screenshots/liveRideScreenDriver1Dark.png" width="38%"/>
 </p>
 
 <br>
@@ -561,9 +561,9 @@ Every screen ships in **light** and **dark**. Expand a section to browse.
 <h4 align="center">Rider — Waiting for Pickup</h4>
 
 <p align="center">
-<img src="screen%20images/liveRideScreenRider1Light.png" width="38%"/>
+<img src="assets/screenshots/liveRideScreenRider1Light.png" width="38%"/>
 &nbsp;&nbsp;
-<img src="screen%20images/liveRideScreenRider1Dark.png" width="38%"/>
+<img src="assets/screenshots/liveRideScreenRider1Dark.png" width="38%"/>
 </p>
 
 <br>
@@ -571,9 +571,9 @@ Every screen ships in **light** and **dark**. Expand a section to browse.
 <h4 align="center">Driver — At Boarding Point</h4>
 
 <p align="center">
-<img src="screen%20images/liveRideScreenDriver2Light.png" width="38%"/>
+<img src="assets/screenshots/liveRideScreenDriver2Light.png" width="38%"/>
 &nbsp;&nbsp;
-<img src="screen%20images/liveRideScreenDriver2Dark.png" width="38%"/>
+<img src="assets/screenshots/liveRideScreenDriver2Dark.png" width="38%"/>
 </p>
 
 <br>
@@ -581,9 +581,9 @@ Every screen ships in **light** and **dark**. Expand a section to browse.
 <h4 align="center">Rider — Driver Arrived</h4>
 
 <p align="center">
-<img src="screen%20images/liveRideScreenRider2Light.png" width="38%"/>
+<img src="assets/screenshots/liveRideScreenRider2Light.png" width="38%"/>
 &nbsp;&nbsp;
-<img src="screen%20images/liveRideScreenRider2Dark.png" width="38%"/>
+<img src="assets/screenshots/liveRideScreenRider2Dark.png" width="38%"/>
 </p>
 
 <br>
@@ -591,9 +591,9 @@ Every screen ships in **light** and **dark**. Expand a section to browse.
 <h4 align="center">Driver — Rider Boarded</h4>
 
 <p align="center">
-<img src="screen%20images/liveRideScreenDriver3Light.png" width="38%"/>
+<img src="assets/screenshots/liveRideScreenDriver3Light.png" width="38%"/>
 &nbsp;&nbsp;
-<img src="screen%20images/liveRideScreenDriver3Dark.png" width="38%"/>
+<img src="assets/screenshots/liveRideScreenDriver3Dark.png" width="38%"/>
 </p>
 
 <br>
@@ -601,9 +601,9 @@ Every screen ships in **light** and **dark**. Expand a section to browse.
 <h4 align="center">Rider — In Transit</h4>
 
 <p align="center">
-<img src="screen%20images/liveRideScreenRider3Light.png" width="38%"/>
+<img src="assets/screenshots/liveRideScreenRider3Light.png" width="38%"/>
 &nbsp;&nbsp;
-<img src="screen%20images/liveRideScreenRider3Dark.png" width="38%"/>
+<img src="assets/screenshots/liveRideScreenRider3Dark.png" width="38%"/>
 </p>
 
 <br>
@@ -611,9 +611,9 @@ Every screen ships in **light** and **dark**. Expand a section to browse.
 <h4 align="center">In-app Chat</h4>
 
 <p align="center">
-<img src="screen%20images/chatScreenLight.png" width="38%"/>
+<img src="assets/screenshots/chatScreenLight.png" width="38%"/>
 &nbsp;&nbsp;
-<img src="screen%20images/chatScreenDark.png" width="38%"/>
+<img src="assets/screenshots/chatScreenDark.png" width="38%"/>
 </p>
 
 <br>
@@ -621,9 +621,9 @@ Every screen ships in **light** and **dark**. Expand a section to browse.
 <h4 align="center">Driver — Trip Complete</h4>
 
 <p align="center">
-<img src="screen%20images/driverCompletionScreenLight.png" width="38%"/>
+<img src="assets/screenshots/driverCompletionScreenLight.png" width="38%"/>
 &nbsp;&nbsp;
-<img src="screen%20images/driverCompletionScreenDark.png" width="38%"/>
+<img src="assets/screenshots/driverCompletionScreenDark.png" width="38%"/>
 </p>
 
 <br>
@@ -631,9 +631,9 @@ Every screen ships in **light** and **dark**. Expand a section to browse.
 <h4 align="center">Rider — Trip Complete</h4>
 
 <p align="center">
-<img src="screen%20images/riderCompletionScreenLight.png" width="38%"/>
+<img src="assets/screenshots/riderCompletionScreenLight.png" width="38%"/>
 &nbsp;&nbsp;
-<img src="screen%20images/riderCompletionScreenDark.png" width="38%"/>
+<img src="assets/screenshots/riderCompletionScreenDark.png" width="38%"/>
 </p>
 
 <br>
@@ -648,9 +648,9 @@ Every screen ships in **light** and **dark**. Expand a section to browse.
 <h4 align="center">Ride History</h4>
 
 <p align="center">
-<img src="screen%20images/historyScreenLight.png" width="38%"/>
+<img src="assets/screenshots/historyScreenLight.png" width="38%"/>
 &nbsp;&nbsp;
-<img src="screen%20images/historyScreenDark.png" width="38%"/>
+<img src="assets/screenshots/historyScreenDark.png" width="38%"/>
 </p>
 
 <br>
@@ -658,9 +658,9 @@ Every screen ships in **light** and **dark**. Expand a section to browse.
 <h4 align="center">Co-Passengers</h4>
 
 <p align="center">
-<img src="screen%20images/passengersTravelledPopupLight.png" width="38%"/>
+<img src="assets/screenshots/passengersTravelledPopupLight.png" width="38%"/>
 &nbsp;&nbsp;
-<img src="screen%20images/passengersTravelledPopupDark.png" width="38%"/>
+<img src="assets/screenshots/passengersTravelledPopupDark.png" width="38%"/>
 </p>
 
 <br>
@@ -668,9 +668,9 @@ Every screen ships in **light** and **dark**. Expand a section to browse.
 <h4 align="center">Profile</h4>
 
 <p align="center">
-<img src="screen%20images/profileScreenLight.png" width="38%"/>
+<img src="assets/screenshots/profileScreenLight.png" width="38%"/>
 &nbsp;&nbsp;
-<img src="screen%20images/profileScreenDark.png" width="38%"/>
+<img src="assets/screenshots/profileScreenDark.png" width="38%"/>
 </p>
 
 <br>
@@ -685,9 +685,9 @@ Every screen ships in **light** and **dark**. Expand a section to browse.
 <h4 align="center">Admin Dashboard</h4>
 
 <p align="center">
-<img src="screen%20images/adminDashboardLight.png" width="38%"/>
+<img src="assets/screenshots/adminDashboardLight.png" width="38%"/>
 &nbsp;&nbsp;
-<img src="screen%20images/adminDashboardDark.png" width="38%"/>
+<img src="assets/screenshots/adminDashboardDark.png" width="38%"/>
 </p>
 
 <br>
@@ -695,9 +695,9 @@ Every screen ships in **light** and **dark**. Expand a section to browse.
 <h4 align="center">Admin — Users</h4>
 
 <p align="center">
-<img src="screen%20images/adminUsersLight.png" width="38%"/>
+<img src="assets/screenshots/adminUsersLight.png" width="38%"/>
 &nbsp;&nbsp;
-<img src="screen%20images/adminUsersDark.png" width="38%"/>
+<img src="assets/screenshots/adminUsersDark.png" width="38%"/>
 </p>
 
 <br>
@@ -705,9 +705,9 @@ Every screen ships in **light** and **dark**. Expand a section to browse.
 <h4 align="center">Admin — User Actions</h4>
 
 <p align="center">
-<img src="screen%20images/userPopupLight.png" width="38%"/>
+<img src="assets/screenshots/userPopupLight.png" width="38%"/>
 &nbsp;&nbsp;
-<img src="screen%20images/userPopupDark.png" width="38%"/>
+<img src="assets/screenshots/userPopupDark.png" width="38%"/>
 </p>
 
 <br>
@@ -715,9 +715,9 @@ Every screen ships in **light** and **dark**. Expand a section to browse.
 <h4 align="center">Admin — Active Rides</h4>
 
 <p align="center">
-<img src="screen%20images/adminRidesLight.png" width="38%"/>
+<img src="assets/screenshots/adminRidesLight.png" width="38%"/>
 &nbsp;&nbsp;
-<img src="screen%20images/adminRidesDark.png" width="38%"/>
+<img src="assets/screenshots/adminRidesDark.png" width="38%"/>
 </p>
 
 <br>
@@ -725,9 +725,9 @@ Every screen ships in **light** and **dark**. Expand a section to browse.
 <h4 align="center">Admin — KYC Verification</h4>
 
 <p align="center">
-<img src="screen%20images/adminVerifyLight.png" width="38%"/>
+<img src="assets/screenshots/adminVerifyLight.png" width="38%"/>
 &nbsp;&nbsp;
-<img src="screen%20images/adminVerifyDark.png" width="38%"/>
+<img src="assets/screenshots/adminVerifyDark.png" width="38%"/>
 </p>
 
 <br>
