@@ -248,20 +248,12 @@ class _FindRideScreenState extends State<FindRideScreen> {
         userEmail: widget.userEmail,
       );
 
+      // Always open the results screen; it shows a friendly empty state
+      // when nothing matches instead of a snackbar on the search form.
       if (mounted) {
-        if (validRides.isEmpty && _searchResults == null) {
-          ScaffoldMessenger.of(context).clearSnackBars();
-          ScaffoldMessenger.of(context)..clearSnackBars()..showSnackBar(
-            const SnackBar(
-              content: Text("No rides found matching your route and criteria."),
-              backgroundColor: Colors.orange,
-            ),
-          );
-        } else {
-          setState(() {
-            _searchResults = validRides;
-          });
-        }
+        setState(() {
+          _searchResults = validRides;
+        });
       }
     } on TimeoutException {
       if (mounted) {

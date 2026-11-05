@@ -5,6 +5,7 @@ import 'dart:async';
 import 'dart:ui';
 import '../core/socket_service.dart';
 import '../widgets/find_ride/available_ride_card.dart';
+import '../widgets/find_ride/no_rides_found.dart';
 import 'package:flutter/foundation.dart';
 
 class AvailableRidesScreen extends StatefulWidget {
@@ -543,9 +544,18 @@ class _AvailableRidesScreenState extends State<AvailableRidesScreen> {
               SliverFillRemaining(
                 hasScrollBody: false,
                 child: Center(
-                  child: Text(
-                    "No rides available for this filter.",
-                    style: TextStyle(color: subtitleColor, fontSize: 16),
+                  child: NoRidesFound(
+                    filtersHideRides: allRides.isNotEmpty,
+                    vehicleFilter: selectedFilter,
+                    onChangeSearch: widget.onBack ?? () => Navigator.pop(context),
+                    onRefresh: widget.onRefresh,
+                    onClearFilters: () {
+                      setState(() {
+                        selectedFilter = 'Any';
+                        routePrefFilter = 'Any';
+                      });
+                      _applyFiltersAndSort();
+                    },
                   ),
                 ),
               )
