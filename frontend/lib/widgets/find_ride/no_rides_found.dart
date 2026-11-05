@@ -9,7 +9,6 @@ class NoRidesFound extends StatelessWidget {
   final bool filtersHideRides;
   final String vehicleFilter;
   final VoidCallback? onChangeSearch;
-  final Future<void> Function()? onRefresh;
   final VoidCallback? onClearFilters;
 
   const NoRidesFound({
@@ -17,7 +16,6 @@ class NoRidesFound extends StatelessWidget {
     this.filtersHideRides = false,
     this.vehicleFilter = 'Any',
     this.onChangeSearch,
-    this.onRefresh,
     this.onClearFilters,
   });
 
@@ -35,7 +33,7 @@ class NoRidesFound extends StatelessWidget {
     } else {
       title = 'No rides on this route yet';
       body = "Nobody's heading your way right now. Try a different time or a wider walking distance, "
-          'or check back in a bit. New rides get posted all the time.';
+          'or pull down to check again. New rides get posted all the time.';
     }
 
     return TweenAnimationBuilder<double>(
@@ -73,10 +71,6 @@ class NoRidesFound extends StatelessWidget {
               _PrimaryButton(label: 'Clear filters', icon: Icons.filter_alt_off_outlined, onPressed: onClearFilters, isDark: isDark)
             else ...[
               _PrimaryButton(label: 'Change search', icon: Icons.tune_rounded, onPressed: onChangeSearch, isDark: isDark),
-              if (onRefresh != null) ...[
-                const SizedBox(height: 8),
-                _RefreshButton(onRefresh: onRefresh!, color: titleColor),
-              ],
             ],
           ],
         ),
@@ -108,42 +102,6 @@ class _PrimaryButton extends StatelessWidget {
         icon: Icon(icon, size: 18),
         label: Text(label, style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 15)),
       ),
-    );
-  }
-}
-
-class _RefreshButton extends StatefulWidget {
-  final Future<void> Function() onRefresh;
-  final Color color;
-  const _RefreshButton({required this.onRefresh, required this.color});
-
-  @override
-  State<_RefreshButton> createState() => _RefreshButtonState();
-}
-
-class _RefreshButtonState extends State<_RefreshButton> {
-  bool _busy = false;
-
-  Future<void> _run() async {
-    if (_busy) return;
-    setState(() => _busy = true);
-    try {
-      await widget.onRefresh();
-    } catch (_) {
-    } finally {
-      if (mounted) setState(() => _busy = false);
-    }
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return TextButton.icon(
-      onPressed: _busy ? null : _run,
-      style: TextButton.styleFrom(foregroundColor: widget.color),
-      icon: _busy
-          ? SizedBox(width: 16, height: 16, child: CircularProgressIndicator(strokeWidth: 2, color: widget.color))
-          : const Icon(Icons.refresh_rounded, size: 18),
-      label: Text(_busy ? 'Checking…' : 'Check again', style: const TextStyle(fontWeight: FontWeight.w600)),
     );
   }
 }

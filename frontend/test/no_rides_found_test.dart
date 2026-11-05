@@ -15,11 +15,10 @@ void main() {
       addTearDown(tester.view.resetPhysicalSize);
       addTearDown(tester.view.resetDevicePixelRatio);
 
-      var changed = 0, refreshed = 0;
+      var changed = 0;
       await tester.pumpWidget(_host(
         NoRidesFound(
           onChangeSearch: () => changed++,
-          onRefresh: () async => refreshed++,
         ),
         dark: dark,
       ));
@@ -31,9 +30,7 @@ void main() {
       await tester.tap(find.text('Change search'));
       expect(changed, 1);
 
-      await tester.tap(find.text('Check again'));
-      await tester.pumpAndSettle();
-      expect(refreshed, 1);
+      expect(find.text('Check again'), findsNothing);
       expect(tester.takeException(), isNull);
     });
   }

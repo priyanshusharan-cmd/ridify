@@ -548,7 +548,6 @@ class _AvailableRidesScreenState extends State<AvailableRidesScreen> {
                     filtersHideRides: allRides.isNotEmpty,
                     vehicleFilter: selectedFilter,
                     onChangeSearch: widget.onBack ?? () => Navigator.pop(context),
-                    onRefresh: widget.onRefresh,
                     onClearFilters: () {
                       setState(() {
                         selectedFilter = 'Any';
