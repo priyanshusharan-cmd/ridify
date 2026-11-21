@@ -510,11 +510,15 @@ class _OfferRideScreenState extends State<OfferRideScreen> {
             Row(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
+                // While the other options are hidden, empty spacers keep the
+                // Nonstop card at its normal one-third size (centered).
+                if (!FeatureFlags.showFlexibleRouteOptions) const Expanded(child: SizedBox()),
                 _buildPreferenceCard("Nonstop", "Exact pickup and drop only", "nonstop", Icons.straight),
                 if (FeatureFlags.showFlexibleRouteOptions) ...[
                   _buildPreferenceCard("Shared Start", "Same pickup, flexible drop", "shared_start", Icons.call_split),
                   _buildPreferenceCard("Flexible", "Pickup & drop anywhere", "flexible", Icons.route_outlined),
-                ],
+                ] else
+                  const Expanded(child: SizedBox()),
               ],
             ),
             const SizedBox(height: 20),
