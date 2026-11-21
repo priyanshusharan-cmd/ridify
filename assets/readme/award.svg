@@ -104,12 +104,11 @@
   <!-- text -->
   <g>
     <animate attributeName="opacity" values="0;1" dur="1.2s" fill="freeze"/>
-    <text x="420" y="92" font-size="16" font-weight="700" letter-spacing="5" fill="#9E9E9E">AWARD WINNER</text>
-    <text x="420" y="160" font-size="62" font-weight="900" fill="url(#goldText)" letter-spacing="1">BEST UI/UX TEAM</text>
-    <text x="420" y="204" font-size="26" font-weight="700" fill="#FFFFFF">Hacktoberfest Hackday 26</text>
-    <text x="420" y="240" font-size="18" fill="#BDBDBD">RV University, Bengaluru  ·  31 October 2026  ·  Team HopSync</text>
-    <rect x="420" y="262" width="0" height="3" rx="1.5" fill="#F5C542">
-      <animate attributeName="width" values="0;380" dur="1.6s" begin=".4s" fill="freeze"/>
+    <text x="420" y="104" font-size="16" font-weight="700" letter-spacing="5" fill="#9E9E9E">AWARD WINNER</text>
+    <text x="420" y="176" font-size="68" font-weight="900" fill="url(#goldText)" letter-spacing="1">BEST UI/UX</text>
+    <text x="420" y="222" font-size="26" font-weight="700" fill="#FFFFFF">Hacktoberfest Hackday 26</text>
+    <rect x="420" y="246" width="0" height="3" rx="1.5" fill="#F5C542">
+      <animate attributeName="width" values="0;330" dur="1.6s" begin=".4s" fill="freeze"/>
     </rect>
   </g>
 

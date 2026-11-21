@@ -4,10 +4,6 @@
 
 <br/>
 
-<a href="https://lnkd.in/gAvUQw6V"><img src="assets/readme/award.svg" alt="Best UI/UX Team award, Hacktoberfest Hackday 26, RV University, Bengaluru, 31 October 2026, Team HopSync" width="100%"/></a>
-
-<br/>
-
 [![Live Demo](https://img.shields.io/badge/LIVE_DEMO-ridify.onrender.com-000000?style=for-the-badge&logo=render&logoColor=white&labelColor=1E1E1E)](https://ridify.onrender.com)
 [![Watch Demo](https://img.shields.io/badge/WATCH-video_demo-000000?style=for-the-badge&logo=youtube&logoColor=white&labelColor=1E1E1E)](#-see-it-in-action)
 [![User Manual](https://img.shields.io/badge/READ-user_manual-000000?style=for-the-badge&logo=readthedocs&logoColor=white&labelColor=1E1E1E)](USER_MANUAL.md)
@@ -38,6 +34,12 @@
 Every ride is live. Drivers stream GPS over WebSockets, riders watch the car approach on the map, and everyone in the car shares a chat. Each step of the trip (request, accept, arrive, board, drop off, pay) is checked by the server and pushed to every phone instantly.
 
 One Flutter codebase runs on **Android, iOS and the web**. It talks to a **Node.js + Express 5 + Socket.IO** backend on **MongoDB**, with an admin panel for moderation and KYC.
+
+<br/>
+
+<div align="center">
+  <a href="https://lnkd.in/gAvUQw6V"><img src="assets/readme/award.svg" alt="Best UI/UX award, Hacktoberfest Hackday 26" width="100%"/></a>
+</div>
 
 <br/>
 
