@@ -4,6 +4,7 @@ import 'dart:async';
 import 'package:latlong2/latlong.dart';
 import '../widgets/address_search_widget.dart';
 import '../core/constants.dart';
+import '../core/feature_flags.dart';
 import 'map_picker_screen.dart';
 import '../services/ride_service.dart';
 import '../services/location_service.dart';
@@ -510,8 +511,10 @@ class _OfferRideScreenState extends State<OfferRideScreen> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 _buildPreferenceCard("Nonstop", "Exact pickup and drop only", "nonstop", Icons.straight),
-                _buildPreferenceCard("Shared Start", "Same pickup, flexible drop", "shared_start", Icons.call_split),
-                _buildPreferenceCard("Flexible", "Pickup & drop anywhere", "flexible", Icons.route_outlined),
+                if (FeatureFlags.showFlexibleRouteOptions) ...[
+                  _buildPreferenceCard("Shared Start", "Same pickup, flexible drop", "shared_start", Icons.call_split),
+                  _buildPreferenceCard("Flexible", "Pickup & drop anywhere", "flexible", Icons.route_outlined),
+                ],
               ],
             ),
             const SizedBox(height: 20),

@@ -5,6 +5,7 @@ import '../verified_badge.dart';
 import '../../utils/snackbar_util.dart';
 import 'passenger_tile.dart';
 import '../../core/utils.dart';
+import '../../core/feature_flags.dart';
 
 class RideStatusPanel extends StatelessWidget {
   /// Before the ride starts the panel fills the screen (no map, no GPS).
@@ -337,6 +338,7 @@ class RideStatusPanel extends StatelessWidget {
                   }),
                 ],
                 // ── Chat button (always at bottom of list) ──
+                if (FeatureFlags.showChatButton) ...[
                 const SizedBox(height: 16),
                 SizedBox(
                   width: double.infinity,
@@ -352,6 +354,7 @@ class RideStatusPanel extends StatelessWidget {
                     label: const Text("Chat", style: TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.w600)),
                   ),
                 ),
+                ],
               ],
             ),
           );

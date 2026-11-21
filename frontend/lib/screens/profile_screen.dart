@@ -13,6 +13,7 @@ import '../services/auth_service.dart';
 
 import '../core/socket_service.dart';
 import '../core/theme_provider.dart';
+import '../core/feature_flags.dart';
 
 class ProfileScreen extends StatefulWidget {
   final String userName;
@@ -615,7 +616,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
                         height: 24,
                         child: Center(
                           child: _verificationStatus == 'none'
-                              ? (_isUploading
+                              ? (!FeatureFlags.showVerifyAccountButton
+                                    ? const SizedBox.shrink()
+                                    : _isUploading
                                     ? const SizedBox(
                                         width: 16,
                                         height: 16,
