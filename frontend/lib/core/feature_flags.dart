@@ -15,4 +15,7 @@ class FeatureFlags {
 
   /// "Verify your account" button on the My Profile screen.
   static const bool showVerifyAccountButton = false;
+
+  /// "Crafted with ❤️ by Priyanshu Sharan" + GitHub link footer on My Profile.
+  static const bool showCreditsFooter = false;
 }
